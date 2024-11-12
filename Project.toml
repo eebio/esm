@@ -1,0 +1,10 @@
+name = "eebiotools"
+uuid = "31170fb7-9259-406e-89cb-fc418a8fef2f"
+authors = ["Micha <micha_claydon@yahoo.co.uk>"]
+version = "0.1.0"
+
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"

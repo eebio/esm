@@ -41,6 +41,7 @@ This document describes the data types and experiments that are expected for the
 - Series of time points
 
 ### Experiment types:
+- Any florescent or scattering data.
 
 ### File Types: 
 
@@ -51,6 +52,10 @@ This document describes the data types and experiments that are expected for the
 - 1 FCS file per well
 
 ### Standard Data Manipulations:
+
+- Gating
+- Calibration beads
+- Analysis of histograms
 
 -----------------------------------
 ## qPCR 

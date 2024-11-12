@@ -5,7 +5,7 @@
     "date": ["2012-04-23T18:25:43.511Z"],
     "author": "user name",
     "reader": "TYPE_OF_READER(used by parser)",
-    "plate_number":1,
+    "plate_number":3,
     "experiment_type":"time_course",
     "index":[],
     "channels": [
@@ -28,62 +28,35 @@
     "well_ids":[
         {
             "blanks":{
-              "blank_01":{
-                  "media":"LB",
-                  "Antibiotics":["Kan","Spec"],
-                  "Inducers":[],
-                  "description":"LB blanks",
-                  "wells":{
-                    "plate_1":[
-                      "H10",
-                      "H11",
-                      "H12"
-                      ]
-                    }
-                  }},
+              "plate_1":[
+                "H12"
+              ],
+              "plate_2":[
+                "H12"
+              ],
+              "plate_3":[
+                "H12"
+              ]},
             "controls":{
-              "controls_01":{
-                "media":"LB",
-                "Antibiotics":["Kan","Spec"],
-                "Inducers":[],
-                "description":"WT cells",
-                "wells":{
-                  "plate1":[
-                    "H7",
-                    "H8",
-                    "H9"
-                  ]
-                }
-              }}
-            ,
+              "plate1":[
+              "H7",
+              "H8",
+              "H9"
+            ]},
             "cell_calibrants":{
-              "cell_calibrants_01":{
-                "media":"LB",
-                "Antibiotics":["Kan","Spec"],
-                "Inducers":[],
-                "description":"RPU standard",
-                "wells":{
-                  "plate1":[
-                    "H4",
-                    "H5",
-                    "H6"
-                  ]
-                }
-              }},
+              "plate1":[
+              "H4",
+              "H5",
+              "H6"
+            ]},
             "flo_calibrants":{
-              "flo_calibrants_01":{
-                "media":"LB",
-                "Antibiotics":["Kan","Spec"],
-                "Inducers":[],
-                "description":"Fluorescence standard",
-                "wells":{
-                  "plate1":[
-                    "H1",
-                    "H2",
-                    "H3"
-                  ]
-                }
-              }},
+              "media":"LB",
+              "description":"calibrates fluorescence",
+              "plate1":[
+              "H1",
+              "H2",
+              "H3"
+            ]},
             "data_wells":{
                 "set_named01":{
                   "media":"LB",
@@ -137,9 +110,9 @@
                   "description":"sample set5",
                   "wells":{
                     "plate1":[
-                      "B1",
-                      "B2",
-                      "B3"]
+                  "B1",
+                  "B2",
+                  "B3"]
                 }},
                 "set_named06":{
                   "media":"LB",
@@ -225,26 +198,22 @@
       {
         "name":"Blank",
         "formula":"",
-        "channelIn":["OD600","Fluorescence 1"],
-        "units":""
+        "channelIn":["OD600","Fluorescence 1"]
       },
       {
         "name":"cell_calibration",
         "formula":"",
-        "channelsIn":["OD600","Fluorescence 1"],
-        "units":""
+        "channelsIn":["OD600","Fluorescence 1"]
       },
       {
         "name":"flo_calibration",
         "formula":"",
-        "channelsIn":["Fluorescence 1"],
-        "units":""
+        "channelsIn":["Fluorescence 1"]
       },
       {
         "name":"flo_output",
         "formula":"",
-        "channelsIn":["OD600", "Fluorescence 1"],
-        "units":""
+        "channelsIn":["OD600", "Fluorescence 1"]
       }
     ],
     "out_data":{
