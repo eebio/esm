@@ -58,7 +58,7 @@ This document defines the design specification for the biological data transduce
 
 ### 2.3 User Stories
 
-**To be collected**
+_*NEEDS UPDATING IF WORKING OUTSIDE OF MICROBIOLOGY*_
 
 **User case:** Plate reader
 **Actions:** 
@@ -109,6 +109,8 @@ qPCR is not described here but may be added later in the project.
 
 #### Use case 1: Plate Readers
 
+_*NEEDS ADJUSTING IF WORKING OUTSIDE OF MICROBIOLOGY*_
+
 - **Measurements taken**:
   - Absorbance 
   - Fluorescence intensity 
@@ -121,23 +123,37 @@ qPCR is not described here but may be added later in the project.
   - CSV
   - TSV
   - XLSX
-- Output file:
+- **Output file:**
   - JSON
 - **Metadata to be collected:** 
   - Instrument Type
   - Instrument Name
   - Filters/Monochromaters
     - Wavelength 
+      - Excitation
+      - Emission 
     - Band width
-    - Brand
+      - Excitation
+      - Emission 
+    - Filter Brand
+      - Excitation 
+      - Emission 
     - Gain
+      - Absorbance
+      - Excitation
+      - Emission 
     - Read location
+      - Absorbance
+      - Emission 
     - Read height
+      - Absorbance
+      - Emission 
   - Date(s) and time(s)
   - Person Conducting the experiment
   - Experiment type (Spectra, time point or time course)
   - Number of Plates
-  - Plate type
+  - Number of different measurments being taken (Absorbance, Fluorescence 1, Florescence 2, etc.)
+  - Plate type (Number of wells)
   - Sample type
   - Cover type
   - Data samples:
@@ -176,7 +192,6 @@ qPCR is not described here but may be added later in the project.
     - Volume
     - Read offset
     - Description
-
 - **Standard data processing**
   - Absorbance:
     - Subtract blank well average from data wells.
@@ -185,28 +200,91 @@ qPCR is not described here but may be added later in the project.
       - Subtract media blank autofluorescence.
       - Normalise to the adjusted OD.
     - Plant:
-      - 
+      - TBC
     - Eukaryotic/Human cell:
-      - 
+      - TBC
   - Time resolved Fluorescence:
-    - 
+    - TBC
   - Luminescence:
+    - TBC
   - Polarization:
+    - TBC
   - Light scattering:
+    - TBC
   - Temperature:
 
 **Use case 2: Flow cytometers**
 
-- Measurements taken: 
-  - 
-- Input files: 
+- **Measurements taken:** 
+  - Forward angle scatter
+  - Side angle scatter
+  - Florescence intensity
+- **Input files:** 
   - FCS - multiple (1 per well)
-- Output file:
+- **Output file:**
   - JSON
-- Metadata to be collected: 
-  - 
-- Standard data processing
-  - 
+- **Metadata to be collected:** 
+  - Instrument Type
+  - Instrument Name
+  - Filters
+    - Wavelength 
+      - Excitation
+      - Emission 
+    - Band width
+      - Excitation
+      - Emission 
+    - Filter Brand
+      - Excitation 
+      - Emission 
+  - Date(s) and time(s)
+  - Person conducting the experiment
+  - Number of Plates
+  - Number of different measurments being taken (Absorbance, Fluorescence 1, Florescence 2, etc.)
+  - Plate type (Number of wells)
+  - Sample type
+  - Data samples:
+    - Names
+    - Well
+    - Media
+    - Antibiotics
+    - Inducers
+    - Volume
+    - Read offset
+    - Description
+    - Number of counts
+  - Calibrants:
+    - Names
+    - Well
+    - Media
+    - Antibiotic(s)
+    - Inducer
+    - Volume
+    - Read offset
+    - Description
+    - Number of counts
+  - Blanks:
+    - Names
+    - Well
+    - Media
+    - Antibiotic(s)
+    - Inducer
+    - Volume
+    - Read offset
+    - Description
+    - Number of counts
+  - Controls:
+    - Names
+    - Well
+    - Media
+    - Antibiotic(s)
+    - Inducer
+    - Volume
+    - Read offset
+    - Description
+    - Number of counts
+- **Standard data processing:**
+  - Gating scatter. 
+  - Calibrating using beads.
 
 Document detailed use cases that describe specific interactions and workflows. Include input, actions, and expected outputs.
 
@@ -304,6 +382,6 @@ Summarize the key points of the specification, reiterating the importance of the
 
 *Creation Date:* 11/11/2024
 
-*Last update* 13/11/2024
+*Last update:* 13/11/2024
 
-*Maintainer* Micha Y T Claydon
+*Maintainer:* Micha Y T Claydon
