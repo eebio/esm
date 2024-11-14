@@ -1,4 +1,5 @@
 {
+  "exp_data":[{
     "id": "individual name of experiment",
     "type": "Instrument type",
     "description": "Blah",
@@ -24,8 +25,8 @@
         "read_location":"bottom",
         "filters":"monochrometer"
       }
-    ],
-    "well_ids":[
+    ]}],
+  "well_ids":[
         {
             "blanks":{
               "blank_01":{
@@ -221,7 +222,7 @@
               }
             }
     ],
-    "transformations":[
+  "transformations":[
       {
         "name":"Blank",
         "formula":"",
@@ -247,7 +248,7 @@
         "units":""
       }
     ],
-    "out_data":{
+  "out_data":{
       "sample":{
         "set_name01":{
           "Temp":{

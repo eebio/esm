@@ -58,8 +58,6 @@ This document defines the design specification for the biological data transduce
 
 ### 2.3 User Stories
 
-_*NEEDS UPDATING IF WORKING OUTSIDE OF MICROBIOLOGY*_
-
 **User case:** Plate reader
 **Actions:** 
 
@@ -109,8 +107,6 @@ qPCR is not described here but may be added later in the project.
 
 #### Use case 1: Plate Readers
 
-_*NEEDS ADJUSTING IF WORKING OUTSIDE OF MICROBIOLOGY*_
-
 - **Measurements taken**:
   - Absorbance 
   - Fluorescence intensity 
@@ -128,7 +124,7 @@ _*NEEDS ADJUSTING IF WORKING OUTSIDE OF MICROBIOLOGY*_
 - **Metadata to be collected:** 
   - Instrument Type
   - Instrument Name
-  - Filters/Monochromaters
+  - Filters/Monochromaters per reading
     - Wavelength 
       - Excitation
       - Emission 
@@ -148,6 +144,7 @@ _*NEEDS ADJUSTING IF WORKING OUTSIDE OF MICROBIOLOGY*_
     - Read height
       - Absorbance
       - Emission 
+    - Integration time/Resolution
   - Date(s) and time(s)
   - Person Conducting the experiment
   - Experiment type (Spectra, time point or time course)
@@ -156,6 +153,8 @@ _*NEEDS ADJUSTING IF WORKING OUTSIDE OF MICROBIOLOGY*_
   - Plate type (Number of wells)
   - Sample type
   - Cover type
+  - Index
+  - Chamber temperature
   - Data samples:
     - Names
     - Well
@@ -195,30 +194,17 @@ _*NEEDS ADJUSTING IF WORKING OUTSIDE OF MICROBIOLOGY*_
 - **Standard data processing**
   - Absorbance:
     - Subtract blank well average from data wells.
-  - Fluorescence intensity:
-    - Microbiology:
-      - Subtract media blank autofluorescence.
-      - Normalise to the adjusted OD.
-    - Plant:
-      - TBC
-    - Eukaryotic/Human cell:
-      - TBC
-  - Time resolved Fluorescence:
-    - TBC
-  - Luminescence:
-    - TBC
-  - Polarization:
-    - TBC
-  - Light scattering:
-    - TBC
-  - Temperature:
+  - Fluorescence intensity and other methods:
+    - Subtract media blank autofluorescence.
+    - Normalise to the adjusted OD.
+    - Subtract blank spectra from observed spectra
 
 **Use case 2: Flow cytometers**
 
 - **Measurements taken:** 
   - Forward angle scatter
   - Side angle scatter
-  - Florescence intensity
+  - Florescence intensity - multiple
 - **Input files:** 
   - FCS - multiple (1 per well)
 - **Output file:**
@@ -283,24 +269,96 @@ _*NEEDS ADJUSTING IF WORKING OUTSIDE OF MICROBIOLOGY*_
     - Description
     - Number of counts
 - **Standard data processing:**
-  - Gating scatter. 
+  - Gating cell counts. 
   - Calibrating using beads.
-
-Document detailed use cases that describe specific interactions and workflows. Include input, actions, and expected outputs.
 
 ## 3. Design
 
 ### 3.1 Architecture Overview
-Provide a high-level architecture diagram and explain the system components and how they interact. Include considerations for scalability, fault tolerance, and maintainability.
+
+- There is no specific architecture associated with this program, given it is a standalone program (hence no architecture diagram).
+- As it might become a functional component in a pipeline, considerations must be made to ensure that the data outputted is machine readable and space efficient. 
+  - For this program the chosen output file is of JSON format which is readily readable by most modern programming languages. 
+  - This also allows for scalability as it is easy to read and breakdown JSON files and it is a standard data format. 
+- The metadata that is taken in from the metadata document can easily be expanded. This means that other forms of data acquisition (e.g. qPCR etc) can be added in the future. 
+- The program should throw an error if a key metadata field is either not populated. 
+  - Any non-standard fields should default to blank.
 
 ### 3.2 Data Models
-Define the data models, schemas, or database tables required for the system. Include any relevant relationships and constraints between data entities.
+
+- This will follow a hierarchical model. 
+- All plate reader fields not used in the flow cytometer data will be left blank and vice versa.
+- All indexing will be per plate that is present to allow for a full audit trail of experimenter, machine and date.
+  - This also simplifies the iteration process and allows scalability of the final format.
+
+**Broad level JSON organisation:**
+- Broad metadata:
+- Well IDs and contents
+- Transformations
+- Output Data
+
+**Broad metadata organisation:**
+- Captures all information associated with the machine and experiment outside of the individual wells used. 
+- Format: 
+  - Instrument Type (Plate reader or Flow cytometer) (String)
+  - Instrument Name (String)
+  - Filters/Monochromaters/Lasers per channel (Dictionary)
+    - Optics (iterates via optics_0x):
+      - Wavelength 
+        - Excitation (Float)
+        - Emission (Float)
+      - Band width
+        - Excitation (Float)
+        - Emission (Float)
+      - Filter Brand
+        - Excitation (String)
+        - Emission (String)
+      - Gain (Float)
+      - Read location (String)
+      - Read height (Float)
+      - Total read time (Float)
+      - Per well read time (Float)
+      - Integration time/Resolution (Float)
+  - Date(s) and time(s) (Dictionary{String} format: YYYY-MM-DD-TT:TT)
+  - Person Conducting the experiment (Dictionary{String})
+  - Experiment type (Spectra, time point or time course) (String)
+  - Number of Plates (Integer)
+  - Number of different measurments being taken (Absorbance, Fluorescence 1, Florescence 2, etc.) (Integer)
+  - Plate type (Number of wells) (Integer)
+  - Sample type (String)
+  - Cover type (Dictionary{String})
+  - Index (Array{Float})
+  - Chamber temperature (Dictionary{Array{Float}})
+
+**Well level organisation:**
+- The per group data structure will be: 
+- Group Name
+  - Media (String)
+  - Antibiotics (Array{String})
+  - Inducers (Array{String})
+  - Description (String)
+  - Wells (Dictionary)
+    - Plate (iterates in form plate_0x - Array{String})
+
+**Output_data organisation:**
+- This is the transformed data outputted by the program. 
+- Structure: 
+  - Group name (String)
+    - Plate (iterated as plate_0x)
+      - Measurement (e.g. OD, Fluorescence/OD)
+        - Wells (Array{String})
+
+
 
 ### 3.3 API Design
 If your system includes an API, describe the endpoints, request/response formats, authentication mechanisms, and error handling strategies.
 
 ### 3.4 UI/UX Design
-If applicable, provide mockups or wireframes of the user interface. Describe the expected user experience and any design principles or patterns you are following.
+ 
+- This will be a CLI and as such will have no user GUI. 
+- The CLI should purely be as follows: 
+```command data.file metadata.JSON```
+```command data_folder metadata.JSON```
 
 ## 4. Implementation
 
