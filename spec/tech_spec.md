@@ -326,7 +326,7 @@ qPCR is not described here but may be added later in the project.
   - Number of different measurments being taken (Absorbance, Fluorescence 1, Florescence 2, etc.) (Integer)
   - Plate type (Number of wells) (Integer)
   - Sample type (String)
-  - Cover type (Dictionary{String})
+  - Cover type (String)
   - Index (Array{Float})
   - Chamber temperature (Dictionary{Array{Float}})
 
@@ -357,8 +357,8 @@ If your system includes an API, describe the endpoints, request/response formats
  
 - This will be a CLI and as such will have no user GUI. 
 - The CLI should purely be as follows: 
-```command data.file metadata.JSON```
-```command data_folder metadata.JSON```
+```command metadata.JSON```
+```command metadata.JSON```
 
 ## 4. Implementation
 
