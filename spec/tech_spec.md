@@ -363,9 +363,23 @@ If your system includes an API, describe the endpoints, request/response formats
 ## 4. Implementation
 
 ### 4.1 Tech Stack
-List the technologies, programming languages, frameworks, and tools that will be used in the project. Justify why each was chosen, considering factors like performance, compatibility, and ease of use.
+- Julia - main programming language, simple to use, easy for future modifications and edits, fast and can be packaged.
+- Rust - For any problems that need more power such as flow cytometry.
+- JSON - Main output file format.
 
 ### 4.2 Code Structure
+- Files will be organised into the general Julia package structure, with subfolders based on the contents: 
+  - Main Folder:
+    - src
+      - analysis - any code used for analysing data
+      - base - any basic code
+      - io - any code used to read or write files
+    - test
+    - deps
+- Code will be organised around two main constructors: one holding general metadata and one holding well level data. 
+  - This allows for the storage of the well level data without the need for large amounts of iteration and standardises the code used.
+- See flow chart for control flow details.
+
 Provide an overview of the code structure, including how files and directories will be organized. This could include directory structures, naming conventions, and patterns.
 
 ### 4.3 Libraries and Frameworks

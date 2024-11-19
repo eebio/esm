@@ -1,68 +1,34 @@
 """
-    asscMetadata
-
-Data structure that holds all the non-well associated data.
-"""
-struct asscMetadata
-    instrument_type::String
-    instrument_name::String
-    plate_n::Int
-    optics::Dict{String,Array{Float}}
-    time_date::Dict{String:String}
-    user::Dict{String:String}
-    experiment_type::String
-    plate_type::Int
-    sample_type::string
-    cover_type::String
-    index::Array{Float}
-    chamber_temp::Array{Float}
-    filen::Array{String}
-
-    """
-        read_metadata(file)
-
-    Extracts the metadata from a file for future processing. 
-
-    Agruments: 
-    - `file`: `DataFrame` - DataFrame type corresponding to the read file from the read() function.
-
-    Returns:
-    - ``
-    """
-    function asscMetadata(filen)
-        
-    end
-end
-
-"""
-    well_group
-
-Structure that contains the data associated with one well group.
-"""
-struct well_group
-    media::String
-    Antibiotics::Array{String}
-    Inducers::Array{String}
-    Description::String
-    wells::Dict{String,Array{String}}
-    out_data::Dict{String,Array{Array{Float}}}
-end
-
-
-"""
     read_fcs(filen)
 
 Reads a set of FCS files into a DataFrame and checks if it is a valid file path.
 
 Arguments: 
-- `filen`: `string` - type corresponding to the path at which the file(s) can be found.
+- `filen`: `Array{String}` - type corresponding to the path at which the file(s) can be found.
 
 Returns: 
 - `file` - `DataFrame` type of read data
 """
-function read_fcs()
+function read_fcs(metadata)
     try
-        
+        output_channels=Dict(metadata.channels.=>DataFrame())
+        for pl in range(1,length(metadata.filen))
+            fcs = [fcs for fcs in readdir("$(metadata.filen[pl])") if fcs[length(fcs)-2:length(fcs)]=="fcs"]
+            for channel in metadata.channels:
+                data=Dict(["$(i)$(k)_$(pl)" for i in ["A","B","C","D","E","F","G","H"] for k in range(1,12)][1:length(fcs)] .=> [load("$(metadata.filen[pl])/$i")["$(metadata.channel)"] for i in fcs])
+                maxy=maximum([length(i) for i in values(data)])
+                df=DataFrame(["t"=>[missing for i in range(1,maxy)]])
+                for i in keys(data)
+                    if maxy >= length(data)
+                        b=[missing for i in range(1,maxy - length(data[i]))]
+                        df=hcat(df,DataFrame([i=>[data[i].:data;b]]))
+                    else
+                        df=hcat(df,DataFrane([i=>[data[i].:data;b]]))
+                    end
+                end
+                output_channels[channel]=df
+            end
+        end
     catch
         print("The path you have entered: $(filen) does not correspond to a file path containing valid FCS files. \n\n Exiting - please retry.")
         leave(true)
@@ -82,7 +48,10 @@ Returns:
 """
 function read_csv(filen) 
     try 
-        file = CSV.read(filen,DataFrame)
+        output_channels=Dict(metadata.channels.=>DataFrame())
+        for pl in range(1,length(metadata.filen))
+            for channel in metadata.channels:
+                file = CSV.read(filen,DataFrame)
         return file
     catch
         print("The path you have entered: $(filen) does not correspond to a CSV file. \n\n Exiting - please retry.")
@@ -91,25 +60,34 @@ function read_csv(filen)
 end
 
 """
-    leave(throw)
+    read_metadata(file)
 
-Defines the exit behaviour of the program.
+Extracts the metadata from a file for future processing. 
 
-Arguments:
-- `throw`: `Bool` - defines the print behaviour of the exit function, with false indicating normal behaviour and True indicating an error.
+Agruments: 
+- `filen`: `String` -  type corresponding to the read file from the read() function.
 
 Returns:
-- `nothing` 
+- ``
 """
-function leave(throw)
-    if throw
-        println("Error occurred - please see printed statements and retry.")
-    else
-        println("All files processed and converted succesfully.")
+function read_metadata(filen)
+    try
+        jfile = JSON.parsefile(filen)
+    catch 
+        print("The path you have entered: $(filen) does not correspond to a JSON file or this file is not formatted correctly. \n\n Exiting - please retry.")
+        leave(true)
     end
-    exit()
-end
-
-function main()
-
+    fmet = asscMetadata(instrument_type=jfile.instrument_type,
+                        instrument_name=jfile.instrument_name,
+                        plate_n=jfile.plate_n,
+                        channels=jfile.channels,
+                        time_date=jfile.time_date,
+                        user=jfile.user,
+                        experiment_type=jfile.experiment_type,
+                        plate_type=jfile.plate_type,
+                        sample_type=jfile.sample_type,
+                        cover_type=jfile.cover_type,
+                        filen=jfile.filen
+                        )
+    return fmet
 end
