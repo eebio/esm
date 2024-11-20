@@ -1,0 +1,189 @@
+{
+    "instrument_type":"Flow cytometer",
+    "instrument_name":"Flow 1",
+    "plate_n":1,
+    "channels":{
+        "BL1-H":{
+            "Name":"GFP",
+            "Excitment":488,
+            "Emission":510
+        },
+        "FSC-A":{
+            "Name":"Forward Scatter A",
+            "Channel":"BL1-H"
+        }
+    },
+    "time_date":["2019-11-21"],
+    "user":"Unknown",
+    "experiment_type":"Flow cytometry",
+    "plate_type":96,
+    "sample_type":"Culture",
+    "cover_type":"N/A",
+    "filen":["../../flopr-master/examples/flow_cytometry/DATA/20191121"],
+    "data_map":{
+            "blanks":{
+                "blank_1":{
+                    "plate_1":{
+                        "wells":["A1","A2","A3"],
+                        "name":"Media Blank",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":0.0,
+                            "Unit": "nM"}
+                            }
+                        }
+                    },
+            "controls":{
+                "controls_1":{
+                    "plate_1":{
+                        "wells":["A4","A5","A6"],
+                        "name":"Cell control",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":0.0,
+                            "Unit": "nM"}
+                    }}},
+            "cellCalibrants":{
+                "cellCalibrants_1":{
+                    "plate_1":{
+                        "wells":["A7","A8","A9"],
+                        "name":"Cell Calibrants",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":0.0,
+                            "Unit": "nM"}
+            }}},
+            "mediaCalibrant":{
+                "mediaCalibrants_1":{
+                    "plate_1":{
+                        "wells":["A10","A11","A12"],
+                        "name":"Media Calibrants",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":0.0,
+                            "Unit": "nM"}
+            }}},
+            "data_groups":{
+                "group_1":{
+                    "plate_1":{
+                        "wells":["B1","B2","B3"],
+                        "name":"E_group_1",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":0.0,
+                            "Unit": "nM"}
+            }},
+                "group_2":{
+                    "plate_1":{
+                        "wells":["B4","B5","B6"],
+                        "name":"E_group_2",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":20.0,
+                            "Unit": "nM"}
+            }},
+                "group_3":{
+                    "plate_1":{
+                        "wells":["B7","B8","B9"],
+                        "name":"E_group_3",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":40.0,
+                            "Unit": "nM"}
+            }},
+                "group_4":{
+                    "plate_1":{
+                        "wells":["B10","B11","B12"],
+                        "name":"E_group_4",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":20.0,
+                            "Unit": "nM"}
+            }},
+                "group_5":{
+                    "plate_1":{
+                        "wells":["C1","C2","C3"],
+                        "name":"E_group_5",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":40.0,
+                            "Unit": "nM"}
+            }},
+                "group_6":{
+                    "plate_1":{
+                        "wells":["C4","C5","C6"],
+                        "name":"E_group_6",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":30.0,
+                            "Unit": "nM"}
+            
+            }},
+                "group_7":{
+                    "plate_1":{
+                        "wells":["C7","C8","C9"],
+                        "name":"E_group_7",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":10.0,
+                            "Unit": "nM"}
+            }},
+                "group_8":{
+                    "plate_1":{
+                        "wells":["C10","C11","C12"],
+                        "name":"E_group_5",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":200.0,
+                            "Unit": "nM"}
+            }},
+                "group_9":{
+                    "plate_1":{
+                        "wells":["D1","D2","D3"],
+                        "name":"E_group_9",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":100.0,
+                            "Unit": "nM"}
+            }},
+                "group_10":{
+                    "plate_1":{
+                        "wells":["D4","D5","D6"],
+                        "name":"E_group_10",
+                        "media":"LB",
+                        "antibiotics":["Kan","Spec"],
+                        "inducers":{
+                            "inducer":"aTc",
+                            "Concetration":4.0,
+                            "Unit": "nM"}
+                }
+            }
+        }
+    }
+}
