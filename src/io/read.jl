@@ -88,12 +88,46 @@ function read_metadata(filen)
                             sample_type=jfile["sample_type"],
                             cover_type=jfile["cover_type"],
                             filen=jfile["filen"],
-                            data_map=jfile["data_map"]
+                            data_map=jfile["data_map"],
+                            plate_map=jfile["plate_map"]
                             )
         return fmet
     catch 
         print("The path you have entered: $(filen) does not correspond to a JSON file or this file is not formatted correctly. \n\n Exiting - please retry.")
         leave(true)
+    end
+end
+
+function read_excel(filen)
+    xf = [XLSX.readtable(filen,"Basic information") |> DataFrames.DataFrame, XLSX.readtable(filen,"Plate Map") |> DataFrames.DataFrame]
+    xf[2].Wells = split.(xf[2].Wells,", ")
+    return xf
+end
+
+function dict_creator(df,grpr)
+    d = groupby(df,grpr)
+    return [i=>combine(d[i],names(d[i])) for i in keys(d)]
+end
+
+function write_conv(xf)
+    i=Dict{Symbol,Any}(pairs(eachcol(permutedims(xf[1],1))))
+    gdf = groupby(xf[2],[:Type,:Name,:Plate])
+    dic=Dict()
+    for l in keys(gdf)
+        if !(l[1] in keys(dic))
+            dic[l[1]]=Dict()
+        end
+        if !(l[2] in keys(dic[l[1]]))
+            dic[l[1]][l[2]]=Dict()
+        end
+        if !(l[3] in keys(dic[l[1]][l[2]]))
+            dic[l[1]][l[2]]["plate_$(l[3])"]=Dict()
+        end
+        dic[l[1]][l[2]]["plate_$(l[3])"]=Dict(pairs(eachcol(get(gdf,l,nothing)[:, Not(:Name,:Type,:Plate)])))
+    end
+    i[:plate_map]=dic
+    open("test_config.json", "w") do file
+        JSON.print(file, i, 4)
     end
 end
 

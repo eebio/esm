@@ -16,7 +16,7 @@ Data structure that holds all the non-well associated data.
     sample_type::String
     cover_type::String
     filen::Array{String}
-    data_map::Dict{String,Any}
+    plate_map::Dict{String,Any}
 end
 
 """
