@@ -99,14 +99,19 @@ function read_metadata(filen)
 end
 
 function read_excel(filen)
-    xf = [XLSX.readtable(filen,"Basic information") |> DataFrames.DataFrame, XLSX.readtable(filen,"Plate Map") |> DataFrames.DataFrame]
-    xf[2].Wells = split.(xf[2].Wells,", ")
+    xf = [XLSX.readtable(filen,"Basic information";infer_eltypes=true) |> DataFrames.DataFrame, XLSX.readtable(filen,"Plate Map";infer_eltypes=true) |> DataFrames.DataFrame]
+    for x in names(xf[2])
+        if xf[2][!,x][1] isa String
+            if true in [occursin(",", val) ? true : false for val in xf[2][!,x]]# occursin(xf[2][!,x],",")
+                xf[2][!,x] .= split.(xf[2][!,x],r", ?")
+            end
+        end
+    end
     return xf
 end
 
-function dict_creator(df,grpr)
-    d = groupby(df,grpr)
-    return [i=>combine(d[i],names(d[i])) for i in keys(d)]
+function add_data(xf,data)
+    
 end
 
 function write_conv(xf)
@@ -126,7 +131,7 @@ function write_conv(xf)
         dic[l[1]][l[2]]["plate_$(l[3])"]=Dict(pairs(eachcol(get(gdf,l,nothing)[:, Not(:Name,:Type,:Plate)])))
     end
     i[:plate_map]=dic
-    open("test_config.json", "w") do file
+    open("config.json", "w") do file
         JSON.print(file, i, 4)
     end
 end

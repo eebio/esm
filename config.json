@@ -1,0 +1,619 @@
+{
+    "Experiment type": [
+        "Flow"
+    ],
+    "Cover type": [
+        "Lid"
+    ],
+    "Number of plates": [
+        1
+    ],
+    "Date": [
+        "2019-11-21"
+    ],
+    "plate_map": {
+        "Callibrants": {
+            "Cell callibrants": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "A7",
+                            "A8",
+                            "A9"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Media callibrants": {
+                "plate_1": {
+                    "Strain": [
+                        null
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "A10",
+                            "A11",
+                            "A12"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            }
+        },
+        "Controls": {
+            "Cell control": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "A4",
+                            "A5",
+                            "A6"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            }
+        },
+        "Data": {
+            "Group 8": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "C10",
+                            "C11",
+                            "C12"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 7": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "C7",
+                            "C8",
+                            "C9"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 5": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "C1",
+                            "C2",
+                            "C3"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 2": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "B4",
+                            "B5",
+                            "B6"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 3": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "B7",
+                            "B8",
+                            "B9"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 1": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "B1",
+                            "B2",
+                            "B3"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 9": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "D1",
+                            "D2",
+                            "D3"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 10": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "D4",
+                            "D5",
+                            "D6"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 6": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "C4",
+                            "C5",
+                            "C6"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            },
+            "Group 4": {
+                "plate_1": {
+                    "Strain": [
+                        "DH5a"
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "B10",
+                            "B11",
+                            "B12"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            }
+        },
+        "Blanks": {
+            "Media Blank": {
+                "plate_1": {
+                    "Strain": [
+                        null
+                    ],
+                    "Inducers": [
+                        [
+                            "aTc",
+                            "IPTG"
+                        ]
+                    ],
+                    "Inducer concentration": [
+                        [
+                            "200",
+                            "1"
+                        ]
+                    ],
+                    "Wells": [
+                        [
+                            "A1",
+                            "A2",
+                            "A3"
+                        ]
+                    ],
+                    "Media": [
+                        "LB"
+                    ],
+                    "Antibiotics": [
+                        [
+                            "Kan",
+                            "Spec"
+                        ]
+                    ],
+                    "Antibiotic concentration": [
+                        [
+                            "50",
+                            "100"
+                        ]
+                    ]
+                }
+            }
+        }
+    },
+    "User(s)": [
+        "MC"
+    ],
+    "Sample type": [
+        "E coli"
+    ],
+    "Instrument type": [
+        "Flow cytometer"
+    ],
+    "Plate type": [
+        96
+    ],
+    "File location": [
+        "../../flopr-master/examples/flow_cytometry/DATA/20191121"
+    ],
+    "Instrument name": [
+        "Flow 1"
+    ],
+    "Channels": [
+        "BL1-H,FSC-A"
+    ]
+}

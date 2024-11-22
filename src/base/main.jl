@@ -72,6 +72,11 @@ end
 
 @main function main(filen)
     f=read_metadata(filen)
+    if r".xslsx" in filen
+        xd=read_excel(filen)
+        write_conv(xd)
+        filen="./config.json"
+    end
     if lowercase(f.instrument_type) in ["plate reader","plate readers","plate_reader"]
         data_dict=read_csv(f)
     else
