@@ -5,18 +5,18 @@ using DataFrames, FileIO
 Data structure that holds all the non-well associated data.
 """
 @with_kw struct asscMetadata
-    instrument_type::String
-    instrument_name::String
-    plate_n::Int
-    channels::Dict{String,Dict{String,Any}}
-    time_date::Array{String}
-    user::String
-    experiment_type::String
-    plate_type::Int
-    sample_type::String
-    cover_type::String
-    filen::Array{String}
-    plate_map::Dict{String,Any}
+    instrument_type::Vector{String}
+    instrument_name::Vector{String}
+    plate_n::Vector{Int}
+    channels::Vector{String}
+    time_date::Vector{String}
+    user::Vector{String}
+    experiment_type::Vector{String}
+    plate_type::Vector{Int}
+    sample_type::Vector{String}
+    cover_type::Vector{String}
+    filen::Vector{String}
+    plate_map::Any
 end
 
 """
@@ -71,16 +71,21 @@ end
 
 
 @main function main(filen)
-    f=read_metadata(filen)
-    if r".xslsx" in filen
+    ext = splitext(basename(filen))[2]
+    if ext==".xlsx"
         xd=read_excel(filen)
         write_conv(xd)
-        filen="./config.json"
+        filen="config.json"
+        f=read_metadata(filen)
+    else 
+        f=read_metadata(filen)
     end
-    if lowercase(f.instrument_type) in ["plate reader","plate readers","plate_reader"]
+    if lowercase(f.instrument_type[1]) in ["plate reader","plate readers","plate_reader"]
         data_dict=read_csv(f)
     else
         data_dict=read_fcs(f)
+        write_out(f,data_dict)
+        # write_conv([DataFrame(Tables.table(f)),data_dict],data_dict,keys(data_dict))
         data_dict=gen_meta(data_dict,f)
         print(DataFrames.metadata(data_dict["BL1-H"]))
         write_json(data_dict)

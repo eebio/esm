@@ -11,7 +11,7 @@ Returns:
 """
 function read_fcs(metad)
     try
-        output_channels=Dict(keys(metad.channels) .=>[DataFrame() for i in 1:length(keys(metad.channels))])
+        output_channels=Dict(metad.channels .=>[DataFrame() for i in 1:length(metad.channels)])
         for pl in range(1,length(metad.filen))
             fcs = [fcs for fcs in readdir("$(metad.filen[pl])") if fcs[length(fcs)-2:length(fcs)]=="fcs"]
             for channel in keys(metad.channels)
@@ -76,30 +76,29 @@ Returns:
 """
 function read_metadata(filen)
     jfile = JSON.parsefile(filen)
-    try
+    # try
         fmet = asscMetadata(instrument_type=jfile["instrument_type"],
                             instrument_name=jfile["instrument_name"],
-                            plate_n=jfile["plate_n"],
+                            plate_n=jfile["number_of_plates"],
                             channels=jfile["channels"],
-                            time_date=jfile["time_date"],
-                            user=jfile["user"],
+                            time_date=jfile["date"],
+                            user=jfile["user(s)"],
                             experiment_type=jfile["experiment_type"],
                             plate_type=jfile["plate_type"],
                             sample_type=jfile["sample_type"],
                             cover_type=jfile["cover_type"],
-                            filen=jfile["filen"],
-                            data_map=jfile["data_map"],
+                            filen=jfile["file_location"],
                             plate_map=jfile["plate_map"]
                             )
         return fmet
-    catch 
-        print("The path you have entered: $(filen) does not correspond to a JSON file or this file is not formatted correctly. \n\n Exiting - please retry.")
-        leave(true)
-    end
+    # catch 
+    #     print("The path you have entered: $(filen) does not correspond to a JSON file or this file is not formatted correctly. \n\n Exiting - please retry.")
+    #     leave(true)
+    # end
 end
 
 function read_excel(filen)
-    xf = [XLSX.readtable(filen,"Basic information";infer_eltypes=true) |> DataFrames.DataFrame, XLSX.readtable(filen,"Plate Map";infer_eltypes=true) |> DataFrames.DataFrame]
+    xf = [XLSX.readtable(filen,"Basic information";infer_eltypes=true,header=false) |> DataFrames.DataFrame, XLSX.readtable(filen,"Plate Map";infer_eltypes=true) |> DataFrames.DataFrame]
     for x in names(xf[2])
         if xf[2][!,x][1] isa String
             if true in [occursin(",", val) ? true : false for val in xf[2][!,x]]# occursin(xf[2][!,x],",")
@@ -107,11 +106,33 @@ function read_excel(filen)
             end
         end
     end
+    for x in names(xf[1])
+        if eltype(xf[1][!,x]) <: AbstractString
+            xf[1][!,x] .= map(val -> 
+                occursin(",", val) ? split(lowercase(val), r", ?") : lowercase(val)
+            , xf[1][!,x])
+        elseif eltype(xf[1][!,x]) <: Integer
+            nothing
+        end
+    end
+    xf[1][:,1]=map(x -> lowercase(replace(x, r" " => "_")), xf[1][!,1])
     return xf
 end
 
-function add_data(xf,data)
-    
+function write_out(md, data)
+    o_dict = Dict(field => getfield(md, field) for field in fieldnames(typeof(md)))
+    # print(o_dict[:plate_map])
+    for i in keys(o_dict[:plate_map])
+        for j in keys(o_dict[:plate_map][i])
+            wells=[]
+            wells=[wells;[o_dict[:plate_map][i][j][k]["Wells"] for k in keys(o_dict[:plate_map][i][j])]]
+            o_dict[:plate_map][i][j]["data"]=Dict()
+            for m in md.channels
+                o_dict[:plate_map][i][j]["data"][m]=Dict(column_name => df[!,"$column_name"][1] for column_name in names(data[!,wells]))
+            end
+        end
+    end
+    print(o_dict[:plate_map])
 end
 
 function write_conv(xf)
@@ -128,7 +149,8 @@ function write_conv(xf)
         if !(l[3] in keys(dic[l[1]][l[2]]))
             dic[l[1]][l[2]]["plate_$(l[3])"]=Dict()
         end
-        dic[l[1]][l[2]]["plate_$(l[3])"]=Dict(pairs(eachcol(get(gdf,l,nothing)[:, Not(:Name,:Type,:Plate)])))
+        df=get(gdf,l,nothing)[:, Not(:Name,:Type,:Plate)]
+        dic[l[1]][l[2]]["plate_$(l[3])"]=Dict(column_name => df[!,"$column_name"][1] for column_name in names(df))
     end
     i[:plate_map]=dic
     open("config.json", "w") do file
