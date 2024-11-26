@@ -70,6 +70,19 @@ function col_meta()
 end
 
 
+"""
+main running function.
+
+### Args
+
+- `filen' - the input file path, leading to either a JSON or an XLSX output. 
+
+### Options
+
+### Flags
+
+"""
+
 @main function main(filen)
     ext = splitext(basename(filen))[2]
     if ext==".xlsx"
@@ -84,10 +97,6 @@ end
         data_dict=read_csv(f)
     else
         data_dict=read_fcs(f)
-        write_out(f,data_dict)
-        # write_conv([DataFrame(Tables.table(f)),data_dict],data_dict,keys(data_dict))
-        data_dict=gen_meta(data_dict,f)
-        print(DataFrames.metadata(data_dict["BL1-H"]))
-        write_json(data_dict)
     end
+    write_out(f,data_dict)
 end

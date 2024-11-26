@@ -10,11 +10,11 @@ Returns:
 - `file` - `DataFrame` type of read data
 """
 function read_fcs(metad)
-    try
-        output_channels=Dict(metad.channels .=>[DataFrame() for i in 1:length(metad.channels)])
+    # try
+        output_channels=Dict(split(metad.channels[1],r", ?") .=>[DataFrame() for i in 1:length(split(metad.channels[1],r", ?"))])
         for pl in range(1,length(metad.filen))
             fcs = [fcs for fcs in readdir("$(metad.filen[pl])") if fcs[length(fcs)-2:length(fcs)]=="fcs"]
-            for channel in keys(metad.channels)
+            for channel in split(metad.channels[1],r", ?")
                 data=Dict(["$(i)$(k)_$(pl)" for i in ["A","B","C","D","E","F","G","H"] for k in range(1,12)][1:length(fcs)] .=> [load("$(metad.filen[pl])/$i")["$(channel)"] for i in fcs])
                 maxy=maximum([length(i) for i in values(data)])
                 df=DataFrame(["t"=>[missing for i in range(1,maxy)]])
@@ -30,10 +30,10 @@ function read_fcs(metad)
             end
         end
         return output_channels
-    catch
-        print("The path you have entered: $(metad.filen) does not correspond to a file path containing valid FCS files. \n\n Exiting - please retry.")
-        leave(true)
-    end
+#     catch
+#         print("The path you have entered: $(metad.filen) does not correspond to a file path containing valid FCS files. \n\n Exiting - please retry.")
+#         leave(true)
+#     end
 end
 
 """
@@ -48,19 +48,19 @@ Returns:
 - `file` - `DataFrame` type of read data
 """
 function read_csv(filen) 
-    try 
-        output_channels=Dict(metad.channels.=>DataFrame())
+    # try 
+        output_channels=Dict(split(metad.channels[1],r", ?") .=>[DataFrame() for i in 1:length(split(metad.channels[1],r", ?"))])
         for pl in range(1,length(metad.filen))
-            for channel in metad.channels
+            for channel in split(metad.channels[1],r", ?")
                 output_channels[channel]=hact(output_channels[channel], CSV.read(filen,DataFrame))
             end
             output_channels[channel]=hcat(output_channels[channel],df)
         end
         return output_channels
-    catch
-        print("The path you have entered: $(metad.filen) does not correspond to a CSV file. \n\n Exiting - please retry.")
-        leave(true)
-    end
+    # catch
+    #     print("The path you have entered: $(metad.filen) does not correspond to a CSV file. \n\n Exiting - please retry.")
+    #     leave(true)
+    # end
 end
 
 """
@@ -124,15 +124,18 @@ function write_out(md, data)
     # print(o_dict[:plate_map])
     for i in keys(o_dict[:plate_map])
         for j in keys(o_dict[:plate_map][i])
-            wells=[]
-            wells=[wells;[o_dict[:plate_map][i][j][k]["Wells"] for k in keys(o_dict[:plate_map][i][j])]]
+            ks=collect(keys(o_dict[:plate_map][i][j]))
+            wells=collect(Base.Iterators.flatten([collect([l * "_$(k)" for l in o_dict[:plate_map][i][j][ks[k]]["Wells"]]) for k in range(1,length(ks))]))
             o_dict[:plate_map][i][j]["data"]=Dict()
-            for m in md.channels
-                o_dict[:plate_map][i][j]["data"][m]=Dict(column_name => df[!,"$column_name"][1] for column_name in names(data[!,wells]))
+            for m in split(md.channels[1],r", ?")
+                o_dict[:plate_map][i][j]["data"][m]=Dict()
+                o_dict[:plate_map][i][j]["data"][m]=Dict(column_name => data[m][!,"$column_name"] for column_name in names(data[m][!,wells]))
             end
         end
     end
-    print(o_dict[:plate_map])
+    open("out.json", "w") do file
+        JSON.print(file, o_dict, 4)
+    end
 end
 
 function write_conv(xf)
