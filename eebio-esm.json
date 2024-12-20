@@ -1,0 +1,72 @@
+{
+  "samples": {
+    "Plate1_A1": {
+      "type": "timeseries",
+      "values": {
+        "time": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "OD600": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "GFP": [
+          10,
+          9,
+          8,
+          7,
+          6,
+          5,
+          4,
+          3,
+          2,
+          1
+        ]
+      }
+    }
+  },
+  "groups": {
+    "Plate1": {
+      "type": "physical",
+      "samples": [
+        "Plate1_A1"
+      ],
+      "metadata": {
+        "date": "01/10/2024"
+      }
+    },
+    "LB_blanks": {
+      "type": "experimental",
+      "samples": [
+        "Plate1_A1"
+      ],
+      "metadata": {
+        "cells": "none",
+        "media": "LB"
+      }
+    }
+  },
+  "views":{
+    
+  },
+  "transformations":{
+
+  }
+}
