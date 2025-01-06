@@ -223,10 +223,10 @@
     },
     "transformations":{
         "flo per_OD_LB":{
-            "equation":["samples_LB - mean(blank_LB) = back_remove_LB","back_remove_LB/back_remove_LB.OD700"]
+            "equation":["sample_LB .* samples_M9.OD700","(sample_LB - mean(blank_LB)) / (sample_LB.OD700 - mean(blank_LB.OD700))"]
         },
         "back_remove_M9":{
-            "equation":["samples_M9 - mean(blank_M9) = back_remove_M9","back_remove_M9/back_remove_M9.OD700"]
+            "equation":["samples_M9 - blank_M9 = back_remove_M9","back_remove_M9/back_remove_M9.OD700"]
         }
     },
     "views":{
