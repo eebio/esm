@@ -222,11 +222,11 @@
         }
     },
     "transformations":{
-        "flo per_OD_LB":{
-            "equation":["sample_LB .* samples_M9.OD700","(sample_LB - mean(blank_LB)) / (sample_LB.OD700 - mean(blank_LB.OD700))"]
+        "flo_per_OD_LB":{
+            "equation":"(sample_LB .- mean(blank_LB)) ./ mean(sample_LB.OD700)"
         },
         "back_remove_M9":{
-            "equation":["samples_M9 - blank_M9 = back_remove_M9","back_remove_M9/back_remove_M9.OD700"]
+            "equation":"samples_M9 .- mean(flo_per_OD_LB)"
         }
     },
     "views":{
