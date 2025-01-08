@@ -3,7 +3,6 @@
     groups
     transformations
     views
-    trans_meta_map
 end
 
 function sexp_to_nested_list(sexp::Any,group_map,samples,trans_meta_map)
@@ -39,9 +38,25 @@ function sexp_to_nested_list(sexp::Any,group_map,samples,trans_meta_map)
     end
 end
 
-function prod_v(es,trans_meta_map,group_map) #### In progress
-    y=Meta.parse(es.transformations["back_remove_M9"]["equation"])
-    x=sexp_to_nested_list(y,group_map,es.samples,trans_meta_map)
+function prod_v(es,trans_meta_map,group_map)
+    v_out=Dict()
+    for i in keys(es.views)
+        result = []
+        for j in es.views[i]["data"]
+            if Symbol(j) in keys(trans_meta_map)
+                push!(result,eval(sexp_to_nested_list(trans_meta_map[Symbol(j)],group_map,es.samples,trans_meta_map)))
+            elseif Symbol(j) in keys(group_map)
+                push!(result,group_map[Symbol(j)])
+            end
+        end
+        try 
+            v_out[i]=hcat(result...)
+        catch 
+            warn("Duplicate labels detected, left DataFrame denoted with _1 right denoted with _2.\n")
+            v_out[i]=hcat(result...,makeunique=true)
+        end 
+    end
+    return v_out
 end
 
 function read_esm(filen)
@@ -64,13 +79,15 @@ function read_esm(filen)
                         for i in all_sub)
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
     # print(trans_meta_map)
+    print(prod_v(es,trans_meta_map,group_map))
+    # print(trans_meta_map)
 
     # print(x)
-    print(eval(x))
-    return y
+    # print(eval(x))
+    return 0
 end
 
 mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 # std(df::DataFrame)
 
-read_esm("./ESM_proto.json")
+read_esm("./ESM_proto_pr.json")

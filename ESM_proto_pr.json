@@ -165,7 +165,7 @@
                 }
         },
         "sample_LB":{
-            "sample_IDs":["plate_01_A1","plate_01_A2","plate_01_A3"],
+            "sample_IDs":["plate_02_A1","plate_02_A2","plate_02_A3"],
             "metadata":{
                 "media":"LB",
                 "antibiotic":"kanamycin",
@@ -226,15 +226,15 @@
             "equation":"(sample_LB .- mean(blank_LB)) ./ mean(sample_LB.OD700)"
         },
         "back_remove_M9":{
-            "equation":"samples_M9 .- mean(flo_per_OD_LB)"
+            "equation":"samples_M9 .- mean(blank_M9)"
         }
     },
     "views":{
         "growth":{
-            "data":["back_remove_LB","back_remove_M9"]
+            "data":["back_remove_M9"]
         },
         "flo_per_OD":{
-            "data":["flo_per_OD_M9","flo_per_OD_LB"]
+            "data":["flo_per_OD_LB","back_remove_M9","cali"]
         }
     }
 }
