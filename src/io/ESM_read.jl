@@ -11,7 +11,7 @@ function sexp_to_nested_list(sexp::Any,group_map,samples,trans_meta_map)
             return eval(sexp_to_nested_list(trans_meta_map[sexp],group_map,samples,trans_meta_map))
         end
         if sexp in keys(group_map)
-            regex_pattern = r".time"
+            regex_pattern = r".Time"
             return group_map[sexp][:, setdiff(names(group_map[sexp]),filter(colname -> occursin(regex_pattern, string(colname)), names(group_map[sexp])))]
         else
             return sexp
@@ -88,6 +88,8 @@ function read_esm(filen)
 end
 
 mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
+
+# function model(df)
 # std(df::DataFrame)
 
 read_esm("./ESM_proto_pr.json")
