@@ -20,7 +20,12 @@ function sexp_to_nested_list(sexp::Any,group_map,samples,trans_meta_map)
         # Handle mathematical operations
         result = []
         if true in [isa(i,QuoteNode) for i in sexp.args]
-            return group_map[Symbol(string(sexp.args[1],".", sexp.args[2].value))]
+            if Symbol(string(sexp.args[1],".", sexp.args[2].value)) in keys(group_map)
+                return group_map[Symbol(string(sexp.args[1],".", sexp.args[2].value))]
+            elseif Symbol(string(sexp.args[1])) in keys(trans_meta_map)
+                regex_pattern=Regex(string(sexp.args[2].value))
+                return trans_meta_map[Symbol(string(sexp.args[1]))][:,names(filter(colname -> occursin(regex_pattern, string(colname)), names(trans_meta_map[sexp])))]
+            end
         else
             for arg in sexp.args
                 push!(result, sexp_to_nested_list(arg,group_map,samples,trans_meta_map))

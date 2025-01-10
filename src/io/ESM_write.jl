@@ -39,7 +39,7 @@ function read_data(filen)
                 else
                     name = j.Name
                 end
-                try sample_dict[name]=[x=>load(samples[i][!,"Data Location"])["$(x)"] for x in channels] catch; warn("Skipping $name as file invalid - check the specified location or if the file is corrupted.") end
+                try sample_dict[name]=Dict(x=>load(samples[i][!,"Data Location"])["$(x)"] for x in channels) catch; warn("Skipping $name as file invalid - check the specified location or if the file is corrupted.") end
             end
         else
             error("Unknown instrument type: $ins_type")
