@@ -227,6 +227,9 @@
         },
         "back_remove_M9":{
             "equation":"samples_M9 .- mean(blank_M9)"
+        },
+        "model":{
+            "equation":"plate_02.sample_LB.OD700 .- 100"
         }
     },
     "views":{
