@@ -14,9 +14,9 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
             return eval(sexp_to_nested_list(trans_meta_map[sexp],es,trans_meta_map))
         end
         if string(sexp) in es.groups.group
-            print("here")
+            # print("here")
             # regex_pattern = r".[Tt]ime"
-            return filter_col(form_df(filter_row(es,sexp)),["OD","GFP","BFP","RFP"]) #group_map[sexp][:, setdiff(names(group_map[sexp]),filter(colname -> occursin(regex_pattern, string(colname)), names(group_map[sexp])))]
+            return form_df(filter_row(es,sexp)) #group_map[sexp][:, setdiff(names(group_map[sexp]),filter(colname -> occursin(regex_pattern, string(colname)), names(group_map[sexp])))]
         else
             return sexp
         end
@@ -26,12 +26,14 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
         if true in [isa(i,QuoteNode) for i in sexp.args] ####### Edit to allow for x.y.z to specify subsets of larger groups
             if isa(sexp.args[1],Expr)
                 return sexp_to_nested_list(sexp,es,trans_meta_map) ############### Pick up here - you are trying to return a list of all the quote nodes and the names of the columns in them. This can then be used to isolate and view the the data you want from the main dataframe.
-            # end
-            # if Symbol(string(sexp.args[1],".", sexp.args[2].value)) in keys(group_map)
+                # end
+                # if Symbol(string(sexp.args[1],".", sexp.args[2].value)) in keys(group_map)
             elseif Symbol(string(sexp.args[1])) in keys(trans_meta_map)
-                regex_pattern=Regex(string(sexp.args[2].value))
-                return trans_meta_map[Symbol(string(sexp.args[1]))][:,names(filter(colname -> occursin(regex_pattern, string(colname)), names(trans_meta_map[sexp])))]
+                # print(string(sexp[2].value))
+                # regex_pattern=Regex(string(sexp.args[2].value))
+                return filter_col(eval(sexp_to_nested_list(trans_meta_map[Symbol(string(sexp.args[1]))],es,trans_meta_map)),[string(sexp.args[2].value)])#[:,names(filter(colname -> occursin(regex_pattern, string(colname)), names(trans_meta_map[sexp])))]
             else
+                print("here")
                 return filter_col(form_df(filter_row(es,sexp.args[1])),sexp.args[2].value) #group_map[Symbol(string(sexp.args[1],".", sexp.args[2].value))]
             end
         # elseif sexp.head == :. 
@@ -58,13 +60,17 @@ end
 function prod_v(es,trans_meta_map)
     v_out=Dict()
     for i in keys(es.views)
-        print(i)
+        # print(i)
         result = []
         for j in es.views[i]["data"]
+            print(j)
             if Symbol(j) in keys(trans_meta_map)
                 push!(result,eval(sexp_to_nested_list(trans_meta_map[Symbol(j)],es,trans_meta_map)))
             elseif Symbol(j) in es.groups.group
                 push!(result,form_df(filter_row(es,Symbol(j))))
+            elseif j in es.samples.name
+                print("here")
+                push!(result,form_df(es.samples[es.samples.name .== j,:]))
             end
         end
         try 
@@ -158,6 +164,14 @@ end
 mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 
 hcat(x...) = return hcat(x)
+
+function density_gate()
+
+end
+
+function bead_calibrate()
+    
+end
 
 function model(x...)
     print(x)
