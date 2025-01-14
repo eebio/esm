@@ -24,11 +24,14 @@ function read_data(filen)
                 else
                     name = j.Name
                 end
+                if !("plate_0$(j.Plate)_time" in keys(sample_dict))
+                    sample_dict["plate_0$(j.Plate)_time"]=Dict([:values=>Dict(),:type=>"timeseries"])
+                    sample_dict["plate_0$(j.Plate)_time"][:values]=Dict(x=>data[x][!,"Time"] for x in channels)
+                end
                 # print(typeof(j.Well))
                 temp = Dict()
                 temp[:type]="timeseries"
                 temp[:values]=Dict(x=>data[x][!,j.Well] for x in channels)
-                temp[:values]["Time"]=data[channels[1]][!,"Time"]
                 sample_dict[name]=temp
                 # sample_dict[name]="values"=>temp
                 # sample_dict[name]["values"]["Time"]=#;[]
@@ -36,6 +39,8 @@ function read_data(filen)
                 # push!(sample_dict[name]["values"],Dict())
                 broad_g=[broad_g;[name]]
             end
+            # sample_dict["plate_0$(unique(samples[i].Plate[1][1]))_time"]=Dict([:values=>Dict(),:type=>"timeseries"])
+            # sample_dict["plate_0$(unique(samples[i].Plate[1][1]))_time"][:values]=Dict(x=>data[channels[1]][!,"Time"] for x in channels)
         elseif "flow" in lowercase.(ins_type)
             for j in eachrow(samples[i])
                 if ismissing(j.Name)
@@ -64,8 +69,8 @@ function read_data(filen)
         group_dict["plate_0$i"]=Dict("sample_IDs"=>broad_g,"metadata"=>:autodefined=>"true")
         # group_dict["plate_0$i"]=Dict()
     end
-    trans_dict = OrderedDict(i.Name=>i.Equation for i in eachrow(trans))
-    views_dict = OrderedDict(i.Name=>[:data=>split(i.Groups,",")] for i in eachrow(views))
+    trans_dict = OrderedDict(i.Name=>"equation"=>i.Equation for i in eachrow(trans))
+    views_dict = OrderedDict(i.Name=>:data=>split(i.Groups,",") for i in eachrow(views))
     return OrderedDict(:samples=>sample_dict,:groups=>group_dict,:transformations=>trans_dict,:views=>views_dict)
 end
 
@@ -75,4 +80,4 @@ function write_esm(esm_dict)
     end
 end
 
-# write_esm(read_data("ESM_input_test.xlsx"))
+write_esm(read_data("ESM_input_test.xlsx"))

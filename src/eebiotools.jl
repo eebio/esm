@@ -1,7 +1,7 @@
 module eebiotools
 
 using CSV, DataFrames, FileIO, JSON, Comonicon, FCSFiles, Parameters, JSONTables, JSONSchema, XLSX, Statistics, DataStructures
-import Statistics.mean
+import Statistics.mean, DataFrames.hcat
 include("./io/read.jl")
 include("./base/main.jl")
 include("./io/ESM_read.jl")
