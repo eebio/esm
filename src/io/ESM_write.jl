@@ -5,6 +5,7 @@ function read_data(filen)
     views = DataFrame(XLSX.readtable(filen,"Views"))
     sample_dict= OrderedDict()
     group_dict = OrderedDict(i.Group => Dict("sample_IDs" => Vector(split(i.Name,",")), "metadata" => Dict(j => i[j,:] for j in names(i) if !(j in ["Group","Name"]))) for i in eachrow(groups))
+    @info "Reading $(length(keys(samples))) plates" 
     for i in range(1,length(keys(samples)))
         data=Dict()
         ins_type=Set(samples[i].Type)
@@ -13,6 +14,7 @@ function read_data(filen)
         channels = unique(split.(samples[i].Channels,","))[1]
         broad_g=[]
         if "plate reader" in lowercase.(ins_type)
+            @info "Processing plate reader data from plate $i"
             loc=unique(samples[i][!,"Data Location"])
             try length(loc) == 1 catch; error("Please give the location of only one folder containing all the CSVs for one plate. \nLocations given here are: $(Set(samples[i][!,"Data Location"]))") end
             for j in channels
@@ -42,6 +44,7 @@ function read_data(filen)
             # sample_dict["plate_0$(unique(samples[i].Plate[1][1]))_time"]=Dict([:values=>Dict(),:type=>"timeseries"])
             # sample_dict["plate_0$(unique(samples[i].Plate[1][1]))_time"][:values]=Dict(x=>data[channels[1]][!,"Time"] for x in channels)
         elseif "flow" in lowercase.(ins_type)
+            @info "Processing flow cytometer data from plate $i"
             for j in eachrow(samples[i])
                 if ismissing(j.Name)
                     name = "plate_0$(j.Plate)_$(j.Well)"
@@ -78,6 +81,7 @@ function write_esm(esm_dict)
     open("out.json", "w") do file
         JSON.print(file, esm_dict, 4)
     end
+    @info "ESM written."
 end
 
 write_esm(read_data("ESM_input_test.xlsx"))
