@@ -83,7 +83,7 @@ main running function.
 
 """
 
-@main function main(filen)
+@main function main1(filen)
     ext = splitext(basename(filen))[2]
     if ext==".xlsx"
         xd=read_excel(filen)
