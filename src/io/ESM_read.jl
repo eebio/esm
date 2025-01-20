@@ -11,7 +11,7 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
         if isdefined(eebiotools,sexp)
             return sexp
         end
-        if sexp in keys(trans_meta_map)
+        if sexp in keys(trans_meta_map) ### Needs circular referencing of transformations adjusted.
             return eval(sexp_to_nested_list(trans_meta_map[sexp],es,trans_meta_map))
         end
         if string(sexp) in es.groups.group

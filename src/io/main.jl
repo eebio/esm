@@ -44,3 +44,23 @@ end
 """Checks the group names and sample IDs are correct. If incorrect spits out an warning indicating the closest matching id to the failed one."""
 function sampgroupcheck()
 end
+
+"""
+    Function for reading files containing multiple reads from a single CSV file.
+    Returns a Dictionary of DataFrames with keys being the channels. 
+    Currently works for Agilent (a) and Tecan (t).
+"""
+function read_multipr_file(filen,ptype,channels)
+    o_dict = Dict()
+    if ptype=="t"
+        i = [j for j in split(read(filen,String),r"\n,+?\n") if (length(j)>1500)]
+        o_dict = Dict(match(r"([A-Za-z0-9]+)",j).match =>CSV.read(IOBuffer(j),DataFrame,transpose=true) for j in i if match(r"([A-Za-z0-9]+)",j).match in channels)
+    elseif ptype=="a"
+        i = [i for i in split(read(filen,String),r"(\r\n.+?\r\n\r\n)") if (length(i) > 8 && (length(i) > 1000 && string(i)[1:7] != "Results"))]
+        o_dict=Dict(match(r":([A-Za-z0-9,]+)",j).match[2:end] => CSV.read(IOBuffer("Time"*split(j,"\nTime")[2]),DataFrame) for j in i if match(r":([A-Za-z0-9,]+)",j).match[2:end] in channels)
+    end
+    for i in keys(o_dict)
+        o_dict[i]=o_dict[i][!,Not(all.(ismissing,eachcol(o_dict[i])))]
+    end
+    return o_dict
+end
