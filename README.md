@@ -1,2 +1,4 @@
-# esm
-Experimental Standard Model (ESM) for accessible and reproducible data processing for engineering biology
+# Experimental Standard Model (ESM)
+A data format and supporting tools to enable accessible and reproducible data processing for engineering biology.
+
+
