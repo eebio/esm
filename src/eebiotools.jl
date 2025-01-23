@@ -1,6 +1,6 @@
 module eebiotools
 
-using CSV, DataFrames, FileIO, JSON, Comonicon, FCSFiles, Parameters, JSONTables, JSONSchema, XLSX, Statistics, DataStructures,Plots, StatsPlots, StatsBase
+using CSV, DataFrames, FileIO, JSON, Comonicon, FCSFiles, Parameters, JSONTables, JSONSchema, XLSX, Statistics, DataStructures,Plots, StatsPlots, StatsBase, Catalyst
 import Statistics.mean, DataFrames.hcat
 include("./io/read.jl")
 include("./base/main.jl")
