@@ -169,54 +169,6 @@ end
 function bead_calibrate()
 end
 
-
-function mod_in(i)
-    name, rn_string, pams, inc = i, es.models[i]["Model"],es.models[i]["Parameters"],es.models[i]["Species"]
-    return eval(Meta.parse("@reaction_network $name begin \n@parameters $(replace(pams, " "=>"",","=>" ")) \n@species $(replace(inc,"="=>"(t)="," "=>"" ,"," => " ")) \n"*rn_string*" end"))
-end
-
-function to_eqs(i,rn)
-    tspan = (0,es.models[i]["Time"])
-    u0=[]
-    p=[]
-    if es.models[i]["Type"]=="ODE"
-        return ODEProblem(rn, u0,tspan,p)
-    elseif es.models[i]["Type"]=="SDE"
-        return SDEProblem(rn, u0,tspan,p)
-    else
-        @error "No valid type provided for equations."
-    end
-end
-
-function fit_equation(rn,oprob, f_ps,data)
-    defs=rn.defaults
-    defs_names=keys(defs)
-    p_generator(prob,p)=remake(prob;p= [if (string(defs_names[i]) in f_ps) defs[dfs_names[i]] else p[i] end for i in range(1,length(defs))])
-    loss_function_fixed_kD = build_loss_objective(oprob, Tsit5(), L2Loss([i for i in data[!,i] for i in f_ps]...), Optimization.AutoForwardDiff(); prob_generator = p_generator, maxiters=10000, verbose=false, save_idxs=4)
-    optprob = OptimizationProblem(loss_function_fixed_kD, [1.0 for i in f_ps])
-    optsol = solve(optprob, Optim.NelderMead())
-    return optsol
-end
-
-# if es.models["Vary"] != missing
-#     for i in var
-function model(x...)
-    model=mod_in(x[1])
-
-end
-
-function landscape(x...)
-end
-
-function fit_param(x...)
-end
-
-function composable(x...)
-end
-
-function spatial(x...)
-end
-
 function calc_rel_flow(n)
     df=es.samples[occursin.(n, es.samples.name),:]
     for i in range(1,4)
@@ -244,6 +196,70 @@ function relative_flow(d;)
     end
 
 end
+
+inside_bins = (x .>= minimum(x_bins)) .& (x .<= maximum(x_bins)) .& (y .>= minimum(y_bins)) .& (y .<= maximum(y_bins))
+x_filtered = x[inside_bins]
+y_filtered = y[inside_bins]
+
+# function mod_in(i)
+#     name, rn_string, pams, inc = i, es.models[i]["Model"],es.models[i]["Parameters"],es.models[i]["Species"]
+#     return eval(Meta.parse("@reaction_network $name begin \n@parameters $(replace(pams, " "=>"",","=>" ")) \n@species $(replace(inc,"="=>"(t)="," "=>"" ,"," => " ")) \n"*rn_string*" end"))
+# end
+
+# function to_eqs(i,rn)
+#     tspan = (0,es.models[i]["Time"])
+#     u0=[]
+#     p=[]
+#     if es.models[i]["Type"]=="ODE"
+#         return ODEProblem(rn, u0,tspan,p)
+#     elseif es.models[i]["Type"]=="SDE"
+#         return SDEProblem(rn, u0,tspan,p)
+#     else
+#         @error "No valid type provided for equations."
+#     end
+# end
+# """
+#     A function to fit an equation to a reaction network.
+#     Args:
+#     - rn - Catalyst reaction network
+#     - oprob - ode problem of the above reaction network
+#     - f_ps - names of the fixed parameters. 
+#     - data - dataframe to fit to. 
+# """
+# function fit_equation(rn,oprob, f_ps,data)
+#     defs=rn.defaults
+#     defs_names=keys(defs)
+#     p_generator(prob,p)=remake(prob;p= [if (string(defs_names[i]) in f_ps) defs[dfs_names[i]] else p[i] end for i in range(1,length(defs))])
+#     if !(isempty(f_ps))
+#         loss_function_fixed_kD = build_loss_objective(oprob, Tsit5(), L2Loss(hcat([j for j in data[!,i] for i in f_ps]...)'), Optimization.AutoForwardDiff(); prob_generator = p_generator, maxiters=10000, verbose=false, save_idxs=4)
+#         optprob = OptimizationProblem(loss_function_fixed_kD, [1.0 for i in f_ps])
+#         optsol = solve(optprob, Optim.NelderMead())
+#         oprob_fitted = remake(oprob; p=optsol.u)
+#         fitted_sol =solve(oprob_fitted)
+#     else
+#         build_loss_objective(oprob, Tsit5(), L2Loss(data_ts, Array(hcat(data...)')), Optimization.AutoForwardDiff(); maxiters=10000, verbose=false, save_idxs=[1, 4])
+#     return fitted_sol
+# end
+
+# if es.models["Vary"] != missing
+#     for i in var
+# function model(x...)
+#     model=mod_in(x[1])
+
+# end
+
+# function landscape(x...)
+# end
+
+# function fit_param(x...)
+# end
+
+# function composable(x...)
+# end
+
+# function spatial(x...)
+# end
+
 
 # function model(df)
 # std(df::DataFrame)

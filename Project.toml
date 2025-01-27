@@ -4,6 +4,7 @@ authors = ["Micha <micha_claydon@yahoo.co.uk>"]
 version = "0.1.0"
 
 [deps]
+BitIntegers = "c3b6d118-76ef-56ca-8cc7-ebb389d030a1"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 Comonicon = "863f3e99-da2a-4334-8734-de3dacbe5542"
 DataAPI = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
