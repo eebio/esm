@@ -3,7 +3,6 @@ function read_data(filen;ptype="a")
     groups = DataFrame(XLSX.readtable(filen,"Groups"))
     trans = DataFrame(XLSX.readtable(filen,"Transformations"))
     views = DataFrame(XLSX.readtable(filen,"Views"))
-    models = DataFrame(XLSX.readtable(filen,"Models"))
     ID=DataFrame(XLSX.readtable(filen,"ID"))
     id_dict=Dict(i."Current ID"=> i."Replaced ID" for i in eachrow(ID))
     print(id_dict)
@@ -42,9 +41,8 @@ function read_data(filen;ptype="a")
     end
     trans_dict = OrderedDict(i.Name=>"equation"=>i.Equation for i in eachrow(trans))
     # print(typeof(trans_dict))
-    m_dict=OrderedDict(j.Name =>OrderedDict([k => j["$k"] for k in names(models)]) for j in eachrow(models))
     views_dict = OrderedDict(i.Name=>:data=>split(i.Groups,",") for i in eachrow(views))
-    return OrderedDict(:samples=>sample_dict,:groups=>group_dict,:transformations=>trans_dict,:views=>views_dict,:models=>m_dict)
+    return OrderedDict(:samples=>sample_dict,:groups=>group_dict,:transformations=>trans_dict,:views=>views_dict)
 end
 
 function write_esm(esm_dict)

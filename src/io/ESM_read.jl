@@ -3,7 +3,6 @@
     groups
     transformations
     views
-    models
 end
 
 function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
@@ -122,8 +121,7 @@ function read_esm(filen)
         samples=DataFrame([(lowercase(i), j, ef["samples"][i]["type"],ef["samples"][i]["values"][j],if !isempty(keys(ef["samples"][i]["meta"])) ef["samples"][i]["meta"][j] else ef["samples"][i]["meta"] end,[i in lowercase.(ef["groups"][k]["sample_IDs"]) for k in keys(ef["groups"])]...) for i in keys(ef["samples"]) for j in keys(ef["samples"][i]["values"])],["name","channel","type","values","meta",[k for k in keys(ef["groups"])]...]),#DataFrame(ef["samples"]),
         groups=DataFrame([(i,lowercase.(ef["groups"][i]["sample_IDs"]),ef["groups"][i]["metadata"],:(filter(row -> row.name in ef["groups"][i]["sample_IDs"], samples, view=true))) for i in keys(ef["groups"])],["group","sample_IDs","metadata","meta_select"]),
         transformations=ef["transformations"],
-        views=ef["views"],
-        models=ef["models"]
+        views=ef["views"]
     )
     es.samples.name = string.(es.samples.name,".",es.samples.channel)
     @info "ESM file successfully read."
@@ -197,9 +195,9 @@ function relative_flow(d;)
 
 end
 
-inside_bins = (x .>= minimum(x_bins)) .& (x .<= maximum(x_bins)) .& (y .>= minimum(y_bins)) .& (y .<= maximum(y_bins))
-x_filtered = x[inside_bins]
-y_filtered = y[inside_bins]
+# inside_bins = (x .>= minimum(x_bins)) .& (x .<= maximum(x_bins)) .& (y .>= minimum(y_bins)) .& (y .<= maximum(y_bins))
+# x_filtered = x[inside_bins]
+# y_filtered = y[inside_bins]
 
 # function mod_in(i)
 #     name, rn_string, pams, inc = i, es.models[i]["Model"],es.models[i]["Parameters"],es.models[i]["Species"]
@@ -273,6 +271,6 @@ for i in keys(views)
     display(plot(views[i][15:end,"plate_01_time.flo"],[views[i][15:end,j] for j in names(views[i]) if j != "plate_01_time.flo"];legend=false))
     # plot(stack(views[i]))
 end
-for i in keys(es.models)
-    show(mod_in(i))
-end
+# for i in keys(es.models)
+#     show(mod_in(i))
+# end
