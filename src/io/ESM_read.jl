@@ -34,6 +34,8 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
             else
                 if  string(sexp.args[2].value) in es.groups.group
                     return filter_col(form_df(filter_row(es,sexp.args[1])),find_group(es,string(sexp.args[2].value)))
+                elseif sexp.args[2].head == :kw
+                    return sexp.args[2]
                 else
                     return remove_subcols(filter_col(form_df(filter_row(es,sexp.args[1])),[sexp.args[2].value]),sexp.args[2].value) 
                 end
@@ -136,131 +138,13 @@ vcat(x...) = return vcat(x)
 
 groupby_flo(df::DataFrame) = return 
 
-
-
-function density_gate(df,channels,bins,gate_fraction,sigma,verbose)
-    if len length(channels)!=2
-        @error "Please send two channels for density gating."
-    end
-    hist = fit(Histogram,(df[:,channels[1]],df[:,channels[2]]);nbins=bins)
-end
-# searchsortedfirst
-#y=fit(Histogram, (x["FSC-A"],x["SSC-A"]),nbins=1024)
-# xed = collect(y.edges[1])
-# xed = collect(y.edges[2])
-#d= imfilter(y.weights,centered(Kernel.gaussian(0.65)))
-# D= d/sum(d)
-# o= reverse(sortperm(vec(D)))
-#p=vec(y.weights)[o]
-#k=cumsum(p)
-#ids = [i for i in k if i >= 0]
-# acc = o[ids]
-# g=vec(zeros(size(y.weights)))
-# g[acc] = true
-# reshape(g,size(y))
-
-function process_pr(samples,blank,odchannel, flochannel,verbose)
-
+function calc_flow(s_group::Array{Symbol}, )
 end
 
-### Needs standards curve creation, 
-function bead_calibrate()
+function rel_flow()
 end
 
-function calc_rel_flow(n)
-    df=es.samples[occursin.(n, es.samples.name),:]
-    for i in range(1,4)
 
-    end
-    if at[1]==0
-        if i[3] == missing
-            ag = 1
-        else
-            ag = i[3]
-        end
-        tf(x) = x/am_g
-    else
-        if r == missing
-            @error "Missing resolution for flow cytometry processing."
-        tf(x) = i[2]*10^(i[2]/r*x)
-        end
-    end
-end
-
-function relative_flow(d;)
-    n_vec= names(d)
-    for i in n_vec
-        calc_rel_flow(i)
-    end
-
-end
-
-# inside_bins = (x .>= minimum(x_bins)) .& (x .<= maximum(x_bins)) .& (y .>= minimum(y_bins)) .& (y .<= maximum(y_bins))
-# x_filtered = x[inside_bins]
-# y_filtered = y[inside_bins]
-
-# function mod_in(i)
-#     name, rn_string, pams, inc = i, es.models[i]["Model"],es.models[i]["Parameters"],es.models[i]["Species"]
-#     return eval(Meta.parse("@reaction_network $name begin \n@parameters $(replace(pams, " "=>"",","=>" ")) \n@species $(replace(inc,"="=>"(t)="," "=>"" ,"," => " ")) \n"*rn_string*" end"))
-# end
-
-# function to_eqs(i,rn)
-#     tspan = (0,es.models[i]["Time"])
-#     u0=[]
-#     p=[]
-#     if es.models[i]["Type"]=="ODE"
-#         return ODEProblem(rn, u0,tspan,p)
-#     elseif es.models[i]["Type"]=="SDE"
-#         return SDEProblem(rn, u0,tspan,p)
-#     else
-#         @error "No valid type provided for equations."
-#     end
-# end
-# """
-#     A function to fit an equation to a reaction network.
-#     Args:
-#     - rn - Catalyst reaction network
-#     - oprob - ode problem of the above reaction network
-#     - f_ps - names of the fixed parameters. 
-#     - data - dataframe to fit to. 
-# """
-# function fit_equation(rn,oprob, f_ps,data)
-#     defs=rn.defaults
-#     defs_names=keys(defs)
-#     p_generator(prob,p)=remake(prob;p= [if (string(defs_names[i]) in f_ps) defs[dfs_names[i]] else p[i] end for i in range(1,length(defs))])
-#     if !(isempty(f_ps))
-#         loss_function_fixed_kD = build_loss_objective(oprob, Tsit5(), L2Loss(hcat([j for j in data[!,i] for i in f_ps]...)'), Optimization.AutoForwardDiff(); prob_generator = p_generator, maxiters=10000, verbose=false, save_idxs=4)
-#         optprob = OptimizationProblem(loss_function_fixed_kD, [1.0 for i in f_ps])
-#         optsol = solve(optprob, Optim.NelderMead())
-#         oprob_fitted = remake(oprob; p=optsol.u)
-#         fitted_sol =solve(oprob_fitted)
-#     else
-#         build_loss_objective(oprob, Tsit5(), L2Loss(data_ts, Array(hcat(data...)')), Optimization.AutoForwardDiff(); maxiters=10000, verbose=false, save_idxs=[1, 4])
-#     return fitted_sol
-# end
-
-# if es.models["Vary"] != missing
-#     for i in var
-# function model(x...)
-#     model=mod_in(x[1])
-
-# end
-
-# function landscape(x...)
-# end
-
-# function fit_param(x...)
-# end
-
-# function composable(x...)
-# end
-
-# function spatial(x...)
-# end
-
-
-# function model(df)
-# std(df::DataFrame)
 
 es = read_esm("./demo.json")
 trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
