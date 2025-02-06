@@ -1,4 +1,4 @@
-using KernelDensity, Plots, StatsBase, FileIO, GaussianMixtures
+using KernelDensity, Plots, StatsBase, FileIO, GaussianMixtures, LinearAlgebra, Distributions,DataFrames
 
 function load_fcs(filen::String)
     return load(filen)
@@ -6,36 +6,36 @@ end
 
 function to_rfi(fcs;chans=[])
     if chans==[]
-        chans=[fcs.params[i] for i in eachmatch(r"\$P[0-9]+?N",join(keys(fcs.params)))]
+        chans=[fcs.params[i.match] for i in eachmatch(r"\$P[0-9]+?N",join(keys(fcs.params)))]
     end
-    at=Dict(fcs.params["\$P$(filter(isdigit,i))N"]=> fcs.params[i] for i in eachmatch(r"\$P[0-9]+?E",join(keys(fcs.params))))
-    if length(at)!=length(chan)
+    at=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse.(Float64,split(fcs.params[i.match],",")) for i in eachmatch(r"\$P[0-9]+?E",join(keys(fcs.params))))
+    if length(at)!=length(chans)
         error("Some amplification types not specfied data will not process.")
     end
-    if length(eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params)))) >= length(chans)
-        ran=Dict(fcs.params["\$P$(filter(isdigit,i))N"]=> fcs.params[i] for i in eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params))))
+    if length([eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params)))...]) >= length(chans)
+        ran=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse(Int,fcs.params[i.match]) for i in eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params))))
     else
         ran=false
     end
-    if length(eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params)))) >= length(chans)
-        ag=Dict(fcs.params["\$P$(filter(isdigit,i))N"]=> fcs.params[i] for i in eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params))))
+    if length([eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params)))...]) >= length(chans)
+        ag=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse(Int,fcs.params[i.match]) for i in eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params))))
     else
         ag = false
     end
-    # ag=[fcs.params[i] for i in eachmatch(r"\$P[0-9]E",join(keys(fcs.params)))]
+    o=Dict()
     for i in chans
         if at[i][1]==0
-            if ag!=false
-                f(x)=x/1
+            if ag==false
+                o[i]=Dict(:data=>fcs[i]./1,:min=>[1/1,:max=>ran[i]/1])
             else
-                f(x)=x/ag[i]
+                o[i]=Dict(:data=>fcs[i]./ag[i],:min=>1/ag[i],:max=>ran[i]/ag[i])
             end
         else
             try ran catch; error("Resolution must be specified") end
-            f(k)=at[i][2]*10 ^(at[1]*(k/ran[i]))
+            o[i]=Dict(:data=>at[i][2]*10 .^(at[i][1]*(fcs[i]/ran[i])),:min=>at[i][2]*10 ^(at[i][1]*(1/ran[i])),:max=>at[i][2]*10 ^(at[i][1]*(ran[i]/ran[i])))
         end
     end
-    return Dict(i=>Dict(:data=>f.(fcs[i]),:range=>[f(1),f(ran[i])]) for i in chan)
+    return o
 end
 
 function high_low(data;chans=[],maxr=missing,minr=missing)
@@ -45,8 +45,12 @@ function high_low(data;chans=[],maxr=missing,minr=missing)
     for i in keys(data)
         if i in chans
             if maxi == missing && maxr == missing
-                dat_mask=[data[i][:range][1] < j < data[i][:range][2] for j in data[i][:data]]
-                data[i][:data]=[xi for (xi,m) in zip(data[1][:data], dat_mask) if m]
+                try
+                    dat_mask=[data[i][:range][1] < j < data[i][:range][2] for j in data[i][:data]]
+                    data[i][:data]=[xi for (xi,m) in zip(data[1][:data], dat_mask) if m]
+                catch
+                    error("Range missing, please specify.")
+                end
             else
                 dat_mask=[minr < j < maxr for j in data[i][:data]]
                 data[i][:data]=[xi for (xi,m) in zip(data[1][:data], dat_mask) if m]
@@ -56,10 +60,151 @@ function high_low(data;chans=[],maxr=missing,minr=missing)
     return data
 end
 
-function to_mef()
+function std_curve()
 end
 
-file = load_fcs("./sample006.fcs")
+function density_gate(data,channels=[],gate_frac=0.65;nbins=1024,outside=false)
+    length(channels)==2 || error("2 channels must be specified for density gating.")
+    x=data[channels[1]][:data]
+    y=data[channels[2]][:data]
+    N=length(x)
+    # Step 2: Create a 2D histogram (for bin edges reference)
+    # hist_bins = (-3:0.2:3, -3:0.2:3)  # Define histogram bins
+    hist_counts = fit(Histogram, (x, y); nbins=nbins)  # Compute histogram
+
+    # fraction_to_keep = 0.75  # Keep top 20% of highest density points
+    # sorted_indices = sortperm(hist_counts.weights, rev=true,dims=1)
+    # top_indices = sorted_indices[1:ceil(Int, fraction_to_keep * N)]
+    # x_top = x[top_indices]
+    # y_top = y[top_indices]
+
+    # Step 3: Define histogram bin edges
+    x_bins = hist_counts.edges[1]
+    y_bins = hist_counts.edges[2]
+    # print(collect(hist_bins[1]))
+
+    # Step 4: Compute KDE for the data
+    kd = kde((x, y))#,bandwidth=(0.1,0.1))  # Use KernelDensity for 2D KDE
+
+    # Step 5: Evaluate the KDE at each data point
+    density_values = [pdf(kd, xi, yi) for (xi, yi) in zip(x, y)]
+    # density_values = pdf.(kd, x',y) 
+    # density_values ./= sum(density_values)
+    # print(maximum(density_values))
+
+    # Step 6: Define a threshold and filter points (points inside KDE contour)
+    fraction_to_keep = 0.75  # Keep top 20% of highest density points
+    sorted_indices = sortperm(density_values, rev=true)
+    top_indice = sorted_indices[ceil(Int, fraction_to_keep * N)]
+    # print(density_values[top_indice])
+    threshold = density_values[top_indice]  # Define a density threshold
+    inside_indices = density_values .> threshold  # Points inside the contour
+    # print(inside_indices)
+    data_inside=stack(data[i][:data] for i in keys(data))
+    data_inside=data_inside[inside_indices,:]
+    out_df=DataFrame(data_inside,[keys(data)...])
+    x_inside = x[inside_indices]
+    y_inside = y[inside_indices]
+    if outside
+    # Step 7: Identify points outside the histogram bins
+        inside_bins = (x .>= minimum(x_bins)) .& (x .<= maximum(x_bins)) .& (y .>= minimum(y_bins)) .& (y .<= maximum(y_bins))
+        x_outside = x[inside_bins]
+        y_outside = y[inside_bins]
+        return (x_inside, y_inside), (x_outside,y_outside)
+    else 
+        return out_df
+    end
+end
+
+function cluster_beads(data_beads,mef_vals::Vector{Int},mef_chans::Vector{String};clust_chans=[],cluster_f=to_mef,cluster_params=Dict(),stat=median,stat_func=Dict(),selection_func=std,selection_func_params=Dict(),fitfunc=std_curve,fitfunc_params=Dict())
+    if clust_chans==[]
+        clust_chans=mef_chans
+    end
+
+    clusters=length(mef_vals)
+    clust_vals=mef_clust(data_beads[clust_chans],clusters,cluster_params)
+    u_clust_vals=unique(clust_vals)
+    pops = [data_beads[clust_vals==i] for i in u_clust_vals]
+
+end
+
+function mef_clust(data, clusters::Int;min_covar=1e-3, cluster_params=missing)
+    if isa(data,Vector{Float64})
+        data=reshape(data,length(data),1)
+    end
+    gmm=GMM(size(data)[2],clusters;kind=:full)
+    # print(gmm.μ)
+    weights=[1/clusters for i in 1:1:8]
+    means=[]
+    covar=UpperTriangular{Float64,Matrix{Float64}}[UpperTriangular([1:2 1:2]) for i=1:clusters]
+    dist=sum((data .- minimum(data,dims=1)).^2.0,dims=2)
+    sort_idxs=sortperm(dist,dims=1)
+    n_per_cluseter=size(data)[1]/clusters
+        # print(size(transpose(data)))
+    discard_frac=0.5
+    sa=I*min_covar
+    for i in range(0,clusters-1)
+        il =round(Int,(i+discard_frac/2)*n_per_cluseter,RoundDown)
+        ih =round(Int,(i+1-discard_frac/2)*n_per_cluseter,RoundDown)
+        sorted_idx_cluster=sort_idxs[il:ih]
+        data_cluster=data[sorted_idx_cluster,:]
+        print(size(data_cluster))
+        # print(typeof(data_cluster),", ")
+        cova=[]
+        print(mean(data_cluster,dims=1))
+       means=[means;[mean(data_cluster,dims=1)...]]
+        if size(data,1)==1
+            cova = reshape(cov(transpose(data_cluster)), (1,1))
+            cova .+= sa(size(data)[2])
+        else
+            cova = cov(data_cluster) 
+            cova += sa(size(data)[2])
+        end
+        covar[i+1]=UpperTriangular(cova)
+    end
+    # print(covar,",  ")
+    means=vcat(means...)
+    if size(data,2)==1
+        means=reshape(means,length(means),1)
+    end
+    print(means)
+    # print(typeof(means))
+    gmm.μ=means
+    gmm.w=weights
+    gmm.Σ=covar
+    em!(gmm,data; nIter=500)
+    # gmm=GMM(8, data; method=:kmeans, kind=:diag, nInit=50, nIter=500, nFinal=500)
+
+    # print(gmm.μ,"\n",gmm.w,"\n",gmm.Σ)
+    # print(typeof(covar))
+    # gmm=GMM(,,,[],0)#;kind=:full,nIter=0)
+    g=MixtureModel(gmm)
+    out=fit(g,data)
+    plot(out)
+    
+    # em!(gmm,nIter=500,varfloor=1e-3)
+
+    # gmm=GMM(size(data)[1],size(data)[2];kind=:full)#;kind=:full,nIter=0)
+    # GMM(weights,means,covars)
+    # if cluster_params!=missing
+    #     g=GMM(clusters,d;cluster_params...)
+    #     em!(g,data_beads;nInter)
+    # else
+    #     g=GMM(clusters,d;kind=:full)
+    # end
+    
+end
+
+function to_mef()
+
+end
+
+file = load_fcs("./sample001.fcs")
+data_dict=to_rfi(file)
+d=density_gate(data_dict,["FSC","SSC"],0.3)
+# print(d)
+data_m=stack(data_dict[i][:data] for i in keys(data_dict))
+mef_clust(d[:,"FL1"],8)
 # Step 1: Generate some 2D data
 # print([bitstring(i) for i in file.data["FSC-A"]])
 # print(file.params)

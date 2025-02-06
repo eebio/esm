@@ -34,8 +34,6 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
             else
                 if  string(sexp.args[2].value) in es.groups.group
                     return filter_col(form_df(filter_row(es,sexp.args[1])),find_group(es,string(sexp.args[2].value)))
-                elseif sexp.args[2].head == :kw
-                    return sexp.args[2]
                 else
                     return remove_subcols(filter_col(form_df(filter_row(es,sexp.args[1])),[sexp.args[2].value]),sexp.args[2].value) 
                 end
@@ -138,12 +136,121 @@ vcat(x...) = return vcat(x)
 
 groupby_flo(df::DataFrame) = return 
 
-function calc_flow(s_group::Array{Symbol}, )
+function process_fcs(group,gate_channels,out_channels;es=es,rfi=true,denisty=true,high_low=true)
+    data=filter_row(es.samples,group)
+    for i in es.groups["group"]
+    if rfi
+        data=to_rfi()
+    end
+    end
+
 end
 
-function rel_flow()
+function to_rfi(fcs;chans=[],es=es)
+    if chans==[]
+        chans=[fcs.params[i.match] for i in eachmatch(r"\$P[0-9]+?N",join(keys(fcs.params)))]
+    end
+    at=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse.(Float64,split(fcs.params[i.match],",")) for i in eachmatch(r"\$P[0-9]+?E",join(keys(fcs.params))))
+    if length(at)!=length(chans)
+        error("Some amplification types not specfied data will not process.")
+    end
+    if length([eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params)))...]) >= length(chans)
+        ran=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse(Int,fcs.params[i.match]) for i in eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params))))
+    else
+        ran=false
+    end
+    if length([eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params)))...]) >= length(chans)
+        ag=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse(Int,fcs.params[i.match]) for i in eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params))))
+    else
+        ag = false
+    end
+    o=Dict()
+    for i in chans
+        if at[i][1]==0
+            if ag==false
+                o[i]=Dict(:data=>fcs[i]./1,:min=>[1/1,:max=>ran[i]/1])
+            else
+                o[i]=Dict(:data=>fcs[i]./ag[i],:min=>1/ag[i],:max=>ran[i]/ag[i])
+            end
+        else
+            try ran catch; error("Resolution must be specified") end
+            o[i]=Dict(:data=>at[i][2]*10 .^(at[i][1]*(fcs[i]/ran[i])),:min=>at[i][2]*10 ^(at[i][1]*(1/ran[i])),:max=>at[i][2]*10 ^(at[i][1]*(ran[i]/ran[i])))
+        end
+    end
+    return o
 end
 
+function high_low(data;chans=[],maxr=missing,minr=missing)
+    if chans == []
+        chans = keys(data)
+    end
+    for i in keys(data)
+        if i in chans
+            if maxi == missing && maxr == missing
+                try
+                    dat_mask=[data[i][:range][1] < j < data[i][:range][2] for j in data[i][:data]]
+                    data[i][:data]=[xi for (xi,m) in zip(data[1][:data], dat_mask) if m]
+                catch
+                    error("Range missing, please specify.")
+                end
+            else
+                dat_mask=[minr < j < maxr for j in data[i][:data]]
+                data[i][:data]=[xi for (xi,m) in zip(data[1][:data], dat_mask) if m]
+            end
+        end
+    end
+    return data
+end
+
+function density_gate(data,channels=[],gate_frac=0.65;nbins=1024,outside=false)
+    length(channels)==2 || error("2 channels must be specified for density gating.")
+    x=data[channels[1]][:data]
+    y=data[channels[2]][:data]
+    N=length(x)
+
+    hist_counts = fit(Histogram, (x, y); nbins=nbins) 
+
+
+    x_bins = hist_counts.edges[1]
+    y_bins = hist_counts.edges[2]
+
+    kd = kde((x, y))
+
+    density_values = [pdf(kd, xi, yi) for (xi, yi) in zip(x, y)]
+
+    fraction_to_keep = 0.75  
+    sorted_indices = sortperm(density_values, rev=true)
+    top_indice = sorted_indices[ceil(Int, fraction_to_keep * N)]
+
+    threshold = density_values[top_indice]
+    inside_indices = density_values .> threshold
+
+    data_inside=stack(data[i][:data] for i in keys(data))
+    data_inside=data_inside[inside_indices,:]
+    out_df=DataFrame(data_inside,[keys(data)...])
+    x_inside = x[inside_indices]
+    y_inside = y[inside_indices]
+    if outside
+        inside_bins = (x .>= minimum(x_bins)) .& (x .<= maximum(x_bins)) .& (y .>= minimum(y_bins)) .& (y .<= maximum(y_bins))
+        x_outside = x[inside_bins]
+        y_outside = y[inside_bins]
+        return (x_inside, y_inside), (x_outside,y_outside)
+    else 
+        return out_df
+    end
+end
+
+function cluster_beads(data_beads,mef_vals::Vector{Int},mef_chans::Vector{String};clust_chans=[],cluster_f=to_mef,cluster_params=Dict(),stat=median,stat_func=Dict(),selection_func=std,selection_func_params=Dict(),fitfunc=std_curve,fitfunc_params=Dict())
+    if clust_chans==[]
+        clust_chans=mef_chans
+    end
+
+    clusters=length(mef_vals)
+    clust_vals=mef_clust(data_beads[clust_chans],clusters,cluster_params)
+    u_clust_vals=unique(clust_vals)
+    pops = [data_beads[clust_vals==i] for i in u_clust_vals]
+
+end
 
 
 es = read_esm("./demo.json")
