@@ -4,8 +4,7 @@ function read_data(filen;ptype="a")
     trans = DataFrame(XLSX.readtable(filen,"Transformations"))
     views = DataFrame(XLSX.readtable(filen,"Views"))
     ID=DataFrame(XLSX.readtable(filen,"ID"))
-    id_dict=Dict(i."Current ID"=> i."Replaced ID" for i in eachrow(ID))
-    print(id_dict)
+    id_dict=Dict(i."Current"=> i."Target" for i in eachrow(ID))
     sample_dict= OrderedDict()
     group_dict = OrderedDict(i.Group => Dict("sample_IDs" => Vector(split(i.Name,",")), "metadata" => Dict(j => i[j,:] for j in names(i) if !(j in ["Group","Name"]))) for i in eachrow(groups))
     @info "Reading $(length(keys(samples))) plates" 
@@ -45,8 +44,11 @@ function read_data(filen;ptype="a")
     return OrderedDict(:samples=>sample_dict,:groups=>group_dict,:transformations=>trans_dict,:views=>views_dict)
 end
 
-function write_esm(esm_dict)
-    open("demo.json", "w") do file
+function write_esm(esm_dict;name="")
+    if name==""
+        name="out"
+    end
+    open("$name.esm", "w") do file
         JSON.print(file, esm_dict, 4)
     end
     @info "ESM written."
@@ -69,7 +71,9 @@ function read_pr(samples,sample_dict,channels,broad_g,ptype,channel_map)
             data=read_multipr_file("$(loc...)",ptype,channels,channel_map)
         end
         channels=keys(data)
+        pre=keys(sample_dict)
         sample_dict=merge(sample_dict,OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(:type=>"timeseries",:values => Dict(i=>data[i][!,k] for i in channels),:meta=>Dict()) for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
+        broad_g=[i for i in keys(sample_dict) if !(i in pre)]
     else
         data=read_multipr_file("$loc",ptype,channels,channel_map)
         channels = keys(data)
@@ -119,7 +123,7 @@ function read_flow(samples, sample_dict,channels,broad_g,channel_map)
     @info "Processing flow cytometer data from plate $(unique(samples.Plate)[1])"
     for j in eachrow(samples)
         if ismissing(j.Name)
-            name = "plate_0$(j.Plate)_$(j.Well)"
+            name = "plate_0$(j.Plate)_$(lowercase(j.Well))"
         else
             name = j.Name
         end
@@ -155,6 +159,10 @@ function read_multipr_file(filen,ptype,channels,channel_map)
     elseif ptype=="a"
         i = [i for i in split(read(filen,String),r"(\r\n.+?\r\n\r\n)") if (length(i) > 8 && (length(i) > 1000 && string(i)[1:7] != "Results"))]
         o_dict=Dict(channel_map[match(r":([A-Za-z0-9,\[\]]+)",j).match[2:end]] => CSV.read(IOBuffer("Time"*split(j,"\nTime")[2]),DataFrame) for j in i if match(r":([A-Za-z0-9,]+)",j).match[2:end] in channels)
+    elseif ptype=="spectramax"
+        f = IOBuffer(transcode(UInt8, ltoh.(reinterpret(UInt16, read(filen)))))
+        i = [j for j in split(read(f,String),r"\#\#Blocks= |\n~End")]
+        o_dict=Dict(channel_map[split.(split(i[j],"\n")[2],"\t")[2]] =>CSV.read(IOBuffer(i[j]),DataFrame,header=2) for j in 1:length(i) if split.(split(i[j],"\n")[2],"\t")[2] in channels)
     else
         i = [j for j in split(read(filen,String),r"\n,+?\n") if (length(j)>1500)]
         o_dict = Dict(channel_map[match(r"([A-Za-z0-9]+)",j).match] =>CSV.read(IOBuffer(j),DataFrame,transpose=true) for j in i if match(r"([A-Za-z0-9]+)",j).match in channels)

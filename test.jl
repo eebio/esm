@@ -1,5 +1,5 @@
 using KernelDensity, Plots, StatsBase, FileIO, GaussianMixtures, LinearAlgebra, Distributions,DataFrames
-
+export PATH="$PATH:/home/micha/julia-1.10.5/bin"
 function load_fcs(filen::String)
     return load(filen)
 end

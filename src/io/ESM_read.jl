@@ -50,14 +50,20 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
         return sexp_to_nested_list(sexp.value,es,trans_meta_map)
     elseif isa(sexp, Number)
         return sexp
+    elseif isa(sexp, String)
+        return sexp
     else
+        print(sexp)
         error("Unexpected type: $(typeof(sexp))")
     end
 end
 
-function prod_v(es,trans_meta_map)
+function prod_v(es,trans_meta_map;to_out=[])
+    if to_out==[]
+        to_out=keys(es.views)
+    end
     v_out=Dict()
-    for i in keys(es.views)
+    for i in to_out
         @info "Producing view $i."
         result = []
         for j in es.views[i]["data"]
@@ -105,6 +111,15 @@ function find_group(es,grn)
     return es.groups[es.groups.group .== grn,:sample_IDs][1]
 end
 
+function view_to_csv(es,trans_meta_map;outdir="",to_out=[])
+    vs = prod_v(es,trans_meta_map;to_out=to_out)
+    for i in keys(vs)
+        @info "Writing view: $i to $outdir/$i.csv"
+        CSV.write("$outdir/$i.csv",vs[i])
+    end
+    @info "Views written successfully."
+end
+
 function read_esm(filen)
     @info "Reading ESM file at: $filen"
     ef = JSON.parsefile(filen)
@@ -130,37 +145,68 @@ end
 
 mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 
-hcat(x...) = return hcat(x)
+# Base.hcat(x...) = return hcat(x)
 
 vcat(x...) = return vcat(x)
 
+# function at_time_point(x,y)
+    
+# end
+
+# gr(x...) = log2(at_time_point)
+
+# function growth_rate(x)
+#     gr
+# end
+
+# calibration_curve()
+
 groupby_flo(df::DataFrame) = return 
 
-function process_fcs(group,gate_channels,out_channels;es=es,rfi=true,denisty=true,high_low=true)
-    data=filter_row(es.samples,group)
-    for i in es.groups["group"]
-    if rfi
-        data=to_rfi()
+function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{String};gate_frac=0.65,nbins=1024,hl_channels=[],rfi=true,dense=true,hl=true,maxr=missing,minr=missing)
+    out_data=[]
+    max_len=maximum([length(es.samples.values[map(x -> !isnothing(match(Regex(string(i*raw"\.")), x)), es.samples.name),:][1]) for i in es.groups.sample_IDs[es.groups.group.==group,:][1]])
+    @info "Processing flow cytometer data in :$group."
+    @showprogress for i in es.groups.sample_IDs[es.groups.group.==group,:][1]
+        if rfi
+            o=to_rfi(i)
+        end
+        if hl
+            o=high_low(o;chans=hl_channels,maxr=maxr,minr=minr)
+        end
+        try (rfi == false && hl == false) catch; error("Data must go through initial gating, please set rfi or hl to true.") end
+        if dense
+            df=density_gate(o,gate_channels;gate_frac=gate_frac,nbins=nbins)
+            # print([j=>i*"."*j for j in names(df) if j in out_channels])
+            df=rename!(df[:,out_channels],[j=>i*"."*j for j in names(df) if j in out_channels])
+            out_data=[out_data;append!(df,DataFrame([names(df)[j]=>[0 for i in range(1,max_len-nrow(df))] for j in range(1,length(out_channels))]))]
+        else
+            data_inside=stack(o[i][:data] for i in keys(o))
+            df=DataFrame(data_inside,[keys(o)...])
+            out_data=[out_data;append(rename!(df[:,out_channels],[j=>i*"."*j for j in names(df) if j in out_channels]),DataFrame([names(df)[j]=>[i for i in range(1,max_len-nrow(df))] for j in range(1,length(out_channels))]))]
+        end
+        # print([names(j) for j in out_data])
     end
-    end
-
+    CSV.write("flo_test.csv",filter(row -> any(!=(0), row),hcat(out_data...)))
+    return filter(row -> any(!=(0), row),hcat(out_data...))
 end
 
-function to_rfi(fcs;chans=[],es=es)
-    if chans==[]
-        chans=[fcs.params[i.match] for i in eachmatch(r"\$P[0-9]+?N",join(keys(fcs.params)))]
+function to_rfi(sample_name;chans=[])
+    sub=es.samples[map(x -> !isnothing(match(Regex(string(sample_name*raw"\.")), x)), es.samples.name),:]
+    if chans == []
+        chans=sub.channel
     end
-    at=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse.(Float64,split(fcs.params[i.match],",")) for i in eachmatch(r"\$P[0-9]+?E",join(keys(fcs.params))))
+    at=Dict(i=> parse.(Float64,split(sub[sub.name.=="$sample_name.$i","meta"][1]["amp_type"],",")) for i in chans)
     if length(at)!=length(chans)
         error("Some amplification types not specfied data will not process.")
     end
-    if length([eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params)))...]) >= length(chans)
-        ran=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse(Int,fcs.params[i.match]) for i in eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params))))
+    if !(false in ["range" in keys(sub.meta[sub.name.=="$sample_name.$i",:][1]) for i in chans])#length([eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params)))...]) >= length(chans)
+        ran=Dict(i=> parse(Int,sub.meta[sub.name.=="$sample_name.$i",:][1]["range"]) for i in chans)
     else
         ran=false
     end
-    if length([eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params)))...]) >= length(chans)
-        ag=Dict(fcs.params["\$P$(filter(isdigit,i.match))N"]=> parse(Int,fcs.params[i.match]) for i in eachmatch(r"\$P[0-9]+?G",join(keys(fcs.params))))
+    if !(false in ["amp_gain" in keys(sub.meta[sub.name.=="$sample_name.$i",:][1]) && sub.meta[sub.name.=="$sample_name.$i",:][1]["amp_gain"] != nothing for i in chans])
+        ag=Dict(i=> parse(Int,sub.meta[sub.name.=="$sample_name.$i",:][1]["amp_gain"]) for i in chans)
     else
         ag = false
     end
@@ -168,41 +214,45 @@ function to_rfi(fcs;chans=[],es=es)
     for i in chans
         if at[i][1]==0
             if ag==false
-                o[i]=Dict(:data=>fcs[i]./1,:min=>[1/1,:max=>ran[i]/1])
+                o[i]=Dict(:data=>sub.values[sub.name.=="$sample_name.$i",:][1]./1,:min=>1/1,:max=>ran[i]/1)
             else
-                o[i]=Dict(:data=>fcs[i]./ag[i],:min=>1/ag[i],:max=>ran[i]/ag[i])
+                o[i]=Dict(:data=>sub.values[sub.name.=="$sample_name.$i",:][1]./ag[i],:min=>1/ag[i],:max=>ran[i]/ag[i])
             end
         else
             try ran catch; error("Resolution must be specified") end
-            o[i]=Dict(:data=>at[i][2]*10 .^(at[i][1]*(fcs[i]/ran[i])),:min=>at[i][2]*10 ^(at[i][1]*(1/ran[i])),:max=>at[i][2]*10 ^(at[i][1]*(ran[i]/ran[i])))
+            o[i]=Dict(:data=>at[i][2]*10 .^(at[i][1]*(sub.values[sub.name.=="$sample_name.$i",:][1]/ran[i])),:min=>at[i][2]*10 ^(at[i][1]*(1/ran[i])),:max=>at[i][2]*10 ^(at[i][1]*(ran[i]/ran[i])))
         end
     end
     return o
 end
 
 function high_low(data;chans=[],maxr=missing,minr=missing)
+    if !ismissing(maxr) && !ismissing(minr) && (length(chans) >= 1)
+        @warn "Processing flow data and limiting more than one channel ($(chans...)) by the same value."
+    end
     if chans == []
         chans = keys(data)
     end
+    dat_mask=[]
     for i in keys(data)
         if i in chans
-            if maxi == missing && maxr == missing
-                try
-                    dat_mask=[data[i][:range][1] < j < data[i][:range][2] for j in data[i][:data]]
-                    data[i][:data]=[xi for (xi,m) in zip(data[1][:data], dat_mask) if m]
-                catch
-                    error("Range missing, please specify.")
-                end
+            if ismissing(minr) && ismissing(maxr)
+                # print([dat_mask;[data[i][:min] < j < data[i][:max] for j in data[i][:data]]])
+                dat_mask=[dat_mask;[data[i][:min] < j < data[i][:max] for j in data[i][:data]]]
             else
-                dat_mask=[minr < j < maxr for j in data[i][:data]]
-                data[i][:data]=[xi for (xi,m) in zip(data[1][:data], dat_mask) if m]
+                dat_mask=[dat_mask;[minr < j < maxr for j in data[i][:data]]]
             end
         end
+    end
+    dat_mask=hcat(dat_mask)
+    dat_m =[if any(col) end for col in eachcol(dat_mask)]
+    for i in keys(data)
+        data[i][:data]=[xi for (xi,m) in zip(data[i][:data], dat_mask) if m]
     end
     return data
 end
 
-function density_gate(data,channels=[],gate_frac=0.65;nbins=1024,outside=false)
+function density_gate(data,channels=[];gate_frac=0.65,nbins=1024,outside=false)
     length(channels)==2 || error("2 channels must be specified for density gating.")
     x=data[channels[1]][:data]
     y=data[channels[2]][:data]
@@ -253,15 +303,15 @@ function cluster_beads(data_beads,mef_vals::Vector{Int},mef_chans::Vector{String
 end
 
 
-es = read_esm("./demo.json")
+es = read_esm("./out.esm")
 trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
 @info "Producing views."
-views = prod_v(es,trans_meta_map)
-for i in keys(views)
-    show(views[i])
-    display(plot(views[i][15:end,"plate_01_time.flo"],[views[i][15:end,j] for j in names(views[i]) if j != "plate_01_time.flo"];legend=false))
-    # plot(stack(views[i]))
-end
+view_to_csv(es,trans_meta_map;outdir="./test",to_out=["flow_cy"])
+# for i in keys(views)
+#     show(views[i])
+#     display(plot(views[i][15:end,"plate_01_time.flo"],[views[i][15:end,j] for j in names(views[i]) if j != "plate_01_time.flo"];legend=false))
+#     # plot(stack(views[i]))
+# end
 # for i in keys(es.models)
 #     show(mod_in(i))
 # end

@@ -1,1 +1,2 @@
-println("I am being built...")
+# build.jl
+using eebiotools; eebiotools.comonicon_install()
