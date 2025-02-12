@@ -1,4 +1,4 @@
-function read_data(filen;ptype="a")
+function read_data(filen;ptype="agilent")
     samples = groupby(DataFrame(XLSX.readtable(filen,"Samples")),:Plate)
     groups = DataFrame(XLSX.readtable(filen,"Groups"))
     trans = DataFrame(XLSX.readtable(filen,"Transformations"))
@@ -153,10 +153,10 @@ end
 """
 function read_multipr_file(filen,ptype,channels,channel_map)
     o_dict = Dict()
-    if ptype=="t"
+    if ptype=="tecan"
         i = [j for j in split(read(filen,String),r"\n,+?\n") if (length(j)>1500)]
         o_dict = Dict(channel_map[match(r"([A-Za-z0-9]+)",j).match] =>CSV.read(IOBuffer(j),DataFrame,transpose=true) for j in i if match(r"([A-Za-z0-9]+)",j).match in channels)
-    elseif ptype=="a"
+    elseif ptype=="agilent"
         i = [i for i in split(read(filen,String),r"(\r\n.+?\r\n\r\n)") if (length(i) > 8 && (length(i) > 1000 && string(i)[1:7] != "Results"))]
         o_dict=Dict(channel_map[match(r":([A-Za-z0-9,\[\]]+)",j).match[2:end]] => CSV.read(IOBuffer("Time"*split(j,"\nTime")[2]),DataFrame) for j in i if match(r":([A-Za-z0-9,]+)",j).match[2:end] in channels)
     elseif ptype=="spectramax"
@@ -178,4 +178,4 @@ function rep_num_to_str()
 
 end
 
-write_esm(read_data("ESM_input_test.xlsx"))
+# write_esm(read_data("ESM_input_test.xlsx"))

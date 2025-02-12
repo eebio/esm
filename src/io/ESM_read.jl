@@ -1,9 +1,9 @@
-@with_kw struct esm_zones
-    samples::DataFrame
-    groups
-    transformations
-    views
-end
+# @with_kw struct esm_zones
+#     samples::DataFrame
+#     groups
+#     transformations
+#     views
+# end
 
 function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
     if isa(sexp, Symbol)
@@ -34,6 +34,8 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
             else
                 if  string(sexp.args[2].value) in es.groups.group
                     return filter_col(form_df(filter_row(es,sexp.args[1])),find_group(es,string(sexp.args[2].value)))
+                elseif string(sexp.args[1])*"."*string(sexp.args[2].value) in es.samples.name
+                    return form_df(es.samples[es.samples.name.==string(sexp.args[1])*"."*string(sexp.args[2].value),:])
                 else
                     return remove_subcols(filter_col(form_df(filter_row(es,sexp.args[1])),[sexp.args[2].value]),sexp.args[2].value) 
                 end
@@ -58,7 +60,7 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
     end
 end
 
-function prod_v(es,trans_meta_map;to_out=[])
+function produce_views(es,trans_meta_map;to_out=[])
     if to_out==[]
         to_out=keys(es.views)
     end
@@ -112,7 +114,7 @@ function find_group(es,grn)
 end
 
 function view_to_csv(es,trans_meta_map;outdir="",to_out=[])
-    vs = prod_v(es,trans_meta_map;to_out=to_out)
+    vs = produce_views(es,trans_meta_map;to_out=to_out)
     for i in keys(vs)
         @info "Writing view: $i to $outdir/$i.csv"
         CSV.write("$outdir/$i.csv",vs[i])
@@ -149,19 +151,30 @@ mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 
 vcat(x...) = return vcat(x)
 
-# function at_time_point(x,y)
-    
-# end
+function index_between_vals(df::DataFrame; minv=-Inf,maxv=Inf)
+    return Dict(col => (findfirst(x -> minv < x, df[:, col]),findfirst(x -> maxv < x, df[:, col]) ) for col in names(df))
+end
 
-# gr(x...) = log2(at_time_point)
+function between_times(df::DataFrame, time_col::DataFrame; mint=-Inf, maxt=Inf)
+    tvals=index_between_vals(time_col;mint,maxt)[names(time_col)[1]]
+    return df[tvals[1]:tvals[2],:]
+end
 
-# function growth_rate(x)
-#     gr
-# end
-
-# calibration_curve()
-
-groupby_flo(df::DataFrame) = return 
+function doubling_time(df::DataFrame, time_col::DataFrame;max_od::Float64=0.4)
+    min_od=max_od/4
+    dict_2=Dict()
+    t_col_n = names(time_col)[1]
+    for i in names(df)
+        dic=index_between_vals(filter_col(df,[i]);minv=min_od,maxv=max_od)[i]
+        if max_od > maximum(df[:,i])
+            @warn "Skipping $i as the max_od 4 x min_od ($max_od) is greater than in this sample ($(maximum(df[:,i])))."
+        else
+            dict_2[i]=((Dates.Time(time_col[dic[2],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11))-(Dates.Time(time_col[dic[1],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)))/log2(max_od/min_od)
+            # print((Dates.Time(time_col[dic[2],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)),", ",(Dates.Time(time_col[dic[1],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)))
+        end
+    end
+    return DataFrame(dict_2)
+end
 
 function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{String};gate_frac=0.65,nbins=1024,hl_channels=[],rfi=true,dense=true,hl=true,maxr=missing,minr=missing)
     out_data=[]
@@ -187,7 +200,6 @@ function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{St
         end
         # print([names(j) for j in out_data])
     end
-    CSV.write("flo_test.csv",filter(row -> any(!=(0), row),hcat(out_data...)))
     return filter(row -> any(!=(0), row),hcat(out_data...))
 end
 
@@ -303,10 +315,10 @@ function cluster_beads(data_beads,mef_vals::Vector{Int},mef_chans::Vector{String
 end
 
 
-es = read_esm("./out.esm")
-trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
-@info "Producing views."
-view_to_csv(es,trans_meta_map;outdir="./test",to_out=["flow_cy"])
+# es = read_esm("./out.esm")
+# trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
+# @info "Producing views."
+# view_to_csv(es,trans_meta_map;outdir="./test",to_out=["flow_cy"])
 # for i in keys(views)
 #     show(views[i])
 #     display(plot(views[i][15:end,"plate_01_time.flo"],[views[i][15:end,j] for j in names(views[i]) if j != "plate_01_time.flo"];legend=false))
