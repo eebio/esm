@@ -22,11 +22,15 @@ end
 Creates a .esm file from an the input XLSX file defined by esm and writes it to target.
 The structure of the template input file must be followed.
 
+# Args
+
 # Options: 
 
 - `-e, --excel=<String>`: The .xlsx file to be read.
 - `-t, --target=<String>`: The name of the output .esm file. Does not include the .esm extension.
-- `-p, --plate-reader-type=<String>`: Defines the plate reader type used (agilent, tecan or spectramax). If a plate reader was not used, leave this blank.
+- `-p, --plate-reader-type=<String>`: Defines the plate reader type used (agilent, tecan or spectramax). If a plate reader was not used, give this any name.
+
+# Flags
 
 """
 @cast create(;excel::String,target::String,plate_reader_type::String) = esm("create";file_name=excel,name=target,pr_type=plate_reader_type)
@@ -72,7 +76,7 @@ Produces a all views from within the .esm files and saves them to a specified fo
 
 function esm(action;view::String="",file_name::String="",output_dir::String="",name::String="",pr_type::String="")
     if action == "create"
-        x=read_data(file_name,pr_type)
+        x=read_data(file_name;ptype=pr_type)
         write_esm(x;name=name)
     elseif action == "produce"
     global es = read_esm(file_name)

@@ -6,7 +6,7 @@ function read_data(filen;ptype="agilent")
     ID=DataFrame(XLSX.readtable(filen,"ID"))
     id_dict=Dict(i."Current"=> i."Target" for i in eachrow(ID))
     sample_dict= OrderedDict()
-    group_dict = OrderedDict(i.Group => Dict("sample_IDs" => Vector(split(i.Name,",")), "metadata" => Dict(j => i[j,:] for j in names(i) if !(j in ["Group","Name"]))) for i in eachrow(groups))
+    group_dict = OrderedDict(i.Group => Dict("sample_IDs" => Vector(split(i.Name,",")), :type=>"experimental","metadata" => Dict(j => i[j,:] for j in names(i) if !(j in ["Group","Name"]))) for i in eachrow(groups))
     @info "Reading $(length(keys(samples))) plates" 
     for i in range(1,length(keys(samples)))
         data=Dict()
@@ -35,7 +35,7 @@ function read_data(filen;ptype="agilent")
             error("Unknown instrument type: $ins_type")
         end
         # print(group_dict)
-        group_dict["plate_0$i"]=Dict("sample_IDs"=>broad_g,"metadata"=>:autodefined=>"true")
+        group_dict["plate_0$i"]=Dict("sample_IDs"=>broad_g,:type=>"physical","metadata"=>:autodefined=>"true")
         # group_dict["plate_0$i"]=Dict()
     end
     trans_dict = OrderedDict(i.Name=>"equation"=>i.Equation for i in eachrow(trans))
@@ -58,24 +58,25 @@ function read_pr(samples,sample_dict,channels,broad_g,ptype,channel_map)
     @info "Processing plate reader data from plate $(unique(samples.Plate)[1])"
     loc=unique(samples[!,"Data Location"])
     try length(loc) == 1 catch; error("Please give the location of only one folder containing all the CSVs for one plate. \nLocations given here are: $(Set(samples[!,"Data Location"]))") end
+    data=Dict()
     if length(samples.Plate) == 1
-        if length(loc) > 1
-            for j in loc
-                d2=read_multipr_file("$(loc[j])",ptype,channels,channel_map)
-                for k in channels
-                    try names(data[k])==names(d2[k]) catch; @error "Non contiguous columns names used: \nColumns: $(setdiff(names(data[k]),names(d2[k]))) do not match.\n" end
-                    data[k]=vcat(data[k],d2[k])
-                end
-            end
+        if isdir(loc)
+            data=read_sep_chans_pr(channel_map,loc[1],channels)
         else
             data=read_multipr_file("$(loc...)",ptype,channels,channel_map)
         end
         channels=keys(data)
         pre=keys(sample_dict)
-        sample_dict=merge(sample_dict,OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(:type=>"timeseries",:values => Dict(i=>data[i][!,k] for i in channels),:meta=>Dict()) for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
+        # print(data)
+        sample_dict=merge(sample_dict,OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(:type=>"timeseries",:values => Dict(i=>data[i][!,k] for i in channels if k in names(data[i])),:meta=>Dict()) for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
         broad_g=[i for i in keys(sample_dict) if !(i in pre)]
     else
-        data=read_multipr_file("$loc",ptype,channels,channel_map)
+        if isdir(loc)
+            data=read_sep_chans_pr(channel_map,loc)
+        else
+            data=read_multipr_file("$(loc...)",ptype,channels,channel_map)
+        end
+        # data=read_multipr_file("$loc",ptype,channels,channel_map)
         channels = keys(data)
         for j in eachrow(samples)
             if ismissing(j.Name)
@@ -161,8 +162,9 @@ function read_multipr_file(filen,ptype,channels,channel_map)
         o_dict=Dict(channel_map[match(r":([A-Za-z0-9,\[\]]+)",j).match[2:end]] => CSV.read(IOBuffer("Time"*split(j,"\nTime")[2]),DataFrame) for j in i if match(r":([A-Za-z0-9,]+)",j).match[2:end] in channels)
     elseif ptype=="spectramax"
         f = IOBuffer(transcode(UInt8, ltoh.(reinterpret(UInt16, read(filen)))))
-        i = [j for j in split(read(f,String),r"\#\#Blocks= |\n~End")]
-        o_dict=Dict(channel_map[split.(split(i[j],"\n")[2],"\t")[2]] =>CSV.read(IOBuffer(i[j]),DataFrame,header=2) for j in 1:length(i) if split.(split(i[j],"\n")[2],"\t")[2] in channels)
+        i = [j for j in split(read(f,String),r"\#\#Blocks= |\n~End") if (length(split.(split(j,"\n")[2],"\t"))> 1)]
+        # print([split.(split(i[j],"\n")[2],"\t") for j in 1:length(i)])
+        o_dict=Dict(channel_map[split.(split(i[j],"\n")[2],"\t")[2]] =>CSV.read(IOBuffer(i[j]),DataFrame,header=3, delim="\t") for j in 1:length(i) if (split.(split(i[j],"\n")[2],"\t")[2] in channels))
     else
         i = [j for j in split(read(filen,String),r"\n,+?\n") if (length(j)>1500)]
         o_dict = Dict(channel_map[match(r"([A-Za-z0-9]+)",j).match] =>CSV.read(IOBuffer(j),DataFrame,transpose=true) for j in i if match(r"([A-Za-z0-9]+)",j).match in channels)
@@ -172,6 +174,10 @@ function read_multipr_file(filen,ptype,channels,channel_map)
     end
     # print(keys(o_dict))
     return o_dict
+end
+
+function read_sep_chans_pr(channel_map,loc,channels)
+    return Dict(channel_map[j[1:end-4]]=>CSV.read(loc*"/"*j, DataFrame) for j in readdir(loc) if j[1:end-4] in channels)
 end
 
 function rep_num_to_str()
