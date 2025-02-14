@@ -22,18 +22,14 @@ end
 Creates a .esm file from an the input XLSX file defined by esm and writes it to target.
 The structure of the template input file must be followed.
 
-# Args
-
 # Options: 
 
 - `-e, --excel=<String>`: The .xlsx file to be read.
 - `-t, --target=<String>`: The name of the output .esm file. Does not include the .esm extension.
 - `-p, --plate-reader-type=<String>`: Defines the plate reader type used (agilent, tecan or spectramax). If a plate reader was not used, give this any name.
 
-# Flags
-
 """
-@cast create(;excel::String,target::String,plate_reader_type::String) = esm("create";file_name=excel,name=target,pr_type=plate_reader_type)
+@cast create(;excel::String,target::String) = esm("create";file_name=excel,name=target)
 
 """
     esm produce 
@@ -47,7 +43,7 @@ Produces a specific view from within the .esm files and saves it to a specified 
 - `-o, --output-dir=<String>`: The directory to save the output to.
 
 """
-@cast produce(;esm::String,view::String,output_dir::String) = esm("produce";file_name=esm,view=view,output_dir=output_dir)
+@cast produce(;esm_file::String,view::String,output_dir::String) = esm("produce";file_name=esm_file,view=view,output_dir=output_dir)
 
 """
     esm template 
@@ -59,7 +55,7 @@ Produces a template excel file for data entry into the ESM.
 - `-o, --output-path=<String>`: The output file path to write the template to. Does not specify the file. 
 
 """
-@cast template(;output_path::String) = esm("template";output_dir=output_file)
+@cast template(;output_path::String) = esm("template";output_dir=output_path)
 
 """
     esm process 
@@ -72,11 +68,11 @@ Produces a all views from within the .esm files and saves them to a specified fo
 - `-o, --output-dir=<String>`: The directory to save the output to.
 
 """
-@cast process(;esm::String,output_dir::String) = esm("process";file_name=esm,output_dir=output_dir)
+@cast process(;esm_file::String,output_dir::String) = esm("process";file_name=esm_file,output_dir=output_dir)
 
-function esm(action;view::String="",file_name::String="",output_dir::String="",name::String="",pr_type::String="")
+function esm(action;view::String="",file_name::String="",output_dir::String="",name::String="")
     if action == "create"
-        x=read_data(file_name;ptype=pr_type)
+        x=read_data(file_name)
         write_esm(x;name=name)
     elseif action == "produce"
     global es = read_esm(file_name)
