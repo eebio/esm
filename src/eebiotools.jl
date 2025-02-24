@@ -91,6 +91,6 @@ function esm(action;view::String="",file_name::String="",output_dir::String="",n
     end
 end
 
-@main
+Comonicon.@main
 
 end # module eebiotools
