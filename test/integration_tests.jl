@@ -15,21 +15,21 @@ build()
 @testset "Template integration" begin
     dir = Base.Filesystem.mktempdir()*"/"
     run(`eebiotools template --output-path $dir`)
-    @test isfile(joinpath(dir, "ESM.xlsx"))
+    @test isfile(joinpath(dir, "example.xlsx"))
     dir = Base.Filesystem.mktempdir()*"/"
     run(`eebiotools template -o $dir`)
-    @test isfile(joinpath(dir, "ESM.xlsx"))
+    @test isfile(joinpath(dir, "example.xlsx"))
 end
 
 @testset "Create integration" begin
     dir = Base.Filesystem.mktempdir()
-    run(`eebiotools create --excel inputs/ESM.xlsx --target $dir/tmp`)
+    run(`eebiotools create --excel inputs/example.xlsx --target $dir/tmp`)
     @test isfile(joinpath(dir, "tmp.esm"))
     esm_hash = open(joinpath(dir, "tmp.esm")) do f
         sha256(f)
     end
     @test bytes2hex(esm_hash) == "600ec268f7a50736b5d0f70798fc695df09eb5832e418c5f9af5c936b4a11cc0"
-    run(`eebiotools create -e inputs/ESM.xlsx -t $dir/tmp2`)
+    run(`eebiotools create -e inputs/example.xlsx -t $dir/tmp2`)
     @test isfile(joinpath(dir, "tmp2.esm"))
     esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
