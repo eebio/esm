@@ -274,3 +274,15 @@ end
     @test eebiotools.doubling_time(od_df, time_col; max_od=0.5) == DataFrame(A = 1.0) broken=true
     @test eebiotools.doubling_time(od_df, time_col; max_od=0.3) == DataFrame(A = 1.0) broken=true
 end
+
+@testitem "expression" setup = [MockESM] begin
+    es = MockESM.es
+    es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
+    
+    @test eebiotools.sexp_to_nested_list(5,es,trans_meta_map) == 5 #Test numbers
+    @test eebiotools.sexp_to_nested_list(:("hello"),es,trans_meta_map) == "hello" # Test strings
+    @test eval(eebiotools.sexp_to_nested_list(:(sum([1,2,3])),es,trans_meta_map)) == 6 # Test functions
+    @test eval(eebiotools.sexp_to_nested_list(:extra_transform,es,trans_meta_map)) == 10 # Test accessing transformations
+    @test_broken eebiotools.sexp_to_nested_list(:flow_cyt,es,trans_meta_map) == ["process_fcs", "plate_01", ["FSC", "SSC"], ["FL1"]] # Test accessing views
+end
