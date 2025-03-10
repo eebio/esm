@@ -37,7 +37,7 @@ end
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
-@testitem "Integration coverage" setup=[build] begin
+@testitem "Integration coverage" begin
     dir = Base.Filesystem.mktempdir()
     eebiotools.template(output_path=dir)
     eebiotools.create(excel="inputs/example.xlsx", target=joinpath(dir, "tmp"))
