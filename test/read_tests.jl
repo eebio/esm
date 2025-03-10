@@ -1,5 +1,6 @@
 # Test read_esm function
-@testitem "read_esm tests" begin
+@testmodule MockESM begin
+    using eebiotools
     mock_data = """
 {
     "samples": {
@@ -172,6 +173,10 @@
         write(f, mock_data)
     end
     es = read_esm(temp_file)
+end
+
+@testitem "read_esm tests" setup=[MockESM] begin
+    es = MockESM.es
     @test issetequal(es.samples.name, ["plate_01_a1.FL1", "plate_01_a1.SSC", "plate_01_a1.FSC", "plate_01_a2.FL1", "plate_01_a2.SSC", "plate_01_a2.FSC"])
     @test issetequal(es.samples.channel, ["FL1", "SSC", "FSC", "FL1", "SSC", "FSC"])
     @test issetequal(es.samples.type, ["population", "population", "population", "population", "population", "population"])
