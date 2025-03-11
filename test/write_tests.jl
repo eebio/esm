@@ -1,7 +1,5 @@
 @testitem "read data" begin
     es = eebiotools.read_data("inputs/example.xlsx")
-    @test true
-    println("heherhrh")
     @test es[:samples]["plate_01_a1"][:values]["FL1"][1:5] == [169472, -117439489, 24444930, 202496, 1946157137]
     @test es[:samples]["plate_01_a1"][:values]["FL1"][end] == 21233666
     @test es[:samples]["plate_01_a2"][:values]["FSC"][1:5] == [39387138, 58112, 0, 34996226, 61952]
