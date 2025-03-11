@@ -172,11 +172,10 @@
     open(temp_file, "w") do f
         write(f, mock_data)
     end
-    es = read_esm(temp_file)
 end
 
 @testitem "read_esm tests" setup=[MockESM] begin
-    es = MockESM.es
+    es = eebiotools.read_esm(MockESM.temp_file)
     @test issetequal(es.samples.name, ["plate_01_a1.FL1", "plate_01_a1.SSC", "plate_01_a1.FSC", "plate_01_a2.FL1", "plate_01_a2.SSC", "plate_01_a2.FSC"])
     @test issetequal(es.samples.channel, ["FL1", "SSC", "FSC", "FL1", "SSC", "FSC"])
     @test issetequal(es.samples.type, ["population", "population", "population", "population", "population", "population"])
@@ -276,7 +275,7 @@ end
 end
 
 @testitem "expression" setup = [MockESM] begin
-    es = MockESM.es
+    es = eebiotools.read_esm(MockESM.temp_file)
     es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
     
