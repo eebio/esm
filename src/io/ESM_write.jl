@@ -189,7 +189,7 @@ function read_flow(samples, sample_dict,channels,broad_g,channel_map)
 
         catch
             # print(j."Data Location")
-             warn("\n\nSkipping $name as file $(j[!,"Data Location"]) invalid - check the specified location or if the file is corrupted.")
+             @warn "\n\nSkipping $name as file $(j[!,"Data Location"]) invalid - check the specified location or if the file is corrupted."
         end
         broad_g=[broad_g;[name]]
     end
