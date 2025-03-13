@@ -363,14 +363,14 @@ Args:
 function doubling_time(df::DataFrame, time_col::DataFrame;max_od::Float64=0.4)
     min_od=max_od/4
     dict_2=Dict()
-    t_col_n = names(time_col)[1]
+    time_col=mapcols(col -> Dates.Time.(col,dateformat"H:M:S"), time_col)
+    time_col=mapcols(col -> [i.instant.value*(1e-9) for i in col], time_col)
     for i in names(df)
-        dic=index_between_vals(filter_col(df,[i]);minv=min_od,maxv=max_od)[i]
+        indexes=index_between_vals(df;minv=min_od,maxv=max_od)[i]
         if max_od > maximum(df[:,i])                                                                                                                # Is the max greater than what we can deal with?
             @warn "Skipping $i as the max_od 4 x min_od ($max_od) is greater than in this sample ($(maximum(df[:,i])))." 
         else
-            dict_2[i]=((Dates.Time(time_col[dic[2],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11))-(Dates.Time(time_col[dic[1],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)))/log2(max_od/min_od)
-            # print((Dates.Time(time_col[dic[2],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)),", ",(Dates.Time(time_col[dic[1],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)))
+            dict_2[i]=(time_col[indexes[2],1]-time_col[indexes[1],1])/log2(df[indexes[2],1]/df[indexes[1],1])/60
         end
     end
     return DataFrame(dict_2)

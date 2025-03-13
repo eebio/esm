@@ -282,9 +282,10 @@ end
     od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
     time_col = DataFrame(Time = ["00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
 
-    @test eebiotools.doubling_time(od_df, time_col) == DataFrame(A = 1.0) broken=true
-    @test eebiotools.doubling_time(od_df, time_col; max_od=0.5) == DataFrame(A = 1.0) broken=true
-    @test eebiotools.doubling_time(od_df, time_col; max_od=0.3) == DataFrame(A = 1.0) broken=true
+    @test eebiotools.doubling_time(od_df, time_col) ≈ DataFrame(A = 1.0)
+    @test eebiotools.doubling_time(od_df, time_col; max_od=0.5) ≈ DataFrame(A = 1.0)
+    @test eebiotools.doubling_time(od_df, time_col; max_od=0.3) ≈ DataFrame(A = 1.0)
+    # TODO: Add some more tests with more awkward data
 end
 
 @testitem "expression" setup = [MockESM] begin
