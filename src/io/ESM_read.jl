@@ -336,8 +336,11 @@ function at_od(od_df, target_df, target_od)
                 @warn "Skipping $i as the target OD ($target_od) is higher than the maximum OD ($(maximum(replace(od_df[:,i],NaN=>0.0))))."
             else
                 dic = index_between_vals(filter_col(od_df,[i]);minv=target_od,maxv=target_od)[i]
-                dict_2[i]=target_df[dic[1],:]
-                dict_2[i]=dict_2[i][i]                                                              # Indexing was being weird. IDK.
+                if isnothing(dic[1])
+                    dict_2[i]=nothing
+                else
+                    dict_2[i]=target_df[dic[1],i]
+                end
             end
         end
     end

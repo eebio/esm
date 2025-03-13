@@ -270,9 +270,9 @@ end
     od_df = DataFrame(A = [0.1, 0.2, 0.3, 0.4, 0.5], B = [0.2, 0.3, 0.4, 0.5, 0.6])
     target_df = DataFrame(A = [10, 20, 30, 40, 50], B = [20, 30, 40, 50, 60])
 
-    @test eebiotools.at_od(od_df, target_df, 0.3) == DataFrame(A = 30, B = 30) broken=true
-    @test eebiotools.at_od(od_df, target_df, 0.1) == DataFrame(A = 20, B = 30) broken=true
-    @test eebiotools.at_od(od_df, target_df, 0.5) == DataFrame(A = 50, B = 60) broken=true
+    @test eebiotools.at_od(od_df, target_df, 0.3) == DataFrame(A = 30, B = 30)
+    @test eebiotools.at_od(od_df, target_df, 0.1) == DataFrame(A = 10, B = nothing)
+    @test eebiotools.at_od(od_df, target_df, 0.5) == DataFrame(A = 50, B = 50)
 end
 
 # Test doubling_time
