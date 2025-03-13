@@ -187,9 +187,10 @@ function read_flow(samples, sample_dict,channels,broad_g,channel_map)
             temp[:meta]= Dict(channel_map[x]=>extract_flow(temp_data,"$x") for x in channels)
             sample_dict[name]=temp
 
-        catch
+        catch e
             # print(j."Data Location")
-             @warn "\n\nSkipping $name as file $(j[!,"Data Location"]) invalid - check the specified location or if the file is corrupted."
+             @warn "\n\nFatal error encountered for well $name as file $(j."Data Location") is invalid - check the specified location or if the file is corrupted."
+             throw(e)
         end
         broad_g=[broad_g;[name]]
     end
