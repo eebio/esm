@@ -228,16 +228,22 @@ end
 
     # Sample data for testing
     df = DataFrame(A = 1:10, B = 11:20)
-    time_col = DataFrame(Time = ["00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38", "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:38:38"])
+    time_col = DataFrame(Time = ["00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38", "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:30:00"])
 
-    result = eebiotools.between_times(df, time_col; mint=2e-11, maxt=6e-11)
-    @test result == DataFrame(A = 2:6, B = 12:16) broken=true
+    result = eebiotools.between_times(df, time_col; mint=0, maxt=0)
+    @test result == DataFrame(A = [], B = [])
     
     result = eebiotools.between_times(df, time_col; mint=1e-11, maxt=3e-11)
-    @test result == DataFrame(A = 1:3, B = 11:13) broken=true
+    @test result == DataFrame(A = [], B = [])
     
-    result = eebiotools.between_times(df, time_col; mint=5e-11, maxt=9e-11)
-    @test result == DataFrame(A = 5:9, B = 15:19) broken=true
+    result = eebiotools.between_times(df, time_col; mint=9, maxt=15)
+    @test result == DataFrame(A = [], B = [])
+
+    result = eebiotools.between_times(df, time_col; mint=0, maxt=50)
+    @test result == DataFrame(A = 1:5, B = 11:15)
+
+    result = eebiotools.between_times(df, time_col; mint=90, maxt=90)
+    @test result == DataFrame(A = 10, B = 20)
 end
 
 # Test at_time

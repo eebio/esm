@@ -280,8 +280,12 @@ Args:
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint=-Inf, maxt=Inf)
     time_col=mapcols(col -> Dates.Time.(col,dateformat"H:M:S"), time_col)
-    time_col=mapcols(col -> [i.instant.value*(1.7e-11) for i in col], time_col)
-    tvals=index_between_vals(time_col;minv=mint,maxv=maxt)[names(time_col)[1]]
+    time_col=mapcols(col -> [i.instant.value*(1e-9) for i in col], time_col)
+    tvals=index_between_vals(time_col;minv=mint*60,maxv=maxt*60)[names(time_col)[1]] # Do time calculations in seconds to avoid floating point math
+    if isnothing(tvals[1]) || isnothing(tvals[2])
+        @warn "No values found between $mint and $maxt."
+        return df[1:0,:] # return empty dataframe of the same type
+    end
     return df[tvals[1]:tvals[2],:]
 end
 
