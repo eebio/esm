@@ -139,7 +139,7 @@ Args:
 function extract_flow(fcs,chan)
     # print(findfirst([i == chan for i in fcs.data.axes[1]]))
     p= findfirst([i == chan for i in fcs.data.axes[1]])
-    props=unique([i.match[4] for i in eachmatch(r"\$P[0-9][A-Z]",join(keys(fcs.params)))])
+    props=unique([i.match[4] for i in eachmatch(Regex("\\\$P$(p)[A-Z]"),join(keys(fcs.params)))])
     Dict(
         :name=>if 'N' in props fcs.params["\$P$(p)N"] else missing end,
         :amp_type=>if 'E' in props fcs.params["\$P$(p)E"] else missing end,
