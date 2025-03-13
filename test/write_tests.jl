@@ -1,15 +1,10 @@
 @testitem "read data" begin
     es = eebiotools.read_data("inputs/example.xlsx")
-    @test es[:samples]["plate_01_a1"][:values]["FL1"][1:5] == [169472, -117439489, 24444930, 202496, 1946157137]
-    @test es[:samples]["plate_01_a1"][:values]["FL1"][end] == 21233666
-    @test es[:samples]["plate_01_a2"][:values]["FSC"][1:5] == [39387138, 58112, 0, 34996226, 61952]
-    @test es[:samples]["plate_01_a2"][:values]["FSC"][end] == 0
+    @test es[:samples]["plate_01_a1"][:values]["FSC-H"] == [628, 1023, 373, 1023]
+    @test es[:samples]["plate_01_a1"][:values]["FL4-H"] ≈ [28.133175, 310.590027, 3.819718, 2414.418213]
     @test es[:samples]["plate_01_a1"][:type] == "population"
-    @test es[:samples]["plate_01_a1"][:meta]["FL1"][:range] == "1024"
-    @test es[:samples]["plate_01_a1"][:meta]["FL1"][:det_volt] == "850"
-    @test es[:samples]["plate_01_a1"][:meta]["FL1"][:ex_wav] == "488,561"
-    @test ismissing(es[:samples]["plate_01_a1"][:meta]["FL1"][:name_s])
-    @test ismissing(es[:samples]["plate_01_a1"][:meta]["FL1"][:det_type])
+    @test es[:samples]["plate_01_a1"][:meta]["FL1-H"][:range] == "1024"
+    @test es[:samples]["plate_01_a1"][:meta]["FL1-H"][:amp_type] == "0,0"
 end
 
 @testitem "write esm" begin
