@@ -54,6 +54,7 @@ Produces a template excel file for data entry into the ESM.
 
 """
 @cast template(;output_path::String) = esm("template";output_dir=output_path)
+# TODO: input form for template is really 'particular'
 
 """
     esm process 

@@ -236,6 +236,7 @@ function read_esm(filen)
     return es
 end
 
+#TODO - remove type piracy on mean
 mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df) # redfining just to get it right.
 
 vcat(x...) = return vcat(x) # could be useful.
@@ -467,12 +468,14 @@ Args:
 - `minr::Int64`: min range
 """
 function high_low(data;chans=[],maxr=missing,minr=missing)
+    # TODO this warning wont come up if channels list is empty, even though that means all channels
     if !ismissing(maxr) && !ismissing(minr) && (length(chans) >= 1)
         @warn "Processing flow data and limiting more than one channel ($(chans...)) by the same value."
     end
     if chans == []
         chans = keys(data)
     end
+    # TODO I don't think the data mask is behaving properly
     dat_mask=[]
     for i in keys(data)
         if i in chans

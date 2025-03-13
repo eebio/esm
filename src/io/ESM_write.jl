@@ -207,6 +207,7 @@ Args:
 - `channel_map`: The new names for the channels.
 """
 function read_multipr_file(filen,ptype,channels,channel_map)
+    # TODO: Add bmg labtech reading
     o_dict = Dict()
     if ptype=="tecan"
         i = [j for j in split(read(filen,String),r"\n,+?\n") if (length(j)>1500)]
