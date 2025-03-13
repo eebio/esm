@@ -202,16 +202,24 @@ end
     df = DataFrame(A = 1:10, B = 11:20)
 
     result = eebiotools.index_between_vals(df; minv=3, maxv=8)
-    @test result["A"] == (3, 8) broken=true
-    @test result["B"] == (3, 8) broken=true
+    @test result["A"] == (3, 8)
+    @test result["B"] == (nothing, nothing)
     
     result = eebiotools.index_between_vals(df; minv=5, maxv=10)
-    @test result["A"] == (5, 10) broken=true
-    @test result["B"] == (5, 10) broken=true
+    @test result["A"] == (5, 10)
+    @test result["B"] == (nothing, nothing)
     
     result = eebiotools.index_between_vals(df; minv=0, maxv=15)
-    @test result["A"] == (1, 10) broken=true
-    @test result["B"] == (1, 10) broken=true
+    @test result["A"] == (1, 10)
+    @test result["B"] == (1, 5)
+
+    result = eebiotools.index_between_vals(df; minv=2.5, maxv=13.5)
+    @test result["A"] == (3, 10)
+    @test result["B"] == (1, 3)
+
+    result = eebiotools.index_between_vals(df)
+    @test result["A"] == (1,10)
+    @test result["B"] == (1,10)
 end
 
 # Test between_times

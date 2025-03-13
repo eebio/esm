@@ -253,7 +253,9 @@ vcat(x...) = return vcat(x) # could be useful.
     index_between_vals(df; minv, maxv)
 
 Returns the indexes between two points so that these can be later isolated. This is in dict form to allow for individual points to be separated out.
+Both ends are inclusive. 
 
+If minv is larger than all values in the column, or maxv smaller, will return `(nothing,nothing)`.
 Args: 
 
 - `df=<DataFrame>`: DataFrame to work on.
@@ -261,7 +263,7 @@ Args:
 - `maxv=<Float64>`: Maximum value. 
 """
 function index_between_vals(df::DataFrame; minv=-Inf,maxv=Inf)
-    return Dict(col => (findfirst(x -> minv < x, df[:, col]),findfirst(x -> maxv < x, df[:, col]) ) for col in names(df))
+    return Dict(col => (findfirst(x -> minv <= x <= maxv, df[:, col]), findlast(x -> minv <= x <= maxv, df[:, col])) for col in names(df))
 end
 
 """
