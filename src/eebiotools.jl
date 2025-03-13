@@ -2,8 +2,6 @@ module eebiotools
 
 using CSV, DataFrames, FileIO, JSON, Comonicon, FCSFiles, Parameters, JSONTables, XLSX, Statistics, DataStructures, StatsBase, KernelDensity, ProgressMeter, Dates
 import Statistics.mean, DataFrames.hcat
-# include("./io/read.jl")
-# include("./base/main.jl")
 include("./io/ESM_read.jl")
 include("./io/ESM_write.jl")
 export read_esm, esm_zones, read_data, write_esm

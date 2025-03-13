@@ -1,9 +1,3 @@
-# @with_kw struct esm_zones
-#     samples::DataFrame
-#     groups
-#     transformations
-#     views
-# end
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
 
@@ -38,7 +32,6 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
                 if  string(sexp.args[2].value) in es.groups.group # check if the second part of the quote node is in the groups - this allows a group to be sub-specified. e.g. only return the samples that are part of two groups.
                     return filter_col(eval(sexp_to_nested_list(trans_meta_map[Symbol(string(sexp.args[1]))],es,trans_meta_map)),find_group(es,string(sexp.args[2].value))) # eval the transformation and then sub filter using the names of the samples.
                 else
-                    # print(filter_col(eval(sexp_to_nested_list(trans_meta_map[Symbol(string(sexp.args[1]))],es,trans_meta_map)),[string(sexp.args[2].value)]))
                     return remove_subcols(filter_col(eval(sexp_to_nested_list(trans_meta_map[Symbol(string(sexp.args[1]))],es,trans_meta_map)),[string(sexp.args[2].value)]),sexp.args[2].value) # just eval the other transformation.
                 end
             else
@@ -245,8 +238,6 @@ end
 
 mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df) # redfining just to get it right.
 
-# Base.hcat(x...) = return hcat(x)
-
 vcat(x...) = return vcat(x) # could be useful.
 
 """
@@ -408,7 +399,6 @@ function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{St
         try (rfi == false && hl == false) catch; error("Data must go through initial gating, please set rfi or hl to true.") end
         if dense
             df=density_gate(o,gate_channels;gate_frac=gate_frac,nbins=nbins)
-            # print([j=>i*"."*j for j in names(df) if j in out_channels])
             df=rename!(df[:,out_channels],[j=>i*"."*j for j in names(df) if j in out_channels])                                          # Make the channels identifieable.
             out_data=[out_data;append!(df,DataFrame([names(df)[j]=>[0 for i in range(1,max_len-nrow(df))] for j in range(1,length(out_channels))]))] # add dataframe to output.
         else
@@ -416,7 +406,6 @@ function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{St
             df=DataFrame(data_inside,[keys(o)...])
             out_data=[out_data;append(rename!(df[:,out_channels],[j=>i*"."*j for j in names(df) if j in out_channels]),DataFrame([names(df)[j]=>[i for i in range(1,max_len-nrow(df))] for j in range(1,length(out_channels))]))]
         end
-        # print([names(j) for j in out_data])
     end
     return filter(row -> any(!=(0), row),hcat(out_data...)) # get rid of any trailing full 0 rows (they aren't necessary.)
 end
@@ -439,7 +428,7 @@ function to_rfi(sample_name;chans=[])
     if length(at)!=length(chans)
         error("Some amplification types not specfied data will not process.")
     end
-    if !(false in ["range" in keys(sub.meta[sub.name.=="$sample_name.$i",:][1]) for i in chans])#length([eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params)))...]) >= length(chans)
+    if !(false in ["range" in keys(sub.meta[sub.name.=="$sample_name.$i",:][1]) for i in chans])
         ran=Dict(i=> parse(Int,sub.meta[sub.name.=="$sample_name.$i",:][1]["range"]) for i in chans)
     else
         ran=false
@@ -488,7 +477,6 @@ function high_low(data;chans=[],maxr=missing,minr=missing)
     for i in keys(data)
         if i in chans
             if ismissing(minr) && ismissing(maxr)
-                # print([dat_mask;[data[i][:min] < j < data[i][:max] for j in data[i][:data]]])
                 dat_mask=[dat_mask;[data[i][:min] < j < data[i][:max] for j in data[i][:data]]]
             else
                 dat_mask=[dat_mask;[minr < j < maxr for j in data[i][:data]]]
@@ -553,17 +541,3 @@ function density_gate(data,channels=[];gate_frac=0.65,nbins=1024,outside=false)
         return out_df
     end
 end
-
-
-# es = read_esm("./out.esm")
-# trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
-# @info "Producing views."
-# view_to_csv(es,trans_meta_map;outdir="./test",to_out=["flow_cy"])
-# for i in keys(views)
-#     show(views[i])
-#     display(plot(views[i][15:end,"plate_01_time.flo"],[views[i][15:end,j] for j in names(views[i]) if j != "plate_01_time.flo"];legend=false))
-#     # plot(stack(views[i]))
-# end
-# for i in keys(es.models)
-#     show(mod_in(i))
-# end
