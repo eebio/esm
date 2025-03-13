@@ -1,0 +1,23 @@
+{
+    "instrument_type":"Flow cytometer",
+    "instrument_name":"Flow 1",
+    "plate_n":1,
+    "channels":{
+        "BL1-H":{
+            "Name":"GFP",
+            "Excitment":488,
+            "Emission":510
+        },
+        "FSC-A":{
+            "Name":"Forward Scatter A",
+            "Channel":"BL1-H"
+        }
+    },
+    "time_date":["2019-11-21"],
+    "user":"Unknown",
+    "experiment_type":"Flow cytometry",
+    "plate_type":96,
+    "sample_type":"Culture",
+    "cover_type":"N/A",
+    "filen":["../../flopr-master/examples/flow_cytometry/DATA/20191121"],
+}
