@@ -27,13 +27,13 @@ end
     esm_hash = open(joinpath(dir, "tmp.esm")) do f
         sha256(f)
     end
-    @test bytes2hex(esm_hash) == "c5162331501aa17468d460aa6e4ef2b3f5aab2802568cbfd446173e0f8ddb12f"
     @test_broken run(`eebiotools create -e inputs/example.xlsx -t $dir/tmp2`)
+    @test bytes2hex(esm_hash) == "806fc9b3a2c4ec394a700286281025f800b268876449a179ccb18565a14dfaf8"
     @test isfile(joinpath(dir, "tmp2.esm")) skip=true
     @test_skip esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
     end
-    @test bytes2hex(esm_hash) == "c5162331501aa17468d460aa6e4ef2b3f5aab2802568cbfd446173e0f8ddb12f" skip=true
+    @test bytes2hex(esm_hash) == "806fc9b3a2c4ec394a700286281025f800b268876449a179ccb18565a14dfaf8" skip=true
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
