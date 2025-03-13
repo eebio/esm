@@ -10,11 +10,11 @@ end
 @testitem "Template integration" setup=[build] begin
     dir = Base.Filesystem.mktempdir()*"/"
     readdir(dir)
-    run(`eebiotools template --output-path $dir`)
+    run(`esm template --output-path $dir`)
     readdir(dir)
     @test isfile(joinpath(dir, "ESM.xlsx"))
     dir = Base.Filesystem.mktempdir()*"/"
-    @test_broken run(`eebiotools template -o $dir`)
+    @test_broken run(`esm template -o $dir`)
     @test isfile(joinpath(dir, "ESM.xlsx")) broken=true
 end
 
@@ -22,13 +22,13 @@ end
     using SHA
 
     dir = Base.Filesystem.mktempdir()
-    run(`eebiotools create --excel inputs/example.xlsx --target $dir/tmp`)
+    run(`esm create --excel inputs/example.xlsx --target $dir/tmp`)
     @test isfile(joinpath(dir, "tmp.esm"))
     esm_hash = open(joinpath(dir, "tmp.esm")) do f
         sha256(f)
     end
-    @test_broken run(`eebiotools create -e inputs/example.xlsx -t $dir/tmp2`)
     @test bytes2hex(esm_hash) == "806fc9b3a2c4ec394a700286281025f800b268876449a179ccb18565a14dfaf8"
+    @test_broken run(`esm create -e inputs/example.xlsx -t $dir/tmp2`)
     @test isfile(joinpath(dir, "tmp2.esm")) skip=true
     @test_skip esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
@@ -39,6 +39,6 @@ end
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
 @testitem "Integration coverage" begin
     dir = Base.Filesystem.mktempdir()
-    eebiotools.template(output_path=dir)
-    eebiotools.create(excel="inputs/example.xlsx", target=joinpath(dir, "tmp"))
+    ESM.template(output_path=dir)
+    ESM.create(excel="inputs/example.xlsx", target=joinpath(dir, "tmp"))
 end

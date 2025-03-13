@@ -1,2 +1,2 @@
 # build.jl
-using eebiotools; eebiotools.comonicon_install()
+using ESM; ESM.comonicon_install()

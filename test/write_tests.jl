@@ -1,5 +1,5 @@
 @testitem "read data" begin
-    es = eebiotools.read_data("inputs/example.xlsx")
+    es = ESM.read_data("inputs/example.xlsx")
     @test es[:samples]["plate_01_a1"][:values]["FSC-H"] == [628, 1023, 373, 1023]
     @test es[:samples]["plate_01_a1"][:values]["FL4-H"] ≈ [28.133175, 310.590027, 3.819718, 2414.418213]
     @test es[:samples]["plate_01_a1"][:type] == "population"
@@ -9,10 +9,10 @@ end
 
 @testitem "write esm" begin
     # write esm from example.xlsx and read it back
-    es = eebiotools.read_data("inputs/example.xlsx")
+    es = ESM.read_data("inputs/example.xlsx")
     filename = Base.Filesystem.mktempdir()*"/tmp"
-    eebiotools.write_esm(es; name = filename)
-    es = eebiotools.read_esm(filename*".esm")
+    ESM.write_esm(es; name = filename)
+    es = ESM.read_esm(filename*".esm")
 
     @test issetequal(es.samples.name, ["plate_01_a1.FL1", "plate_01_a1.SSC", "plate_01_a1.FSC", "plate_01_a2.FL1", "plate_01_a2.SSC", "plate_01_a2.FSC"])
     @test issetequal(es.samples.channel, ["FL1", "SSC", "FSC", "FL1", "SSC", "FSC"])

@@ -12,7 +12,7 @@ Args:
 function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
     if isa(sexp, Symbol)
         
-        if isdefined(eebiotools,sexp) # Is the symbol a function?
+        if isdefined(ESM,sexp) # Is the symbol a function?
             return sexp
         end
         if sexp in keys(trans_meta_map) ### Needs circular referencing of transformations adjusted. - Is the symbol a transformation

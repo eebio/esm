@@ -1,4 +1,4 @@
-module eebiotools
+module ESM
 
 using CSV, DataFrames, FileIO, JSON, Comonicon, FCSFiles, Parameters, JSONTables, XLSX, Statistics, DataStructures, StatsBase, KernelDensity, ProgressMeter, Dates
 import Statistics.mean, DataFrames.hcat
@@ -79,8 +79,8 @@ function esm(action;view::String="",file_name::String="",output_dir::String="",n
         @info "Producing views."
         view_to_csv(es,trans_meta_map;outdir=output_dir,to_out=[view])
     elseif action == "template"
-        e=pathof(eebiotools)
-        e=e[1:length(e)-13]
+        e=pathof(ESM)
+        e=e[1:length(e)-6]
         cp(e*"io/ESM.xlsx",output_dir*"ESM.xlsx")
     elseif action == "process"
     global es = read_esm(file_name)
@@ -92,4 +92,4 @@ end
 
 Comonicon.@main
 
-end # module eebiotools
+end # module ESM
