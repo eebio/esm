@@ -254,14 +254,13 @@ end
     df = DataFrame(A = 1:10, B = 11:20)
     time_col = DataFrame(Time = ["00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38", "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:38:38"])
 
-    # TODO Review: Currently returns the next datapoint after the specified time
-    @test eebiotools.at_time(df, time_col, 30) == DataFrame(A = 4, B = 14)
+    # Recasts into DataFrame again as this removes the Row indexes (which are used as part of DataFrame equality comparison)
+    @test DataFrame(eebiotools.at_time(df, time_col, 30)) == DataFrame(A = 3, B = 13)
     
-    @test eebiotools.at_time(df, time_col, 0) == DataFrame(A = 1, B = 11)
+    @test DataFrame(eebiotools.at_time(df, time_col, 0)) == DataFrame(A = [], B = [])
     
-    @test eebiotools.at_time(df, time_col, 1000) == DataFrame(A = 10, B = 20) broken=true
+    @test DataFrame(eebiotools.at_time(df, time_col, 1000)) == DataFrame(A = 10, B = 20)
 end
-
 
 # Test at_od
 @testitem "at_od" begin

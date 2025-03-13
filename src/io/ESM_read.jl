@@ -292,7 +292,9 @@ end
 """
     at_time(df, time_col, time_point)
 
-Returns values at a specific time point.
+Returns values at a specific time point. 
+If no value at specific timepoint, return the last recording before the timepoint. 
+If time_point < minimum(time_col), return `nothing`.
 
 Args:
 
@@ -302,9 +304,13 @@ Args:
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
     time_col=mapcols(col -> Dates.Time.(col,dateformat"H:M:S"), time_col)
-    time_col=mapcols(col -> [i.instant.value*(1.7e-11) for i in col], time_col)
-    tvals=index_between_vals(time_col;minv=time_point,maxv=time_point)[names(time_col)[1]]
-    return df[tvals[1]:tvals[2],:]
+    time_col=mapcols(col -> [i.instant.value*(1e-9) for i in col], time_col)
+    tvals=index_between_vals(time_col;minv=0,maxv=time_point*60)[names(time_col)[1]]
+    if isnothing(tvals[2])
+        @warn "No values found at or before $time_point."
+        return df[1:0,:] # return empty dataframe of the same type
+    end
+    return df[tvals[2],:]
 end
 
 """
