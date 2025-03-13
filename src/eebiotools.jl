@@ -2,8 +2,6 @@ module eebiotools
 
 using CSV, DataFrames, FileIO, JSON, Comonicon, FCSFiles, Parameters, JSONTables, XLSX, Statistics, DataStructures, StatsBase, KernelDensity, ProgressMeter, Dates
 import Statistics.mean, DataFrames.hcat
-# include("./io/read.jl")
-# include("./base/main.jl")
 include("./io/ESM_read.jl")
 include("./io/ESM_write.jl")
 export read_esm, esm_zones, read_data, write_esm
@@ -56,6 +54,7 @@ Produces a template excel file for data entry into the ESM.
 
 """
 @cast template(;output_path::String) = esm("template";output_dir=output_path)
+# TODO: input form for template is really 'particular'
 
 """
     esm process 
@@ -91,6 +90,6 @@ function esm(action;view::String="",file_name::String="",output_dir::String="",n
     end
 end
 
-@main
+Comonicon.@main
 
 end # module eebiotools

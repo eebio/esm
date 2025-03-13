@@ -1,9 +1,3 @@
-# @with_kw struct esm_zones
-#     samples::DataFrame
-#     groups
-#     transformations
-#     views
-# end
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
 
@@ -38,7 +32,6 @@ function sexp_to_nested_list(sexp::Any,es,trans_meta_map)
                 if  string(sexp.args[2].value) in es.groups.group # check if the second part of the quote node is in the groups - this allows a group to be sub-specified. e.g. only return the samples that are part of two groups.
                     return filter_col(eval(sexp_to_nested_list(trans_meta_map[Symbol(string(sexp.args[1]))],es,trans_meta_map)),find_group(es,string(sexp.args[2].value))) # eval the transformation and then sub filter using the names of the samples.
                 else
-                    # print(filter_col(eval(sexp_to_nested_list(trans_meta_map[Symbol(string(sexp.args[1]))],es,trans_meta_map)),[string(sexp.args[2].value)]))
                     return remove_subcols(filter_col(eval(sexp_to_nested_list(trans_meta_map[Symbol(string(sexp.args[1]))],es,trans_meta_map)),[string(sexp.args[2].value)]),sexp.args[2].value) # just eval the other transformation.
                 end
             else
@@ -243,9 +236,8 @@ function read_esm(filen)
     return es
 end
 
+#TODO - remove type piracy on mean
 mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df) # redfining just to get it right.
-
-# Base.hcat(x...) = return hcat(x)
 
 vcat(x...) = return vcat(x) # could be useful.
 
@@ -253,7 +245,9 @@ vcat(x...) = return vcat(x) # could be useful.
     index_between_vals(df; minv, maxv)
 
 Returns the indexes between two points so that these can be later isolated. This is in dict form to allow for individual points to be separated out.
+Both ends are inclusive. 
 
+If minv is larger than all values in the column, or maxv smaller, will return `(nothing,nothing)`.
 Args: 
 
 - `df=<DataFrame>`: DataFrame to work on.
@@ -261,7 +255,7 @@ Args:
 - `maxv=<Float64>`: Maximum value. 
 """
 function index_between_vals(df::DataFrame; minv=-Inf,maxv=Inf)
-    return Dict(col => (findfirst(x -> minv < x, df[:, col]),findfirst(x -> maxv < x, df[:, col]) ) for col in names(df))
+    return Dict(col => (findfirst(x -> minv <= x <= maxv, df[:, col]), findlast(x -> minv <= x <= maxv, df[:, col])) for col in names(df))
 end
 
 """
@@ -278,15 +272,21 @@ Args:
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint=-Inf, maxt=Inf)
     time_col=mapcols(col -> Dates.Time.(col,dateformat"H:M:S"), time_col)
-    time_col=mapcols(col -> [i.instant.value*(1.7e-11) for i in col], time_col)
-    tvals=index_between_vals(time_col;minv=mint,maxv=maxt)[names(time_col)[1]]
+    time_col=mapcols(col -> [i.instant.value*(1e-9) for i in col], time_col)
+    tvals=index_between_vals(time_col;minv=mint*60,maxv=maxt*60)[names(time_col)[1]] # Do time calculations in seconds to avoid floating point math
+    if isnothing(tvals[1]) || isnothing(tvals[2])
+        @warn "No values found between $mint and $maxt."
+        return df[1:0,:] # return empty dataframe of the same type
+    end
     return df[tvals[1]:tvals[2],:]
 end
 
 """
     at_time(df, time_col, time_point)
 
-Returns values at a specific time point.
+Returns values at a specific time point. 
+If no value at specific timepoint, return the last recording before the timepoint. 
+If time_point < minimum(time_col), return `nothing`.
 
 Args:
 
@@ -296,9 +296,13 @@ Args:
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
     time_col=mapcols(col -> Dates.Time.(col,dateformat"H:M:S"), time_col)
-    time_col=mapcols(col -> [i.instant.value*(1.7e-11) for i in col], time_col)
-    tvals=index_between_vals(time_col;minv=time_point,maxv=time_point)[names(time_col)[1]]
-    return df[tvals[1]:tvals[2],:]
+    time_col=mapcols(col -> [i.instant.value*(1e-9) for i in col], time_col)
+    tvals=index_between_vals(time_col;minv=0,maxv=time_point*60)[names(time_col)[1]]
+    if isnothing(tvals[2])
+        @warn "No values found at or before $time_point."
+        return df[1:0,:] # return empty dataframe of the same type
+    end
+    return df[tvals[2],:]
 end
 
 """
@@ -324,8 +328,11 @@ function at_od(od_df, target_df, target_od)
                 @warn "Skipping $i as the target OD ($target_od) is higher than the maximum OD ($(maximum(replace(od_df[:,i],NaN=>0.0))))."
             else
                 dic = index_between_vals(filter_col(od_df,[i]);minv=target_od,maxv=target_od)[i]
-                dict_2[i]=target_df[dic[1],:]
-                dict_2[i]=dict_2[i][i]                                                              # Indexing was being weird. IDK.
+                if isnothing(dic[1])
+                    dict_2[i]=nothing
+                else
+                    dict_2[i]=target_df[dic[1],i]
+                end
             end
         end
     end
@@ -348,14 +355,14 @@ Args:
 function doubling_time(df::DataFrame, time_col::DataFrame;max_od::Float64=0.4)
     min_od=max_od/4
     dict_2=Dict()
-    t_col_n = names(time_col)[1]
+    time_col=mapcols(col -> Dates.Time.(col,dateformat"H:M:S"), time_col)
+    time_col=mapcols(col -> [i.instant.value*(1e-9) for i in col], time_col)
     for i in names(df)
-        dic=index_between_vals(filter_col(df,[i]);minv=min_od,maxv=max_od)[i]
+        indexes=index_between_vals(df;minv=min_od,maxv=max_od)[i]
         if max_od > maximum(df[:,i])                                                                                                                # Is the max greater than what we can deal with?
             @warn "Skipping $i as the max_od 4 x min_od ($max_od) is greater than in this sample ($(maximum(df[:,i])))." 
         else
-            dict_2[i]=((Dates.Time(time_col[dic[2],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11))-(Dates.Time(time_col[dic[1],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)))/log2(max_od/min_od)
-            # print((Dates.Time(time_col[dic[2],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)),", ",(Dates.Time(time_col[dic[1],t_col_n],dateformat"H:M:S").instant.value*(1.7e-11)))
+            dict_2[i]=(time_col[indexes[2],1]-time_col[indexes[1],1])/log2(df[indexes[2],1]/df[indexes[1],1])/60
         end
     end
     return DataFrame(dict_2)
@@ -393,7 +400,6 @@ function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{St
         try (rfi == false && hl == false) catch; error("Data must go through initial gating, please set rfi or hl to true.") end
         if dense
             df=density_gate(o,gate_channels;gate_frac=gate_frac,nbins=nbins)
-            # print([j=>i*"."*j for j in names(df) if j in out_channels])
             df=rename!(df[:,out_channels],[j=>i*"."*j for j in names(df) if j in out_channels])                                          # Make the channels identifieable.
             out_data=[out_data;append!(df,DataFrame([names(df)[j]=>[0 for i in range(1,max_len-nrow(df))] for j in range(1,length(out_channels))]))] # add dataframe to output.
         else
@@ -401,7 +407,6 @@ function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{St
             df=DataFrame(data_inside,[keys(o)...])
             out_data=[out_data;append(rename!(df[:,out_channels],[j=>i*"."*j for j in names(df) if j in out_channels]),DataFrame([names(df)[j]=>[i for i in range(1,max_len-nrow(df))] for j in range(1,length(out_channels))]))]
         end
-        # print([names(j) for j in out_data])
     end
     return filter(row -> any(!=(0), row),hcat(out_data...)) # get rid of any trailing full 0 rows (they aren't necessary.)
 end
@@ -424,7 +429,7 @@ function to_rfi(sample_name;chans=[])
     if length(at)!=length(chans)
         error("Some amplification types not specfied data will not process.")
     end
-    if !(false in ["range" in keys(sub.meta[sub.name.=="$sample_name.$i",:][1]) for i in chans])#length([eachmatch(r"\$P[0-9]+?R",join(keys(fcs.params)))...]) >= length(chans)
+    if !(false in ["range" in keys(sub.meta[sub.name.=="$sample_name.$i",:][1]) for i in chans])
         ran=Dict(i=> parse(Int,sub.meta[sub.name.=="$sample_name.$i",:][1]["range"]) for i in chans)
     else
         ran=false
@@ -463,17 +468,18 @@ Args:
 - `minr::Int64`: min range
 """
 function high_low(data;chans=[],maxr=missing,minr=missing)
+    # TODO this warning wont come up if channels list is empty, even though that means all channels
     if !ismissing(maxr) && !ismissing(minr) && (length(chans) >= 1)
         @warn "Processing flow data and limiting more than one channel ($(chans...)) by the same value."
     end
     if chans == []
         chans = keys(data)
     end
+    # TODO I don't think the data mask is behaving properly
     dat_mask=[]
     for i in keys(data)
         if i in chans
             if ismissing(minr) && ismissing(maxr)
-                # print([dat_mask;[data[i][:min] < j < data[i][:max] for j in data[i][:data]]])
                 dat_mask=[dat_mask;[data[i][:min] < j < data[i][:max] for j in data[i][:data]]]
             else
                 dat_mask=[dat_mask;[minr < j < maxr for j in data[i][:data]]]
@@ -538,17 +544,3 @@ function density_gate(data,channels=[];gate_frac=0.65,nbins=1024,outside=false)
         return out_df
     end
 end
-
-
-# es = read_esm("./out.esm")
-# trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
-# @info "Producing views."
-# view_to_csv(es,trans_meta_map;outdir="./test",to_out=["flow_cy"])
-# for i in keys(views)
-#     show(views[i])
-#     display(plot(views[i][15:end,"plate_01_time.flo"],[views[i][15:end,j] for j in names(views[i]) if j != "plate_01_time.flo"];legend=false))
-#     # plot(stack(views[i]))
-# end
-# for i in keys(es.models)
-#     show(mod_in(i))
-# end

@@ -103,7 +103,6 @@ function read_pr(samples,sample_dict,channels,broad_g,channel_map)
             length(ptype) ==1 || error("Only one plat type can be used per plate. $(Set(samples[!,"Plate reader brand"])) given. ")
             data=read_multipr_file("$(loc...)",ptype[1],channels,channel_map)
         end
-        # data=read_multipr_file("$loc",ptype,channels,channel_map)
         channels = keys(data)
         for j in eachrow(samples)
             if ismissing(j.Name)
@@ -137,9 +136,8 @@ Args:
 - `chan::String`: The channel being read from 
 """
 function extract_flow(fcs,chan)
-    # print(findfirst([i == chan for i in fcs.data.axes[1]]))
     p= findfirst([i == chan for i in fcs.data.axes[1]])
-    props=unique([i.match[4] for i in eachmatch(r"\$P[0-9][A-Z]",join(keys(fcs.params)))])
+    props=unique([i.match[4] for i in eachmatch(Regex("\\\$P$(p)[A-Z]"),join(keys(fcs.params)))])
     Dict(
         :name=>if 'N' in props fcs.params["\$P$(p)N"] else missing end,
         :amp_type=>if 'E' in props fcs.params["\$P$(p)E"] else missing end,
@@ -177,19 +175,16 @@ function read_flow(samples, sample_dict,channels,broad_g,channel_map)
         else
             name = j.Name
         end
-        # print(Dict(x=>load(j."Data Location")["$(x)"] for x in channels))
         try 
             temp=Dict()
             temp[:type]="population"
             temp_data=load(j."Data Location")
-            # print(channels)
             temp[:values] = Dict(channel_map[x]=>temp_data["$(x)"] for x in channels)
             temp[:meta]= Dict(channel_map[x]=>extract_flow(temp_data,"$x") for x in channels)
             sample_dict[name]=temp
-
-        catch
-            # print(j."Data Location")
-             warn("\n\nSkipping $name as file $(j[!,"Data Location"]) invalid - check the specified location or if the file is corrupted.")
+        catch e
+             @warn "\n\nFatal error encountered for well $name as file $(j."Data Location") is invalid - check the specified location or if the file is corrupted."
+             throw(e)
         end
         broad_g=[broad_g;[name]]
     end
@@ -212,6 +207,7 @@ Args:
 - `channel_map`: The new names for the channels.
 """
 function read_multipr_file(filen,ptype,channels,channel_map)
+    # TODO: Add bmg labtech reading
     o_dict = Dict()
     if ptype=="tecan"
         i = [j for j in split(read(filen,String),r"\n,+?\n") if (length(j)>1500)]
@@ -222,7 +218,6 @@ function read_multipr_file(filen,ptype,channels,channel_map)
     elseif ptype=="spectramax"
         f = IOBuffer(transcode(UInt8, ltoh.(reinterpret(UInt16, read(filen)))))
         i = [j for j in split(read(f,String),r"\#\#Blocks= |\n~End") if (length(split.(split(j,"\n")[2],"\t"))> 1)]
-        # print([split.(split(i[j],"\n")[2],"\t") for j in 1:length(i)])
         o_dict=Dict(channel_map[split.(split(i[j],"\n")[2],"\t")[2]] =>CSV.read(IOBuffer(i[j]),DataFrame,header=3, delim="\t") for j in 1:length(i) if (split.(split(i[j],"\n")[2],"\t")[2] in channels))
     else
         i = [j for j in split(read(filen,String),r"\n,+?\n") if (length(j)>1500)]
@@ -249,5 +244,3 @@ Args:
 function read_sep_chans_pr(channel_map,loc,channels)
     return Dict(channel_map[j[1:end-4]]=>CSV.read(loc*"/"*j, DataFrame) for j in readdir(loc) if j[1:end-4] in channels)
 end
-
-# write_esm(read_data("ESM_input_test.xlsx"))

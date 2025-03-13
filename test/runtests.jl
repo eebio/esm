@@ -1,1 +1,3 @@
-println("Testing...")
+using TestItemRunner
+
+@run_package_tests
