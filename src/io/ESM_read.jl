@@ -395,6 +395,7 @@ function process_fcs(group::String,gate_channels::Vector,out_channels::Vector{St
             o=to_rfi(i)
         end
         if hl
+            #TODO Cant specify rfi=false, hl=true
             o=high_low(o;chans=hl_channels,maxr=maxr,minr=minr)
         end
         try (rfi == false && hl == false) catch; error("Data must go through initial gating, please set rfi or hl to true.") end
@@ -421,6 +422,7 @@ Args:
 - `chans::Vector`: vector of channels to keep. 
 """
 function to_rfi(sample_name;chans=[])
+    # TODO Does to_rfi mutate the data
     sub=es.samples[map(x -> !isnothing(match(Regex(string(sample_name*raw"\.")), x)), es.samples.name),:]
     if chans == []
         chans=sub.channel
