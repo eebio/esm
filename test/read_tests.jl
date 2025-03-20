@@ -289,13 +289,16 @@ end
 end
 
 @testitem "expression" setup = [MockESM] begin
-    es = ESM.read_esm(MockESM.temp_file)
-    es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"]) for i in keys(es.transformations))
+    global ESM.es = ESM.read_esm(MockESM.temp_file)
+    ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"]) for i in keys(ESM.es.transformations))
     
-    @test ESM.sexp_to_nested_list(5,es,trans_meta_map) == 5 #Test numbers
-    @test ESM.sexp_to_nested_list(:("hello"),es,trans_meta_map) == "hello" # Test strings
-    @test eval(ESM.sexp_to_nested_list(:(sum([1,2,3])),es,trans_meta_map)) == 6 # Test functions
-    @test eval(ESM.sexp_to_nested_list(:extra_transform,es,trans_meta_map)) == 10 # Test accessing transformations
-    @test_broken ESM.sexp_to_nested_list(:flow_cyt,es,trans_meta_map) == ["process_fcs", "plate_01", ["FSC", "SSC"], ["FL1"]] # Test accessing views
+    @test ESM.sexp_to_nested_list(5,ESM.es,trans_meta_map) == 5 #Test numbers
+    @test ESM.sexp_to_nested_list(:("hello"),ESM.es,trans_meta_map) == "hello" # Test strings
+    @test eval(ESM.sexp_to_nested_list(:(sum([1,2,3])),ESM.es,trans_meta_map)) == 6 # Test functions
+    @test eval(ESM.sexp_to_nested_list(:extra_transform,ESM.es,trans_meta_map)) == 10 # Test accessing transformations
+    @test_broken ESM.sexp_to_nested_list(:flow_cyt,ESM.es,trans_meta_map) == ["process_fcs", "plate_01", ["FSC-H", "SSC-H"], ["FL1-H"]] # Test accessing views
+    @test ESM.sexp_to_nested_list(:plate_01,ESM.es,trans_meta_map) == ESM.form_df(ESM.es.samples) # Test accessing groups
+    @test ESM.sexp_to_nested_list(:unknown,ESM.es,trans_meta_map) == :unknown # Test other symbols - should just be returned
+end
 end
