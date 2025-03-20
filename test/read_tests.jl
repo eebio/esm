@@ -335,7 +335,9 @@ end
     @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) ==
           ESM.form_df(ESM.es.samples)
     # Test other symbols - should just be returned
-    @test ESM.sexp_to_nested_list(:unknown, ESM.es, trans_meta_map) == :unknown
+    @test ESM.sexp_to_nested_list(:not_defined, ESM.es, trans_meta_map) == :not_defined
+    @test_broken ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)),ESM.es,trans_meta_map)
+
 end
 
 @testitem "produce_views" begin
