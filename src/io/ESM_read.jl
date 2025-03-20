@@ -468,26 +468,22 @@ Args:
 - `minr::Int64`: min range
 """
 function high_low(data;chans=[],maxr=missing,minr=missing)
-    # TODO this warning wont come up if channels list is empty, even though that means all channels
-    if !ismissing(maxr) && !ismissing(minr) && (length(chans) >= 1)
-        @warn "Processing flow data and limiting more than one channel ($(chans...)) by the same value."
-    end
     if chans == []
         chans = keys(data)
     end
-    # TODO I don't think the data mask is behaving properly
-    dat_mask=[]
-    for i in keys(data)
+    if !ismissing(maxr) && !ismissing(minr) && (length(chans) >= 1)
+        @warn "Processing flow data and limiting more than one channel ($(chans...)) by the same value."
+    end
+    dat_mask = true
+    for i in keys(data) #TODO Is chans always a subset of keys
         if i in chans
             if ismissing(minr) && ismissing(maxr)
-                dat_mask=[dat_mask;[data[i][:min] < j < data[i][:max] for j in data[i][:data]]]
+                dat_mask = dat_mask .& (data[i][:min] .< data[i][:data] .< data[i][:max])
             else
-                dat_mask=[dat_mask;[minr < j < maxr for j in data[i][:data]]]
+                dat_mask = dat_mask .& (minr .< data[i][:data] .< maxr)
             end
         end
     end
-    dat_mask=hcat(dat_mask)
-    dat_m =[if any(col) end for col in eachcol(dat_mask)]
     for i in keys(data)
         data[i][:data]=[xi for (xi,m) in zip(data[i][:data], dat_mask) if m]
     end
