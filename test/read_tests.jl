@@ -301,4 +301,16 @@ end
     @test ESM.sexp_to_nested_list(:plate_01,ESM.es,trans_meta_map) == ESM.form_df(ESM.es.samples) # Test accessing groups
     @test ESM.sexp_to_nested_list(:unknown,ESM.es,trans_meta_map) == :unknown # Test other symbols - should just be returned
 end
+
+@testitem "produce_views" begin
+    pwd()
+    global ESM.es = ESM.read_esm("inputs/example.esm")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"]) for i in keys(ESM.es.transformations))
+    ESM.produce_views(ESM.es,trans_meta_map)
+end
+
+@testitem "process_fcs" begin
+    global ESM.es = ESM.read_esm("inputs/example.esm")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"]) for i in keys(ESM.es.transformations))
+    ESM.process_fcs("plate_01", ["FSC-H", "SSC-H"], ["FL1-H"])
 end
