@@ -358,6 +358,15 @@ Args:
 - `channels::Vector`: The channels to use to read the files.
 """
 function read_sep_chans_pr(channel_map, loc, channels)
-    return Dict(channel_map[j[1:(end - 4)]] => CSV.read(loc * "/" * j, DataFrame)
-    for j in readdir(loc) if j[1:(end - 4)] in channels)
+    # TODO Is there really only one format here? If so, do we still need to specify the brand for folders
+    # TODO 1:(end-4) is a bit of a hack - this is to remove the .csv/.tsv from the end of the file
+    out = Dict()
+    for j in readdir(loc)
+        if j[1:end - 4] in channels
+            out[channel_map[j[1:end - 4]]] = CSV.read(loc * "/" * j, DataFrame)
+        elseif j[1:end - 4] in [channel_map[channel] for channel in channels]
+            out[j[1:end - 4]] = CSV.read(loc * "/" * j, DataFrame)
+        end
+    end
+    return out
 end
