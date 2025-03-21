@@ -341,7 +341,6 @@ end
 end
 
 @testitem "produce_views" begin
-    pwd()
     global ESM.es = ESM.read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
@@ -352,5 +351,5 @@ end
     global ESM.es = ESM.read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
-    ESM.process_fcs("plate_01", ["FSC-H", "SSC-H"], ["FL1-H"])
+    ESM.process_fcs("plate_02", ["FSC-H", "SSC-H"], ["FL1-H"])
 end
