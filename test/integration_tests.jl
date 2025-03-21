@@ -14,7 +14,7 @@ end
     readdir(dir)
     @test isfile(joinpath(dir, "ESM.xlsx"))
     dir = Base.Filesystem.mktempdir() * "/"
-    @test_broken run(`esm template -o $dir`)
+    run(`esm template -o $dir`)
     @test isfile(joinpath(dir, "ESM.xlsx")) broken=true
 end
 
@@ -27,15 +27,15 @@ end
     esm_hash = open(joinpath(dir, "tmp.esm")) do f
         sha256(f)
     end
-    @test_skip bytes2hex(esm_hash) ==
-               "806fc9b3a2c4ec394a700286281025f800b268876449a179ccb18565a14dfaf8"
-    @test_broken run(`esm create -e inputs/example.xlsx -t $dir/tmp2`)
+    @test bytes2hex(esm_hash) ==
+          "b98d7cd46924ec510fa286d340db3b21756e8aa0ec3af6262129405de766e236"
+    run(`esm create -e inputs/example.xlsx -t $dir/tmp2`)
     @test isfile(joinpath(dir, "tmp2.esm")) skip=true
-    @test_skip esm_hash = open(joinpath(dir, "tmp2.esm")) do f
+    esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
     end
-    @test_skip bytes2hex(esm_hash) ==
-               "806fc9b3a2c4ec394a700286281025f800b268876449a179ccb18565a14dfaf8"
+    @test bytes2hex(esm_hash) ==
+          "b98d7cd46924ec510fa286d340db3b21756e8aa0ec3af6262129405de766e236"
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
