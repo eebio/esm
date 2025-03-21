@@ -122,7 +122,7 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
     # Check there is only one loc
     loc = unique(samples[!, "Data Location"])
     # Check what the plate-reader type is
-    ptype = unique(samples[!, "Plate reader brand"])
+    ptype = unique(samples[!, "Plate brand"])
     try
         length(loc) == 1
     catch
@@ -136,7 +136,7 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
             data = read_sep_chans_pr(channel_map, loc[1], channels)
         else
             length(ptype) == 1 ||
-                error("Only one plat type can be used per plate. $(Set(samples[!,"Plate reader brand"])...) given. ")
+                error("Only one plat type can be used per plate. $(Set(samples[!,"Plate brand"])...) given. ")
             data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
         end
         channels = keys(data)
@@ -156,7 +156,7 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
             data = read_sep_chans_pr(channel_map, loc, channels)
         else
             length(ptype) == 1 ||
-                error("Only one plat type can be used per plate. $(Set(samples[!,"Plate reader brand"])) given. ")
+                error("Only one plat type can be used per plate. $(Set(samples[!,"Plate brand"])) given. ")
             data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
         end
         channels = keys(data)
