@@ -33,7 +33,7 @@ end
 Creates a .esm file from an the input XLSX file defined by esm and writes it to target.
 The structure of the template input file must be followed.
 
-# Options:
+# Options
 
 - `-e, --excel=<String>`: The .xlsx file to be read.
 - `-t, --target=<String>`: The name of the output .esm file. Does not include the .esm extension.
@@ -48,7 +48,7 @@ The structure of the template input file must be followed.
 
 Produces a specific view from within the .esm files and saves it to a specified folder.
 
-# Options:
+# Options
 
 - `-e, --esm=<String>`: The .xlsx file to be read.
 - `-v, --view=<String>`: The view to be exported.
@@ -63,7 +63,7 @@ Produces a specific view from within the .esm files and saves it to a specified 
 
 Produces a template excel file for data entry into the ESM.
 
-# Options:
+# Options
 
 - `-o, --output-path=<String>`: The output file path to write the template to. Does not specify the file.
 
@@ -76,7 +76,7 @@ Produces a template excel file for data entry into the ESM.
 
 Produces a all views from within the .esm files and saves them to a specified folder.
 
-# Options:
+# Options
 
 - `-e, --esm=<String>`: The .xlsx file to be read.
 - `-o, --output-dir=<String>`: The directory to save the output to.
