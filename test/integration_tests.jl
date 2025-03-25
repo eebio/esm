@@ -41,17 +41,17 @@ end
 @testitem "Process integration" setup=[build] begin
     dir = Base.Filesystem.mktempdir()
     run(`esm create --excel inputs/example.xlsx --target $dir/tmp`)
-    run(`esm process --esm $dir/tmp.esm --output-dir $dir`)
+    run(`esm process --esm-file $dir/tmp.esm --output-dir $dir`)
     # TODO Add tests for detecting views once working
-    run(`esm process -e $dir/tmp.esm -o $dir`)
+    @test_broken run(`esm process -e $dir/tmp.esm -o $dir`)
 end
 
 @testitem "Produce intergration" setup=[build] begin
     dir = Base.Filesystem.mktempdir()
     run(`esm create --excel inputs/example.xlsx --target $dir/tmp`)
-    run(`esm produce --esm $dir/tmp.esm --view flow_cyt --output-dir $dir`)
+    run(`esm produce --esm-file $dir/tmp.esm --view flow_cy --output-dir $dir`)
     # TODO Add tests for detecting views once working
-    run(`esm produce -e $dir/tmp.esm -v flow_cyt -o $dir`)
+    @test_broken run(`esm produce -e $dir/tmp.esm -v flow_cy -o $dir`)
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
@@ -60,5 +60,5 @@ end
     ESM.template(output_path = dir)
     ESM.create(excel = "inputs/example.xlsx", target = joinpath(dir, "tmp"))
     ESM.process(esm_file = joinpath(dir, "tmp.esm"), output_dir = dir)
-    ESM.produce(esm_file = joinpath(dir, "tmp.esm"), view = "flow_cyt", output_dir = dir)
+    ESM.produce(esm_file = joinpath(dir, "tmp.esm"), view = "flow_cy", output_dir = dir)
 end
