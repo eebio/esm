@@ -15,7 +15,7 @@ end
     @test isfile(joinpath(dir, "ESM.xlsx"))
     dir = Base.Filesystem.mktempdir() * "/"
     run(`esm template -o $dir`)
-    @test isfile(joinpath(dir, "ESM.xlsx")) broken=true
+    @test isfile(joinpath(dir, "ESM.xlsx"))
 end
 
 @testitem "Create integration" setup=[build] begin
@@ -30,7 +30,7 @@ end
     @test bytes2hex(esm_hash) ==
           "b98d7cd46924ec510fa286d340db3b21756e8aa0ec3af6262129405de766e236"
     run(`esm create -e inputs/example.xlsx -t $dir/tmp2`)
-    @test isfile(joinpath(dir, "tmp2.esm")) skip=true
+    @test isfile(joinpath(dir, "tmp2.esm"))
     esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
     end
