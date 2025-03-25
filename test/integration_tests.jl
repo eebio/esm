@@ -28,14 +28,14 @@ end
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
-          "b98d7cd46924ec510fa286d340db3b21756e8aa0ec3af6262129405de766e236"
+          "e2163d5e07ac91b201d8d616f1915c72aeb649932568feac159539e020c9ce9a"
     run(`esm create -e inputs/example.xlsx -t $dir/tmp2`)
     @test isfile(joinpath(dir, "tmp2.esm"))
     esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
-          "b98d7cd46924ec510fa286d340db3b21756e8aa0ec3af6262129405de766e236"
+          "e2163d5e07ac91b201d8d616f1915c72aeb649932568feac159539e020c9ce9a"
 end
 
 @testitem "Process integration" setup=[build] begin
