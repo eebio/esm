@@ -2,8 +2,13 @@
     using Pkg
     Pkg.build()
     if !occursin("/.julia/bin", ENV["PATH"])
+        println("===============================")
+        println("Adding Julia bin to PATH")
         homepath = ENV["HOME"]
+        println("The homepath is: $homepath")
         ENV["PATH"] *= ":" * joinpath(homepath, ".julia", "bin")
+        println(ENV["PATH"])
+        display(ENV)
     end
 end
 
