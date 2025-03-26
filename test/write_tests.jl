@@ -1,4 +1,4 @@
-@testitem "read data" begin
+@testitem "read data" setup=[environment_path] begin
     es = ESM.read_data("inputs/example.xlsx")
     @test es[:samples]["plate_02_a1"][:values]["FSC-H"] == [628, 1023, 373, 1023]
     @test es[:samples]["plate_02_a1"][:values]["FL4-H"] ≈
@@ -8,7 +8,7 @@
     @test es[:samples]["plate_02_a1"][:meta]["FL1-H"][:amp_type] == "0,0"
 end
 
-@testitem "write esm" begin
+@testitem "write esm" setup=[environment_path] begin
     # write esm from example.xlsx and read it back
     es = ESM.read_data("inputs/example.xlsx")
     filename = Base.Filesystem.mktempdir() * "/tmp"
@@ -48,7 +48,7 @@ end
 
 @testitem "read tecan" begin end
 
-@testitem "read plate reader directories" begin
+@testitem "read plate reader directories" setup=[environment_path] begin
     using Dates
 
     data = ESM.read_data("inputs/example.xlsx")

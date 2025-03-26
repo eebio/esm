@@ -18,7 +18,7 @@ end
     @test isfile(joinpath(dir, "ESM.xlsx"))
 end
 
-@testitem "Create integration" setup=[build] begin
+@testitem "Create integration" setup=[environment_path, build] begin
     using SHA
 
     dir = Base.Filesystem.mktempdir()
@@ -38,7 +38,7 @@ end
           "e2163d5e07ac91b201d8d616f1915c72aeb649932568feac159539e020c9ce9a"
 end
 
-@testitem "Process integration" setup=[build] begin
+@testitem "Process integration" setup=[environment_path, build] begin
     dir = Base.Filesystem.mktempdir()
     run(`esm create --excel inputs/example.xlsx --target $dir/tmp`)
     run(`esm process --esm-file $dir/tmp.esm --output-dir $dir`)
@@ -46,7 +46,7 @@ end
     @test_broken run(`esm process -e $dir/tmp.esm -o $dir`)
 end
 
-@testitem "Produce intergration" setup=[build] begin
+@testitem "Produce intergration" setup=[environment_path, build] begin
     dir = Base.Filesystem.mktempdir()
     run(`esm create --excel inputs/example.xlsx --target $dir/tmp`)
     run(`esm produce --esm-file $dir/tmp.esm --view flow_cy --output-dir $dir`)
@@ -55,7 +55,7 @@ end
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
-@testitem "Integration coverage" begin
+@testitem "Integration coverage" setup=[environment_path] begin
     dir = Base.Filesystem.mktempdir()
     ESM.template(output_path = dir)
     ESM.create(excel = "inputs/example.xlsx", target = joinpath(dir, "tmp"))

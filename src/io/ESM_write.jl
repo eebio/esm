@@ -28,6 +28,9 @@ function read_data(filen)
         data = Dict()
         # Check what instrument was used
         ins_type = Set(samples[i].Type)
+        if contains(samples[i]."Data Location"[1], "\$GITHUB_WORKSPACE")
+            samples[i]."Data Location"[1] = replace.(samples[i]."Data Location"[1], "\$GITHUB_WORKSPACE" => ENV["GITHUB_WORKSPACE"])
+        end
         try
             length(ins_type) == 1
         catch
