@@ -16,8 +16,8 @@ using KernelDensity
 using ProgressMeter
 using Dates
 import Statistics.mean, DataFrames.hcat
-include("./io/ESM_read.jl")
-include("./io/ESM_write.jl")
+include(joinpath(".","io","ESM_read.jl"))
+include(joinpath(".", "io", "ESM_write.jl"))
 export read_esm, esm_zones, read_data, write_esm
 
 @with_kw struct esm_zones
@@ -99,7 +99,7 @@ function esm(action; view::String = "", file_name::String = "",
     elseif action == "template"
         e = pathof(ESM)
         e = e[1:(length(e) - 6)]
-        cp(e * "io/ESM.xlsx", output_dir * "ESM.xlsx")
+        cp(joinpath(e, "io", "ESM.xlsx"), joinpath(output_dir, "ESM.xlsx"))
     elseif action == "process"
         global es = read_esm(file_name)
         trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])

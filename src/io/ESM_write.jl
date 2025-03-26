@@ -366,9 +366,9 @@ function read_sep_chans_pr(channel_map, loc, channels)
     out = Dict()
     for j in readdir(loc)
         if j[1:end - 4] in channels
-            out[channel_map[j[1:end - 4]]] = CSV.read(loc * "/" * j, DataFrame)
+            out[channel_map[j[1:end - 4]]] = CSV.read(joinpath(loc, j), DataFrame)
         elseif j[1:end - 4] in [channel_map[channel] for channel in channels]
-            out[j[1:end - 4]] = CSV.read(loc * "/" * j, DataFrame)
+            out[j[1:end - 4]] = CSV.read(joinpath(loc, j), DataFrame)
         end
     end
     return out

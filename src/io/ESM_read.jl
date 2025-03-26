@@ -243,8 +243,8 @@ function view_to_csv(es, trans_meta_map; outdir = "", to_out = [])
     vs = produce_views(es, trans_meta_map; to_out = to_out)
     # Write the views to file
     for i in keys(vs)
-        @info "Writing view: $i to $outdir/$i.csv"
-        CSV.write("$outdir/$i.csv", vs[i])
+        @info "Writing view: $i to $(joinpath(outdir,i*".csv"))"
+        CSV.write("$(joinpath(outdir,i*".csv"))", vs[i])
     end
     @info "Views written successfully."
 end
