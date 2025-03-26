@@ -11,7 +11,7 @@ end
 @testitem "write esm" setup=[environment_path] begin
     # write esm from example.xlsx and read it back
     es = ESM.read_data("inputs/example.xlsx")
-    filename = Base.Filesystem.mktempdir() * "/tmp"
+    filename = joinpath(Base.Filesystem.mktempdir(parent = pwd()), "tmp")
     ESM.write_esm(es; name = filename)
     es = ESM.read_esm(filename * ".esm")
 
