@@ -2,34 +2,45 @@
     using Pkg
     Pkg.build()
     if !occursin("/.julia/bin", ENV["PATH"])
-        homepath = ENV["HOME"]
-        ENV["PATH"] *= ":" * joinpath(homepath, ".julia", "bin")
+        if Sys.iswindows()
+            ENV["PATH"] *= ";" * first(DEPOT_PATH)
+        else
+            ENV["PATH"] *= ":" * first(DEPOT_PATH)
+        end
     end
 end
 
-@testitem "Template integration" setup=[build] begin
+@testsnippet getshell begin
+    if Sys.iswindows()
+        # Use cmd shell for Windows
+        shell = ["cmd", "/C"]
+    else
+        # Use default shell
+        shell = []
+    end
+end
+
+@testitem "Template integration" setup=[build, getshell] begin
     dir = Base.Filesystem.mktempdir()
-    readdir(dir)
-    run(`esm template --output-path $dir`)
-    readdir(dir)
+    run(`$(shell) esm template --output-path $dir`)
     @test isfile(joinpath(dir, "ESM.xlsx"))
     dir = Base.Filesystem.mktempdir()
-    run(`esm template -o $dir`)
+    run(`$(shell) esm template -o $dir`)
     @test isfile(joinpath(dir, "ESM.xlsx"))
 end
 
-@testitem "Create integration" setup=[environment_path, build] begin
+@testitem "Create integration" setup=[environment_path, build, getshell] begin
     using SHA
 
     dir = Base.Filesystem.mktempdir()
-    run(`esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
+    run(`$(shell) esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
     @test isfile(joinpath(dir, "tmp.esm"))
     esm_hash = open(joinpath(dir, "tmp.esm")) do f
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
           "e2163d5e07ac91b201d8d616f1915c72aeb649932568feac159539e020c9ce9a"
-    run(`esm create -e $(joinpath("inputs", "example.xlsx")) -t $(joinpath(dir, "tmp2"))`)
+    run(`$(shell) esm create -e $(joinpath("inputs", "example.xlsx")) -t $(joinpath(dir, "tmp2"))`)
     @test isfile(joinpath(dir, "tmp2.esm"))
     esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
@@ -38,20 +49,20 @@ end
           "e2163d5e07ac91b201d8d616f1915c72aeb649932568feac159539e020c9ce9a"
 end
 
-@testitem "Process integration" setup=[environment_path, build] begin
+@testitem "Process integration" setup=[environment_path, build, getshell] begin
     dir = Base.Filesystem.mktempdir()
-    run(`esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
-    run(`esm process --esm-file $(joinpath(dir, "tmp.esm")) --output-dir $dir`)
+    run(`$(shell) esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
+    run(`$(shell) esm process --esm-file $(joinpath(dir, "tmp.esm")) --output-dir $dir`)
     # TODO Add tests for detecting views once working
-    @test_broken run(`esm process -e $(joinpath(dir, "tmp.esm")) -o $dir`)
+    @test_broken run(`$(shell) esm process -e $(joinpath(dir, "tmp.esm")) -o $dir`)
 end
 
-@testitem "Produce intergration" setup=[environment_path, build] begin
+@testitem "Produce intergration" setup=[environment_path, build, getshell] begin
     dir = Base.Filesystem.mktempdir()
-    run(`esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
-    run(`esm produce --esm-file $(joinpath(dir, "tmp.esm")) --view flow_cy --output-dir $dir`)
+    run(`$(shell) esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
+    run(`$(shell) esm produce --esm-file $(joinpath(dir, "tmp.esm")) --view flow_cy --output-dir $dir`)
     # TODO Add tests for detecting views once working
-    @test_broken run(`esm produce -e $(joinpath(dir, "tmp.esm")) -v flow_cy -o $dir`)
+    @test_broken run(`$(shell) esm produce -e $(joinpath(dir, "tmp.esm")) -v flow_cy -o $dir`)
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here

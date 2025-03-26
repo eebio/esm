@@ -1,20 +1,19 @@
 module ESM
 
 using CSV
+using Comonicon
 using DataFrames
+using DataStructures
+using Dates
+using FCSFiles
 using FileIO
 using JSON
-using Comonicon
-using FCSFiles
-using Parameters
-using JSONTables
-using XLSX
-using Statistics
-using DataStructures
-using StatsBase
 using KernelDensity
+using Parameters
 using ProgressMeter
-using Dates
+using Statistics
+using StatsBase
+using XLSX
 import Statistics.mean, DataFrames.hcat
 include(joinpath(".","io","ESM_read.jl"))
 include(joinpath(".", "io", "ESM_write.jl"))
