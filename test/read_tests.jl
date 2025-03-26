@@ -168,7 +168,7 @@
 """
 
     # Write mock data to a temporary file
-    temp_file = joinpath(Base.Filesystem.mktempdir(pwd()), "temp_mock_data.esm")
+    temp_file = joinpath(Base.Filesystem.mktempdir(), "temp_mock_data.esm")
     open(temp_file, "w") do f
         write(f, mock_data)
     end
