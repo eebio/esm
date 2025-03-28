@@ -28,7 +28,22 @@ jobs:
           version: ${{ matrix.julia-version }}
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
-      - run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
+      - name: Printing lots of directories
+        run: |
+          echo "Printing directories to find ESM"
+          cd $HOME
+          ls
+          cd $HOME/.julia
+          ls
+          cd C:\Users\Runner~1\AppData
+          ls
+          cd C:\Users\Runner~1\AppData\Local
+          ls
+          cd C:\Users\Runner~1\AppData\Local\Julia-1.11.4
+          ls
+          cd C:\Users\Runner~1\AppData\Local\Julia-1.11.4\bin
+          ls
+          find / -type d -name "esm"
       - uses: julia-actions/julia-runtest@v1
         with:
           annotate: true
