@@ -7,9 +7,9 @@
         homepath = ENV["HOME"]
         println("The homepath is: $homepath")
         if Sys.iswindows()
-            ENV["PATH"] *= ";" * joinpath(homepath, ".julia", "bin")
+            ENV["PATH"] *= ";" * first(DEPOT_PATH)
         else
-            ENV["PATH"] *= ":" * joinpath(homepath, ".julia", "bin")
+            ENV["PATH"] *= ":" * first(DEPOT_PATH)
         end
     end
 end
