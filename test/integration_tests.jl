@@ -6,6 +6,9 @@
         println("Adding Julia bin to PATH")
         homepath = ENV["HOME"]
         println("The homepath is: $homepath")
+        @show ENV["PATH"]
+        @show DEPOT_PATH
+        @show first(DEPOT_PATH)
         if Sys.iswindows()
             ENV["PATH"] *= ";" * first(DEPOT_PATH)
         else

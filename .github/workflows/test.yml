@@ -34,8 +34,11 @@ jobs:
           julia -e "@show DEPOT_PATH"
           cd C:\Users\runneradmin\.julia\bin
           ls
+          echo "here1"
           echo "$HOME/.julia/bin" >> "GITHUB_PATH"
+          echo "here2"
           echo $GITHUB_PATH
+          echo "here3"
           pwd
       - uses: julia-actions/julia-runtest@v1
         with:
