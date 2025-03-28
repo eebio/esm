@@ -17,10 +17,12 @@ end
 @testitem "Template integration" setup=[build] begin
     dir = Base.Filesystem.mktempdir()
     println("The temporary directory is located at: $dir")
-    for (root, dirs, files) in walkdir(dir)
-        println("Root: $root")
-        println("Dirs: $dirs")
-        println("Files: $files")
+    splitDir = splitpath(dir)
+    for i in eachindex(splitDir)
+        println(joinpath(splitDir[1:i]...))
+        println(splitDir[i])
+        println(isdir(joinpath(splitDir[1:i]...)))
+        println("=======")
     end
     readdir(dir)
     run(`esm template --output-path $dir`)
