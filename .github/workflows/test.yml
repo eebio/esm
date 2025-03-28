@@ -36,7 +36,9 @@ jobs:
           cd C:\Users\runneradmin\.julia\bin
           ls
           echo "here1"
-          echo "$HOME/.julia/bin" >> $GITHUB_PATH
+          echo "$GITHUB_PATH"
+          echo "$HOME\.julia\bin"
+          echo "$HOME\.julia\bin" >> $GITHUB_PATH
           echo "here2"
           echo "$GITHUB_PATH"
           echo "here3"
