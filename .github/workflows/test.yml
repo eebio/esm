@@ -28,6 +28,7 @@ jobs:
           version: ${{ matrix.julia-version }}
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
+      - run: echo "$HOME/.julia/bin" >> "$GITHUB_PATH"
       - uses: julia-actions/julia-runtest@v1
         with:
           annotate: true

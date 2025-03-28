@@ -6,9 +6,11 @@
         println("Adding Julia bin to PATH")
         homepath = ENV["HOME"]
         println("The homepath is: $homepath")
-        ENV["PATH"] *= ":" * joinpath(homepath, ".julia", "bin")
-        println(ENV["PATH"])
-        display(ENV)
+        if Sys.iswindows()
+            ENV["PATH"] *= ";" * joinpath(homepath, ".julia", "bin")
+        else
+            ENV["PATH"] *= ":" * joinpath(homepath, ".julia", "bin")
+        end
     end
 end
 
