@@ -28,25 +28,10 @@ jobs:
           version: ${{ matrix.julia-version }}
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
-      - name: Printing lots of directories
+      - name: Add Julia bin to GITHUB_PATH
         run: |
-          echo "Printing directories to find ESM"
-          julia -e "@show DEPOT_PATH"
-          cd C:\Users\runneradmin\.julia\bin
-          ls
-          echo "here1"
-          $env:Path += ";C:\Users\runneradmin\.julia\bin"
-          echo "$env:Path"
-          $env:GITHUB_PATH += ";C:\Users\runneradmin\.julia\bin"
-          echo "$env:GITHUB_PATH"
-          echo "here2"
-          echo "$GITHUB_PATH"
-          echo "$HOME\.julia\bin"
-          echo "$HOME\.julia\bin" >> $env:GITHUB_PATH
-          echo "here3"
-          echo "$env:GITHUB_PATH"
-          echo "here4"
-          pwd
+          echo "$HOME/.julia/bin" >> $GITHUB_PATH
+        shell: bash
       - uses: julia-actions/julia-runtest@v1
         with:
           annotate: true
