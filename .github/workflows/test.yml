@@ -29,7 +29,6 @@ jobs:
       - uses: julia-actions/cache@v2
       - uses: julia-actions/julia-buildpkg@v1
       - name: Printing lots of directories
-        shell: bash
         run: |
           echo "Printing directories to find ESM"
           julia -e "@show DEPOT_PATH"
