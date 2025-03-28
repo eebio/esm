@@ -11,6 +11,8 @@
         else
             ENV["PATH"] *= ":" * first(DEPOT_PATH)
         end
+        @show ENV["PATH"]
+        @show ENV["GITHUB_PATH"]
     end
 end
 

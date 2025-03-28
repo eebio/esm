@@ -32,10 +32,11 @@ jobs:
         run: |
           echo "Printing directories to find ESM"
           julia -e "@show DEPOT_PATH"
-          cd C:\Users\runneradmin\.julia
+          cd C:\Users\runneradmin\.julia\bin
           ls
-          cd bin
-          ls
+          echo "$HOME/.julia/bin" >> "GITHUB_PATH"
+          echo $GITHUB_PATH
+          pwd
       - uses: julia-actions/julia-runtest@v1
         with:
           annotate: true
