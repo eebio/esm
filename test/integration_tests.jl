@@ -25,7 +25,7 @@ end
         println("=======")
     end
     readdir(dir)
-    run(`esm template --output-path $dir`)
+    run(`esm template -h`)
     readdir(dir)
     @test isfile(joinpath(dir, "ESM.xlsx"))
     dir = Base.Filesystem.mktempdir()
