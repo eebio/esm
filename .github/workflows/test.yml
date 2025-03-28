@@ -31,18 +31,7 @@ jobs:
       - name: Printing lots of directories
         run: |
           echo "Printing directories to find ESM"
-          cd $HOME
-          ls
-          cd $HOME/.julia
-          ls
-          cd C:\Users\Runner~1\AppData
-          ls
-          cd C:\Users\Runner~1\AppData\Local
-          ls
-          cd C:\Users\Runner~1\AppData\Local\Julia-1.11.4
-          ls
-          cd C:\Users\Runner~1\AppData\Local\Julia-1.11.4\bin
-          ls
+          julia -e "@show DEPOT_PATH"
           find / -type d -name "esm"
       - uses: julia-actions/julia-runtest@v1
         with:
