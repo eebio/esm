@@ -42,9 +42,9 @@ jobs:
           echo "here2"
           echo "$GITHUB_PATH"
           echo "$HOME\.julia\bin"
-          echo "$HOME\.julia\bin" >> $GITHUB_PATH
+          echo "$HOME\.julia\bin" >> $env:GITHUB_PATH
           echo "here3"
-          echo "$GITHUB_PATH"
+          echo "$env:GITHUB_PATH"
           echo "here4"
           pwd
       - uses: julia-actions/julia-runtest@v1
