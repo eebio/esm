@@ -32,7 +32,10 @@ jobs:
         run: |
           echo "Printing directories to find ESM"
           julia -e "@show DEPOT_PATH"
-          find / -type d -name "esm"
+          cd C:\Users\runneradmin\.julia
+          ls
+          cd bin
+          ls
       - uses: julia-actions/julia-runtest@v1
         with:
           annotate: true
