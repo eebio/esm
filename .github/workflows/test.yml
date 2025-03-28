@@ -35,12 +35,17 @@ jobs:
           cd C:\Users\runneradmin\.julia\bin
           ls
           echo "here1"
+          $env:Path += ";C:\Users\runneradmin\.julia\bin"
+          echo "$env:Path"
+          $env:GITHUB_PATH += ";C:\Users\runneradmin\.julia\bin"
+          echo "$env:GITHUB_PATH"
+          echo "here2"
           echo "$GITHUB_PATH"
           echo "$HOME\.julia\bin"
           echo "$HOME\.julia\bin" >> $GITHUB_PATH
-          echo "here2"
-          echo "$GITHUB_PATH"
           echo "here3"
+          echo "$GITHUB_PATH"
+          echo "here4"
           pwd
       - uses: julia-actions/julia-runtest@v1
         with:
