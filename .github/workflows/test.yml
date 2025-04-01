@@ -32,6 +32,21 @@ jobs:
         run: |
           echo "C:\\Users\\runneradmin\\.julia\\bin" >> $GITHUB_PATH
         shell: bash
+      - name: Print path in bash
+        run: |
+          echo $PATH
+        continue-on-error: true
+        shell: bash
+      - name: Print path in PowerShell
+        run: |
+          echo $env:PATH
+        continue-on-error: true
+        shell: pwsh
+      - name: Print path in cmd
+        run: |
+          echo %PATH%
+        continue-on-error: true
+        shell: cmd
       - name: Try esm in bash
         run: esm --version
         continue-on-error: true
