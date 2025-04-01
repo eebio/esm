@@ -32,6 +32,24 @@ jobs:
         run: |
           echo "C:\\Users\\runneradmin\\.julia\\bin" >> $GITHUB_PATH
         shell: bash
+      - name: Try esm in bash
+        run: esm --version
+        shell: bash
+      - name: Try esm in PowerShell
+        run: esm --version
+        shell: pwsh
+      - name: Try esm in cmd
+        run: esm --version
+        shell: cmd
+      - name: Try esm.cmd in cmd
+        run: esm.cmd --version
+        shell: cmd
+      - name: Try esm.cmd in bash
+        run: esm.cmd --version
+        shell: bash
+      - name: Try esm.cmd in PowerShell
+        run: esm.cmd --version
+        shell: pwsh
       - uses: julia-actions/julia-runtest@v1
         with:
           annotate: true
