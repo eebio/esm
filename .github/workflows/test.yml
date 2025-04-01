@@ -71,6 +71,26 @@ jobs:
         run: esm.cmd -h
         continue-on-error: true
         shell: pwsh
+      - name: Try esm.cmd in Julia in bash shell
+        run: |
+          julia -e 'run(`esm.cmd -h`)'
+        continue-on-error: true
+        shell: bash
+      - name: Try esm.cmd in Julia in CMD shell
+        run: |
+          julia -e 'run(`esm.cmd -h`)'
+        continue-on-error: true
+        shell: cmd
+      - name: Try cmd /C in bash shell
+        run: |
+          julia -e 'run(`cmd /C esm -h`)'
+        continue-on-error: true
+        shell: bash
+      - name: Try cmd /C in CMD
+        run: |
+          julia -e 'run(`cmd /C esm -h`)'
+        continue-on-error: true
+        shell: cmd
       - uses: julia-actions/julia-runtest@v1
         with:
           annotate: true
