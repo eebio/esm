@@ -7,8 +7,6 @@
         else
             ENV["PATH"] *= ":" * first(DEPOT_PATH)
         end
-        println("Didnt find .julia/bin in PATH so I have tried adding it")
-        @show ENV["PATH"]
     end
 end
 
@@ -25,10 +23,10 @@ end
 @testitem "Template integration" setup=[build, getshell] begin
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm template --output-path $dir`)
-    @test_skip isfile(joinpath(dir, "ESM.xlsx"))
+    @test isfile(joinpath(dir, "ESM.xlsx"))
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm template -o $dir`)
-    @test_skip isfile(joinpath(dir, "ESM.xlsx"))
+    @test isfile(joinpath(dir, "ESM.xlsx"))
 end
 
 @testitem "Create integration" setup=[environment_path, build, getshell] begin
