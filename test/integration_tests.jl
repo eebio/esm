@@ -22,7 +22,7 @@ end
 
 @testitem "Template integration" setup=[build, getshell] begin
     dir = Base.Filesystem.mktempdir()
-    run(`$(shell) esm template -h`)
+    run(`$(shell) esm template --output-path $dir`)
     @test_skip isfile(joinpath(dir, "ESM.xlsx"))
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm template -o $dir`)
