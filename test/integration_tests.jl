@@ -7,6 +7,8 @@
         else
             ENV["PATH"] *= ":" * first(DEPOT_PATH)
         end
+        println("Didnt find .julia/bin in PATH so I have tried adding it")
+        @show ENV["PATH"]
     end
 end
 
