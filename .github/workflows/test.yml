@@ -17,6 +17,7 @@ jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         julia-version: ['lts', '1', 'pre']
         julia-arch: [x64, x86]
