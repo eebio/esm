@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         julia-version: ['1']
-        os: [macos-latest]
+        os: [macos-latest, windows-latest]
         julia-arch: [x64]
 
     steps:
