@@ -31,11 +31,13 @@ jobs:
                 arch: ${{ matrix.julia-arch }}
             - name: cache
               uses: julia-actions/cache@v2
+            - name: build package to install deps
+              uses: julia-actions/julia-buildpkg@v1
             - name: Build CLI
               run: |
                 julia --project deps/build.jl app
             - name: upload
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
-                name: esm
-                path: build/Release/esm
+                name: esm-${{ matrix.os }}
+                path: build/esm
