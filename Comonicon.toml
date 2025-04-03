@@ -1,0 +1,5 @@
+name = "esm"
+
+[application]
+incremental = false
+filter_stdlibs = false
