@@ -1,0 +1,41 @@
+name: build CLI
+
+on:
+  workflow_dispatch:
+
+permissions:
+    actions: write
+    contents: read
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                julia-arch: [x64, aarch64]
+                exclude:
+                    - os: macOS-latest
+                      julia-arch: x64
+                    - os: ubuntu-latest
+                      julia-arch: aarch64
+                    - os: windows-latest
+                      julia-arch: aarch64
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+            - name: Set up Julia
+              uses: julia-actions/setup-julia@v2
+              with:
+                version: '1'
+                arch: ${{ matrix.julia-arch }}
+            - name: cache
+              uses: julia-actions/cache@v2
+            - name: Build CLI
+              run: |
+                julia --project deps/build.jl app
+            - name: upload
+              uses: actions/upload-artifact@v3
+              with:
+                name: esm
+                path: build/Release/esm
