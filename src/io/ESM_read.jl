@@ -537,7 +537,6 @@ Args:
 - `chans::Vector`: vector of channels to keep.
 """
 function to_rfi(sample_name; chans = [])
-    # TODO Does to_rfi mutate the data?
     sub = es.samples[
         map(x -> !isnothing(match(Regex(string(sample_name * raw"\.")), x)),
             es.samples.name),
@@ -545,54 +544,34 @@ function to_rfi(sample_name; chans = [])
     if chans == []
         chans = sub.channel
     end
-    at = Dict(i => parse.(Float64,
-                  split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
-    for i in chans)
-    if length(at) != length(chans)
-        error("Some amplification types not specfied data will not process.")
-    end
-    if !(false in ["range" in keys(sub.meta[sub.name .== "$sample_name.$i", :][1])
-                   for i in chans])
-        ran = Dict(i => parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
-        for i in chans)
-    else
-        ran = false
-    end
-    if !(false in ["amp_gain" in keys(sub.meta[sub.name .== "$sample_name.$i", :][1]) &&
-                   sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"] != nothing
-                   for i in chans])
-        ag = Dict(i => parse(
-                      Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
-        for i in chans)
-    else
-        ag = false
-    end
     o = Dict()
     for i in chans
-        if at[i][1] == 0
-            # Linear gain
-            if ag == false
-                # No gain set, set to 1
-                o[i] = Dict(:data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ 1,
-                    :min => 1 / 1, :max => ran[i] / 1)
-            else
-                o[i] = Dict(
-                    :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ ag[i],
-                    :min => 1 / ag[i], :max => ran[i] / ag[i])
-            end
-        else
-            # Non-linear gain
+        # Load metadata for channel
+        at = parse.(Float64, split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
+        ran = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
+        if at[1] == 0
+            local ag
             try
-                ran
-            catch
-                error("Resolution must be specified")
+                ag = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
+            catch e
+                if isa(e, MethodError)
+                    # If the gain is not defined, set it to 1
+                    ag = 1.0
+                else
+                    rethrow(e)
+                end
             end
             o[i] = Dict(
-                :data => at[i][2] *
-                         10 .^ (at[i][1] *
-                          (sub.values[sub.name .== "$sample_name.$i", :][1] / ran[i])),
-                :min => at[i][2] * 10^(at[i][1] * (1 / ran[i])),
-                :max => at[i][2] * 10^(at[i][1] * (ran[i] / ran[i])))
+                    :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ ag,
+                    :min => 1 / ag, :max => ran / ag)
+        else
+            # Non-linear gain
+            o[i] = Dict(
+                :data => at[2] *
+                         10 .^ (at[1] *
+                          (sub.values[sub.name .== "$sample_name.$i", :][1] / ran)),
+                :min => at[2] * 10^(at[1] * (1 / ran)),
+                :max => at[2] * 10^(at[1] * (ran / ran)))
         end
     end
     return o
