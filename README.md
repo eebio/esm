@@ -1,3 +1,4 @@
+![Tests](https://github.com/eebio/esm/actions/workflows/test.yml/badge.svg)
 
 # Experimental Simple Model (ESM)
 
