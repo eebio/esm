@@ -129,7 +129,7 @@ function produce_views(es, trans_meta_map; to_out = [])
                 push!(result,
                     eval(sexp_to_nested_list(
                         trans_meta_map[Symbol(j)], es, trans_meta_map)))
-            elseif Symbol(j) in es.groups.group
+            elseif j in es.groups.group
                 # If its a group, put the basal data in the results array
                 push!(result, form_df(filter_row(es, Symbol(j))))
             elseif j in es.samples.name
