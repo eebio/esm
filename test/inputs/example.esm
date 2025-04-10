@@ -22941,6 +22941,33 @@
         }
     },
     "groups": {
+        "first_group": {
+            "type": "experimental",
+            "sample_IDs": [
+                "plate_01_A1",
+                "plate_01_A5",
+                "plate_01_A9"
+            ],
+            "metadata": {}
+        },
+        "second_group": {
+            "type": "experimental",
+            "sample_IDs": [
+                "plate_01_A3",
+                "plate_01_A8",
+                "plate_01_A7"
+            ],
+            "metadata": {}
+        },
+        "third_group": {
+            "type": "experimental",
+            "sample_IDs": [
+                "plate_01_A1",
+                "plate_01_A2",
+                "plate_01_A3"
+            ],
+            "metadata": {}
+        },
         "plate_01": {
             "type": "physical",
             "sample_IDs": [
@@ -23060,12 +23087,54 @@
     "transformations": {
         "flow_cyt": {
             "equation": "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])"
+        },
+        "flow_sub": {
+            "equation": "hcat(first_group.flo,second_group.flo).-mean(third_group.flo)"
+        },
+        "od_sub": {
+            "equation": "hcat(first_group.OD,second_group.OD).-mean(third_group.OD)"
         }
     },
     "views": {
         "flow_cy": {
             "data": [
                 "flow_cyt"
+            ]
+        },
+        "group1": {
+            "data": [
+                "first_group"
+            ]
+        },
+        "group2": {
+            "data": [
+                "second_group"
+            ]
+        },
+        "group3": {
+            "data": [
+                "third_group"
+            ]
+        },
+        "sample": {
+            "data": [
+                "plate_01_time.flo"
+            ]
+        },
+        "flowsub": {
+            "data": [
+                "flow_sub"
+            ]
+        },
+        "odsub": {
+            "data": [
+                "od_sub"
+            ]
+        },
+        "mega": {
+            "data": [
+                "first_group",
+                "second_group"
             ]
         }
     }

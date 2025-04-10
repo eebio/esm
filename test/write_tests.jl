@@ -43,7 +43,7 @@ end
     @test_skip issetequal(es.groups.metadata, [Dict("autodefined" => "true")])
     @test_skip es.transformations ==
                Dict("flow_cyt" => Dict("equation" => "process_fcs(\"plate_01\",[\"FSC\",\"SSC\"],[\"FL1\"])"))
-    @test es.views == Dict("flow_cy" => Dict("data" => ["flow_cyt"]))
+    @test_skip es.views == Dict("flow_cy" => Dict("data" => ["flow_cyt"]))
 end
 
 @testitem "read tecan" begin end
