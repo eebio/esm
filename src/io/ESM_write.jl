@@ -330,6 +330,8 @@ function read_multipr_file(filen, ptype, channels, channel_map)
         for j in i if match(r":([A-Za-z0-9,]+)", j).match[2:end] in channels)
     elseif ptype == "spectramax"
         o_dict = read_spectramax(filen, channels)
+    elseif ptype == "biotek"
+        o_dict = read_biotek(filen, channels)
     else
         i = [j for j in split(read(filen, String), r"\n,+?\n") if (length(j) > 1500)]
         o_dict = Dict(channel_map[match(r"([A-Za-z0-9]+)", j).match] => CSV.read(
@@ -401,6 +403,73 @@ function read_spectramax(filen, channels)
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Do I need to drop temperature?)
         out[channel] = df
+    end
+    return out
+end
+
+function read_biotek(filen, channels)
+    f = replace(read(filen, String), "\r\n" => "\n")
+    b = split(f, r"\n")
+    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in b]
+    function runlength(a, i)
+        if i == length(a)
+            return 1
+        elseif a[i] == 1
+            return runlength(a, i + 1) + 1
+        else
+            return 0
+        end
+    end
+    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
+    datalocations = findall(x -> x == maximum(rl), rl)
+    # Trim the data to only the relevant parts
+    data = []
+    for i in datalocations
+        table = []
+        # Find and push header onto table (first row before i that contains Time and the row above it)
+        for j in (i - 1):-1:1
+            if occursin("Time", b[j])
+                push!(table, b[j - 2])
+                push!(table, b[j])
+                break
+            end
+        end
+        # Find and push the data onto table
+        for j in i:length(b)
+            if containsTime[j] == 1
+                push!(table, b[j])
+            else
+                break
+            end
+        end
+        push!(data, table)
+    end
+    # Create the dataframes
+    out = Dict()
+    for i in eachindex(data)
+        # Get the channel name from the first header row
+        channel = ""
+        for chan in channels
+            if occursin(chan, data[i][1])
+                channel = chan
+                break
+            end
+        end
+        @show channels
+        @show data[i][1]
+        if channel == ""
+            # Channel not requested by the user so skip
+            error("Channel not found in file for data starting at $(datalocations[i]). Please check the file and the channels requested.")
+            continue
+        end
+        @show channel
+        # Get the data
+        df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = ",")
+        # Remove empty columns
+        df = df[:, Not(all.(ismissing, eachcol(df)))]
+        # Do I need to drop temperature?)
+        out[channel] = df
+        @show keys(out)
     end
     return out
 end
