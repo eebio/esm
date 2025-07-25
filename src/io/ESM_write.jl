@@ -36,29 +36,29 @@ function read_data(filen)
         catch
             error("All experiments on one plate must be from the same instrument types. \nInstrument types used here are: $(Set(samples[i].Type))")
         end
-        if true in [occursin('(', j) for j in unique(samples[i].Channels)]
-            # Channel checks - is this a comma separated channel
-            # Process channels
-            channels = unique([filter(s -> !all(isempty, s),
-                                   unique(split.(samples[i].Channels, r",\(.+?\)"))[1])
-                               [[replace((string(k.match)), "(" => "", ")" => "")
-                                 for k in j]
-                                for j in eachmatch.(r"\(.+?\)", unique(samples[i].Channels))]...])
-            # Create the channel map
-            channel_map = Dict(i => if i in keys(id_dict)
-                                   id_dict[i]
-                               else
-                                   i
-                               end for i in channels)
-        else
-            # Same as above but life is a bit easier
-            channels = unique(split.(samples[i].Channels, ","))[1]
-            channel_map = Dict(i => if i in keys(id_dict)
-                                   id_dict[i]
-                               else
-                                   i
-                               end for i in channels)
+        # TODO Get channels should be its own function with separate tests
+        # Process channels
+        channels = []
+        for j in samples[i].Channels
+            # Add any channels that are in brackets to the list of channels
+            for k in eachmatch(r"\(.+?\)", j)
+                # Remove the brackets
+                push!(channels, replace((string(k.match)), "(" => "", ")" => ""))
+            end
+            # Remove the bracket channels from the string
+            j = replace(j, r"\(.+?\)" => "")
+            # Add the remaining channels to the list
+            for k in split(j, ",")
+                push!(channels, k)
+            end
         end
+        channels = [c for c in channels if !isempty(c)]
+        # Create the channel map
+        channel_map = Dict(i => if i in keys(id_dict)
+                                id_dict[i]
+                            else
+                                i
+                            end for i in channels)
         @info "Channels $(join([string(j)*", " for j in channels])[1:end-2]) being used to process plate $i"
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
@@ -329,13 +329,7 @@ function read_multipr_file(filen, ptype, channels, channel_map)
                           IOBuffer("Time" * split(j, "\nTime")[2]), DataFrame)
         for j in i if match(r":([A-Za-z0-9,]+)", j).match[2:end] in channels)
     elseif ptype == "spectramax"
-        f = IOBuffer(transcode(UInt8, ltoh.(reinterpret(UInt16, read(filen)))))
-        i = [j
-             for j in split(read(f, String), r"\#\#Blocks= |\n~End")
-             if (length(split.(split(j, "\n")[2], "\t")) > 1)]
-        o_dict = Dict(channel_map[split.(split(i[j], "\n")[2], "\t")[2]] => CSV.read(
-                          IOBuffer(i[j]), DataFrame, header = 3, delim = "\t")
-        for j in 1:length(i) if (split.(split(i[j], "\n")[2], "\t")[2] in channels))
+        o_dict = read_spectramax(filen, channels)
     else
         i = [j for j in split(read(filen, String), r"\n,+?\n") if (length(j) > 1500)]
         o_dict = Dict(channel_map[match(r"([A-Za-z0-9]+)", j).match] => CSV.read(
@@ -346,6 +340,69 @@ function read_multipr_file(filen, ptype, channels, channel_map)
         o_dict[i] = o_dict[i][!, Not(all.(ismissing, eachcol(o_dict[i])))]
     end
     return o_dict
+end
+
+function read_spectramax(filen, channels)
+    f = read(filen, String)
+    b = split(f, r"\n")
+    containsTime = [occursin(r"\d\d:\d\d:\d\d", j) ? 1 : 0 for j in b]
+    function runlength(a, i)
+        if i == length(a)
+            return 1
+        elseif a[i] == 1
+            return runlength(a, i + 1) + 1
+        else
+            return 0
+        end
+    end
+    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
+    datalocations = findall(x -> x == maximum(rl), rl)
+    # Trim the data to only the relevant parts
+    data = []
+    for i in datalocations
+        table = []
+        # Find and push header onto table (first row before i that contains Time and the row above it)
+        for j in (i - 1):-1:1
+            if occursin("Time", b[j])
+                push!(table, b[j - 1])
+                push!(table, b[j])
+                break
+            end
+        end
+        # Find and push the data onto table
+        for j in i:length(b)
+            if containsTime[j] == 1
+                push!(table, b[j])
+            else
+                break
+            end
+        end
+        push!(data, table)
+    end
+    # Create the dataframes
+    out = Dict()
+    for i in eachindex(data)
+        # Get the channel name from the first header row
+        channel = ""
+        for chan in channels
+            if occursin(chan, data[i][1])
+                channel = chan
+                break
+            end
+        end
+        if channel == ""
+            # Channel not requested by the user so skip
+            error("Channel not found in file for data starting at $(datalocations[i]). Please check the file and the channels requested.")
+            continue
+        end
+        # Get the data
+        df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
+        # Remove empty columns
+        df = df[:, Not(all.(ismissing, eachcol(df)))]
+        # Do I need to drop temperature?)
+        out[channel] = df
+    end
+    return out
 end
 
 """

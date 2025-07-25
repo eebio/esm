@@ -53,7 +53,6 @@ end
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
     run(`$(shell) esm process --esm-file $(joinpath(dir, "tmp.esm")) --output-dir $dir`)
-    @show readdir(dir)
     @test issetequal(readdir(dir), ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
     rm.(joinpath.(dir, ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv"]), force=true)
     @test issetequal(readdir(dir), ["tmp.esm"])

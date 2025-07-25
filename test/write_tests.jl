@@ -46,7 +46,17 @@ end
     @test_skip es.views == Dict("flow_cy" => Dict("data" => ["flow_cyt"]))
 end
 
-@testitem "read tecan" begin end
+@testitem "read spectramax" setup=[environment_path] begin
+    data = ESM.read_data("inputs/spectramax.xlsx")
+    # TODO should probably separate the channels into 600 and 700?
+    # TODO channel is currently 535 for fluorescence but the 485 is also relevant
+    @test data[:samples]["plate_01_a1"][:values]["600 700"][[1,2,end-1,end]] == [0.1493, 0.1623, 0.3297, 0.3629]
+    @test data[:samples]["plate_01_e12"][:values]["600 700"][[1, 2, end - 1, end]] == [
+        0.0776, 0.0772, 0.2173, 0.2359]
+    wells = [string("plate_01_",row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
+    wells = [wells..., "plate_01_time", "plate_01_temperature(�c)"]  # Flatten to a 1D vector
+    @test issetequal(keys(data[:samples]), wells)
+end
 
 @testitem "read plate reader directories" setup=[environment_path] begin
     using Dates
