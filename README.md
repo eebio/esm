@@ -1,5 +1,7 @@
-
 # Experimental Simple Model (ESM)
+
+![Tests](https://github.com/eebio/esm/actions/workflows/test.yml/badge.svg)
+[![codecov](https://codecov.io/gh/eebio/esm/graph/badge.svg?token=AL85Z9I06H)](https://codecov.io/gh/eebio/esm)
 
 A data format and supporting tools to enable accessible and reproducible data processing for engineering biology.
 

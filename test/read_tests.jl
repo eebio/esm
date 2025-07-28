@@ -344,7 +344,33 @@ end
     global ESM.es = ESM.read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
-    ESM.produce_views(ESM.es, trans_meta_map)
+    a = ESM.produce_views(ESM.es, trans_meta_map)
+    # Test groups
+    @test issetequal(keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "flow_cy", "mega"])
+    @test issetequal(names(a["group1"]), ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo"])
+    @test issetequal(names(a["group2"]), ["plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
+    @test issetequal(names(a["group3"]), ["plate_01_a2.OD", "plate_01_a2.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a3.OD", "plate_01_a3.flo"])
+    @test a["group1"][1:3, "plate_01_a5.OD"] == Any[0.169, 0.173, 0.177]
+    @test a["group2"][2:4, "plate_01_a8.OD"] == Any[0.152, 0.154, 0.157]
+    @test a["group3"][(end - 2):end, "plate_01_a3.flo"] == Any[211, 201, 209]
+    # Test mega group
+    @test issetequal(names(a["mega"]),
+    ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo",
+    "plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
+    @test a["mega"][1:3, "plate_01_a5.OD"] == Any[0.169, 0.173, 0.177]
+    @test a["mega"][2:4, "plate_01_a8.OD"] == Any[0.152, 0.154, 0.157]
+    @test a["mega"][(end - 2):end, "plate_01_a3.flo"] == Any[211, 201, 209]
+    # Test sample
+    @test names(a["sample"]) == ["plate_01_time.flo"]
+    @test a["sample"][[1, 2, end - 1, end], "plate_01_time.flo"] == Any["00:09:04", "00:19:04", "18:29:04", "18:39:04"]
+    # Test expressions
+    @test issetequal(names(a["flowsub"]), ["plate_01_a5", "plate_01_a1", "plate_01_a9", "plate_01_a8", "plate_01_a3", "plate_01_a7"])
+    @test issetequal(names(a["odsub"]), ["plate_01_a5", "plate_01_a1", "plate_01_a9", "plate_01_a8", "plate_01_a3", "plate_01_a7"])
+    @test a["flowsub"][[1, 2, end - 1, end], "plate_01_a9"] ≈ [0.33333333333333215, -2.666666666666668, -160.66666666666669, -162.33333333333331]
+    @test a["odsub"][[1, 2, end - 1, end], "plate_01_a3"] ≈ [0.0026666666666666783, 0.0026666666666666783, -0.10200000000000009, -0.10133333333333328]
+    # Process FCS
+    @test issetequal(names(a["flow_cy"]), ["plate_02_a1.FL1-H"])
+    @test_broken size(a["flow_cy"])[1] > 0
 end
 
 @testitem "process_fcs" begin
@@ -352,4 +378,17 @@ end
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
     ESM.process_fcs("plate_02", ["FSC-H", "SSC-H"], ["FL1-H"])
+end
+
+@testitem "to_rfi" begin
+    global ESM.es = ESM.read_esm("inputs/example.esm")
+    out = ESM.to_rfi("plate_02_a1")
+    # Linear test with no gain
+    @test out["FSC-H"][:data] == [628.0, 1023.0, 373.0, 1023.0]
+    @test out["FSC-H"][:max] == 1024.0
+    @test out["FSC-H"][:min] == 1.0
+    # Scaling factor gain test
+    @test out["FL1-H"][:data] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
+    # Log scaling test
+    @test out["SSC-H"][:data] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
 end

@@ -36,7 +36,6 @@ The structure of the template input file must be followed.
 
 - `-e, --excel=<String>`: The .xlsx file to be read.
 - `-t, --target=<String>`: The name of the output .esm file. Does not include the .esm extension.
-- `-p, --plate-reader-type=<String>`: Defines the plate reader type used (agilent, tecan or spectramax). If a plate reader was not used, give this any name.
 
 """
 @cast create(; excel::String, target::String) = esm(
@@ -49,7 +48,7 @@ Produces a specific view from within the .esm files and saves it to a specified 
 
 # Options
 
-- `-e, --esm=<String>`: The .xlsx file to be read.
+- `-e, --esm-file=<String>`: The .xlsx file to be read.
 - `-v, --view=<String>`: The view to be exported.
 - `-o, --output-dir=<String>`: The directory to save the output to.
 
@@ -77,7 +76,7 @@ Produces a all views from within the .esm files and saves them to a specified fo
 
 # Options
 
-- `-e, --esm=<String>`: The .xlsx file to be read.
+- `-e, --esm-file=<String>`: The .xlsx file to be read.
 - `-o, --output-dir=<String>`: The directory to save the output to.
 
 """
