@@ -57,8 +57,8 @@ end
     rm.(joinpath.(dir, ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv"]), force=true)
     @test issetequal(readdir(dir), ["tmp.esm"])
 
-    @test_broken run(`$(shell) esm process -e $(joinpath(dir, "tmp.esm")) -o $dir`)
-    @test_broken issetequal(readdir(dir), ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
+    run(`$(shell) esm process -e $(joinpath(dir, "tmp.esm")) -o $dir`)
+    @test issetequal(readdir(dir), ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
 end
 
 @testitem "Produce intergration" setup=[environment_path, build, getshell] begin
@@ -75,12 +75,12 @@ end
           "8dc3e2b2a2d60b1d2c2ad0bbcf5564e31aa93961792eb2a88640bbfe59cde9a4"
 
     dir2 = Base.Filesystem.mktempdir()
-    @test_broken run(`$(shell) esm produce -e $(joinpath(dir, "tmp.esm")) -v mega -o $dir2`)
-    @test_broken isfile(joinpath(dir2, "mega.csv"))
-    @test_broken esm_hash2 = open(joinpath(dir2, "mega.csv")) do f #Keep as esm_hash2 until test is working
+    run(`$(shell) esm produce -e $(joinpath(dir, "tmp.esm")) -v mega -o $dir2`)
+    @test isfile(joinpath(dir2, "mega.csv"))
+    esm_hash2 = open(joinpath(dir2, "mega.csv")) do f #Keep as esm_hash2 until test is working
         sha256(f)
     end
-    @test_broken bytes2hex(esm_hash2) ==
+    @test bytes2hex(esm_hash2) ==
           "8dc3e2b2a2d60b1d2c2ad0bbcf5564e31aa93961792eb2a88640bbfe59cde9a4"
 end
 
