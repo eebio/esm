@@ -13,37 +13,43 @@ end
     es = ESM.read_data("inputs/example.xlsx")
     filename = joinpath(Base.Filesystem.mktempdir(), "tmp")
     ESM.write_esm(es; name = filename)
-    es = ESM.read_esm(filename * ".esm")
-
-    @test_skip issetequal(es.samples.name,
-        ["plate_02_a1.FL1", "plate_02_a1.SSC", "plate_02_a1.FSC",
-            "plate_02_a2.FL1", "plate_02_a2.SSC", "plate_02_a2.FSC"])
-    @test_skip issetequal(es.samples.channel, ["FL1", "SSC", "FSC", "FL1", "SSC", "FSC"])
-    @test_skip issetequal(es.samples.type,
-        ["population", "population", "population",
-            "population", "population", "population"])
-    @test_skip issetequal(es.samples.values[3][1:5], [39387138, 58112, 0, 34996226, 61952])
-    @test_skip es.samples.name[1] == "plate_02_a2.FL1"
-    @test_skip es.samples.meta[1] == Dict("amp_type" => "4.0,1.0", "filter" => nothing,
-        "det_type" => nothing, "name" => "FL1", "range" => "1024",
-        "ex_pow" => nothing, "det_volt" => "850", "amp_gain" => nothing,
-        "ex_wav" => "488,561", "perc_em" => nothing, "name_s" => nothing)
-    @test_skip es.samples.meta[6] ==
-               Dict("amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
-        "name" => "FSC", "range" => "1024", "ex_pow" => nothing,
-        "det_volt" => "10.0", "amp_gain" => nothing,
-        "ex_wav" => "488,561", "perc_em" => nothing, "name_s" => nothing)
-    for i in 1:6
-        @test_skip issetequal(keys(es.samples.meta[i]),
+    es_written = ESM.read_esm(filename * ".esm")
+    names = [
+        ["plate_01_$(letter)$(number).$(channel)"
+         for letter in 'a':'h', number in 1:12, channel in ["OD", "flo"]]...,
+        ["plate_02_a1.$(channel)"
+         for channel in ["FSC-H", "SSC-H", "FL1-H", "FL1-H", "FL3-H", "FL1-A", "FL4-H"]]...,
+        "plate_01_t° read 1:700.OD", "plate_01_time.OD", "plate_01_time.flo"] # TODO tidy up some of the name reading
+    names = []
+    for (i,j) in es[:samples]
+        for k in keys(j[:values])
+            push!(names, "$(i).$(k)")
+        end
+    end
+    @test issetequal(names,
+        es_written.samples.name)
+    @test issetequal(
+        unique(es_written.samples.channel), ["OD", "flo", "FL1-H", "SSC-H", "FL3-H", "FL1-A", "FL4-H", "FSC-H"])
+    @test es_written.samples.type[end-5:end] ==
+          ["population", "population", "population", "population", "population", "population"]
+    @test es[:samples]["plate_01_b3"][:values]["flo"] ==
+          es_written.samples.values[findfirst(es_written.samples.name .==
+                                              "plate_01_b3.flo")]
+    for i in length(es_written.samples.meta)-5:length(es_written.samples.meta)
+        @test issetequal(keys(es_written.samples.meta[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
                 "amp_gain", "name_s", "name", "det_type", "perc_em"])
     end
-    @test_skip issetequal(es.groups.group, ["plate_01"])
-    @test_skip issetequal(es.groups.sample_IDs, [["plate_02_a1", "plate_02_a2"]])
-    @test_skip issetequal(es.groups.metadata, [Dict("autodefined" => "true")])
-    @test_skip es.transformations ==
-               Dict("flow_cyt" => Dict("equation" => "process_fcs(\"plate_01\",[\"FSC\",\"SSC\"],[\"FL1\"])"))
-    @test_skip es.views == Dict("flow_cy" => Dict("data" => ["flow_cyt"]))
+    @test issetequal(es_written.groups.group, ["plate_01", "plate_02", "first_group", "second_group", "third_group"])
+    @test es_written.groups.sample_IDs[es_written.groups.group .== "plate_02"] == [["plate_02_a1"]]
+    @test es_written.groups.metadata[es_written.groups.group .== "plate_02"] ==
+        [Dict("autodefined" => "true")]
+    @test issetequal(keys(es_written.transformations), ["flow_cyt", "flow_sub", "od_sub"])
+    @test es_written.transformations["flow_cyt"] ==
+          Dict{String, Any}("equation" => "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])")
+    @test issetequal(keys(es_written.views), ["flowsub", "mega", "group2", "flow_cy", "sample", "odsub", "group1", "group3"])
+    @test es_written.views["mega"] ==
+          Dict{String, Any}("data" => Any["first_group", "second_group"])
 end
 
 @testitem "read spectramax" setup=[environment_path] begin
