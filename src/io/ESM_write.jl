@@ -132,58 +132,25 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
         error("Please give the location of only one folder containing all the CSVs for one plate. \nLocations given here are: $(Set(samples[!,"Data Location"])...)")
     end
     data = Dict()
-    # Is there only one file being passed?
-    if length(samples.Plate) == 1
-        if isdir(loc)
-            # Are the channels separated into different files named after the channels? - This is useful for generic data
-            data = read_sep_chans_pr(channel_map, loc[1], channels)
-        else
-            length(ptype) == 1 ||
-                error("Only one plat type can be used per plate. $(Set(samples[!,"Plate brand"])...) given. ")
-            data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
-        end
-        channels = keys(data)
-        # Just so that the broader physical group can be defined using the set difference
-        pre = keys(sample_dict)
-        sample_dict = merge(sample_dict,
-            OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(
-                            :type => "timeseries",
-                            :values => Dict(i => data[i][!, k]
-                            for i in channels if k in names(data[i])),
-                            :meta => Dict())
-            for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
-        broad_g = [i for i in keys(sample_dict) if !(i in pre)]
+    if isdir(loc)
+        # Are the channels separated into different files named after the channels? - This is useful for generic data
+        data = read_sep_chans_pr(channel_map, loc[1], channels)
     else
-        # This allows for the renaming of the samples if defined per well
-        if isdir(loc)
-            data = read_sep_chans_pr(channel_map, loc, channels)
-        else
-            length(ptype) == 1 ||
-                error("Only one plat type can be used per plate. $(Set(samples[!,"Plate brand"])) given. ")
-            data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
-        end
-        channels = keys(data)
-        for j in eachrow(samples)
-            if ismissing(j.Name)
-                name = "plate_0$(j.Plate)_$(j.Well)"
-            else
-                name = j.Name
-            end
-            if !("plate_0$(j.Plate)_time" in keys(sample_dict))
-                sample_dict["plate_0$(j.Plate)_time"] = Dict([
-                    :values => Dict(), :type => "timeseries", :meta => Dict()])
-                sample_dict["plate_0$(j.Plate)_time"][:values] = Dict(x => data[x][
-                                                                          !, "Time"]
-                for x in channels)
-            end
-            temp = Dict()
-            temp[:type] = "timeseries"
-            temp[:values] = Dict(x => data[x][!, j.Well] for x in channels)
-            temp[:meta] = Dict()
-            sample_dict[name] = temp
-            broad_g = [broad_g; [name]]
-        end
+        length(ptype) == 1 ||
+            error("Only one plat type can be used per plate. $(Set(samples[!,"Plate brand"])...) given. ")
+        data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
     end
+    channels = keys(data)
+    # Just so that the broader physical group can be defined using the set difference
+    pre = keys(sample_dict)
+    sample_dict = merge(sample_dict,
+        OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(
+                        :type => "timeseries",
+                        :values => Dict(i => data[i][!, k]
+                        for i in channels if k in names(data[i])),
+                        :meta => Dict())
+        for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
+    broad_g = [i for i in keys(sample_dict) if !(i in pre)]
     return sample_dict, broad_g
 end
 
@@ -316,27 +283,12 @@ Args:
 function read_multipr_file(filen, ptype, channels, channel_map)
     # TODO: Add bmg labtech reading
     o_dict = Dict()
-    if ptype == "tecan"
-        i = [j for j in split(read(filen, String), r"\n,+?\n") if (length(j) > 1500)]
-        o_dict = Dict(channel_map[match(r"([A-Za-z0-9]+)", j).match] => CSV.read(
-                          IOBuffer(j), DataFrame, transpose = true)
-        for j in i if match(r"([A-Za-z0-9]+)", j).match in channels)
-    elseif ptype == "agilent"
-        i = [i
-             for i in split(read(filen, String), r"(\r\n.+?\r\n\r\n)")
-             if (length(i) > 8 && (length(i) > 1000 && string(i)[1:7] != "Results"))]
-        o_dict = Dict(channel_map[match(r":([A-Za-z0-9,\[\]]+)", j).match[2:end]] => CSV.read(
-                          IOBuffer("Time" * split(j, "\nTime")[2]), DataFrame)
-        for j in i if match(r":([A-Za-z0-9,]+)", j).match[2:end] in channels)
-    elseif ptype == "spectramax"
+    if ptype == "spectramax"
         o_dict = read_spectramax(filen, channels)
     elseif ptype == "biotek"
         o_dict = read_biotek(filen, channels)
     else
-        i = [j for j in split(read(filen, String), r"\n,+?\n") if (length(j) > 1500)]
-        o_dict = Dict(channel_map[match(r"([A-Za-z0-9]+)", j).match] => CSV.read(
-                          IOBuffer(j), DataFrame, transpose = true)
-        for j in i if match(r"([A-Za-z0-9]+)", j).match in channels)
+        error("Unknown plate reader type: $ptype.")
     end
     for i in keys(o_dict)
         o_dict[i] = o_dict[i][!, Not(all.(ismissing, eachcol(o_dict[i])))]
