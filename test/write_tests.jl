@@ -11,9 +11,9 @@ end
 @testitem "write esm" setup=[environment_path] begin
     # write esm from example.xlsx and read it back
     es = ESM.read_data("inputs/example.xlsx")
-    filename = joinpath(Base.Filesystem.mktempdir(), "tmp")
-    ESM.write_esm(es; name = filename)
-    es_written = ESM.read_esm(filename * ".esm")
+    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.esm")
+    ESM.write_esm(es, filename)
+    es_written = ESM.read_esm(filename)
     names = [
         ["plate_01_$(letter)$(number).$(channel)"
          for letter in 'a':'h', number in 1:12, channel in ["OD", "flo"]]...,

@@ -27,19 +27,18 @@ export read_esm, esm_zones, read_data, write_esm
 end
 
 """
-    esm create
+    esm translate
 
-Creates a .esm file from an the input XLSX file defined by esm and writes it to target.
-The structure of the template input file must be followed.
+Translates the completed .xlsx template file defined by `excel` and to a .esm file from and writes it to `target`.
 
 # Options
 
-- `-e, --excel=<String>`: The .xlsx file to be read.
-- `-t, --target=<String>`: The name of the output .esm file. Does not include the .esm extension.
+- `-e, --excel=<String>`: The .xlsx template file to be read.
+- `-t, --target=<String>`: The name of the output .esm file.
 
 """
-@cast create(; excel::String, target::String) = esm(
-    "create"; file_name = excel, name = target)
+@cast translate(; excel::String, target::String) = esm(
+    "translate"; file_name = excel, name = target)
 
 """
     esm produce
@@ -85,9 +84,9 @@ Produces a all views from within the .esm files and saves them to a specified fo
 
 function esm(action; view::String = "", file_name::String = "",
         output_dir::String = "", name::String = "")
-    if action == "create"
+    if action == "translate"
         x = read_data(file_name)
-        write_esm(x; name = name)
+        write_esm(x, name)
     elseif action == "produce"
         global es = read_esm(file_name)
         trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])

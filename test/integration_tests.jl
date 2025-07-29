@@ -29,18 +29,18 @@ end
     @test isfile(joinpath(dir, "ESM.xlsx"))
 end
 
-@testitem "Create integration" setup=[environment_path, build, getshell] begin
+@testitem "Translate integration" setup=[environment_path, build, getshell] begin
     using SHA
 
     dir = Base.Filesystem.mktempdir()
-    run(`$(shell) esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
+    run(`$(shell) esm translate --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp.esm"))`)
     @test isfile(joinpath(dir, "tmp.esm"))
     esm_hash = open(joinpath(dir, "tmp.esm")) do f
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
           "7584ebe26cc7b016394151c717b9f4197220db2a9f35a6231f07065f3619a2e0"
-    run(`$(shell) esm create -e $(joinpath("inputs", "example.xlsx")) -t $(joinpath(dir, "tmp2"))`)
+    run(`$(shell) esm translate -e $(joinpath("inputs", "example.xlsx")) -t $(joinpath(dir, "tmp2.esm"))`)
     @test isfile(joinpath(dir, "tmp2.esm"))
     esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
@@ -51,7 +51,7 @@ end
 
 @testitem "Process integration" setup=[environment_path, build, getshell] begin
     dir = Base.Filesystem.mktempdir()
-    run(`$(shell) esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
+    run(`$(shell) esm translate --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp.esm"))`)
     run(`$(shell) esm process --esm-file $(joinpath(dir, "tmp.esm")) --output-dir $dir`)
     @test issetequal(readdir(dir), ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
     rm.(joinpath.(dir, ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv"]), force=true)
@@ -65,7 +65,7 @@ end
     using SHA
 
     dir = Base.Filesystem.mktempdir()
-    run(`$(shell) esm create --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp"))`)
+    run(`$(shell) esm translate --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp.esm"))`)
     run(`$(shell) esm produce --esm-file $(joinpath(dir, "tmp.esm")) --view mega --output-dir $dir`)
     @test isfile(joinpath(dir, "mega.csv"))
     esm_hash = open(joinpath(dir, "mega.csv")) do f
@@ -88,7 +88,7 @@ end
 @testitem "Integration coverage" setup=[environment_path] begin
     dir = Base.Filesystem.mktempdir()
     ESM.template(output_path = dir)
-    ESM.create(excel = joinpath("inputs", "example.xlsx"), target = joinpath(dir, "tmp"))
+    ESM.translate(excel = joinpath("inputs", "example.xlsx"), target = joinpath(dir, "tmp.esm"))
     ESM.process(esm_file = joinpath(dir, "tmp.esm"), output_dir = dir)
     ESM.produce(esm_file = joinpath(dir, "tmp.esm"), view = "mega", output_dir = dir)
 end

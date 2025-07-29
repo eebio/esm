@@ -87,7 +87,7 @@ function read_data(filen)
 end
 
 """
-    write_esm(esm_dict;name)
+    write_esm(esm_dict, name)
 
 Write the esm_dict from read_data() to the path/file `name`.
 
@@ -96,15 +96,11 @@ Args:
 - `esm_dict::Dict`: Dictionary describing the esm.
 - `name::String`: Path to deposit the ESM to.
 """
-function write_esm(esm_dict; name = "")
-    if name == ""
-        # No name? No problem
-        name = "out"
-    end
-    open("$name.esm", "w") do file
+function write_esm(esm_dict, name)
+    open(name, "w") do file
         JSON.print(file, esm_dict, 4)
     end
-    @info "ESM written to $name.esm."
+    @info "ESM written to $name"
 end
 
 """
