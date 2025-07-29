@@ -37,8 +37,10 @@ Translates the completed .xlsx template file defined by `excel` and to a .esm fi
 - `-t, --target=<String>`: The name of the output .esm file.
 
 """
-@cast translate(; excel::String, target::String) = esm(
-    "translate"; file_name = excel, name = target)
+@cast function translate(; excel::String, target::String)
+    x = read_data(excel)
+    write_esm(x, target)
+end
 
 """
     esm produce
@@ -52,8 +54,13 @@ Produces a specific view from within the .esm files and saves it to a specified 
 - `-o, --output-dir=<String>`: The directory to save the output to.
 
 """
-@cast produce(; esm_file::String, view::String, output_dir::String) = esm(
-    "produce"; file_name = esm_file, view = view, output_dir = output_dir)
+@cast function produce(; esm_file::String, view::String, output_dir::String)
+    global es = read_esm(esm_file)
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    @info "Producing views."
+    view_to_csv(es, trans_meta_map; outdir = output_dir, to_out = [view])
+end
 
 """
     esm template
@@ -62,11 +69,14 @@ Produces a template excel file for data entry into the ESM.
 
 # Options
 
-- `-o, --output-path=<String>`: The output file path to write the template to. Does not specify the file.
+- `-o, --output-dir=<String>`: The output file path to write the template to. Does not specify the file.
 
 """
-@cast template(; output_path::String) = esm("template"; output_dir = output_path)
-# TODO: input form for template is really 'particular'
+@cast function template(; output_dir::String)
+    e = pathof(ESM)
+    e = e[1:(length(e) - 6)]
+    cp(joinpath(e, "io", "ESM.xlsx"), joinpath(output_dir, "ESM.xlsx"))
+end
 
 """
     esm process
@@ -79,31 +89,12 @@ Produces a all views from within the .esm files and saves them to a specified fo
 - `-o, --output-dir=<String>`: The directory to save the output to.
 
 """
-@cast process(; esm_file::String, output_dir::String) = esm(
-    "process"; file_name = esm_file, output_dir = output_dir)
-
-function esm(action; view::String = "", file_name::String = "",
-        output_dir::String = "", name::String = "")
-    if action == "translate"
-        x = read_data(file_name)
-        write_esm(x, name)
-    elseif action == "produce"
-        global es = read_esm(file_name)
-        trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
-        for i in keys(es.transformations))
-        @info "Producing views."
-        view_to_csv(es, trans_meta_map; outdir = output_dir, to_out = [view])
-    elseif action == "template"
-        e = pathof(ESM)
-        e = e[1:(length(e) - 6)]
-        cp(joinpath(e, "io", "ESM.xlsx"), joinpath(output_dir, "ESM.xlsx"))
-    elseif action == "process"
-        global es = read_esm(file_name)
-        trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
-        for i in keys(es.transformations))
-        @info "Producing views."
-        view_to_csv(es, trans_meta_map; outdir = output_dir)
-    end
+@cast function process(; esm_file::String, output_dir::String=".")
+    global es = read_esm(esm_file)
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    @info "Producing views."
+    view_to_csv(es, trans_meta_map; outdir = output_dir)
 end
 
 Comonicon.@main
