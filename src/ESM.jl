@@ -51,10 +51,10 @@ Produces a specific view from within the .esm files and saves it to a specified 
 
 - `-e, --esm-file=<String>`: The .xlsx file to be read.
 - `-v, --view=<String>`: The view to be produced. If not specified, all views will be produced.
-- `-o, --output-dir=<String>`: The directory to save the output to.
+- `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the current directory.
 
 """
-@cast function views(; esm_file::String, view=nothing, output_dir::String)
+@cast function views(; esm_file::String, view = nothing, output_dir::String = ".")
     global es = read_esm(esm_file)
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
@@ -74,13 +74,13 @@ Produces a template excel file for data entry into the ESM.
 
 # Options
 
-- `-o, --output-dir=<String>`: The output file path to write the template to. Does not specify the file.
+- `-o, --output-path=<String>`: The path to create the template in. Defaults to ESM.xlsx in the current directory.
 
 """
-@cast function template(; output_dir::String)
+@cast function template(; output_path::String = "ESM.xlsx")
     e = pathof(ESM)
     e = e[1:(length(e) - 6)]
-    cp(joinpath(e, "io", "ESM.xlsx"), joinpath(output_dir, "ESM.xlsx"))
+    cp(joinpath(e, "io", "ESM.xlsx"), output_path)
 end
 
 Comonicon.@main

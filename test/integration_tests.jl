@@ -22,11 +22,13 @@ end
 
 @testitem "Template integration" setup=[build, getshell] begin
     dir = Base.Filesystem.mktempdir()
-    run(`$(shell) esm template --output-dir $dir`)
-    @test isfile(joinpath(dir, "ESM.xlsx"))
-    dir = Base.Filesystem.mktempdir()
-    run(`$(shell) esm template -o $dir`)
-    @test isfile(joinpath(dir, "ESM.xlsx"))
+    run(`$(shell) esm template --output-path $dir/tmp.xlsx`)
+    @test isfile(joinpath(dir, "tmp.xlsx"))
+    run(`$(shell) esm template -o $dir/t2.xlsx`)
+    @test isfile(joinpath(dir, "t2.xlsx"))
+    cd(dir)
+    run(`$(shell) esm template`)
+    @test isfile("ESM.xlsx")
 end
 
 @testitem "Translate integration" setup=[environment_path, build, getshell] begin
@@ -87,7 +89,7 @@ end
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
 @testitem "Integration coverage" setup=[environment_path] begin
     dir = Base.Filesystem.mktempdir()
-    ESM.template(output_dir = dir)
+    ESM.template(output_path = joinpath(dir, "tmp.xlsx"))
     ESM.translate(excel = joinpath("inputs", "example.xlsx"), target = joinpath(dir, "tmp.esm"))
     ESM.views(esm_file = joinpath(dir, "tmp.esm"), output_dir = dir)
     ESM.views(esm_file = joinpath(dir, "tmp.esm"), view = "mega", output_dir = dir)
