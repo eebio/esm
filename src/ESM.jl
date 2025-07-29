@@ -29,7 +29,7 @@ end
 """
     esm translate
 
-Translates the completed .xlsx template file defined by `excel` and to a .esm file from and writes it to `target`.
+Translates the completed .xlsx template file to a .esm file.
 
 # Options
 
@@ -45,11 +45,11 @@ end
 """
     esm views
 
-Produces a specific view from within the .esm files and saves it to a specified folder.
+Produce and save the views from a .esm file.
 
 # Options
 
-- `-e, --esm-file=<String>`: The .xlsx file to be read.
+- `-e, --esm-file=<String>`: The .esm file to be read.
 - `-v, --view=<String>`: The view to be produced. If not specified, all views will be produced.
 - `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the current directory.
 
@@ -70,7 +70,7 @@ end
 """
     esm template
 
-Produces a template excel file for data entry into the ESM.
+Produce a template excel file for data entry into the ESM.
 
 # Options
 
