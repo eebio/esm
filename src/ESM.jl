@@ -14,10 +14,12 @@ using ProgressMeter
 using Statistics
 using StatsBase
 using XLSX
+
 import Statistics.mean, DataFrames.hcat
-include(joinpath(".","io","ESM_read.jl"))
-include(joinpath(".", "io", "ESM_write.jl"))
 export read_esm, esm_zones, read_data, write_esm
+
+include(joinpath("io", "ESM_read.jl"))
+include(joinpath("io", "ESM_write.jl"))
 
 @with_kw struct esm_zones
     samples::DataFrame
@@ -35,7 +37,6 @@ Translates the completed .xlsx template file to a .esm file.
 
 - `-e, --excel=<String>`: The .xlsx template file to be read.
 - `-t, --target=<String>`: The name of the output .esm file.
-
 """
 @cast function translate(; excel::String, target::String)
     x = read_data(excel)
@@ -52,9 +53,8 @@ Produce and save the views from a .esm file.
 - `-e, --esm-file=<String>`: The .esm file to be read.
 - `-v, --view=<String>`: The view to be produced. If not specified, all views will be produced.
 - `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the current directory.
-
 """
-@cast function views(; esm_file::String, view = nothing, output_dir::String = ".")
+@cast function views(; esm_file::AbstractString, view = nothing, output_dir::AbstractString = ".")
     global es = read_esm(esm_file)
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
@@ -75,7 +75,6 @@ Produce a template excel file for data entry into the ESM.
 # Options
 
 - `-o, --output-path=<String>`: The path to create the template in. Defaults to ESM.xlsx in the current directory.
-
 """
 @cast function template(; output_path::String = "ESM.xlsx")
     e = pathof(ESM)

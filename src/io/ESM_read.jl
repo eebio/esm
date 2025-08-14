@@ -1,15 +1,18 @@
+using ESM
+
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
 
-Recursively converts the parsed equations to julia code and produces the correct dataframes over which to operate. This also calls any unprocessed transformations.
+Recursively converts the parsed expressions, swapping in relevant DataFrames from `es`.
+This also calls any unprocessed transformations.
 
 Args:
 
-- sexp - Expression or part of expression to be decomposed.
-- es - The esm_zones data type that contains the data (global variable).
-- trans_meta_map - The transformation map of the parsed transformations.
+- `sexp`: Expression to be decomposed.
+- `es`: The esm_zones data type that contains the data (global variable).
+- `trans_meta_map`: The transformation map of names to parsed transformations.
 """
-function sexp_to_nested_list(sexp::Any, es, trans_meta_map)
+function sexp_to_nested_list(sexp, es, trans_meta_map)
     if isa(sexp, Symbol)
         if isdefined(ESM, sexp)
             # Is the symbol a function?
@@ -102,13 +105,13 @@ end
 """
     produce_views(es, trans_meta_map;to_out=[])
 
-Produces the views specified in `to_out` else all views in `esm.views`.
+Produce the views from `es`.
 
 Args:
 
-- `es=<esm_zones>`: The esm_zones object (global)
-- `trans_meta_map=<Dict>`: A dictionary mapping transformations to their names.
-- `to_out=<Array>`: A list of all the views to be produced.
+- `es`: The esm_zones object (global).
+- `trans_meta_map`: A dictionary mapping transformations to their names.
+- `to_out`: A list of all the views to be produced. Defaults to all views.
 """
 function produce_views(es, trans_meta_map; to_out = [])
     # No views specified? Do all then
@@ -119,34 +122,33 @@ function produce_views(es, trans_meta_map; to_out = [])
     v_out = Dict()
     for i in to_out
         @info "Producing view $i."
-        # Initialise the result dict that can be concatenated later
-        result = []
+        # Initialise the results dict that can be concatenated later
+        results = []
         # Loop over the views list
         for j in es.views[i]["data"]
-            # Check if this is a transformation to initiate the processing
+            # Check if this is a transformation
             if Symbol(j) in keys(trans_meta_map)
-                # Put the result in the results array
-                push!(result,
-                    eval(sexp_to_nested_list(
-                        trans_meta_map[Symbol(j)], es, trans_meta_map)))
+                # Run the transformation and get the result
+                r = eval(sexp_to_nested_list(trans_meta_map[Symbol(j)], es, trans_meta_map))
+                push!(results, r)
             elseif j in es.groups.group
-                # If its a group, put the basal data in the results array
-                push!(result, form_df(filter_row(es, Symbol(j))))
+                # If its a group, filter the original samples dataframe and output
+                push!(results, form_df(filter_row(es, Symbol(j))))
             elseif j in es.samples.name
                 # If its a sample, create the df and push it
-                push!(result, form_df(es.samples[es.samples.name .== j, :]))
+                push!(results, form_df(es.samples[es.samples.name .== j, :]))
             else
                 # Ya dun goofed.
-                @warn "Transformation/Group - $j - not found please check your transformation and groups. \n Reminder: Time on plate readers is handled per channel and associated with a specific plate. Please specify the time as: plate_0x_time.channel ."
+                @warn "Transformation/Group - $j - not found please check your transformation and groups. \n Reminder: Time on plate readers is handled per channel and associated with a specific plate. Please specify the time as: plate_0x_time.channel."
             end
         end
         try
             # Put it all in the same frame and not a vector
-            v_out[i] = hcat(result...)
+            v_out[i] = hcat(results...)
         catch
             # Put in the same vector with different labels because they exist twice
             @warn "Duplicate labels detected, left DataFrame denoted with _1 right denoted with _2.\n"
-            v_out[i] = hcat(result..., makeunique = true)
+            v_out[i] = hcat(results..., makeunique = true)
         end
     end
     @info "Views produced."
@@ -162,7 +164,7 @@ e.g. \n
     remove flo
     a1.flo -> a1
 """
-function remove_subcols(df, sub)
+function remove_subcols(df, sub) #TODO - this function is unclear, probably needs some specific tests
     rename!(s -> replace(s, Regex("." * string(sub)) => ""), df)
     return df
 end
@@ -177,7 +179,7 @@ Args:
 - `es=<esm_zones>`: esm zones data type. global
 - `group=<string || vector>`: what group/groups to filter by.
 """
-function filter_row(es, group)
+function filter_row(es, group) #TODO - this function is unclear, probably needs some specific tests
     return es.samples[es.samples[!, group] .== true, :]
 end
 
@@ -191,10 +193,9 @@ Args:
 - `df=<DataFrame>` DataFrame to filter.
 - `reg_l=<Array{String}>`: Array of strings to filter by.
 """
-function filter_col(df, reg_l)
-    return df[:,
-        filter(colname -> occursin((Regex(join(string.(reg_l), "|"))), string(colname)),
-            names(df))]
+function filter_col(df, reg_l) #TODO - this function is unclear, probably needs some specific tests
+    regex = Regex(join(string.(reg_l), "|"))
+    return df[:, filter(colname -> occursin(regex, string(colname)), names(df))]
 end
 
 """
@@ -206,39 +207,39 @@ Args:
 
 - `df=<DataFrame>`: A dataframe of es.samples to parse.
 """
-function form_df(df)
+function form_df(df) #TODO - this function is unclear, probably needs some specific tests
     max_dat = maximum(length.(df.values))
     return hcat([DataFrame(j.name => [j.values; fill(missing, max_dat - length(j.values))])
                  for j in eachrow(df)]...)
 end
 
 """
-    find_group(es,grn)
+    find_group(es,groupname)
 
-Finds a specific group from the original es.groups dataframe and returns the sample names.
+Get the sample IDs that correspond to a specific group.
 
 Args:
 
 - `es=<esm_zones>`: the original es object.
-- `grn=<String>`: A string of a group name which can be used to filter the original dataframe.
+- `groupname=<String>`: A string of a group name which can be used to filter the original dataframe.
 """
-function find_group(es, grn)
-    return es.groups[es.groups.group .== grn, :sample_IDs][1]
+function find_group(es, groupname) #TODO add tests
+    return es.groups[es.groups.group .== groupname, :sample_IDs][1]
 end
 
 """
     view_to_csv(es,trans_meta_map;out_dir,to_out)
 
-Controls the calling of the view producer and writes the outputted views to a csv file.
+Produces views and outputs them to csv files.
 
 Args:
 
-- `es=<esm_zones>`: The original esm struct
-- `trans_meta_map=<Dict>`: The transformations that have been parsed at the top level.
-- `out_dir=<String>`: The specified output dir - defaults to nothing.
-- `to_out=<Array{String}>`: The views to be processed.
+- `es`: The original esm struct
+- `trans_meta_map`: The transformations that have been parsed at the top level.
+- `out_dir`: The specified output dir. Defaults to local directory.
+- `to_out`: The views to be processed. Defaults to all views.
 """
-function view_to_csv(es, trans_meta_map; outdir = "", to_out = [])
+function view_to_csv(es, trans_meta_map; outdir = ".", to_out = [])
     # Process the views
     vs = produce_views(es, trans_meta_map; to_out = to_out)
     # Write the views to file
