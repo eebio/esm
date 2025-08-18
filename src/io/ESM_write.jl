@@ -294,20 +294,32 @@ function read_multipr_file(filen, ptype, channels, channel_map)
     return o_dict
 end
 
-function read_into_lines(filen, encoding)
-    if isnothing(encoding)
-        str = read(filen, String)
-    else
-        bytes = read(filen)
-        str = decode(bytes, encoding)
+function read_into_lines(filen)
+    encodings = ["UTF-16", "UTF-8", "windows-1252", "ISO-8859-1", "ASCII"]
+    true_encoding = ""
+    bytes = read(filen)
+    for enc in encodings
+        try
+            str = decode(bytes, enc)
+            if occursin("Time", str)
+                true_encoding = enc
+                break
+            end
+        catch e
+            continue
+        end
     end
+    if true_encoding == ""
+        error("Could not determine encoding for file $filen.")
+    end
+    str = decode(bytes, true_encoding)
     str = replace(str, "\r\n" => "\n")  # Normalize line endings
     str = replace(str, "\r" => "\n")    # Handle any remaining carriage returns
     return split(str, r"\n")  # Split into lines
 end
 
 function read_spectramax(filen, channels)
-    f = read_into_lines(filen, "UTF-16")
+    f = read_into_lines(filen)
     containsTime = [occursin(r"\d\d:\d\d:\d\d", j) ? 1 : 0 for j in f]
     function runlength(a, i)
         if i == length(a)
@@ -364,7 +376,7 @@ function read_spectramax(filen, channels)
 end
 
 function read_biotek(filen, channels)
-    f = read_into_lines(filen, nothing)
+    f = read_into_lines(filen)
     containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
     function runlength(a, i)
         if i == length(a)
