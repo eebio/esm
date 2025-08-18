@@ -418,8 +418,10 @@ function read_biotek(filen, channels)
             if !occursin(chan, data[i][1])
                 continue
             end
-            # Get the data
-            df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
+            # Remove channel name from the first row
+            data[i][2] = replace(data[i][2], " $(data[i][1])" => "")
+            # Read the data into a DataFrame
+            df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame)
             # Remove empty columns
             df = df[:, Not(all.(ismissing, eachcol(df)))]
             # Do I need to drop temperature?)
