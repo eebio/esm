@@ -71,10 +71,9 @@ end
           [0.134, 0.133, 0.131, 0.131]
     @test data[:samples]["plate_01_h12"][:values]["700"][[1, 2, end - 1, end]] == [
         0.114, 0.113, 0.577, 0.578]
-    @show keys(data[:samples]["plate_01_a1"][:values])
-    @test_broken data[:samples]["plate_01_a2"][:values]["485,530[2]"][[
+    @test data[:samples]["plate_01_a2"][:values]["485,530[2]"][[
         1, 2, end - 1, end]] == [
-        166, 162, 1030, 1024] # TODO Fix test, it interprets channel 485,530[2] as 485,530
+        166, 162, 1030, 1024]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_time"]  # Flatten to a 1D vector
     @test issubset(wells, keys(data[:samples])) # TODO should be issetequal, but there is some weirdness around how the temperature is stored in the data - there is a temperature column per channel which includes the channel name
