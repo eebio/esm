@@ -344,26 +344,21 @@ function read_spectramax(filen, channels)
     end
     # Create the dataframes
     out = Dict()
-    for i in eachindex(data)
-        # Get the channel name from the first header row
-        channel = ""
-        for chan in channels
-            if occursin(chan, data[i][1])
-                channel = chan
-                break
+    for chan in channels
+        for i in eachindex(data)
+            if !occursin(chan, data[i][1])
+                continue
             end
+            # Get the data
+            df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
+            # Remove empty columns
+            df = df[:, Not(all.(ismissing, eachcol(df)))]
+            # Do I need to drop temperature?)
+            out[chan] = df
         end
-        if channel == ""
-            # Channel not requested by the user so skip
-            error("Channel not found in file for data starting at $(datalocations[i]). Please check the file and the channels requested.")
-            continue
-        end
-        # Get the data
-        df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
-        # Remove empty columns
-        df = df[:, Not(all.(ismissing, eachcol(df)))]
-        # Do I need to drop temperature?)
-        out[channel] = df
+    end
+    if !issetequal(keys(out), channels)
+        error("Not all channels found in file. Found $(keys(out)) but requested $(channels). Please check the file and the channels requested.")
     end
     return out
 end
@@ -406,30 +401,21 @@ function read_biotek(filen, channels)
     end
     # Create the dataframes
     out = Dict()
-    for i in eachindex(data)
-        # Get the channel name from the first header row
-        channel = ""
-        for chan in channels
-            if occursin(chan, data[i][1])
-                channel = chan
-                break
+    for chan in channels
+        for i in eachindex(data)
+            if !occursin(chan, data[i][1])
+                continue
             end
+            # Get the data
+            df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
+            # Remove empty columns
+            df = df[:, Not(all.(ismissing, eachcol(df)))]
+            # Do I need to drop temperature?)
+            out[chan] = df
         end
-        @show channels
-        @show data[i][1]
-        if channel == ""
-            # Channel not requested by the user so skip
-            error("Channel not found in file for data starting at $(datalocations[i]). Please check the file and the channels requested.")
-            continue
-        end
-        @show channel
-        # Get the data
-        df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = ",")
-        # Remove empty columns
-        df = df[:, Not(all.(ismissing, eachcol(df)))]
-        # Do I need to drop temperature?)
-        out[channel] = df
-        @show keys(out)
+    end
+    if !issetequal(keys(out), channels)
+        error("Not all channels found in file. Found $(keys(out)) but requested $(channels). Please check the file and the channels requested.")
     end
     return out
 end
