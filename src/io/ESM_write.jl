@@ -1,3 +1,5 @@
+using StringEncodings
+
 """
     read_data(filen)
 
@@ -292,10 +294,21 @@ function read_multipr_file(filen, ptype, channels, channel_map)
     return o_dict
 end
 
+function read_into_lines(filen, encoding)
+    if isnothing(encoding)
+        str = read(filen, String)
+    else
+        bytes = read(filen)
+        str = decode(bytes, encoding)
+    end
+    str = replace(str, "\r\n" => "\n")  # Normalize line endings
+    str = replace(str, "\r" => "\n")    # Handle any remaining carriage returns
+    return split(str, r"\n")  # Split into lines
+end
+
 function read_spectramax(filen, channels)
-    f = read(filen, String)
-    b = split(f, r"\n")
-    containsTime = [occursin(r"\d\d:\d\d:\d\d", j) ? 1 : 0 for j in b]
+    f = read_into_lines(filen, "UTF-16")
+    containsTime = [occursin(r"\d\d:\d\d:\d\d", j) ? 1 : 0 for j in f]
     function runlength(a, i)
         if i == length(a)
             return 1
@@ -313,16 +326,16 @@ function read_spectramax(filen, channels)
         table = []
         # Find and push header onto table (first row before i that contains Time and the row above it)
         for j in (i - 1):-1:1
-            if occursin("Time", b[j])
-                push!(table, b[j - 1])
-                push!(table, b[j])
+            if occursin("Time", f[j])
+                push!(table, f[j - 1])
+                push!(table, f[j])
                 break
             end
         end
         # Find and push the data onto table
-        for j in i:length(b)
+        for j in i:length(f)
             if containsTime[j] == 1
-                push!(table, b[j])
+                push!(table, f[j])
             else
                 break
             end
@@ -356,9 +369,8 @@ function read_spectramax(filen, channels)
 end
 
 function read_biotek(filen, channels)
-    f = replace(read(filen, String), "\r\n" => "\n")
-    b = split(f, r"\n")
-    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in b]
+    f = read_into_lines(filen, nothing)
+    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
     function runlength(a, i)
         if i == length(a)
             return 1
@@ -376,16 +388,16 @@ function read_biotek(filen, channels)
         table = []
         # Find and push header onto table (first row before i that contains Time and the row above it)
         for j in (i - 1):-1:1
-            if occursin("Time", b[j])
-                push!(table, b[j - 2])
-                push!(table, b[j])
+            if occursin("Time", f[j])
+                push!(table, f[j - 2])
+                push!(table, f[j])
                 break
             end
         end
         # Find and push the data onto table
-        for j in i:length(b)
+        for j in i:length(f)
             if containsTime[j] == 1
-                push!(table, b[j])
+                push!(table, f[j])
             else
                 break
             end
