@@ -89,6 +89,57 @@ function read_data(filen)
 end
 
 """
+    expand_group(group::AbstractString)
+
+Expand a condensed group name into the sample IDs it contains.
+For example, if the group is "plate_0[1,2]_[a:c]2", it will return all sample IDs
+from plate 1 to 2 and wells a2, b2, and c2.
+
+Args:
+- `group::AbstractString`: The group name to expand.
+
+Returns:
+- `Vector{String}`: A vector of sample IDs contained in the group.
+"""
+function expand_group(group::AbstractString)
+    parts = []
+    for match in eachmatch(r"\[([^\]]+)\]", group)
+        s = match.captures[1]
+        expanded = []
+        for item in split(s, ",")
+            item = strip(item)
+            if occursin(":", item)
+                if count(==(':'), item) == 3
+                    start, step, stop = split(item, ":")
+                else
+                    start, stop = split(item, ":")
+                    step = "1"
+                end
+                if occursin(r"\d", start)
+                    append!(expanded, string.(parse(Int, start):parse(Int, step):parse(Int, stop)))
+                else
+                    append!(expanded, collect(start[1]:parse(Int, step):stop[1]))
+                end
+            else
+                push!(expanded, item)
+            end
+        end
+        push!(parts, expanded)
+    end
+    # Replace bracketed sections with "{}" for formatting
+    fmt = replace(group, r"\[[^\]]+\]" => "{}")
+    ids = []
+    for x in Iterators.product(parts...)
+        id = fmt
+        for (i, y) in enumerate(eachmatch(r"\{\}", fmt))
+            id = replace(id, y.match => x[i], count = 1)
+        end
+        push!(ids, id)
+    end
+    return ids
+end
+
+"""
     write_esm(esm_dict, name)
 
 Write the esm_dict from read_data() to the path/file `name`.
@@ -445,10 +496,10 @@ function read_sep_chans_pr(channel_map, loc, channels)
     # TODO 1:(end-4) is a bit of a hack - this is to remove the .csv/.tsv from the end of the file
     out = Dict()
     for j in readdir(loc)
-        if j[1:end - 4] in channels
-            out[channel_map[j[1:end - 4]]] = CSV.read(joinpath(loc, j), DataFrame)
-        elseif j[1:end - 4] in [channel_map[channel] for channel in channels]
-            out[j[1:end - 4]] = CSV.read(joinpath(loc, j), DataFrame)
+        if j[1:(end - 4)] in channels
+            out[channel_map[j[1:(end - 4)]]] = CSV.read(joinpath(loc, j), DataFrame)
+        elseif j[1:(end - 4)] in [channel_map[channel] for channel in channels]
+            out[j[1:(end - 4)]] = CSV.read(joinpath(loc, j), DataFrame)
         end
     end
     return out
