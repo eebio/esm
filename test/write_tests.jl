@@ -63,6 +63,10 @@ end
     wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
     wells = [wells..., "plate_01_time", "plate_01_temperature(�c)"]  # Flatten to a 1D vector
     @test issetequal(keys(data[:samples]), wells)
+
+    @test_throws "Not all channels found in file" ESM.read_spectramax(
+        "inputs/spectramax-data.txt", ["fake channel", "600 700"],
+        Dict(["600 700" => "od1",]))
 end
 
 @testitem "read biotek" setup=[environment_path] begin
@@ -77,6 +81,10 @@ end
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_time"]  # Flatten to a 1D vector
     @test issubset(wells, keys(data[:samples])) # TODO should be issetequal, but there is some weirdness around how the temperature is stored in the data - there is a temperature column per channel which includes the channel name
+
+    @test_throws "Not all channels found in file" ESM.read_biotek(
+        "inputs/biotek-data.csv", ["fake channel", "600", "700"],
+        Dict(["600" => "od1", "700" => "od2"]))
 end
 
 @testitem "read plate reader directories" setup=[environment_path] begin
