@@ -366,16 +366,8 @@ function read_spectramax(filen, channels, channel_map)
             # Remove empty columns
             df = df[:, Not(all.(ismissing, eachcol(df)))]
             # Do I need to drop temperature?)
-            if chan in keys(channel_map)
-                out[channel_map[chan]] = df
-            else
-                out[chan] = df
-            end
+            out[channel_map[chan]] = df
         end
-    end
-
-    if !issetequal(keys(out), [chan in keys(channel_map) ? channel_map[chan] : chan for chan in channels])
-        error("Not all channels found in file. Found $(keys(out)) but requested $(channels). Please check the file and the channels requested.")
     end
     return out
 end
@@ -430,15 +422,8 @@ function read_biotek(filen, channels, channel_map)
             # Remove empty columns
             df = df[:, Not(all.(ismissing, eachcol(df)))]
             # Do I need to drop temperature?)
-            if chan in keys(channel_map)
-                out[channel_map[chan]] = df
-            else
-                out[chan] = df
-            end
+            out[channel_map[chan]] = df
         end
-    end
-    if !issetequal(keys(out), [chan in keys(channel_map) ? channel_map[chan] : chan for chan in channels])
-        error("Not all channels found in file. Found $(keys(out)) but requested $(channels). Please check the file and the channels requested.")
     end
     return out
 end
