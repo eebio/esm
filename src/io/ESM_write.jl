@@ -109,7 +109,7 @@ function expand_group(group::AbstractString)
         for item in split(s, ",")
             item = strip(item)
             if occursin(":", item)
-                if count(==(':'), item) == 3
+                if count(==(':'), item) == 2
                     start, step, stop = split(item, ":")
                 else
                     start, stop = split(item, ":")
