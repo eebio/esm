@@ -338,6 +338,24 @@ function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
 end
 
 """
+    df2time(time_col)
+
+Converts a time column in a DataFrame with String elements to time in seconds.
+
+Args:
+- `time_col=<DataFrame>`: DataFrame with time values.
+"""
+function df2time(time_col::DataFrame)
+    if eltype(time_col[!, 1]) != String
+        # Assume already converted
+        return time_col
+    end
+    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
+    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    return time_col
+end
+
+"""
     between_times(df,time_col;mint,maxt)
 
 Returns the DataFrame between two timepoints.
@@ -350,8 +368,7 @@ Args:
 - `maxt=<Float64>`: Max time in mins.
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    time_col = df2time(time_col)
     # Do time calculations in seconds to avoid floating point math
     tvals = index_between_vals(time_col; minv = mint * 60, maxv = maxt * 60)[names(time_col)[1]]
     if isnothing(tvals[1]) || isnothing(tvals[2])
@@ -376,8 +393,7 @@ Args:
 - `time_point=<Float64>`: Time point in mins at which to report the measurement.
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    time_col = df2time(time_col)
     tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60)[names(time_col)[1]]
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."
@@ -440,8 +456,7 @@ Args:
 function doubling_time(df::DataFrame, time_col::DataFrame; max_od::Float64 = 0.4)
     min_od = max_od / 4
     dict_2 = Dict()
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    time_col = df2time(time_col)
     for i in names(df)
         indexes = index_between_vals(df; minv = min_od, maxv = max_od)[i]
         # Is the max greater than what we can deal with?
