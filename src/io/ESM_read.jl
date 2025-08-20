@@ -348,7 +348,7 @@ Args:
 - `time_col=<DataFrame>`: DataFrame with time values.
 """
 function df2time(time_col::DataFrame)
-    if eltype(time_col[!, 1]) != String
+    if typeof(time_col[1, 1]) != String
         # Assume already converted
         return time_col
     end
