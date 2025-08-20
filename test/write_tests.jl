@@ -94,3 +94,12 @@ end
     @test data[:samples]["plate_01_a1"][:values]["flo"][1:3] == [21, 22, 20]
     @test data[:samples]["plate_01_h12"][:values]["flo"][end] == 7
 end
+
+@testitem "expand_group" begin
+    @test ESM.expand_group("plate_01_a[1:3]") == ["plate_01_a1", "plate_01_a2", "plate_01_a3"]
+    @test ESM.expand_group("plate_01_a[2:4]") == ["plate_01_a2", "plate_01_a3", "plate_01_a4"]
+    @test ESM.expand_group("plate_01_[a:d]1") == ["plate_01_a1", "plate_01_b1", "plate_01_c1", "plate_01_d1"]
+    @test ESM.expand_group("plate_01_[a:c]1[2:3]") == ["plate_01_a12", "plate_01_b12", "plate_01_c12", "plate_01_a13", "plate_01_b13", "plate_01_c13"]
+    @test ESM.expand_group("plate_01_[a:2:e]1") == ["plate_01_a1", "plate_01_c1", "plate_01_e1"]
+    @test ESM.expand_group("plate_01_a[1:3:10]") == ["plate_01_a1", "plate_01_a4", "plate_01_a7", "plate_01_a10"]
+end
