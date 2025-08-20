@@ -496,21 +496,21 @@ function growth_rate(df, time_col; window_size = 10)
             endtime = starttime + window_size
             sub_df = between_times(
                 df, time_col; mint = starttime, maxt = endtime)
-            if nrow(sub_df) < 2
-                if starttime == time_col[1, 1] / 60
-                    error("Not enough data to calculate growth rate for $i with window size $window_size minutes. Please increase the window size.")
-                end
+            starttime = endtime
+            if starttime > time_col[end, 1] / 60 + window_size
                 break
+            end
+            if nrow(sub_df) < 2
+                continue
             end
             tvals = sub_df[!, end] ./ 60 # convert to minutes
             yvals = log.(sub_df[!, i])
             lmfit = lm(@formula(y~t), DataFrame(y = yvals, t = tvals))
             rate = coef(lmfit)[2]
             push!(growth_rate, rate)
-            starttime = endtime
-            if endtime > time_col[end, 1] / 60
-                break
-            end
+        end
+        if length(growth_rate) == 0
+            error("No growth rate could be calculated for $i. The window size may be too small.")
         end
         dict_2[i] = maximum(growth_rate)
     end

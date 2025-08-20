@@ -322,6 +322,9 @@ end
         "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
 
     @test ESM.growth_rate(od_df, time_col; window_size = 2)[1, "A"] ≈ log(2)
+
+    @test_throws "No growth rate could be calculated" ESM.growth_rate(
+        od_df, time_col; window_size = 0.5)
 end
 
 @testitem "expression" setup=[MockESM] begin
