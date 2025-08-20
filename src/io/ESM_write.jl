@@ -282,9 +282,9 @@ function read_multipr_file(filen, ptype, channels, channel_map)
     # TODO: Add bmg labtech reading
     o_dict = Dict()
     if ptype == "spectramax"
-        o_dict = read_spectramax(filen, channels)
+        o_dict = read_spectramax(filen, channels, channel_map)
     elseif ptype == "biotek"
-        o_dict = read_biotek(filen, channels)
+        o_dict = read_biotek(filen, channels, channel_map)
     else
         error("Unknown plate reader type: $ptype.")
     end
@@ -318,7 +318,7 @@ function read_into_lines(filen)
     return split(str, r"\n")  # Split into lines
 end
 
-function read_spectramax(filen, channels)
+function read_spectramax(filen, channels, channel_map)
     f = read_into_lines(filen)
     containsTime = [occursin(r"\d\d:\d\d:\d\d", j) ? 1 : 0 for j in f]
     function runlength(a, i)
@@ -366,16 +366,13 @@ function read_spectramax(filen, channels)
             # Remove empty columns
             df = df[:, Not(all.(ismissing, eachcol(df)))]
             # Do I need to drop temperature?)
-            out[chan] = df
+            out[channel_map[chan]] = df
         end
-    end
-    if !issetequal(keys(out), channels)
-        error("Not all channels found in file. Found $(keys(out)) but requested $(channels). Please check the file and the channels requested.")
     end
     return out
 end
 
-function read_biotek(filen, channels)
+function read_biotek(filen, channels, channel_map)
     f = read_into_lines(filen)
     containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
     function runlength(a, i)
@@ -425,11 +422,8 @@ function read_biotek(filen, channels)
             # Remove empty columns
             df = df[:, Not(all.(ismissing, eachcol(df)))]
             # Do I need to drop temperature?)
-            out[chan] = df
+            out[channel_map[chan]] = df
         end
-    end
-    if !issetequal(keys(out), channels)
-        error("Not all channels found in file. Found $(keys(out)) but requested $(channels). Please check the file and the channels requested.")
     end
     return out
 end
