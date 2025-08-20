@@ -75,8 +75,7 @@ end
           [0.134, 0.133, 0.131, 0.131]
     @test data[:samples]["plate_01_h12"][:values]["od2"][[1, 2, end - 1, end]] == [
         0.114, 0.113, 0.577, 0.578]
-    @test data[:samples]["plate_01_a2"][:values]["flu2"][[
-        1, 2, end - 1, end]] == [
+    @test data[:samples]["plate_01_a2"][:values]["485,530[2]"][[1, 2, end - 1, end]] == [
         166, 162, 1030, 1024]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_time"]  # Flatten to a 1D vector
