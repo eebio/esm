@@ -56,9 +56,9 @@ end
     data = ESM.read_data("inputs/spectramax.xlsx")
     # TODO should probably separate the channels into 600 and 700?
     # TODO channel is currently 535 for fluorescence but the 485 is also relevant
-    @test data[:samples]["plate_01_a1"][:values]["600 700"][[1, 2, end - 1, end]] ==
+    @test data[:samples]["plate_01_a1"][:values]["abs"][[1, 2, end - 1, end]] ==
           [0.1493, 0.1623, 0.3297, 0.3629]
-    @test data[:samples]["plate_01_e12"][:values]["600 700"][[1, 2, end - 1, end]] == [
+    @test data[:samples]["plate_01_e12"][:values]["abs"][[1, 2, end - 1, end]] == [
         0.0776, 0.0772, 0.2173, 0.2359]
     wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
     wells = [wells..., "plate_01_time", "plate_01_temperature(�c)"]  # Flatten to a 1D vector
@@ -67,11 +67,11 @@ end
 
 @testitem "read biotek" setup=[environment_path] begin
     data = ESM.read_data("inputs/biotek.xlsx")
-    @test data[:samples]["plate_01_a1"][:values]["600"][[1, 2, end - 1, end]] ==
+    @test data[:samples]["plate_01_a1"][:values]["od1"][[1, 2, end - 1, end]] ==
           [0.134, 0.133, 0.131, 0.131]
-    @test data[:samples]["plate_01_h12"][:values]["700"][[1, 2, end - 1, end]] == [
+    @test data[:samples]["plate_01_h12"][:values]["od2"][[1, 2, end - 1, end]] == [
         0.114, 0.113, 0.577, 0.578]
-    @test data[:samples]["plate_01_a2"][:values]["485,530[2]"][[
+    @test data[:samples]["plate_01_a2"][:values]["flu2"][[
         1, 2, end - 1, end]] == [
         166, 162, 1030, 1024]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
