@@ -314,6 +314,19 @@ end
     # TODO: Add some more tests with more awkward data
 end
 
+@testitem "growth_rate" begin
+    using DataFrames
+
+    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
+    time_col = DataFrame(Time = [
+        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
+
+    @test ESM.growth_rate(od_df, time_col; window_size = 2)[1, "A"] ≈ log(2)
+
+    @test_throws "No growth rate could be calculated" ESM.growth_rate(
+        od_df, time_col; window_size = 0.5)
+end
+
 @testitem "expression" setup=[MockESM] begin
     global ESM.es = ESM.read_esm(MockESM.temp_file)
     ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")

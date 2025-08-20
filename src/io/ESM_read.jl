@@ -1,3 +1,5 @@
+using GLM
+
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
 
@@ -338,6 +340,24 @@ function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
 end
 
 """
+    df2time(time_col)
+
+Converts a time column in a DataFrame with String elements to time in seconds.
+
+Args:
+- `time_col=<DataFrame>`: DataFrame with time values.
+"""
+function df2time(time_col::DataFrame)
+    if typeof(time_col[1, 1]) != String
+        # Assume already converted
+        return time_col
+    end
+    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
+    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    return time_col
+end
+
+"""
     between_times(df,time_col;mint,maxt)
 
 Returns the DataFrame between two timepoints.
@@ -350,8 +370,7 @@ Args:
 - `maxt=<Float64>`: Max time in mins.
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    time_col = df2time(time_col)
     # Do time calculations in seconds to avoid floating point math
     tvals = index_between_vals(time_col; minv = mint * 60, maxv = maxt * 60)[names(time_col)[1]]
     if isnothing(tvals[1]) || isnothing(tvals[2])
@@ -376,8 +395,7 @@ Args:
 - `time_point=<Float64>`: Time point in mins at which to report the measurement.
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    time_col = df2time(time_col)
     tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60)[names(time_col)[1]]
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."
@@ -440,8 +458,7 @@ Args:
 function doubling_time(df::DataFrame, time_col::DataFrame; max_od::Float64 = 0.4)
     min_od = max_od / 4
     dict_2 = Dict()
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
+    time_col = df2time(time_col)
     for i in names(df)
         indexes = index_between_vals(df; minv = min_od, maxv = max_od)[i]
         # Is the max greater than what we can deal with?
@@ -451,6 +468,51 @@ function doubling_time(df::DataFrame, time_col::DataFrame; max_od::Float64 = 0.4
             dict_2[i] = (time_col[indexes[2], 1] - time_col[indexes[1], 1]) /
                         log2(df[indexes[2], 1] / df[indexes[1], 1]) / 60
         end
+    end
+    return DataFrame(dict_2)
+end
+
+"""
+    growth_rate(df; window_size=10)
+
+Calculates the growth rate of a given dataframe. Returns in min^-1 using base e.
+
+Args:
+
+- `df=<DataFrame>`: DataFrame containing the data.
+- `window_size=10`: Size of the window (in minutes) to use for calculating the growth rate. Defaults to 10.
+"""
+function growth_rate(df, time_col; window_size = 10)
+    dict_2 = Dict()
+    time_col = df2time(time_col)
+    df = hcat(df, time_col)
+    for i in names(df)
+        if i in names(time_col)
+            continue
+        end
+        growth_rate = []
+        starttime = time_col[1, 1] / 60 # convert to minutes
+        while true
+            endtime = starttime + window_size
+            sub_df = between_times(
+                df, time_col; mint = starttime, maxt = endtime)
+            starttime = endtime
+            if starttime > time_col[end, 1] / 60 + window_size
+                break
+            end
+            if nrow(sub_df) < 2
+                continue
+            end
+            tvals = sub_df[!, end] ./ 60 # convert to minutes
+            yvals = log.(sub_df[!, i])
+            lmfit = lm(@formula(y~t), DataFrame(y = yvals, t = tvals))
+            rate = coef(lmfit)[2]
+            push!(growth_rate, rate)
+        end
+        if length(growth_rate) == 0
+            error("No growth rate could be calculated for $i. The window size may be too small.")
+        end
+        dict_2[i] = maximum(growth_rate)
     end
     return DataFrame(dict_2)
 end

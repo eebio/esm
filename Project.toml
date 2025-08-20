@@ -11,6 +11,7 @@ DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FCSFiles = "d76558cf-badf-52d4-a17e-381ab0b0d937"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+GLM = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 KernelDensity = "5ab0869b-81aa-558d-bb23-cbf5423bbe9b"
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
@@ -22,4 +23,5 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
 
 [compat]
+GLM = "1.9.0"
 StringEncodings = "0.3.7"
