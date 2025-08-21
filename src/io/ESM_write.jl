@@ -150,11 +150,9 @@ function expand_groups(groups::AbstractString)
         well = strip(well)
         if occursin(r"\[|\]", well)
             append!(expanded, expand_group(well))
-            @show expanded
         else
             push!(expanded, well)
         end
-        @show well
     end
     return expanded
 end
