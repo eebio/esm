@@ -19,8 +19,7 @@ function read_data(filen)
     id_dict = Dict(i."Current" => i."Target" for i in eachrow(ID))
     sample_dict = OrderedDict()
     group_dict = OrderedDict(i.Group => Dict(
-                                 "sample_IDs" => replace.(
-                                     Vector(split(i.Name, ",")), " " => ""),
+                                 "sample_IDs" => expand_groups(i.Name),
                                  :type => "experimental",
                                  "metadata" => Dict(j => i[j, :]
                                  for j in names(i) if !(j in ["Group", "Name"])))
