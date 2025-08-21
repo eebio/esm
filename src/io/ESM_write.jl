@@ -140,6 +140,27 @@ function expand_group(group::AbstractString)
 end
 
 """
+    expand_groups(groups::AbstractString)
+"""
+function expand_groups(groups::AbstractString)
+    expanded = []
+    # Split on commas not inside brackets
+    # Split on commas not inside brackets
+    wells = split(groups, r",(?![^\[]*\])")
+    for well in wells
+        well = strip(well)
+        if occursin(r"\[|\]", well)
+            append!(expanded, expand_group(well))
+            @show expanded
+        else
+            push!(expanded, well)
+        end
+        @show well
+    end
+    return expanded
+end
+
+"""
     write_esm(esm_dict, name)
 
 Write the esm_dict from read_data() to the path/file `name`.

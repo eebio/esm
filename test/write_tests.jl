@@ -102,4 +102,9 @@ end
     @test ESM.expand_group("plate_01_[a:c]1[2:3]") == ["plate_01_a12", "plate_01_b12", "plate_01_c12", "plate_01_a13", "plate_01_b13", "plate_01_c13"]
     @test ESM.expand_group("plate_01_[a:2:e]1") == ["plate_01_a1", "plate_01_c1", "plate_01_e1"]
     @test ESM.expand_group("plate_01_a[1:3:10]") == ["plate_01_a1", "plate_01_a4", "plate_01_a7", "plate_01_a10"]
+
+    # expand_groups
+    @test ESM.expand_groups("plate_01_a[1:3],plate_01_b[2:4], plate_02_c5,plate_01_d[1,2]") ==
+          ["plate_01_a1", "plate_01_a2", "plate_01_a3", "plate_01_b2", "plate_01_b3", "plate_01_b4",
+           "plate_02_c5", "plate_01_d1", "plate_01_d2"]
 end
