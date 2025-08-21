@@ -6,6 +6,9 @@
     @test es[:samples]["plate_02_a1"][:type] == "population"
     @test es[:samples]["plate_02_a1"][:meta]["FL1-H"][:range] == "1024"
     @test es[:samples]["plate_02_a1"][:meta]["FL1-H"][:amp_type] == "0,0"
+    @test es[:groups]["first_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A5", "plate_01_A9"]
+    @test es[:groups]["second_group"]["sample_IDs"] == ["plate_01_A3", "plate_01_A8", "plate_01_A7"]
+    @test es[:groups]["third_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A2", "plate_01_A3"]
 end
 
 @testitem "write esm" setup=[environment_path] begin
