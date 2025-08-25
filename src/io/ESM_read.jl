@@ -732,3 +732,57 @@ function density_gate(data, channels = []; gate_frac = 0.65, nbins = 1024, outsi
         return out_df
     end
 end
+
+"""
+    summarise_esm(file)
+
+Summarises the contents of an esm file.
+
+Args:
+
+- `file::String`: The path to the esm file to be summarised.
+"""
+function summarise_esm(file::String)
+    # Read the esm file
+    es = read_esm(file)
+
+    println("")
+    # Print a summary of the contents
+    @info "Summary of ESM file: $file"
+    # Summarise samples
+    @info "Summarising samples"
+    # Number of timeseries and populations
+    @info "Number of timeseries: $(sum(es.samples[!,"type"].=="timeseries"))"
+    @info "Number of populations: $(sum(es.samples[!,"type"].=="population"))"
+    @info "Available channels are: $(unique(es.samples[!,"channel"]))"
+
+    println("")
+    # Summarise groups
+    @info "Summarising groups"
+    @info "Number of groups: $(nrow(es.groups))"
+    @info "Number of manually defined groups: $(sum("autodefined" .∉ keys.(es.groups[!,"metadata"])))"
+    @info "Number of autodefined groups (such as for plates): $(sum([
+        "autodefined" ∈ keys(es.groups[i,"metadata"]) &&
+        es.groups[i,"metadata"]["autodefined"]=="true"
+        for i in eachindex(es.groups[!,"metadata"])]))"
+    group_sizes = Dict(i["group"] => length(i["sample_IDs"]) for i in eachrow(es.groups))
+    for (key, value) in sort(group_sizes)
+        @info "Group $key has size $value and is$("autodefined" ∉ keys(first(es.groups[es.groups[!, "group"] .== key, "metadata"])) ? " not" : "") autodefined."
+    end
+
+    println("")
+    # Summarise transformations
+    @info "Summarising transformations"
+    @info "Number of transformations: $(length(es.transformations))"
+    for (key, value) in sort(es.transformations)
+        @info "Transformation $key: $(value["equation"])"
+    end
+
+    println("")
+    # Summarise views
+    @info "Summarising views"
+    @info "Number of views: $(length(es.views))"
+    for (key, value) in sort(es.views)
+        @info "View $key: $(value["data"])"
+    end
+end
