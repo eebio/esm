@@ -408,11 +408,15 @@ end
 
 @testitem "summarise" begin
     ESM.summarise_esm("inputs/example.esm"; plot = true)
+    @test isfile("inputs/example.esm.pdf")
     rm("inputs/example.esm.pdf")
     ESM.summarise_fcs("inputs/small.fcs"; plot = true)
+    @test isfile("inputs/small.fcs.pdf")
     rm("inputs/small.fcs.pdf")
     ESM.summarise_spectramax("inputs/spectramax-data.txt"; plot = true)
+    @test isfile("inputs/spectramax-data.txt.pdf")
     rm("inputs/spectramax-data.txt.pdf")
     ESM.summarise_biotek("inputs/biotek-data.csv"; plot = true)
+    @test isfile("inputs/biotek-data.csv.pdf")
     rm("inputs/biotek-data.csv.pdf")
 end
