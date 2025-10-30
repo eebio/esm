@@ -93,14 +93,17 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 - `-f, --file=<String>`: The data file to be summarised.
 - `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm", "spectramax", "biotek", "fcs". If "auto" is selected, the type will be inferred from the file extension (or raise an error if not possible).
 
+# Flags
+
+- `-p, --plot`: Produce plots of the data. Only available for some types.
 """
-@cast function summarise(; file=nothing, type::String="auto")
+@cast function summarise(; file=nothing, type="auto", plot=false)
     if isnothing(file)
         error("Please provide a file to be summarised using the -f or --file option.")
     end
     # If type=="auto", attempt to infer from file extension
     if type == "auto"
-        ext = splitext(file)[2]
+        ext = splitext(file)[end]
         if ext == ".esm"
             type = "esm"
         elseif ext == ".fcs"
@@ -111,7 +114,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
     end
     if type == "esm"
         # Read the esm file and print a summary
-        summarise_esm(file)
+        summarise_esm(file; plot=plot)
     elseif type == "fcs"
         # Read the fcs file and print a summary
         summarise_fcs(file)

@@ -1,4 +1,6 @@
 using GLM
+using Plots
+using PDFmerger
 
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
@@ -609,7 +611,8 @@ function to_rfi(sample_name; chans = [])
     o = Dict()
     for i in chans
         # Load metadata for channel
-        at = parse.(Float64, split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
+        at = parse.(
+            Float64, split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
         ran = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
         if at[1] == 0
             local ag
@@ -624,8 +627,8 @@ function to_rfi(sample_name; chans = [])
                 end
             end
             o[i] = Dict(
-                    :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ ag,
-                    :min => 1 / ag, :max => ran / ag)
+                :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ ag,
+                :min => 1 / ag, :max => ran / ag)
         else
             # Non-linear gain
             o[i] = Dict(
@@ -742,7 +745,7 @@ Args:
 
 - `file::String`: The path to the esm file to be summarised.
 """
-function summarise_esm(file::String)
+function summarise_esm(file; plot=false)
     # Read the esm file
     es = read_esm(file)
 
@@ -784,5 +787,22 @@ function summarise_esm(file::String)
     @info "Number of views: $(length(es.views))"
     for (key, value) in sort(es.views)
         @info "View $key: $(value["data"])"
+    end
+
+    if plot
+        # Plot all timeseries
+        @info "Plotting timeseries data"
+        # TODO need to know the times for all samples automatically
+        dir = mktempdir()
+        for r in eachrow(es.samples)
+            if r.type == "timeseries"
+                p = Plots.plot(r.values,
+                    xlabel = "Time (#units missing#)", ylabel = "Value",
+                    title = "Timeseries for $(string(r.name))")
+                savefig(p, joinpath(dir, string(r.name) * ".pdf"))
+            end
+        end
+        filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
+        merge_pdfs(filepaths, string(file) * ".pdf")
     end
 end
