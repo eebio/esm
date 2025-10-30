@@ -117,7 +117,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         summarise_esm(file; plot=plot)
     elseif type == "fcs"
         # Read the fcs file and print a summary
-        summarise_fcs(file)
+        summarise_fcs(file; plot=plot)
     elseif type == "spectramax"
         # Read the data into an ESM format, and then print a summary
         summarise_spectramax(file; plot=plot)

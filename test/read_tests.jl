@@ -409,8 +409,8 @@ end
 @testitem "summarise" begin
     ESM.summarise_esm("inputs/example.esm"; plot = true)
     rm("inputs/example.esm.pdf")
-    ESM.summarise_fcs("inputs/example.fcs"; plot = true)
-    rm("inputs/example.fcs.pdf")
+    ESM.summarise_fcs("inputs/small.fcs"; plot = true)
+    rm("inputs/small.fcs.pdf")
     ESM.summarise_spectramax("inputs/spectramax-data.txt"; plot = true)
     rm("inputs/spectramax-data.txt.pdf")
     ESM.summarise_biotek("inputs/biotek-data.csv"; plot = true)

@@ -5,6 +5,7 @@ version = "0.1.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 Comonicon = "863f3e99-da2a-4334-8734-de3dacbe5542"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
@@ -25,6 +26,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
 
 [compat]
+Combinatorics = "1.0.3"
 GLM = "1.9.0"
 PDFmerger = "0.3.3"
 Plots = "1.41.1"

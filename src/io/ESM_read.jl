@@ -1,6 +1,7 @@
 using GLM
 using Plots
 using PDFmerger
+using Combinatorics
 
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
@@ -979,5 +980,45 @@ function summarise_biotek(file; plot = false)
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
         merge_pdfs(filepaths, string(file) * ".pdf")
+    end
+end
+
+function summarise_fcs(file; plot = false)
+    f = load(file)
+    @info "Summary of FCS file: $file"
+    @show f
+    println("")
+    # Summarise channels
+    @info "Summarising channels"
+    @info "Number of channels: $(length(keys(f)) - 1)" # Exclude the "Time" key
+    for key in keys(f)
+        if key == "Time"
+            continue
+        end
+        @info "Channel $key: $(length(f[key])) events."
+        @info "Values range from $(minimum(f[key])) to $(maximum(f[key]))."
+    end
+    @info "Time ranges from $(minimum(f["Time"])) to $(maximum(f["Time"])) with $(length(f["Time"])) timepoints."
+
+    if plot
+        @info "Plotting FCS data"
+        dir = mktempdir()
+        channels = [c for c in keys(f) if c != "Time"]
+        for c in channels
+            p = histogram(f[c],
+                xlabel = "$c", ylabel = "Count")
+            savefig(p, joinpath(dir, string(c) * ".pdf"))
+        end
+        filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
+        merge_pdfs(filepaths, string(file) * ".pdf")
+        dir = mktempdir()
+        for (c1, c2) in combinations(channels, 2)
+            p = histogram2d(f[c1], f[c2],
+                xlabel = "$c1", ylabel = "$c2")
+            savefig(p, joinpath(dir, string(c1) * string(c2) * ".pdf"))
+        end
+        filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
+        merge_pdfs(filepaths, joinpath(dir, "temp.pdf"))
+        append_pdf!(string(file) * ".pdf", joinpath(dir, "temp.pdf"))
     end
 end
