@@ -97,7 +97,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 
 - `-p, --plot`: Produce plots of the data. Only available for some types.
 """
-@cast function summarise(; file=nothing, type="auto", plot=false)
+@cast function summarise(; file=nothing, type="auto", plot::Bool=false)
     if isnothing(file)
         error("Please provide a file to be summarised using the -f or --file option.")
     end
