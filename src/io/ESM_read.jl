@@ -744,6 +744,7 @@ Summarises the contents of an esm file.
 Args:
 
 - `file::String`: The path to the esm file to be summarised.
+- `plot::Bool`: Whether to plot the timeseries data.
 """
 function summarise_esm(file; plot=false)
     # Read the esm file
@@ -815,6 +816,7 @@ Summarises a SpectraMax output file.
 Args:
 
 - `file::String`: Path to the SpectraMax file.
+- `plot::Bool`: Whether to plot the data.
 """
 function summarise_spectramax(file; plot = false)
     f = read_into_lines(file)
@@ -900,6 +902,7 @@ Summarises a Biotek output file.
 Args:
 
 - `file::String`: Path to the Biotek file.
+- `plot::Bool`: Whether to plot the data.
 """
 function summarise_biotek(file; plot = false)
     f = read_into_lines(file)
