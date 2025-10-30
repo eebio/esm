@@ -120,7 +120,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         summarise_fcs(file)
     elseif type == "spectramax"
         # Read the data into an ESM format, and then print a summary
-        summarise_spectramax(file)
+        summarise_spectramax(file; plot=plot)
     elseif type == "biotek"
         # Read the data into an ESM format, and then print a summary
         summarise_biotek(file)
