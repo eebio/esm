@@ -892,3 +892,89 @@ function summarise_spectramax(file; plot = false)
         merge_pdfs(filepaths, string(file) * ".pdf")
     end
 end
+
+"""
+    summarise_biotek(file)
+Summarises a Biotek output file.
+
+Args:
+
+- `file::String`: Path to the Biotek file.
+"""
+function summarise_biotek(file; plot = false)
+    f = read_into_lines(file)
+    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
+    function runlength(a, i)
+        if i == length(a)
+            return 1
+        elseif a[i] == 1
+            return runlength(a, i + 1) + 1
+        else
+            return 0
+        end
+    end
+    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
+    datalocations = findall(x -> x == maximum(rl), rl)
+    # Trim the data to only the relevant parts
+    data = []
+    for i in datalocations
+        table = []
+        # Find and push header onto table (first row before i that contains Time and the row above it)
+        for j in (i - 1):-1:1
+            if occursin("Time", f[j])
+                push!(table, f[j - 2])
+                push!(table, f[j])
+                break
+            end
+        end
+        # Find and push the data onto table
+        for j in i:length(f)
+            if containsTime[j] == 1
+                push!(table, f[j])
+            else
+                break
+            end
+        end
+        push!(data, table)
+    end
+    # Create the dataframes
+    out = Dict()
+    for i in eachindex(data)
+        channel = split(data[i][1], ":")[end]
+        # Remove channel name from the first row
+        data[i][2] = replace(data[i][2], " $(data[i][1])" => "")
+        # Read the data into a DataFrame
+        df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame)
+        # Remove empty columns
+        df = df[:, Not(all.(ismissing, eachcol(df)))]
+        # Do I need to drop temperature?)
+        out[channel] = df
+    end
+
+    @info "Summary of BioTek file: $file"
+    println("")
+    # Summarise channels
+    @info "Summarising channels"
+    @info "Number of channels: $(length(keys(out)))"
+    for (key, value) in out
+        @info "Channel $key: $(nrow(value)) timepoints and $(ncol(value) - 1) samples."
+        @info "Timepoints range from $(value[1, 1]) to $(value[end, 1])."
+    end
+
+    if plot
+        # Plot all timeseries
+        @info "Plotting timeseries data"
+        # TODO need to know the times for all samples automatically
+        dir = mktempdir()
+        for (key, value) in out
+            for col in names(value)[2:end]
+                p = Plots.plot(value[!, 1], value[!, col],
+                    xlabel = "Time (#units missing#)", ylabel = "Value",
+                    title = "Timeseries for $col: Channel $key")
+                savefig(p, joinpath(dir, string(col) * string(key) * ".pdf"))
+            end
+        end
+        filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
+        merge_pdfs(filepaths, string(file) * ".pdf")
+    end
+end

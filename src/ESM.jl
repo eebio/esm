@@ -123,7 +123,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         summarise_spectramax(file; plot=plot)
     elseif type == "biotek"
         # Read the data into an ESM format, and then print a summary
-        summarise_biotek(file)
+        summarise_biotek(file; plot=plot)
     else
         error("Unsupported file type: $type.")
     end
