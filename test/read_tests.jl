@@ -419,4 +419,9 @@ end
     ESM.summarise_biotek("inputs/biotek-data.csv"; plot = true)
     @test isfile("inputs/biotek-data.csv.pdf")
     rm("inputs/biotek-data.csv.pdf")
+
+    # Error checking
+    @test_throws "Please provide" ESM.summarise()
+    @test_throws "File type" ESM.summarise(file="biotek-data.csv")
+    @test_throws "Unsupported" ESM.summarise(file="inputs/unknown.txt", type="unknown")
 end
