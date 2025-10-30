@@ -405,3 +405,14 @@ end
     # Log scaling test
     @test out["SSC-H"][:data] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
 end
+
+@testitem "summarise" begin
+    ESM.summarise_esm("inputs/example.esm"; plot = true)
+    rm("inputs/example.esm.pdf")
+    ESM.summarise_fcs("inputs/example.fcs"; plot = true)
+    rm("inputs/example.fcs.pdf")
+    ESM.summarise_spectramax("inputs/spectramax-data.txt"; plot = true)
+    rm("inputs/spectramax-data.txt.pdf")
+    ESM.summarise_biotek("inputs/biotek-data.csv"; plot = true)
+    rm("inputs/biotek-data.csv.pdf")
+end
