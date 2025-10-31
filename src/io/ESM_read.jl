@@ -255,7 +255,7 @@ function view_to_csv(es, trans_meta_map; outdir = "", to_out = [])
 end
 
 """
-    read_es(filen)
+    read_esm(filen)
 
 Reads and processes the esm file produced at a file name and creates the esm_zones struct.
 
