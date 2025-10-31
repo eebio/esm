@@ -432,6 +432,10 @@ function read_spectramax(filen, channels, channel_map)
             end
             # Get the data
             df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
+            temp_name = names(df)[2]
+            rename!(df, temp_name => "Temperature")
+            time_name = names(df)[1]
+            rename!(df, time_name => "Time")
             # Remove empty columns
             df = df[:, Not(all.(ismissing, eachcol(df)))]
             # Do I need to drop temperature?)
@@ -488,6 +492,10 @@ function read_biotek(filen, channels, channel_map)
             data[i][2] = replace(data[i][2], " $(data[i][1])" => "")
             # Read the data into a DataFrame
             df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame)
+            temp_name = names(df)[2]
+            rename!(df, temp_name => "Temperature")
+            time_name = names(df)[1]
+            rename!(df, time_name => "Time")
             # Remove empty columns
             df = df[:, Not(all.(ismissing, eachcol(df)))]
             # Do I need to drop temperature?)
