@@ -859,7 +859,7 @@ function summarise_spectramax(file; plot = false)
     out = Dict()
     for i in eachindex(data)
         tmp = split(data[i][1], "\t")
-        channel = tmp[6] == "Fluorescence" ? tmp[14] : tmp[13]
+        channel = strip(tmp[6] == "Fluorescence" ? tmp[14] : tmp[13])
         # Get the data
         df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
         temp_name = names(df)[2]
@@ -949,7 +949,7 @@ function summarise_biotek(file; plot = false)
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
-        channel = split(data[i][1], ":")[end]
+        channel = strip(split(data[i][1], ":")[end])
         # Remove channel name from the first row
         data[i][2] = replace(data[i][2], " $(data[i][1])" => "")
         # Read the data into a DataFrame
