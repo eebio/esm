@@ -866,7 +866,6 @@ function summarise_spectramax(file; plot = false)
         rename!(df, temp_name => "temperature")
         time_name = names(df)[1]
         rename!(df, time_name => "time")
-        @show names(df)
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Do I need to drop temperature?)
