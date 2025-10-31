@@ -863,10 +863,9 @@ function summarise_spectramax(file; plot = false)
         # Get the data
         df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
         temp_name = names(df)[2]
-        rename!(df, temp_name => "Temperature")
+        rename!(df, temp_name => "temperature")
         time_name = names(df)[1]
-        rename!(df, time_name => "Time")
-        @show names(df)
+        rename!(df, time_name => "time")
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Do I need to drop temperature?)
@@ -955,9 +954,9 @@ function summarise_biotek(file; plot = false)
         # Read the data into a DataFrame
         df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame)
         temp_name = names(df)[2]
-        rename!(df, temp_name => "Temperature")
+        rename!(df, temp_name => "temperature")
         time_name = names(df)[1]
-        rename!(df, time_name => "Time")
+        rename!(df, time_name => "time")
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Do I need to drop temperature?)

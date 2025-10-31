@@ -64,7 +64,7 @@ end
     @test data[:samples]["plate_01_e12"][:values]["abs"][[1, 2, end - 1, end]] == [
         0.0776, 0.0772, 0.2173, 0.2359]
     wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
-    wells = [wells..., "plate_01_time", "plate_01_temperature(�c)"]  # Flatten to a 1D vector
+    wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
     @test issetequal(keys(data[:samples]), wells)
 end
 
@@ -77,8 +77,8 @@ end
     @test data[:samples]["plate_01_a2"][:values]["485,530[2]"][[1, 2, end - 1, end]] == [
         166, 162, 1030, 1024]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
-    wells = [wells..., "plate_01_time"]  # Flatten to a 1D vector
-    @test issubset(wells, keys(data[:samples])) # TODO should be issetequal, but there is some weirdness around how the temperature is stored in the data - there is a temperature column per channel which includes the channel name
+    wells = [wells..., "plate_01_temperature", "plate_01_time"]  # Flatten to a 1D vector
+    @test issetequal(wells, keys(data[:samples]))
 end
 
 @testitem "read plate reader directories" setup=[environment_path] begin
