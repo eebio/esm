@@ -405,3 +405,23 @@ end
     # Log scaling test
     @test out["SSC-H"][:data] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
 end
+
+@testitem "summarise" begin
+    ESM.summarise_esm("inputs/example.esm"; plot = true)
+    @test isfile("inputs/example.esm.pdf")
+    rm("inputs/example.esm.pdf")
+    ESM.summarise_fcs("inputs/small.fcs"; plot = true)
+    @test isfile("inputs/small.fcs.pdf")
+    rm("inputs/small.fcs.pdf")
+    ESM.summarise_spectramax("inputs/spectramax-data.txt"; plot = true)
+    @test isfile("inputs/spectramax-data.txt.pdf")
+    rm("inputs/spectramax-data.txt.pdf")
+    ESM.summarise_biotek("inputs/biotek-data.csv"; plot = true)
+    @test isfile("inputs/biotek-data.csv.pdf")
+    rm("inputs/biotek-data.csv.pdf")
+
+    # Error checking
+    @test_throws "Please provide" ESM.summarise()
+    @test_throws "File type" ESM.summarise(file="biotek-data.csv")
+    @test_throws "Unsupported" ESM.summarise(file="inputs/unknown.txt", type="unknown")
+end

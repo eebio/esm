@@ -83,6 +83,51 @@ Produce a template excel file for data entry into the ESM.
     cp(joinpath(e, "io", "ESM.xlsx"), output_path)
 end
 
+"""
+    esm summarise
+
+Summarise a data file (.esm, plate reader, .fcs, etc.).
+
+# Options
+
+- `-f, --file=<String>`: The data file to be summarised.
+- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm", "spectramax", "biotek", "fcs". If "auto" is selected, the type will be inferred from the file extension (or raise an error if not possible).
+
+# Flags
+
+- `-p, --plot`: Produce plots of the data. Only available for some types.
+"""
+@cast function summarise(; file=nothing, type="auto", plot::Bool=false)
+    if isnothing(file)
+        error("Please provide a file to be summarised using the -f or --file option.")
+    end
+    # If type=="auto", attempt to infer from file extension
+    if type == "auto"
+        ext = splitext(file)[end]
+        if ext == ".esm"
+            type = "esm"
+        elseif ext == ".fcs"
+            type = "fcs"
+        else
+            error("File type $ext cannot be inferred from extension. Supported extensions are .esm and .fcs.")
+        end
+    end
+    if type == "esm"
+        # Read the esm file and print a summary
+        summarise_esm(file; plot=plot)
+    elseif type == "fcs"
+        # Read the fcs file and print a summary
+        summarise_fcs(file; plot=plot)
+    elseif type == "spectramax"
+        # Read the data into an ESM format, and then print a summary
+        summarise_spectramax(file; plot=plot)
+    elseif type == "biotek"
+        # Read the data into an ESM format, and then print a summary
+        summarise_biotek(file; plot=plot)
+    else
+        error("Unsupported file type: $type.")
+    end
+end
 Comonicon.@main
 
 end # module ESM
