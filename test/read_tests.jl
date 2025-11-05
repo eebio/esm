@@ -407,21 +407,21 @@ end
 end
 
 @testitem "summarise" begin
-    ESM.summarise_esm("inputs/example.esm"; plot = true)
-    @test isfile("inputs/example.esm.pdf")
-    rm("inputs/example.esm.pdf")
+    ESM.summarise_esm("inputs/summarise.esm"; plot = true)
+    @test isfile("inputs/summarise.esm.pdf")
+    rm("inputs/summarise.esm.pdf")
     ESM.summarise_fcs("inputs/small.fcs"; plot = true)
     @test isfile("inputs/small.fcs.pdf")
     rm("inputs/small.fcs.pdf")
-    ESM.summarise_spectramax("inputs/spectramax-data.txt"; plot = true)
-    @test isfile("inputs/spectramax-data.txt.pdf")
-    rm("inputs/spectramax-data.txt.pdf")
-    ESM.summarise_biotek("inputs/biotek-data.csv"; plot = true)
-    @test isfile("inputs/biotek-data.csv.pdf")
-    rm("inputs/biotek-data.csv.pdf")
+    ESM.summarise_spectramax("inputs/spectramax-summarise.txt"; plot = true)
+    @test isfile("inputs/spectramax-summarise.txt.pdf")
+    rm("inputs/spectramax-summarise.txt.pdf")
+    ESM.summarise_biotek("inputs/biotek-summarise.csv"; plot = true)
+    @test isfile("inputs/biotek-summarise.csv.pdf")
+    rm("inputs/biotek-summarise.csv.pdf")
 
     # Error checking
     @test_throws "Please provide" ESM.summarise()
-    @test_throws "File type" ESM.summarise(file="biotek-data.csv")
+    @test_throws "File type" ESM.summarise(file="biotek-summarise.csv")
     @test_throws "Unsupported" ESM.summarise(file="inputs/unknown.txt", type="unknown")
 end

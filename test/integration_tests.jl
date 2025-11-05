@@ -88,11 +88,12 @@ end
 
 @testitem "Summarise integration" setup=[environment_path, build, getshell] begin
     dir = Base.Filesystem.mktempdir()
-    run(`$(shell) esm translate --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp.esm"))`)
-    run(`$(shell) esm summarise --file $(joinpath(dir, "tmp.esm")) --plot`)
-    @test isfile(joinpath(dir, "tmp.esm.pdf"))
-    run(`$(shell) esm summarise -f $(joinpath(dir, "tmp.esm")) -p`)
-    @test isfile(joinpath(dir, "tmp.esm.pdf"))
+    cp(joinpath("inputs", "summarise.esm"), joinpath(dir, "summarise.esm"))
+    run(`$(shell) esm summarise --file $(joinpath(dir, "summarise.esm")) --plot`)
+    @test isfile(joinpath(dir, "summarise.esm.pdf"))
+    rm(joinpath(dir, "summarise.esm.pdf"), force=true)
+    run(`$(shell) esm summarise -f $(joinpath(dir, "summarise.esm")) -p`)
+    @test isfile(joinpath(dir, "summarise.esm.pdf"))
 
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
     run(`$(shell) esm summarise --file $(joinpath(dir, "small.fcs"))`)
@@ -100,17 +101,17 @@ end
     run(`$(shell) esm summarise -f $(joinpath(dir, "small.fcs")) --plot`)
     @test isfile(joinpath(dir, "small.fcs.pdf"))
 
-    cp(joinpath("inputs", "spectramax-data.txt"), joinpath(dir, "spectramax-data.txt"))
-    run(`$(shell) esm summarise --file $(joinpath(dir, "spectramax-data.txt")) --type spectramax`)
-    @test !isfile(joinpath(dir, "spectramax-data.txt.pdf"))
-    run(`$(shell) esm summarise -f $(joinpath(dir, "spectramax-data.txt")) --type spectramax --plot`)
-    @test isfile(joinpath(dir, "spectramax-data.txt.pdf"))
+    cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))
+    run(`$(shell) esm summarise --file $(joinpath(dir, "spectramax-summarise.txt")) --type spectramax`)
+    @test !isfile(joinpath(dir, "spectramax-summarise.txt.pdf"))
+    run(`$(shell) esm summarise -f $(joinpath(dir, "spectramax-summarise.txt")) --type spectramax --plot`)
+    @test isfile(joinpath(dir, "spectramax-summarise.txt.pdf"))
 
-    cp(joinpath("inputs", "biotek-data.csv"), joinpath(dir, "biotek-data.csv"))
-    run(`$(shell) esm summarise --file $(joinpath(dir, "biotek-data.csv")) --type biotek`)
-    @test !isfile(joinpath(dir, "biotek-data.csv.pdf"))
-    run(`$(shell) esm summarise -f $(joinpath(dir, "biotek-data.csv")) --type biotek -p`)
-    @test isfile(joinpath(dir, "biotek-data.csv.pdf"))
+    cp(joinpath("inputs", "biotek-summarise.csv"), joinpath(dir, "biotek-summarise.csv"))
+    run(`$(shell) esm summarise --file $(joinpath(dir, "biotek-summarise.csv")) --type biotek`)
+    @test !isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
+    run(`$(shell) esm summarise -f $(joinpath(dir, "biotek-summarise.csv")) --type biotek -p`)
+    @test isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
@@ -120,11 +121,12 @@ end
     ESM.translate(excel = joinpath("inputs", "example.xlsx"), target = joinpath(dir, "tmp.esm"))
     ESM.views(esm_file = joinpath(dir, "tmp.esm"), output_dir = dir)
     ESM.views(esm_file = joinpath(dir, "tmp.esm"), view = "mega", output_dir = dir)
-    ESM.summarise(file = joinpath(dir, "tmp.esm"), plot = true)
+    cp(joinpath("inputs", "summarise.esm"), joinpath(dir, "summarise.esm"))
+    ESM.summarise(file = joinpath(dir, "summarise.esm"), plot = true)
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
-    cp(joinpath("inputs", "spectramax-data.txt"), joinpath(dir, "spectramax-data.txt"))
-    cp(joinpath("inputs", "biotek-data.csv"), joinpath(dir, "biotek-data.csv"))
+    cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))
+    cp(joinpath("inputs", "biotek-summarise.csv"), joinpath(dir, "biotek-summarise.csv"))
     ESM.summarise(file = joinpath(dir, "small.fcs"), plot = true)
-    ESM.summarise(file = joinpath(dir, "spectramax-data.txt"), type = "spectramax", plot = true)
-    ESM.summarise(file = joinpath(dir, "biotek-data.csv"), type = "biotek", plot = true)
+    ESM.summarise(file = joinpath(dir, "spectramax-summarise.txt"), type = "spectramax", plot = true)
+    ESM.summarise(file = joinpath(dir, "biotek-summarise.csv"), type = "biotek", plot = true)
 end
