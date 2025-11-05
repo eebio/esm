@@ -1,4 +1,5 @@
 module ESM
+@doc read(joinpath(dirname(@__DIR__), "README.md"), String) ESM
 
 using CSV
 using Comonicon
@@ -15,8 +16,8 @@ using Statistics
 using StatsBase
 using XLSX
 import Statistics.mean, DataFrames.hcat
-include(joinpath(".","io","ESM_read.jl"))
-include(joinpath(".", "io", "ESM_write.jl"))
+include("ESM_read.jl")
+include("ESM_write.jl")
 export read_esm, esm_zones, read_data, write_esm
 
 @with_kw struct esm_zones
@@ -80,7 +81,7 @@ Produce a template excel file for data entry into the ESM.
 @cast function template(; output_path::String = "ESM.xlsx")
     e = pathof(ESM)
     e = e[1:(length(e) - 6)]
-    cp(joinpath(e, "io", "ESM.xlsx"), output_path)
+    cp(joinpath(e, "ESM.xlsx"), output_path)
 end
 
 """
