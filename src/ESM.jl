@@ -1,31 +1,16 @@
 module ESM
 @doc read(joinpath(dirname(@__DIR__), "README.md"), String) ESM
 
-using CSV
 using Comonicon
-using DataFrames
-using DataStructures
-using Dates
-using FCSFiles
-using FileIO
-using JSON
-using KernelDensity
-using Parameters
-using ProgressMeter
-using Statistics
-using StatsBase
-using XLSX
-import Statistics.mean, DataFrames.hcat
-include("ESM_read.jl")
-include("ESM_write.jl")
-export read_esm, esm_zones, read_data, write_esm
 
-@with_kw struct esm_zones
-    samples::DataFrame
-    groups::Any
-    transformations::Any
-    views::Any
-end
+include("esm_files.jl")
+include("flow.jl")
+include("main.jl")
+include("plate_readers.jl")
+include("summarise.jl")
+include("views.jl")
+
+export read_esm, esm_zones, read_data, write_esm
 
 """
     esm translate
