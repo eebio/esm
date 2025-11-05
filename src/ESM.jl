@@ -1,4 +1,5 @@
 module ESM
+@doc read(joinpath(dirname(@__DIR__), "README.md"), String) ESM
 
 using CSV
 using Comonicon
