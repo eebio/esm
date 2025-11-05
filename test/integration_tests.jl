@@ -41,14 +41,14 @@ end
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
-          "7584ebe26cc7b016394151c717b9f4197220db2a9f35a6231f07065f3619a2e0"
+          "669d841f00b31be85528ddd38348f8d632f1887877ac92d415d0c69e330b713a"
     run(`$(shell) esm translate -e $(joinpath("inputs", "example.xlsx")) -t $(joinpath(dir, "tmp2.esm"))`)
     @test isfile(joinpath(dir, "tmp2.esm"))
     esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
-          "7584ebe26cc7b016394151c717b9f4197220db2a9f35a6231f07065f3619a2e0"
+          "669d841f00b31be85528ddd38348f8d632f1887877ac92d415d0c69e330b713a"
 end
 
 @testitem "Views integration" setup=[environment_path, build, getshell] begin

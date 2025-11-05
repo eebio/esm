@@ -320,7 +320,7 @@ function read_esm(filen)
 end
 
 #TODO - remove type piracy on mean
-mean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
+colmean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 
 vcat(x...) = return vcat(x)
 

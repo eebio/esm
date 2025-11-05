@@ -23089,10 +23089,10 @@
             "equation": "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])"
         },
         "flow_sub": {
-            "equation": "hcat(first_group.flo,second_group.flo).-mean(third_group.flo)"
+            "equation": "hcat(first_group.flo,second_group.flo).-colmean(third_group.flo)"
         },
         "od_sub": {
-            "equation": "hcat(first_group.OD,second_group.OD).-mean(third_group.OD)"
+            "equation": "hcat(first_group.OD,second_group.OD).-colmean(third_group.OD)"
         }
     },
     "views": {
