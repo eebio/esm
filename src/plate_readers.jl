@@ -248,7 +248,23 @@ Args:
 - `time_col=<DatFrame>`: DataFrame containing the times.
 - `max_od=<Float64>`: Maximum OD. Defaults to 0.4 - min_od is 1/4 of this value.
 """
-function doubling_time(df::DataFrame, time_col::DataFrame; max_od::Float64 = 0.4)
+function doubling_time(args...; kwargs...)
+    return log(2) ./ growth_rate(args...; kwargs...)
+end
+
+struct MaxOD <: AbstractGrowthRateMethod end
+
+"""
+    growth_rate(df; window_size=10)
+
+Calculates the growth rate of a given dataframe. Returns in min^-1 using base e.
+
+Args:
+
+- `df=<DataFrame>`: DataFrame containing the data.
+- `window_size=10`: Size of the window (in minutes) to use for calculating the growth rate. Defaults to 10.
+"""
+function growth_rate(df, time_col, ::MaxOD; max_od=0.4)
     min_od = max_od / 4
     dict_2 = Dict()
     time_col = df2time(time_col)
@@ -262,50 +278,5 @@ function doubling_time(df::DataFrame, time_col::DataFrame; max_od::Float64 = 0.4
                         log2(df[indexes[2], 1] / df[indexes[1], 1]) / 60
         end
     end
-    return DataFrame(dict_2)
-end
-
-"""
-    growth_rate(df; window_size=10)
-
-Calculates the growth rate of a given dataframe. Returns in min^-1 using base e.
-
-Args:
-
-- `df=<DataFrame>`: DataFrame containing the data.
-- `window_size=10`: Size of the window (in minutes) to use for calculating the growth rate. Defaults to 10.
-"""
-function growth_rate(df, time_col; window_size = 10)
-    dict_2 = Dict()
-    time_col = df2time(time_col)
-    df = hcat(df, time_col)
-    for i in names(df)
-        if i in names(time_col)
-            continue
-        end
-        growth_rate = []
-        starttime = time_col[1, 1] / 60 # convert to minutes
-        while true
-            endtime = starttime + window_size
-            sub_df = between_times(
-                df, time_col; mint = starttime, maxt = endtime)
-            starttime = endtime
-            if starttime > time_col[end, 1] / 60 + window_size
-                break
-            end
-            if nrow(sub_df) < 2
-                continue
-            end
-            tvals = sub_df[!, end] ./ 60 # convert to minutes
-            yvals = log.(sub_df[!, i])
-            lmfit = lm(@formula(y~t), DataFrame(y = yvals, t = tvals))
-            rate = coef(lmfit)[2]
-            push!(growth_rate, rate)
-        end
-        if length(growth_rate) == 0
-            error("No growth rate could be calculated for $i. The window size may be too small.")
-        end
-        dict_2[i] = maximum(growth_rate)
-    end
-    return DataFrame(dict_2)
+    return log(2) ./ DataFrame(dict_2)
 end

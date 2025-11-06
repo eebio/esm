@@ -13,6 +13,8 @@ include("summarise.jl")
 include("views.jl")
 
 export read_esm, esm_zones, read_data, write_esm
+export growth_rate, doubling_time
+export MaxOD
 
 """
     esm translate
