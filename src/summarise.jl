@@ -2,7 +2,7 @@ using Plots
 using PDFmerger
 using Combinatorics
 
-function summarise(file::AbstractString, ::ESMData; plot = false)
+function Base.summary(file::AbstractString, ::ESMData; plot = false)
     # Read the esm file
     es = read_esm(file)
 
@@ -64,7 +64,7 @@ function summarise(file::AbstractString, ::ESMData; plot = false)
     end
 end
 
-function summarise(file::AbstractString, ptype::AbstractPlateReader; plot = false)
+function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false)
     out = read(file, ptype)
     println("")
     @info "Summary of $(typeof(ptype)) file: $file"
@@ -95,7 +95,7 @@ function summarise(file::AbstractString, ptype::AbstractPlateReader; plot = fals
     end
 end
 
-function summarise(file::AbstractString, ::FlowCytometryData; plot = false)
+function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
     f = load(file)
     println("")
     @info "Summary of FCS file: $file"

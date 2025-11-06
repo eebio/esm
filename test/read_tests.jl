@@ -406,22 +406,22 @@ end
     @test out["SSC-H"][:data] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
 end
 
-@testitem "summarise" begin
-    summarise("inputs/summarise.esm", ESMData(); plot = true)
+@testitem "summary" begin
+    summary("inputs/summarise.esm", ESMData(); plot = true)
     @test isfile("inputs/summarise.esm.pdf")
     rm("inputs/summarise.esm.pdf")
-    summarise("inputs/small.fcs", FlowCytometryData(); plot = true)
+    summary("inputs/small.fcs", FlowCytometryData(); plot = true)
     @test isfile("inputs/small.fcs.pdf")
     rm("inputs/small.fcs.pdf")
-    summarise("inputs/spectramax-summarise.txt", SpectraMax(); plot = true)
+    summary("inputs/spectramax-summarise.txt", SpectraMax(); plot = true)
     @test isfile("inputs/spectramax-summarise.txt.pdf")
     rm("inputs/spectramax-summarise.txt.pdf")
-    summarise("inputs/biotek-summarise.csv", BioTek(); plot = true)
+    summary("inputs/biotek-summarise.csv", BioTek(); plot = true)
     @test isfile("inputs/biotek-summarise.csv.pdf")
     rm("inputs/biotek-summarise.csv.pdf")
 
     # Error checking
-    @test_throws "Please provide" summarise()
-    @test_throws "File type" summarise(file="biotek-summarise.csv")
-    @test_throws "Unsupported" summarise(file="inputs/unknown.txt", type="unknown")
+    @test_throws "Please provide" ESM.summarise()
+    @test_throws "File type" ESM.summarise(file="biotek-summarise.csv")
+    @test_throws "Unsupported" ESM.summarise(file="inputs/unknown.txt", type="unknown")
 end

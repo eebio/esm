@@ -23,8 +23,7 @@ export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
 export AbstractESMDataType, AbstractPlateReader
 export ESMData, FlowCytometryData, BioTek, SpectraMax, GenericTabular
-export summarise
-
+export summary
 
 """
     esm translate
@@ -114,16 +113,16 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
     end
     if type == "esm"
         # Read the esm file and print a summary
-        summarise(file, ESMData(); plot=plot)
+        summary(file, ESMData(); plot=plot)
     elseif type == "fcs"
         # Read the fcs file and print a summary
-        summarise(file, FlowCytometryData(); plot=plot)
+        summary(file, FlowCytometryData(); plot=plot)
     elseif type == "spectramax"
         # Read the data into an ESM format, and then print a summary
-        summarise(file, SpectraMax(); plot=plot)
+        summary(file, SpectraMax(); plot=plot)
     elseif type == "biotek"
         # Read the data into an ESM format, and then print a summary
-        summarise(file, BioTek(); plot=plot)
+        summary(file, BioTek(); plot=plot)
     else
         error("Unsupported file type: $type.")
     end
