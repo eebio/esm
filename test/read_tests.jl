@@ -419,6 +419,9 @@ end
     summary("inputs/biotek-summarise.csv", BioTek(); plot = true)
     @test isfile("inputs/biotek-summarise.csv.pdf")
     rm("inputs/biotek-summarise.csv.pdf")
+    summary("inputs/pr_folder", GenericTabular(); plot = true)
+    @test isfile("inputs/pr_folder.pdf")
+    rm("inputs/pr_folder.pdf")
 
     # Error checking
     @test_throws "Please provide" ESM.summarise()

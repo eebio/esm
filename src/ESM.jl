@@ -90,7 +90,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 # Options
 
 - `-f, --file=<String>`: The data file to be summarised.
-- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm", "spectramax", "biotek", "fcs". If "auto" is selected, the type will be inferred from the file extension (or raise an error if not possible).
+- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm", "spectramax", "biotek", "generic", "fcs". If "auto" is selected, the type will be inferred from the file extension (or raise an error if not possible).
 
 # Flags
 
@@ -107,22 +107,22 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
             type = "esm"
         elseif ext == ".fcs"
             type = "fcs"
+        elseif isdir(file)
+            type = "generic"
         else
-            error("File type $ext cannot be inferred from extension. Supported extensions are .esm and .fcs.")
+            error("File type $ext cannot be inferred from extension. Supported extensions are .esm and .fcs (or directories for generic tabular plate reader data).")
         end
     end
     if type == "esm"
-        # Read the esm file and print a summary
         summary(file, ESMData(); plot=plot)
     elseif type == "fcs"
-        # Read the fcs file and print a summary
         summary(file, FlowCytometryData(); plot=plot)
     elseif type == "spectramax"
-        # Read the data into an ESM format, and then print a summary
         summary(file, SpectraMax(); plot=plot)
     elseif type == "biotek"
-        # Read the data into an ESM format, and then print a summary
         summary(file, BioTek(); plot=plot)
+    elseif type == "generic"
+        summary(file, GenericTabular(); plot=plot)
     else
         error("Unsupported file type: $type.")
     end
