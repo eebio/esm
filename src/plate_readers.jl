@@ -3,7 +3,7 @@ using CSV
 using StringEncodings
 import Base.read
 
-abstract type AbstractPlateReader end
+abstract type AbstractPlateReader <: AbstractESMDataType end
 
 abstract type AbstractPlateReaderMethod <: AbstractESMMethod end
 

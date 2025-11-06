@@ -5,6 +5,10 @@ using Comonicon
 
 abstract type AbstractESMMethod end
 
+abstract type AbstractESMDataType end
+
+struct ESMData <: AbstractESMDataType end
+
 include("esm_files.jl")
 include("flow.jl")
 include("main.jl")
@@ -15,6 +19,10 @@ include("views.jl")
 export read_esm, esm_zones, read_data, write_esm
 export growth_rate, doubling_time
 export MaxOD
+export AbstractESMDataType, AbstractPlateReader
+export ESMData, FlowCytometryData, BioTek, SpectraMax, GenericTabular
+export summarise
+
 
 """
     esm translate
@@ -104,16 +112,16 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
     end
     if type == "esm"
         # Read the esm file and print a summary
-        summarise_esm(file; plot=plot)
+        summarise(file, ESMData(); plot=plot)
     elseif type == "fcs"
         # Read the fcs file and print a summary
-        summarise_fcs(file; plot=plot)
+        summarise(file, FlowCytometryData(); plot=plot)
     elseif type == "spectramax"
         # Read the data into an ESM format, and then print a summary
-        summarise_spectramax(file; plot=plot)
+        summarise(file, SpectraMax(); plot=plot)
     elseif type == "biotek"
         # Read the data into an ESM format, and then print a summary
-        summarise_biotek(file; plot=plot)
+        summarise(file, BioTek(); plot=plot)
     else
         error("Unsupported file type: $type.")
     end

@@ -5,6 +5,8 @@ using FileIO
 using StatsBase
 using KernelDensity
 
+struct FlowCytometryData <: AbstractESMDataType end
+
 """
     process_fcs(group::String,gate_channels::Vector,out_channels::Vector{String};gate_frac=0.65,nbins=1024,hl_channels=[],rfi=true,dense=true,hl=true,maxr=missing,minr=missing)
 

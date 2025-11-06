@@ -2,17 +2,7 @@ using Plots
 using PDFmerger
 using Combinatorics
 
-"""
-    summarise_esm(file)
-
-Summarises the contents of an esm file.
-
-Args:
-
-- `file::String`: The path to the esm file to be summarised.
-- `plot::Bool`: Whether to plot the timeseries data.
-"""
-function summarise_esm(file; plot = false)
+function summarise(file::AbstractString, ::ESMData; plot = false)
     # Read the esm file
     es = read_esm(file)
 
@@ -74,70 +64,10 @@ function summarise_esm(file; plot = false)
     end
 end
 
-"""
-    summarise_spectramax(file)
-
-Summarises a SpectraMax output file.
-
-Args:
-
-- `file::String`: Path to the SpectraMax file.
-- `plot::Bool`: Whether to plot the data.
-"""
-function summarise_spectramax(file; plot = false)
-    f = read_into_lines(file)
-    containsTime = [occursin(r"\d\d:\d\d:\d\d", j) ? 1 : 0 for j in f]
-    function runlength(a, i)
-        if i == length(a)
-            return 1
-        elseif a[i] == 1
-            return runlength(a, i + 1) + 1
-        else
-            return 0
-        end
-    end
-    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
-    datalocations = findall(x -> x == maximum(rl), rl)
-    # Trim the data to only the relevant parts
-    data = []
-    for i in datalocations
-        table = []
-        # Find and push header onto table (first row before i that contains Time and the row above it)
-        for j in (i - 1):-1:1
-            if occursin("Time", f[j])
-                push!(table, f[j - 1])
-                push!(table, f[j])
-                break
-            end
-        end
-        # Find and push the data onto table
-        for j in i:length(f)
-            if containsTime[j] == 1
-                push!(table, f[j])
-            else
-                break
-            end
-        end
-        push!(data, table)
-    end
-    # Create the dataframes
-    out = Dict()
-    for i in eachindex(data)
-        tmp = split(data[i][1], "\t")
-        channel = strip(tmp[6] == "Fluorescence" ? tmp[14] : tmp[13])
-        # Get the data
-        df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
-        temp_name = names(df)[2]
-        rename!(df, temp_name => "temperature")
-        time_name = names(df)[1]
-        rename!(df, time_name => "time")
-        # Remove empty columns
-        df = df[:, Not(all.(ismissing, eachcol(df)))]
-        # Do I need to drop temperature?)
-        out[channel] = df
-    end
-
-    @info "Summary of SpectraMax file: $file"
+function summarise(file::AbstractString, ptype::AbstractPlateReader; plot = false)
+    out = read(file, ptype)
+    println("")
+    @info "Summary of $(typeof(ptype)) file: $file"
     println("")
     # Summarise channels
     @info "Summarising channels"
@@ -165,99 +95,9 @@ function summarise_spectramax(file; plot = false)
     end
 end
 
-"""
-    summarise_biotek(file)
-Summarises a Biotek output file.
-
-Args:
-
-- `file::String`: Path to the Biotek file.
-- `plot::Bool`: Whether to plot the data.
-"""
-function summarise_biotek(file; plot = false)
-    f = read_into_lines(file)
-    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
-    function runlength(a, i)
-        if i == length(a)
-            return 1
-        elseif a[i] == 1
-            return runlength(a, i + 1) + 1
-        else
-            return 0
-        end
-    end
-    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
-    datalocations = findall(x -> x == maximum(rl), rl)
-    # Trim the data to only the relevant parts
-    data = []
-    for i in datalocations
-        table = []
-        # Find and push header onto table (first row before i that contains Time and the row above it)
-        for j in (i - 1):-1:1
-            if occursin("Time", f[j])
-                push!(table, f[j - 2])
-                push!(table, f[j])
-                break
-            end
-        end
-        # Find and push the data onto table
-        for j in i:length(f)
-            if containsTime[j] == 1
-                push!(table, f[j])
-            else
-                break
-            end
-        end
-        push!(data, table)
-    end
-    # Create the dataframes
-    out = Dict()
-    for i in eachindex(data)
-        channel = strip(split(data[i][1], ":")[end])
-        # Remove channel name from the first row
-        data[i][2] = replace(data[i][2], " $(data[i][1])" => "")
-        # Read the data into a DataFrame
-        df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame)
-        temp_name = names(df)[2]
-        rename!(df, temp_name => "temperature")
-        time_name = names(df)[1]
-        rename!(df, time_name => "time")
-        # Remove empty columns
-        df = df[:, Not(all.(ismissing, eachcol(df)))]
-        # Do I need to drop temperature?)
-        out[channel] = df
-    end
-
-    @info "Summary of BioTek file: $file"
-    println("")
-    # Summarise channels
-    @info "Summarising channels"
-    @info "Number of channels: $(length(keys(out)))"
-    for (key, value) in out
-        @info "Channel $key: $(nrow(value)) timepoints and $(ncol(value) - 1) samples."
-        @info "Timepoints range from $(value[1, 1]) to $(value[end, 1])."
-    end
-
-    if plot
-        # Plot all timeseries
-        @info "Plotting timeseries data"
-        # TODO need to know the times for all samples automatically
-        dir = mktempdir()
-        for (key, value) in out
-            for col in names(value)[2:end]
-                p = Plots.plot(value[!, 1], value[!, col],
-                    xlabel = "Time (#units missing#)", ylabel = "Value",
-                    title = "Timeseries for $col: Channel $key")
-                savefig(p, joinpath(dir, string(col) * string(key) * ".pdf"))
-            end
-        end
-        filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
-        merge_pdfs(filepaths, string(file) * ".pdf")
-    end
-end
-
-function summarise_fcs(file; plot = false)
+function summarise(file::AbstractString, ::FlowCytometryData; plot = false)
     f = load(file)
+    println("")
     @info "Summary of FCS file: $file"
     @show f
     println("")
