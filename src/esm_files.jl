@@ -107,15 +107,15 @@ function read_data(filen)
     groups = DataFrame(XLSX.readtable(filen, "Groups"))
     trans = DataFrame(XLSX.readtable(filen, "Transformations"))
     views = DataFrame(XLSX.readtable(filen, "Views"))
-    ID = DataFrame(XLSX.readtable(filen, "ID"))
+    channel_map = DataFrame(XLSX.readtable(filen, "Channel Map"))
     # Create the dict to show what channels need to be changed
-    id_dict = Dict(i."Current" => i."Target" for i in eachrow(ID))
+    channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
     sample_dict = OrderedDict()
-    group_dict = OrderedDict(i.Group => Dict(
-                                 "sample_IDs" => expand_groups(i.Name),
+    group_dict = OrderedDict(i.Name => Dict(
+                                 "sample_IDs" => expand_groups(i.Samples),
                                  :type => "experimental",
                                  "metadata" => Dict(j => i[j, :]
-                                 for j in names(i) if !(j in ["Group", "Name"])))
+                                 for j in names(i) if !(j in ["Name", "Samples"])))
     for i in eachrow(groups)) # Get all the experimental groups.
     @info "Reading $(length(keys(samples))) plates"
     for i in range(1, length(keys(samples)))
@@ -149,8 +149,8 @@ function read_data(filen)
         end
         channels = [c for c in channels if !isempty(c)]
         # Create the channel map
-        channel_map = Dict(i => if i in keys(id_dict)
-                               id_dict[i]
+        channel_map = Dict(i => if i in keys(channel_map)
+                               channel_map[i]
                            else
                                i
                            end for i in channels)
@@ -175,7 +175,7 @@ function read_data(filen)
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => i.Equation for i in eachrow(trans))
     # Add the views
-    views_dict = OrderedDict(i.Name => :data => [split(i.Groups, ",")...]
+    views_dict = OrderedDict(i.Name => :data => [split(i.View, ",")...]
     for i in eachrow(views))
     return OrderedDict(:samples => sample_dict, :groups => group_dict,
         :transformations => trans_dict, :views => views_dict)

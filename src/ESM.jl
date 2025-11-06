@@ -3,6 +3,8 @@ module ESM
 
 using Comonicon
 
+abstract type AbstractESMMethod end
+
 include("esm_files.jl")
 include("flow.jl")
 include("main.jl")
