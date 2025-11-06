@@ -110,7 +110,47 @@ function read_into_lines(filen)
     str = decode(bytes, true_encoding)
     str = replace(str, "\r\n" => "\n")  # Normalize line endings
     str = replace(str, "\r" => "\n")    # Handle any remaining carriage returns
-    return split(str, r"\n")  # Split into lines
+    return split(str, r"\n")
+end
+
+function runlength(a, i)
+    if i == length(a)
+        return 1
+    elseif a[i] == 1
+        return runlength(a, i + 1) + 1
+    else
+        return 0
+    end
+end
+
+function read_standard(filen, offset)
+    f = read_into_lines(filen)
+    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
+    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
+    datalocations = findall(x -> x == maximum(rl), rl)
+    # Trim the data to only the relevant parts
+    data = []
+    for i in datalocations
+        table = []
+        # Find and push header onto table (first row before i that contains Time and the row above it)
+        for j in (i - 1):-1:1
+            if occursin("Time", f[j])
+                push!(table, f[j - offset])
+                push!(table, f[j])
+                break
+            end
+        end
+        # Find and push the data onto table
+        for j in i:length(f)
+            if containsTime[j] == 1
+                push!(table, f[j])
+            else
+                break
+            end
+        end
+        push!(data, table)
+    end
+    return data
 end
 
 struct SpectraMax <: AbstractPlateReader end
@@ -128,41 +168,7 @@ Optional Args:
 - `channels::Vector{String}`: Channels to be read in. Defaults to all channels.
 """
 function Base.read(filen::AbstractString, ::SpectraMax; channels)
-    f = read_into_lines(filen)
-    containsTime = [occursin(r"\d\d:\d\d:\d\d", j) ? 1 : 0 for j in f]
-    function runlength(a, i)
-        if i == length(a)
-            return 1
-        elseif a[i] == 1
-            return runlength(a, i + 1) + 1
-        else
-            return 0
-        end
-    end
-    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
-    datalocations = findall(x -> x == maximum(rl), rl)
-    # Trim the data to only the relevant parts
-    data = []
-    for i in datalocations
-        table = []
-        # Find and push header onto table (first row before i that contains Time and the row above it)
-        for j in (i - 1):-1:1
-            if occursin("Time", f[j])
-                push!(table, f[j - 1])
-                push!(table, f[j])
-                break
-            end
-        end
-        # Find and push the data onto table
-        for j in i:length(f)
-            if containsTime[j] == 1
-                push!(table, f[j])
-            else
-                break
-            end
-        end
-        push!(data, table)
-    end
+    data = read_standard(filen, 1)
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
@@ -188,41 +194,7 @@ end
 struct BioTek <: AbstractPlateReader end
 
 function Base.read(filen::AbstractString, ::BioTek; channels=nothing)
-    f = read_into_lines(filen)
-    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
-    function runlength(a, i)
-        if i == length(a)
-            return 1
-        elseif a[i] == 1
-            return runlength(a, i + 1) + 1
-        else
-            return 0
-        end
-    end
-    rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
-    datalocations = findall(x -> x == maximum(rl), rl)
-    # Trim the data to only the relevant parts
-    data = []
-    for i in datalocations
-        table = []
-        # Find and push header onto table (first row before i that contains Time and the row above it)
-        for j in (i - 1):-1:1
-            if occursin("Time", f[j])
-                push!(table, f[j - 2])
-                push!(table, f[j])
-                break
-            end
-        end
-        # Find and push the data onto table
-        for j in i:length(f)
-            if containsTime[j] == 1
-                push!(table, f[j])
-            else
-                break
-            end
-        end
-        push!(data, table)
-    end
+    data = read_standard(filen, 2)
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
