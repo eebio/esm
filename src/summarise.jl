@@ -2,6 +2,18 @@ using Plots
 using PDFmerger
 using Combinatorics
 
+"""
+    summary(file, ptype::AbstractESMDataType; plot=false)
+
+Summarise a data file (.esm, plate reader, .fcs, etc.).
+
+# Arguments
+- `file::AbstractString`: The data file to be summarised.
+- `ptype::AbstractESMDataType`: The type of data file.
+
+# Keyword Arguments
+- `plot::Bool=false`: Produce plots of the data. Defaults to false.
+"""
 function Base.summary(file::AbstractString, ::ESMData; plot = false)
     # Read the esm file
     es = read_esm(file)
