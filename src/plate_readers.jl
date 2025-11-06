@@ -167,14 +167,14 @@ Args:
 Optional Args:
 - `channels::Vector{String}`: Channels to be read in. Defaults to all channels.
 """
-function Base.read(filen::AbstractString, ::SpectraMax; channels)
+function Base.read(filen::AbstractString, ::SpectraMax; channels=nothing)
     data = read_standard(filen, 1)
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
         tmp = split(data[i][1], "\t")
         channel = strip(tmp[6] == "Fluorescence" ? tmp[14] : tmp[13])
-        if isnothing(channels) || !(channel in channels)
+        if !isnothing(channels) && !(channel in channels)
             continue
         end
         # Get the data
@@ -199,7 +199,7 @@ function Base.read(filen::AbstractString, ::BioTek; channels=nothing)
     out = Dict()
     for i in eachindex(data)
         channel = strip(split(data[i][1], ":")[end])
-        if isnothing(channels) || !(channel in channels)
+        if !isnothing(channels) && !(channel in channels)
             continue
         end
         # Remove channel name from the first row
