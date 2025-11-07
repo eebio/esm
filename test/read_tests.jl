@@ -153,7 +153,7 @@
     },
     "transformations": {
         "flow_cyt": {
-            "equation": "process_fcs(\\\"plate_01\\\",[\\\"FSC\\\",\\\"SSC\\\"],[\\\"FL1\\\"])"
+            "equation": "1"
         }
     },
     "views": {
@@ -211,7 +211,7 @@ end
     @test issetequal(es.groups.sample_IDs, [["plate_01_a1", "plate_01_a2"]])
     @test issetequal(es.groups.metadata, [Dict("autodefined" => "true")])
     @test es.transformations ==
-          Dict("flow_cyt" => Dict("equation" => "process_fcs(\"plate_01\",[\"FSC\",\"SSC\"],[\"FL1\"])"))
+          Dict("flow_cyt" => Dict("equation" => "1"))
     @test es.views == Dict("flow_cy" => Dict("data" => ["flow_cyt"]))
 end
 
@@ -343,7 +343,7 @@ end
     @test eval(ESM.sexp_to_nested_list(:extra_transform, ESM.es, trans_meta_map)) == 10
     # Test accessing views
     @test_broken ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) ==
-                 ["process_fcs", "plate_01", ["FSC-H", "SSC-H"], ["FL1-H"]]
+                 [1]
     # Test accessing groups
     @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) ==
           ESM.form_df(ESM.es.samples)
@@ -359,7 +359,7 @@ end
     for i in keys(ESM.es.transformations))
     a = ESM.produce_views(ESM.es, trans_meta_map)
     # Test groups
-    @test issetequal(keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "flow_cy", "mega"])
+    @test issetequal(keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "mega"])
     @test issetequal(names(a["group1"]), ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo"])
     @test issetequal(names(a["group2"]), ["plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
     @test issetequal(names(a["group3"]), ["plate_01_a2.OD", "plate_01_a2.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a3.OD", "plate_01_a3.flo"])
@@ -381,16 +381,6 @@ end
     @test issetequal(names(a["odsub"]), ["plate_01_a5", "plate_01_a1", "plate_01_a9", "plate_01_a8", "plate_01_a3", "plate_01_a7"])
     @test a["flowsub"][[1, 2, end - 1, end], "plate_01_a9"] ≈ [0.33333333333333215, -2.666666666666668, -160.66666666666669, -162.33333333333331]
     @test a["odsub"][[1, 2, end - 1, end], "plate_01_a3"] ≈ [0.0026666666666666783, 0.0026666666666666783, -0.10200000000000009, -0.10133333333333328]
-    # Process FCS
-    @test issetequal(names(a["flow_cy"]), ["plate_02_a1.FL1-H"])
-    @test_broken size(a["flow_cy"])[1] > 0
-end
-
-@testitem "process_fcs" begin
-    global ESM.es = ESM.read_esm("inputs/example.esm")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
-    for i in keys(ESM.es.transformations))
-    ESM.process_fcs("plate_02", ["FSC-H", "SSC-H"], ["FL1-H"])
 end
 
 @testitem "to_rfi" begin

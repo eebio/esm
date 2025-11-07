@@ -23199,9 +23199,6 @@
         }
     },
     "transformations": {
-        "flow_cyt": {
-            "equation": "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])"
-        },
         "flow_sub": {
             "equation": "hcat(first_group.flo,second_group.flo).-colmean(third_group.flo)"
         },
@@ -23210,11 +23207,6 @@
         }
     },
     "views": {
-        "flow_cy": {
-            "data": [
-                "flow_cyt"
-            ]
-        },
         "group1": {
             "data": [
                 "first_group"

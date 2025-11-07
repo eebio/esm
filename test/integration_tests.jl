@@ -41,14 +41,14 @@ end
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
-          "cf3b0624ae359f068527deaaedc34e66ec38b8601bc6e4776268189f8feb4ac5"
+          "7c2b0070ec0b6aadfa37cfcea2bb3340396731fff3ee7f76190cb4fc2c71089a"
     run(`$(shell) esm translate -e $(joinpath("inputs", "example.xlsx")) -t $(joinpath(dir, "tmp2.esm"))`)
     @test isfile(joinpath(dir, "tmp2.esm"))
     esm_hash = open(joinpath(dir, "tmp2.esm")) do f
         sha256(f)
     end
     @test bytes2hex(esm_hash) ==
-          "cf3b0624ae359f068527deaaedc34e66ec38b8601bc6e4776268189f8feb4ac5"
+          "7c2b0070ec0b6aadfa37cfcea2bb3340396731fff3ee7f76190cb4fc2c71089a"
 end
 
 @testitem "Views integration" setup=[environment_path, build, getshell] begin
@@ -56,12 +56,12 @@ end
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm translate --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp.esm"))`)
     run(`$(shell) esm views --esm-file $(joinpath(dir, "tmp.esm")) --output-dir $dir`)
-    @test issetequal(readdir(dir), ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
-    rm.(joinpath.(dir, ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv"]), force=true)
+    @test issetequal(readdir(dir), ["flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
+    rm.(joinpath.(dir, ["flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv"]), force=true)
     @test issetequal(readdir(dir), ["tmp.esm"])
 
     run(`$(shell) esm views -e $(joinpath(dir, "tmp.esm")) -o $dir`)
-    @test issetequal(readdir(dir), ["flow_cy.csv", "flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
+    @test issetequal(readdir(dir), ["flowsub.csv", "group1.csv", "group2.csv", "group3.csv", "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
 
     # Specifying a specific view
     using SHA

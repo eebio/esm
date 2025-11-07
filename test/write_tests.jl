@@ -47,10 +47,10 @@ end
     @test es_written.groups.sample_IDs[es_written.groups.group .== "plate_02"] == [["plate_02_a1"]]
     @test es_written.groups.metadata[es_written.groups.group .== "plate_02"] ==
         [Dict("autodefined" => "true")]
-    @test issetequal(keys(es_written.transformations), ["flow_cyt", "flow_sub", "od_sub"])
-    @test es_written.transformations["flow_cyt"] ==
-          Dict{String, Any}("equation" => "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])")
-    @test issetequal(keys(es_written.views), ["flowsub", "mega", "group2", "flow_cy", "sample", "odsub", "group1", "group3"])
+    @test issetequal(keys(es_written.transformations), ["flow_sub", "od_sub"])
+    @test es_written.transformations["flow_sub"] ==
+          Dict{String, Any}("equation" => "hcat(first_group.flo,second_group.flo).-colmean(third_group.flo)")
+    @test issetequal(keys(es_written.views), ["flowsub", "mega", "group2", "sample", "odsub", "group1", "group3"])
     @test es_written.views["mega"] ==
           Dict{String, Any}("data" => Any["first_group", "second_group"])
 end
