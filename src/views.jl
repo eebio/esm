@@ -109,8 +109,7 @@ function sexp_to_nested_list(sexp::Any, es, trans_meta_map)
             # Check if there is a quote node - this allows the `.` syntax in the ESM
             if isa(sexp.args[1], Expr)
                 # If its a normal expression process it normally
-                # TODO This probably shouldn't just be recalling the function with exactly the same inputs
-                return sexp_to_nested_list(sexp, es, trans_meta_map)
+                return sexp
             elseif Symbol(string(sexp.args[1])) in keys(trans_meta_map)
                 # Is it in the transformation map?
                 if string(sexp.args[2].value) in es.groups.group

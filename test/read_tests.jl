@@ -351,15 +351,13 @@ end
     # Test accessing transformations
     @test eval(ESM.sexp_to_nested_list(:extra_transform, ESM.es, trans_meta_map)) == 10
     # Test accessing views
-    @test_broken ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) ==
-                 [1]
+    @test ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) == 1
     # Test accessing groups
     @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) ==
           ESM.form_df(ESM.es.samples)
     # Test other symbols - should just be returned
     @test ESM.sexp_to_nested_list(:not_defined, ESM.es, trans_meta_map) == :not_defined
-    @test_broken ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)),ESM.es,trans_meta_map)
-
+    @test ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)),ESM.es,trans_meta_map) == :(form_df(ESM.es.samples))
 end
 
 @testitem "produce_views" begin
