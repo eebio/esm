@@ -1,5 +1,6 @@
 # Test read_esm function
 @testmodule MockESM begin
+    println("MockESM")
     using ESM
     mock_data = """
 {
@@ -175,6 +176,7 @@
 end
 
 @testitem "read_esm tests" setup=[MockESM] begin
+    println("read_esm tests")
     es = ESM.read_esm(MockESM.temp_file)
     @test issetequal(es.samples.name,
         ["plate_01_a1.FL1", "plate_01_a1.SSC", "plate_01_a1.FSC",
@@ -217,6 +219,7 @@ end
 
 # Test index_between_vals
 @testitem "index_between_vals" begin
+    println("index_between_vals")
     using DataFrames
 
     # Sample data for testing
@@ -245,6 +248,7 @@ end
 
 # Test between_times
 @testitem "between_times" begin
+    println("between_times")
     using DataFrames
 
     # Sample data for testing
@@ -271,6 +275,7 @@ end
 
 # Test at_time
 @testitem "at_time" begin
+    println("at_time")
     using DataFrames
 
     # Sample data for testing
@@ -289,6 +294,7 @@ end
 
 # Test at_od
 @testitem "at_od" begin
+    println("at_od")
     using DataFrames
     #TODO unclear how function inputs should be handled here
     # Sample data for at_od
@@ -302,6 +308,7 @@ end
 
 # Test doubling_time
 @testitem "doubling_time" begin
+    println("doubling_time")
     using DataFrames
 
     od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
@@ -315,6 +322,7 @@ end
 end
 
 @testitem "growth_rate" begin
+    println("growth_rate")
     using DataFrames
 
     od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
@@ -328,6 +336,7 @@ end
 end
 
 @testitem "expression" setup=[MockESM] begin
+    println("expression")
     global ESM.es = ESM.read_esm(MockESM.temp_file)
     ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
@@ -354,6 +363,7 @@ end
 end
 
 @testitem "produce_views" begin
+    println("produce_views")
     global ESM.es = ESM.read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
@@ -384,6 +394,7 @@ end
 end
 
 @testitem "to_rfi" begin
+    println("to_rfi")
     global ESM.es = ESM.read_esm("inputs/example.esm")
     out = ESM.to_rfi("plate_02_a1")
     # Linear test with no gain
@@ -397,6 +408,7 @@ end
 end
 
 @testitem "summary" begin
+    println("summary")
     summary("inputs/summarise.esm", ESMData(); plot = true)
     @test isfile("inputs/summarise.esm.pdf")
     rm("inputs/summarise.esm.pdf")

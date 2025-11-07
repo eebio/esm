@@ -1,4 +1,5 @@
 @testmodule build begin
+    println("build")
     using Pkg
     Pkg.build()
     if !occursin("/.julia/bin", ENV["PATH"])
@@ -11,6 +12,7 @@
 end
 
 @testsnippet getshell begin
+    println("get shell")
     if Sys.iswindows()
         # Use cmd shell for Windows
         shell = ["cmd", "/C"]
@@ -21,6 +23,7 @@ end
 end
 
 @testitem "Template integration" setup=[build, getshell] begin
+    println("Template integration")
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm template --output-path $dir/tmp.xlsx`)
     @test isfile(joinpath(dir, "tmp.xlsx"))
@@ -32,6 +35,7 @@ end
 end
 
 @testitem "Translate integration" setup=[environment_path, build, getshell] begin
+    println("Translate integration")
     using SHA
 
     dir = Base.Filesystem.mktempdir()
@@ -52,6 +56,7 @@ end
 end
 
 @testitem "Views integration" setup=[environment_path, build, getshell] begin
+    println("Views integration")
     # All views
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm translate --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp.esm"))`)
@@ -87,6 +92,7 @@ end
 end
 
 @testitem "Summarise integration" setup=[environment_path, build, getshell] begin
+    println("Summarise integration")
     dir = Base.Filesystem.mktempdir()
     cp(joinpath("inputs", "summarise.esm"), joinpath(dir, "summarise.esm"))
     run(`$(shell) esm summarise --file $(joinpath(dir, "summarise.esm")) --plot`)
@@ -116,6 +122,7 @@ end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
 @testitem "Integration coverage" setup=[environment_path] begin
+    println("Integration coverage")
     dir = Base.Filesystem.mktempdir()
     ESM.template(output_path = joinpath(dir, "tmp.xlsx"))
     ESM.translate(excel = joinpath("inputs", "example.xlsx"), target = joinpath(dir, "tmp.esm"))

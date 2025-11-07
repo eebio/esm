@@ -1,4 +1,5 @@
 @testitem "read data" setup=[environment_path] begin
+    println("read data")
     es = ESM.read_data("inputs/example.xlsx")
     @test es[:samples]["plate_02_a1"][:values]["FSC-H"] == [628, 1023, 373, 1023]
     @test es[:samples]["plate_02_a1"][:values]["FL4-H"] ≈
@@ -12,6 +13,7 @@
 end
 
 @testitem "write esm" setup=[environment_path] begin
+    println("write esm")
     # write esm from example.xlsx and read it back
     es = ESM.read_data("inputs/example.xlsx")
     filename = joinpath(Base.Filesystem.mktempdir(), "tmp.esm")
@@ -56,6 +58,7 @@ end
 end
 
 @testitem "read spectramax" setup=[environment_path] begin
+    println("read spectramax")
     data = ESM.read_data("inputs/spectramax.xlsx")
     # TODO should probably separate the channels into 600 and 700?
     # TODO channel is currently 535 for fluorescence but the 485 is also relevant
@@ -69,6 +72,7 @@ end
 end
 
 @testitem "read biotek" setup=[environment_path] begin
+    println("read biotek")
     data = ESM.read_data("inputs/biotek.xlsx")
     @test data[:samples]["plate_01_a1"][:values]["od1"][[1, 2, end - 1, end]] ==
           [0.134, 0.133, 0.131, 0.131]
@@ -82,6 +86,7 @@ end
 end
 
 @testitem "read plate reader directories" setup=[environment_path] begin
+    println("read plate reader directories")
     using Dates
 
     data = ESM.read_data("inputs/example.xlsx")
@@ -99,6 +104,7 @@ end
 end
 
 @testitem "expand_group" begin
+    println("expand_group")
     @test ESM.expand_group("plate_01_a[1:3]") == ["plate_01_a1", "plate_01_a2", "plate_01_a3"]
     @test ESM.expand_group("plate_01_a[2:4]") == ["plate_01_a2", "plate_01_a3", "plate_01_a4"]
     @test ESM.expand_group("plate_01_[a:d]1") == ["plate_01_a1", "plate_01_b1", "plate_01_c1", "plate_01_d1"]
