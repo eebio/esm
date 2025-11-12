@@ -330,9 +330,6 @@ end
         "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
 
     @test ESM.growth_rate(od_df, time_col, MaxOD())[1, "A"] ≈ log(2)
-
-    @test_skip ESM.growth_rate(
-        od_df, time_col; window_size = 0.5) # test_throws
 end
 
 @testitem "expression" setup=[MockESM] begin
