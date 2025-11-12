@@ -124,9 +124,9 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                    "ex_pow": null,
                 "FSC": {
                     "range": "1024",
+                    "ex_pow": null,
                     "filter": null,
                     "det_volt": "10.0",
                     "amp_type": "4.0,1.0",
@@ -207,7 +207,7 @@ end
     for i in 1:6
         @test issetequal(keys(es.samples.meta[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em"]) broken=(i == 3)
+                "amp_gain", "name_s", "name", "det_type", "perc_em"])
     end
     @test issetequal(es.groups.group, ["plate_01"])
     @test issetequal(es.groups.sample_IDs, [["plate_01_a1", "plate_01_a2"]])
