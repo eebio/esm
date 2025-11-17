@@ -1,6 +1,7 @@
 using GLM
 using CSV
 using StringEncodings
+using NonlinearSolve
 import Base.read
 
 abstract type AbstractPlateReader <: AbstractESMDataType end
@@ -236,47 +237,240 @@ function Base.read(filen::AbstractString, ::GenericTabular; channels=nothing)
 end
 
 """
-    doubling_time(df, time_col;max_od)
+    doubling_time(df, time_col)
+    doubling_time(df, time_col, method::AbstractGrowthRateMethod; kwargs...)
 
-Calculates the growth rate/doubling time of a given dataframe. returns in min^-1
-
-equation = (t_end - t_start)/log_2(max_od/min_od)
+Calculates the doubling time of a given DataFrame. Returns result in minutes.
 
 Args:
 
 - `df=<DataFrame>`: DataFrame containing the data.
 - `time_col=<DatFrame>`: DataFrame containing the times.
-- `max_od=<Float64>`: Maximum OD. Defaults to 0.4 - min_od is 1/4 of this value.
+- `method::AbstractGrowthRateMethod`: Method to use for calculating growth rate.
+
+Optional Args:
+- `kwargs...`: Additional keyword arguments to pass to the growth rate method.
 """
 function doubling_time(args...; kwargs...)
     return log(2) ./ growth_rate(args...; kwargs...)
 end
 
-struct MaxOD <: AbstractGrowthRateMethod end
+@kwdef struct Endpoints <: AbstractGrowthRateMethod
+    start_time::Float64
+    end_time::Float64
+end
 
 """
-    growth_rate(df; window_size=10)
+    growth_rate(df, timecol, method)
 
 Calculates the growth rate of a given dataframe. Returns in min^-1 using base e.
 
 Args:
 
 - `df=<DataFrame>`: DataFrame containing the data.
-- `window_size=10`: Size of the window (in minutes) to use for calculating the growth rate. Defaults to 10.
+- `time_col=<DataFrame>`: DataFrame containing the times.
+- `method::AbstractGrowthRateMethod`: Method to use for calculating growth rate.
 """
-function growth_rate(df, time_col, ::MaxOD; max_od=0.4)
-    min_od = max_od / 4
+function growth_rate(df, time_col, method::Endpoints)
+    start_time = method.start_time
+    end_time = method.end_time
     dict_2 = Dict()
     time_col = df2time(time_col)
     for i in names(df)
-        indexes = index_between_vals(df; minv = min_od, maxv = max_od)[i]
-        # Is the max greater than what we can deal with?
-        if max_od > maximum(df[:, i])
-            @warn "Skipping $i as the max_od 4 x min_od ($max_od) is greater than in this sample ($(maximum(df[:,i])))."
-        else
-            dict_2[i] = (time_col[indexes[2], 1] - time_col[indexes[1], 1]) /
-                        log2(df[indexes[2], 1] / df[indexes[1], 1]) / 60
-        end
+        start_od = at_time(df, time_col, start_time)
+        end_od = at_time(df, time_col, end_time)
+        start_time = at_time(time_col, time_col, start_time) / 60
+        end_time = at_time(time_col, time_col, end_time) / 60
+        dict_2[i] = (log(end_od[1, i]) - log(start_od[1, i])) /
+                     (end_time[1, 1] - start_time[1, 1])
     end
-    return log(2) ./ DataFrame(dict_2)
+    return DataFrame(dict_2)
+end
+
+@kwdef struct MovingWindow <: AbstractGrowthRateMethod
+    window_size::Int = 10
+end
+
+function growth_rate(df, time_col, method::MovingWindow)
+    window_size = method.window_size
+    dict = Dict()
+    time_col = df2time(time_col)
+    for i in names(df)
+        max_rate = 0.0
+        for j in 1:(nrow(df) - window_size)
+            # TODO change this to allow any method to be used as a moving window
+            rate = (log(df[j + window_size, i]) - log(df[j, i])) /
+                   (time_col[j + window_size, 1] - time_col[j, 1])
+            if rate > max_rate
+                max_rate = rate
+            end
+        end
+        dict[i] = max_rate
+    end
+    return DataFrame(dict)
+end
+
+@kwdef struct LinearOnLog <: AbstractGrowthRateMethod
+    start_time::Float64
+    end_time::Float64
+end
+
+function growth_rate(df, time_col, method::LinearOnLog)
+    start_time = method.start_time
+    end_time = method.end_time
+    dict = Dict()
+    time_col = df2time(time_col)
+    # Get the indexes for the time range
+    indexes = index_between_vals(
+        time_col; minv = start_time * 60, maxv = end_time * 60)[names(time_col)[1]]
+    if length(indexes) < 2
+        @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
+    end
+    for i in names(df)
+        lm_df = DataFrame(time = time_col[indexes, 1],
+                         log_od = log.(df[indexes, i]))
+        lm_model = lm(@formula(log_od ~ time), lm_df)
+        dict[i] = coef(lm_model)[2]
+    end
+    return DataFrame(dict)
+end
+
+@kwdef struct ExpOnLinear <: AbstractGrowthRateMethod
+    start_time::Float64
+    end_time::Float64
+end
+
+function growth_rate(df, time_col, method::ExpOnLinear)
+    start_time = method.start_time
+    end_time = method.end_time
+    dict = Dict()
+    time_col = df2time(time_col)
+    # Get the indexes for the time range
+    indexes = index_between_vals(
+        time_col; minv = start_time * 60, maxv = end_time * 60)[names(time_col)[1]]
+    if length(indexes) < 2
+        @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
+    end
+    for i in names(df)
+        t = time_col[indexes, 1]
+        y = df[indexes, i]
+
+        # residual function for NonlinearLeastSquaresProblem
+        # signature (res, u, p, t) is used by NonlinearSolve
+        residuals! = function (res, u, _, _)
+            for k in eachindex(t)
+                res[k] = u[1] * exp(u[2] * t[k]) - y[k]
+            end
+            return nothing
+        end
+
+        # initial guess: A ~ max(y), b small
+        u0 = [maximum(y), 1e-3]
+
+        prob = NonlinearLeastSquaresProblem(residuals!, u0)
+        sol = solve(prob, Newton(); verbose = false, maxiters = 200)
+        psol = sol.u
+        dict[i] = psol[2]
+    end
+    return DataFrame(dict)
+end
+
+struct Logistic <: AbstractGrowthRateMethod
+end
+
+function growth_rate(df, time_col, ::Logistic)
+    dict = Dict()
+    time_col = df2time(time_col)
+    # Get the indexes for the time range
+    indexes = index_between_vals(
+        time_col; minv = start_time * 60, maxv = end_time * 60)[names(time_col)[1]]
+    if length(indexes) < 2
+        @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
+    end
+    for i in names(df)
+        t = time_col[indexes, 1]
+        y = df[indexes, i]
+
+        # residual function for NonlinearLeastSquaresProblem
+        # signature (res, u, p, t) is used by NonlinearSolve
+        residuals! = function (res, u, _, _)
+            for k in eachindex(t)
+                res[k] = u[1] / (1 + exp(-u[2] * (t[k] - u[3]))) - y[k]
+            end
+            return nothing
+        end
+
+        # initial guess: A ~ max(y), b small, c ~ end of time
+        u0 = [maximum(y), 1e-3, t[end]]
+
+        prob = NonlinearLeastSquaresProblem(residuals!, u0)
+        sol = solve(prob, Newton(); verbose = false, maxiters = 200)
+        psol = sol.u
+        dict[i] = psol[2]
+    end
+    return DataFrame(dict)
+end
+
+struct Spline <: AbstractGrowthRateMethod
+end
+
+function growth_rate(df, time_col, ::Spline)
+    dict = Dict()
+    time_col = df2time(time_col)
+    for i in names(df)
+        t = time_col[!, 1]
+        y = df[!, i]
+        sp = Spline1D(t, log.(y), k = 3)
+        # Get the maximum derivative
+        dt = range(minimum(t), stop = maximum(t), length = 1000)
+        dy = ForwardDiff.derivative.(x -> sp(x), dt)
+        dict[i] = maximum(dy)
+    end
+    return DataFrame(dict)
+end
+
+@kwdef struct FiniteDiff <: AbstractGrowthRateMethod
+    type = :central
+end
+
+function growth_rate(df, time_col, method::FiniteDiff)
+    type = method.type
+    dict = Dict()
+    time_col = df2time(time_col)
+    for i in names(df)
+        t = time_col[!, 1]
+        y = df[!, i]
+
+        n = length(t)
+        if n < 2
+            @warn "Not enough time points to compute finite differences for $i."
+            dict[i] = NaN
+            continue
+        end
+
+        # compute log of y to match other methods (growth in log-space)
+        if any(y .<= 0)
+            @warn "Non-positive values in column $i; log will produce NaN/Inf."
+        end
+        ly = log.(y)
+
+        deriv = zeros(length(ly))
+
+        if type == :central
+            # first and last use one-sided differences
+            for k in 2:(n - 1)
+                deriv[k] = (ly[k + 1] - ly[k - 1]) / (t[k + 1] - t[k - 1])
+            end
+        elseif type == :onesided
+            for k in 1:(n - 1)
+                deriv[k] = (ly[k + 1] - ly[k]) / (t[k + 1] - t[k])
+            end
+        else
+            error("Unknown finite difference type: $type")
+        end
+
+        # maximum derivative (growth rate)
+        dict[i] = maximum(deriv)
+    end
+    return DataFrame(dict)
 end
