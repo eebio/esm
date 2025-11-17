@@ -17,6 +17,14 @@ ESM.doubling_time
 
 It can be called using `growth_rate(data, MovingWindow())` or `doubling_time(data, MovingWindow())`.
 
+## FiniteDiff
+
+!!! todo "todo"
+    Describe the finite difference method (central is default but allows backwards or forwards).
+
+It can be called using `growth_rate(data, FiniteDiff())` (defaults to central) or any of `growth_rate(data, FiniteDiff(method=:forward))`, `growth_rate(data, FiniteDiff(method=:backward))` or `growth_rate(data, FiniteDiff(method=:central))`.
+You can also call `doubling_time` with any of the FiniteDiff methods.
+
 ## LinearOnLog
 
 !!! todo "todo"
