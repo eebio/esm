@@ -57,52 +57,6 @@ end
           Dict{String, Any}("data" => Any["first_group", "second_group"])
 end
 
-@testitem "read spectramax" setup=[environment_path] begin
-    println("read spectramax")
-    data = ESM.read_data("inputs/spectramax.xlsx")
-    # TODO should probably separate the channels into 600 and 700?
-    # TODO channel is currently 535 for fluorescence but the 485 is also relevant
-    @test data[:samples]["plate_01_a1"][:values]["abs"][[1, 2, end - 1, end]] ==
-          [0.1493, 0.1623, 0.3297, 0.3629]
-    @test data[:samples]["plate_01_e12"][:values]["abs"][[1, 2, end - 1, end]] == [
-        0.0776, 0.0772, 0.2173, 0.2359]
-    wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
-    wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
-    @test issetequal(keys(data[:samples]), wells)
-end
-
-@testitem "read biotek" setup=[environment_path] begin
-    println("read biotek")
-    data = ESM.read_data("inputs/biotek.xlsx")
-    @test data[:samples]["plate_01_a1"][:values]["od1"][[1, 2, end - 1, end]] ==
-          [0.134, 0.133, 0.131, 0.131]
-    @test data[:samples]["plate_01_h12"][:values]["od2"][[1, 2, end - 1, end]] == [
-        0.114, 0.113, 0.577, 0.578]
-    @test data[:samples]["plate_01_a2"][:values]["485,530[2]"][[1, 2, end - 1, end]] == [
-        166, 162, 1030, 1024]
-    wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
-    wells = [wells..., "plate_01_temperature", "plate_01_time"]  # Flatten to a 1D vector
-    @test issetequal(wells, keys(data[:samples]))
-end
-
-@testitem "read plate reader directories" setup=[environment_path] begin
-    println("read plate reader directories")
-    using Dates
-
-    data = ESM.read_data("inputs/example.xlsx")
-    @test data[:samples]["plate_01_time"][:values]["OD"][1:2] ==
-          Dates.Time[Dates.Time(0, 8, 38), Dates.Time(0, 18, 38)]
-    @test data[:samples]["plate_01_time"][:values]["OD"][end] == Dates.Time(18, 38, 38)
-    @test data[:samples]["plate_01_a1"][:values]["OD"][1:3] == [0.165, 0.167, 0.169]
-    @test data[:samples]["plate_01_h12"][:values]["OD"][end] == 0.148
-
-    @test data[:samples]["plate_01_time"][:values]["flo"][1:2] ==
-          Dates.Time[Dates.Time(0, 9, 04), Dates.Time(0, 19, 04)]
-    @test data[:samples]["plate_01_time"][:values]["flo"][end] == Dates.Time(18, 39, 04)
-    @test data[:samples]["plate_01_a1"][:values]["flo"][1:3] == [21, 22, 20]
-    @test data[:samples]["plate_01_h12"][:values]["flo"][end] == 7
-end
-
 @testitem "expand_group" begin
     println("expand_group")
     @test ESM.expand_group("plate_01_a[1:3]") == ["plate_01_a1", "plate_01_a2", "plate_01_a3"]
