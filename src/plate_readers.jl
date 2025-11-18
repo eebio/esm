@@ -222,8 +222,6 @@ end
 struct GenericTabular <: AbstractPlateReader end
 
 function Base.read(filen::AbstractString, ::GenericTabular; channels=nothing)
-    # TODO Is there really only one format here? If so, do we still need to specify the brand for folders
-    # TODO 1:(end-4) is a bit of a hack - this is to remove the .csv/.tsv from the end of the file
     out = Dict()
     for j in readdir(filen)
         channel = splitext(j)[1] # Remove file extension
