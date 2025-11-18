@@ -6,9 +6,6 @@ There are a variety of types of gates that can be applied to flow cytometry data
 ```
 
 !!! todo "todo"
-    Document which is the default method
-
-!!! todo "todo"
     logical operations on gates
 
 ## HighLow
