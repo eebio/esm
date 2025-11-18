@@ -1,4 +1,5 @@
 using GLM
+using Statistics
 using CSV
 using StringEncodings
 using NonlinearSolve
@@ -445,4 +446,61 @@ function growth_rate(df, time_col, method::FiniteDiff)
         dict[i] = maximum(deriv)
     end
     return DataFrame(dict)
+end
+
+struct TimeseriesBlank <: AbstractCalibrationMethod end
+
+"""
+    calibrate(data, method::AbstractCalibrationMethod)
+    calibrate(data, blanks, method::AbstractCalibrationMethod)
+
+Calibrate data, for example, to remove background OD signal.
+
+Args:
+- `data=<DataFrame>`: DataFrame containing the data to be calibrated.
+- `blanks=<DataFrame>`: DataFrame containing the blank measurements.
+- `method::AbstractCalibrationMethod`: Method to use for calibration.
+"""
+function calibrate(data, blanks, ::TimeseriesBlank)
+    return data .- colmean(blanks)
+end
+
+struct MeanBlank <: AbstractCalibrationMethod end
+
+function calibrate(data, blanks, ::MeanBlank)
+    # Average blanks over time
+    means = mean(colmean(blanks))
+    return data .- means
+end
+
+struct MinBlank <: AbstractCalibrationMethod end
+
+function calibrate(data, blanks, ::MinBlank)
+    # Minimum blank over time
+    mins = minimum(minimum(eachcol(blanks)))
+    return data .- mins
+end
+
+struct MinData <: AbstractCalibrationMethod end
+
+function calibrate(data, _, ::MinData)
+    # Minimum data over time
+    mins = minimum(eachrow(data))
+    return data .- mins
+end
+
+function calibrate(data, ::MinData)
+    calibrate(data, nothing, MinData())
+end
+
+struct StartZero <: AbstractCalibrationMethod end
+
+function calibrate(data, _, ::StartZero)
+    # Set starting value to zero
+    starts = data[1, :]
+    return data .- starts
+end
+
+function calibrate(data, ::StartZero)
+    calibrate(data, nothing, StartZero())
 end
