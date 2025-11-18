@@ -272,17 +272,14 @@ Args:
 - `method::AbstractGrowthRateMethod`: Method to use for calculating growth rate.
 """
 function growth_rate(df, time_col, method::Endpoints)
-    start_time = method.start_time
-    end_time = method.end_time
     dict_2 = Dict()
-    time_col = df2time(time_col)
     for i in names(df)
-        start_od = at_time(df, time_col, start_time)
-        end_od = at_time(df, time_col, end_time)
-        start_time = at_time(time_col, time_col, start_time) / 60
-        end_time = at_time(time_col, time_col, end_time) / 60
-        dict_2[i] = (log(end_od[1, i]) - log(start_od[1, i])) /
-                     (end_time[1, 1] - start_time[1, 1])
+        start_od = at_time(df, time_col, method.start_time) # It is broken because at_time is always returning the last value - maybe weird unit stuff?
+        end_od = at_time(df, time_col, method.end_time)
+        start_time = at_time(df2time(time_col), time_col, method.start_time)[1] / 60
+        end_time = at_time(df2time(time_col), time_col, method.end_time)[1] / 60
+        dict_2[i] = (log(end_od[i]) - log(start_od[i])) /
+                     (end_time - start_time)
     end
     return DataFrame(dict_2)
 end
@@ -300,7 +297,7 @@ function growth_rate(df, time_col, method::MovingWindow)
         for j in 1:(nrow(df) - window_size)
             # TODO change this to allow any method to be used as a moving window
             rate = (log(df[j + window_size, i]) - log(df[j, i])) /
-                   (time_col[j + window_size, 1] - time_col[j, 1])
+                   (time_col[j + window_size, 1]/60 - time_col[j, 1]/60)
             if rate > max_rate
                 max_rate = rate
             end
@@ -319,16 +316,16 @@ function growth_rate(df, time_col, method::LinearOnLog)
     start_time = method.start_time
     end_time = method.end_time
     dict = Dict()
-    time_col = df2time(time_col)
+    time_col = df2time(time_col) ./ 60
     # Get the indexes for the time range
     indexes = index_between_vals(
-        time_col; minv = start_time * 60, maxv = end_time * 60)[names(time_col)[1]]
+        time_col; minv = start_time, maxv = end_time)[names(time_col)[1]]
     if length(indexes) < 2
         @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
     end
     for i in names(df)
-        lm_df = DataFrame(time = time_col[indexes, 1],
-                         log_od = log.(df[indexes, i]))
+        lm_df = DataFrame(time = time_col[indexes[1]:indexes[2], 1],
+                         log_od = log.(df[indexes[1]:indexes[2], i]))
         lm_model = lm(@formula(log_od ~ time), lm_df)
         dict[i] = coef(lm_model)[2]
     end
@@ -344,20 +341,20 @@ function growth_rate(df, time_col, method::ExpOnLinear)
     start_time = method.start_time
     end_time = method.end_time
     dict = Dict()
-    time_col = df2time(time_col)
+    time_col = df2time(time_col) ./ 60
     # Get the indexes for the time range
     indexes = index_between_vals(
-        time_col; minv = start_time * 60, maxv = end_time * 60)[names(time_col)[1]]
+        time_col; minv = start_time, maxv = end_time)[names(time_col)[1]]
     if length(indexes) < 2
         @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
     end
     for i in names(df)
-        t = time_col[indexes, 1]
-        y = df[indexes, i]
+        t = time_col[indexes[1]:indexes[2], 1]
+        y = df[indexes[1]:indexes[2], i]
 
         # residual function for NonlinearLeastSquaresProblem
         # signature (res, u, p, t) is used by NonlinearSolve
-        residuals! = function (res, u, _, _)
+        residuals! = function (res, u, _)
             for k in eachindex(t)
                 res[k] = u[1] * exp(u[2] * t[k]) - y[k]
             end
@@ -367,8 +364,8 @@ function growth_rate(df, time_col, method::ExpOnLinear)
         # initial guess: A ~ max(y), b small
         u0 = [maximum(y), 1e-3]
 
-        prob = NonlinearLeastSquaresProblem(residuals!, u0)
-        sol = solve(prob, Newton(); verbose = false, maxiters = 200)
+        prob = NonlinearLeastSquaresProblem(NonlinearFunction(residuals!, resid_prototype = zeros(length(y))), u0)
+        sol = solve(prob; verbose = false, maxiters = 200)
         psol = sol.u
         dict[i] = psol[2]
     end
@@ -380,20 +377,14 @@ end
 
 function growth_rate(df, time_col, ::Logistic)
     dict = Dict()
-    time_col = df2time(time_col)
-    # Get the indexes for the time range
-    indexes = index_between_vals(
-        time_col; minv = start_time * 60, maxv = end_time * 60)[names(time_col)[1]]
-    if length(indexes) < 2
-        @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
-    end
+    time_col = df2time(time_col) ./ 60
     for i in names(df)
-        t = time_col[indexes, 1]
-        y = df[indexes, i]
+        t = time_col[!, 1]
+        y = df[!, i]
 
         # residual function for NonlinearLeastSquaresProblem
         # signature (res, u, p, t) is used by NonlinearSolve
-        residuals! = function (res, u, _, _)
+        residuals! = function (res, u, _)
             for k in eachindex(t)
                 res[k] = u[1] / (1 + exp(-u[2] * (t[k] - u[3]))) - y[k]
             end
@@ -403,28 +394,10 @@ function growth_rate(df, time_col, ::Logistic)
         # initial guess: A ~ max(y), b small, c ~ end of time
         u0 = [maximum(y), 1e-3, t[end]]
 
-        prob = NonlinearLeastSquaresProblem(residuals!, u0)
-        sol = solve(prob, Newton(); verbose = false, maxiters = 200)
+        prob = NonlinearLeastSquaresProblem(NonlinearFunction(residuals!, resid_prototype = zeros(length(y))), u0)
+        sol = solve(prob; verbose = false, maxiters = 200)
         psol = sol.u
         dict[i] = psol[2]
-    end
-    return DataFrame(dict)
-end
-
-struct Spline <: AbstractGrowthRateMethod
-end
-
-function growth_rate(df, time_col, ::Spline)
-    dict = Dict()
-    time_col = df2time(time_col)
-    for i in names(df)
-        t = time_col[!, 1]
-        y = df[!, i]
-        sp = Spline1D(t, log.(y), k = 3)
-        # Get the maximum derivative
-        dt = range(minimum(t), stop = maximum(t), length = 1000)
-        dy = ForwardDiff.derivative.(x -> sp(x), dt)
-        dict[i] = maximum(dy)
     end
     return DataFrame(dict)
 end
@@ -436,7 +409,7 @@ end
 function growth_rate(df, time_col, method::FiniteDiff)
     type = method.type
     dict = Dict()
-    time_col = df2time(time_col)
+    time_col = df2time(time_col) ./ 60
     for i in names(df)
         t = time_col[!, 1]
         y = df[!, i]

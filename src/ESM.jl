@@ -18,7 +18,7 @@ include("views.jl")
 
 export read_esm, esm_zones, read_data, write_esm
 export growth_rate, doubling_time
-export MaxOD
+export MovingWindow, FiniteDiff, Logistic, Endpoints, ExpOnLinear, LinearOnLog
 export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
 export AbstractESMDataType, AbstractPlateReader

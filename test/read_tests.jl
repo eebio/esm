@@ -311,25 +311,42 @@ end
     println("doubling_time")
     using DataFrames
 
-    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
+    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6, 51.2])
     time_col = DataFrame(Time = [
-        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
+        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00", "00:05:00", "00:06:00",
+        "00:07:00", "00:08:00", "00:09:00", "00:10:00"])
 
-    @test ESM.doubling_time(od_df, time_col, MaxOD()) ≈ DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col, MaxOD(); max_od = 0.5) ≈ DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col, MaxOD(); max_od = 0.3) ≈ DataFrame(A = 1.0)
     # TODO: Add some more tests with more awkward data
+    @test ESM.doubling_time(od_df, time_col, MovingWindow(window_size = 3)) ≈
+          DataFrame(A = 1.0)
+    @test ESM.doubling_time(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5)) ≈
+          DataFrame(A = 1.0)
+    @test ESM.doubling_time(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5)) ≈
+          DataFrame(A = 1.0)
+    @test ESM.doubling_time(od_df, time_col, Endpoints(start_time = 1, end_time = 5)) ≈
+          DataFrame(A = 1.0)
+    @test ESM.doubling_time(od_df, time_col, Logistic()) ≈ DataFrame(A = 1.0)
+    @test ESM.doubling_time(od_df, time_col, FiniteDiff()) ≈ DataFrame(A = 1.0)
 end
 
 @testitem "growth_rate" begin
     println("growth_rate")
     using DataFrames
-
-    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
+    # TODO add tests with more columns and more awkward data
+    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6, 51.2])
     time_col = DataFrame(Time = [
-        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
+        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00", "00:05:00", "00:06:00",
+        "00:07:00", "00:08:00", "00:09:00", "00:10:00"])
 
-    @test ESM.growth_rate(od_df, time_col, MaxOD())[1, "A"] ≈ log(2)
+    @test ESM.growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
+    @test ESM.growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5))[
+        1, "A"] ≈ log(2)
+    @test ESM.growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5))[
+        1, "A"] ≈ log(2)
+    @test ESM.growth_rate(od_df, time_col, Endpoints(start_time = 1, end_time = 5))[
+        1, "A"] ≈ log(2)
+    @test ESM.growth_rate(od_df, time_col, Logistic())[1, "A"] ≈ log(2)
+    @test ESM.growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
 end
 
 @testitem "expression" setup=[MockESM] begin
@@ -354,7 +371,8 @@ end
           ESM.form_df(ESM.es.samples)
     # Test other symbols - should just be returned
     @test ESM.sexp_to_nested_list(:not_defined, ESM.es, trans_meta_map) == :not_defined
-    @test ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)),ESM.es,trans_meta_map) == :(form_df(ESM.es.samples))
+    @test ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)), ESM.es, trans_meta_map) ==
+          :(form_df(ESM.es.samples))
 end
 
 @testitem "produce_views" begin
@@ -364,28 +382,45 @@ end
     for i in keys(ESM.es.transformations))
     a = ESM.produce_views(ESM.es, trans_meta_map)
     # Test groups
-    @test issetequal(keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "mega"])
-    @test issetequal(names(a["group1"]), ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo"])
-    @test issetequal(names(a["group2"]), ["plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
-    @test issetequal(names(a["group3"]), ["plate_01_a2.OD", "plate_01_a2.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a3.OD", "plate_01_a3.flo"])
+    @test issetequal(
+        keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "mega"])
+    @test issetequal(names(a["group1"]),
+        ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD",
+            "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo"])
+    @test issetequal(names(a["group2"]),
+        ["plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD",
+            "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
+    @test issetequal(names(a["group3"]),
+        ["plate_01_a2.OD", "plate_01_a2.flo", "plate_01_a1.OD",
+            "plate_01_a1.flo", "plate_01_a3.OD", "plate_01_a3.flo"])
     @test a["group1"][1:3, "plate_01_a5.OD"] == Any[0.169, 0.173, 0.177]
     @test a["group2"][2:4, "plate_01_a8.OD"] == Any[0.152, 0.154, 0.157]
     @test a["group3"][(end - 2):end, "plate_01_a3.flo"] == Any[211, 201, 209]
     # Test mega group
     @test issetequal(names(a["mega"]),
-    ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo",
-    "plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
+        ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD",
+            "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo",
+            "plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo",
+            "plate_01_a7.OD", "plate_01_a7.flo"])
     @test a["mega"][1:3, "plate_01_a5.OD"] == Any[0.169, 0.173, 0.177]
     @test a["mega"][2:4, "plate_01_a8.OD"] == Any[0.152, 0.154, 0.157]
     @test a["mega"][(end - 2):end, "plate_01_a3.flo"] == Any[211, 201, 209]
     # Test sample
     @test names(a["sample"]) == ["plate_01_time.flo"]
-    @test a["sample"][[1, 2, end - 1, end], "plate_01_time.flo"] == Any["00:09:04", "00:19:04", "18:29:04", "18:39:04"]
+    @test a["sample"][[1, 2, end - 1, end], "plate_01_time.flo"] ==
+          Any["00:09:04", "00:19:04", "18:29:04", "18:39:04"]
     # Test expressions
-    @test issetequal(names(a["flowsub"]), ["plate_01_a5", "plate_01_a1", "plate_01_a9", "plate_01_a8", "plate_01_a3", "plate_01_a7"])
-    @test issetequal(names(a["odsub"]), ["plate_01_a5", "plate_01_a1", "plate_01_a9", "plate_01_a8", "plate_01_a3", "plate_01_a7"])
-    @test a["flowsub"][[1, 2, end - 1, end], "plate_01_a9"] ≈ [0.33333333333333215, -2.666666666666668, -160.66666666666669, -162.33333333333331]
-    @test a["odsub"][[1, 2, end - 1, end], "plate_01_a3"] ≈ [0.0026666666666666783, 0.0026666666666666783, -0.10200000000000009, -0.10133333333333328]
+    @test issetequal(names(a["flowsub"]),
+        ["plate_01_a5", "plate_01_a1", "plate_01_a9",
+            "plate_01_a8", "plate_01_a3", "plate_01_a7"])
+    @test issetequal(names(a["odsub"]),
+        ["plate_01_a5", "plate_01_a1", "plate_01_a9",
+            "plate_01_a8", "plate_01_a3", "plate_01_a7"])
+    @test a["flowsub"][[1, 2, end - 1, end], "plate_01_a9"] ≈ [
+        0.33333333333333215, -2.666666666666668, -160.66666666666669, -162.33333333333331]
+    @test a["odsub"][[1, 2, end - 1, end], "plate_01_a3"] ≈
+          [0.0026666666666666783, 0.0026666666666666783,
+        -0.10200000000000009, -0.10133333333333328]
 end
 
 @testitem "to_rfi" begin
@@ -422,8 +457,8 @@ end
 
     # Error checking
     @test_throws "Please provide" ESM.summarise()
-    @test_throws "File type" ESM.summarise(file="biotek-summarise.csv")
-    @test_throws "Unsupported" ESM.summarise(file="inputs/unknown.txt", type="unknown")
+    @test_throws "File type" ESM.summarise(file = "biotek-summarise.csv")
+    @test_throws "Unsupported" ESM.summarise(file = "inputs/unknown.txt", type = "unknown")
 end
 
 @testitem "issue 34" begin
