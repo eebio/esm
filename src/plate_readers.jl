@@ -259,7 +259,8 @@ end
 end
 
 """
-    growth_rate(df, timecol, method)
+    growth_rate(df, timecol)
+    growth_rate(df, time_col, method::AbstractGrowthRateMethod)
 
 Calculates the growth rate of a given dataframe. Returns in min^-1 using base e.
 
