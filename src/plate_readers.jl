@@ -484,9 +484,13 @@ end
 struct MinData <: AbstractCalibrationMethod end
 
 function calibrate(data, _, ::MinData)
+    data = deepcopy(data)
     # Minimum data over time
-    mins = minimum(eachrow(data))
-    return data .- mins
+    mins = [minimum(i) for i in eachcol(data)]
+    for i in 1:ncol(data)
+        data[!, i] .-= mins[i]
+    end
+    return data
 end
 
 function calibrate(data, ::MinData)
@@ -497,8 +501,12 @@ struct StartZero <: AbstractCalibrationMethod end
 
 function calibrate(data, _, ::StartZero)
     # Set starting value to zero
+    data = deepcopy(data)
     starts = data[1, :]
-    return data .- starts
+    for i in 1:ncol(data)
+        data[!, i] .-= starts[i]
+    end
+    return data
 end
 
 function calibrate(data, ::StartZero)
