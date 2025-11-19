@@ -176,7 +176,7 @@ function to_rfi(sample_name; chans = [])
 end
 
 """
-    autogate(data, method::AbstractAutoGate)
+    gate(data, method::AbstractAutoGate)
 
 Automatically perform density gating.
 
@@ -192,7 +192,7 @@ function autogate end
     nbins::Int64 = 1024
 end
 
-function autogate(data, method::KDE)
+function gate(data, method::KDE)
     channels = method.channels
     gate_frac = method.gate_frac
     nbins = method.nbins
