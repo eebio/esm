@@ -93,6 +93,7 @@ end
 
 @testitem "Summarise integration" setup=[environment_path, build, getshell] begin
     println("Summarise integration")
+    using Plots # May help with some weird MacOS plotting issues
     dir = Base.Filesystem.mktempdir()
     cp(joinpath("inputs", "summarise.esm"), joinpath(dir, "summarise.esm"))
     run(`$(shell) esm summarise --file $(joinpath(dir, "summarise.esm")) --plot`)
@@ -123,6 +124,7 @@ end
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
 @testitem "Integration coverage" setup=[environment_path] begin
     println("Integration coverage")
+    using Plots
     dir = Base.Filesystem.mktempdir()
     ESM.template(output_path = joinpath(dir, "tmp.xlsx"))
     ESM.translate(excel = joinpath("inputs", "example.xlsx"), target = joinpath(dir, "tmp.esm"))

@@ -396,6 +396,7 @@ end
 
 @testitem "summary" begin
     println("summary")
+    using Plots # May help with some weird MacOS plotting issues
     summary("inputs/summarise.esm", ESMData(); plot = true)
     @test isfile("inputs/summarise.esm.pdf")
     rm("inputs/summarise.esm.pdf")
