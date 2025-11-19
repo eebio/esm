@@ -241,21 +241,22 @@ Args:
 """
 function gate end
 
-@kwdef struct HighLow <: AbstractManualGate
+@kwdef struct HighLowGate <: AbstractManualGate
     channel::String
     max::Float64 = Inf
     min::Float64 = -Inf
 end
 
-function gate(data, method::HighLow)
-    dat_mask = method.min .< data[method.channel][:data] .< method.max
+function gate(data, method::HighLowGate)
+    data = deepcopy(data)
+    dat_mask = method.min .<= data[method.channel][:data] .< method.max
     for i in keys(data)
         data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
     end
     return data
 end
 
-struct RectangleGate <: AbstractManualGate
+@kwdef struct RectangleGate <: AbstractManualGate
     channel_x::String
     channel_y::String
     x_min::Float64
@@ -265,15 +266,16 @@ struct RectangleGate <: AbstractManualGate
 end
 
 function gate(data, method::RectangleGate)
-    dat_mask = (method.x_min .< data[method.channel_x][:data] .< method.x_max) .&
-               (method.y_min .< data[method.channel_y][:data] .< method.y_max)
+    data = deepcopy(data)
+    dat_mask = (method.x_min .<= data[method.channel_x][:data] .< method.x_max) .&
+               (method.y_min .<= data[method.channel_y][:data] .< method.y_max)
     for i in keys(data)
         data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
     end
     return data
 end
 
-struct QuadrantGate <: AbstractManualGate
+@kwdef struct QuadrantGate <: AbstractManualGate
     channel_x::String
     channel_y::String
     x_cutoff::Float64
@@ -282,18 +284,19 @@ struct QuadrantGate <: AbstractManualGate
 end
 
 function gate(data, method::QuadrantGate)
+    data = deepcopy(data)
     if method.quadrant == 1
         dat_mask = (data[method.channel_x][:data] .>= method.x_cutoff) .&
                    (data[method.channel_y][:data] .>= method.y_cutoff)
     elseif method.quadrant == 2
-        dat_mask = (data[method.channel_x][:data] .< method.x_cutoff) .&
-                   (data[method.channel_y][:data] .>= method.y_cutoff)
+        dat_mask = (data[method.channel_x][:data] .>= method.x_cutoff) .&
+                   (data[method.channel_y][:data] .< method.y_cutoff)
     elseif method.quadrant == 3
         dat_mask = (data[method.channel_x][:data] .< method.x_cutoff) .&
                    (data[method.channel_y][:data] .< method.y_cutoff)
     elseif method.quadrant == 4
-        dat_mask = (data[method.channel_x][:data] .>= method.x_cutoff) .&
-                   (data[method.channel_y][:data] .< method.y_cutoff)
+        dat_mask = (data[method.channel_x][:data] .< method.x_cutoff) .&
+                   (data[method.channel_y][:data] .>= method.y_cutoff)
     else
         error("Quadrant must be between 1 and 4.")
     end

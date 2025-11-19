@@ -21,6 +21,8 @@ export growth_rate, doubling_time
 export MovingWindow, FiniteDiff, Logistic, Endpoints, ExpOnLinear, LinearOnLog
 export calibrate
 export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
+export gate
+export HighLowGate, RectangleGate, QuadrantGate
 export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
 export AbstractESMDataType, AbstractPlateReader
