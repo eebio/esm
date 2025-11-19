@@ -2,15 +2,16 @@
     println("MockFlow")
     # Example output from to_rfi
     data = Dict(
-        "FSC-A" => Dict(:max => 1e5, :min => 0.0, :data => [1.0, 2.0, 3.0, 4.0, 5.0]),
-        "SSC-A" => Dict(:max => 1e5, :min => 0.0, :data => [100.0, 200.0, 300.0, 400.0, 500.0]),
-        "FL1-A" => Dict(:max => 1e5, :min => 0.0, :data => [510.0, 520.0, 530.0, 540.0, 550.0]),
-        "FL2-A" => Dict(:max => 1e5, :min => 0.0, :data => [51.0, 52.0, 53.0, 54.0, 55.0]),
+        "FSC-A" => Dict(:max => 1e5, :min => 0.0, :data => [1.0, 2.0, 3.0, 4.0, 5.0], :id => [1,2,3,4,5]),
+        "SSC-A" => Dict(:max => 1e5, :min => 0.0, :data => [100.0, 200.0, 300.0, 400.0, 500.0], :id => [1,2,3,4,5]),
+        "FL1-A" => Dict(:max => 1e5, :min => 0.0, :data => [510.0, 520.0, 530.0, 540.0, 550.0], :id => [1,2,3,4,5]),
+        "FL2-A" => Dict(:max => 1e5, :min => 0.0, :data => [51.0, 52.0, 53.0, 54.0, 55.0], :id => [1,2,3,4,5]),
     )
 end
 
 @testitem "manual gating" setup = [MockFlow] begin
     # TODO add tests for other gating constructors
+    # TODO check IDs are handled correctly
     datacopy = deepcopy(MockFlow.data)
     @test gate(MockFlow.data, HighLowGate(channel="FL1-A", min=515.0))["FL1-A"][:data] == [520.0, 530.0, 540.0, 550.0]
     @test gate(MockFlow.data, HighLowGate(channel="SSC-A", max=301.0))["SSC-A"][:data] == [100.0, 200.0, 300.0]

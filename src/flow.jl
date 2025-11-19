@@ -171,6 +171,7 @@ function to_rfi(sample_name; chans = [])
                 :min => at[2] * 10^(at[1] * (1 / ran)),
                 :max => at[2] * 10^(at[1] * (ran / ran)))
         end
+        o[i][:id] = 1:length(o[i][:data])
     end
     return o
 end
@@ -224,6 +225,7 @@ function gate(data, method::KDE)
     data = deepcopy(data)
     for i in keys(data)
         data[i][:data] = data[i][:data][inside_indices]
+        data[i][:id] = data[i][:id][inside_indices]
     end
     return data
 end
@@ -250,6 +252,7 @@ function gate(data, method::HighLowGate)
     dat_mask = method.min .<= data[method.channel][:data] .< method.max
     for i in keys(data)
         data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
+        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], dat_mask) if m]
     end
     return data
 end
@@ -269,6 +272,7 @@ function gate(data, method::RectangleGate)
                (method.y_min .<= data[method.channel_y][:data] .< method.y_max)
     for i in keys(data)
         data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
+        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], dat_mask) if m]
     end
     return data
 end
@@ -300,6 +304,7 @@ function gate(data, method::QuadrantGate)
     end
     for i in keys(data)
         data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
+        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], dat_mask) if m]
     end
     return data
 end
