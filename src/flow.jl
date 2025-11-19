@@ -305,3 +305,18 @@ function gate(data, method::QuadrantGate)
     end
     return data
 end
+
+"""
+    event_count(data)
+
+Count the number of events in the flow cytometry data.
+
+Args:
+- `data::Dict`: Dict returned by RFI.
+"""
+function event_count(data)
+    if !all(length(data[i][:data]) == length(data[first(keys(data))][:data]) for i in keys(data))
+        error("All channels must have the same number of events.")
+    end
+    return length(data[first(keys(data))][:data])
+end

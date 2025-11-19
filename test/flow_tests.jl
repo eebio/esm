@@ -24,3 +24,18 @@ end
     @test gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=4))["FL1-A"][:data] == []
     @test MockFlow.data == datacopy  # ensure original data is not modified
 end
+
+@testitem "event counting" setup = [MockFlow] begin
+    @test event_count(MockFlow.data) == 5
+    gated_data = gate(MockFlow.data, HighLowGate(channel="FL1-A", min=530.0))
+    @test event_count(gated_data) == 3
+    gated_data2 = gate(MockFlow.data, RectangleGate(channel_x="FSC-A", channel_y="SSC-A", x_min=2.0, x_max=4.5, y_min=50.0, y_max=301.0))
+    @test event_count(gated_data2) == 2
+    MockFlow.data["FL1-A"][:data] = [1.0, 2.0]
+    @test_throws ErrorException event_count(MockFlow.data)
+    MockFlow.data["FL1-A"][:data] = [510.0, 520.0, 530.0, 540.0, 550.0]
+    MockFlow.data["FSC-A"][:data] = [100.0, 200.0, 300.0]
+    @test_throws ErrorException event_count(MockFlow.data)
+    MockFlow.data["FSC-A"][:data] = [1.0, 2.0, 3.0, 4.0, 5.0]
+    @test event_count(MockFlow.data) == 5
+end
