@@ -13,6 +13,8 @@ abstract type AbstractAutoGate <: AbstractGatingMethod end
 
 abstract type AbstractManualGate <: AbstractGatingMethod end
 
+abstract type AbstractLogicalGate <: AbstractGatingMethod end
+
 """
     read_flow(samples, sample_dict,channels,broad_g,channel_map)
 
@@ -322,4 +324,81 @@ function event_count(data)
         error("All channels must have the same number of events.")
     end
     return length(data[first(keys(data))][:data])
+end
+
+# Logical operations on gates
+struct AndGate{X,Y} <: AbstractLogicalGate where {X<:AbstractGatingMethod, Y<:AbstractGatingMethod}
+    gate1::X
+    gate2::Y
+end
+
+struct OrGate{X, Y} <: AbstractLogicalGate where {X <: AbstractGatingMethod, Y <: AbstractGatingMethod}
+    gate1::X
+    gate2::Y
+end
+
+struct NotGate{X} <: AbstractLogicalGate where {X <: AbstractGatingMethod}
+    gate1::X
+end
+
+function Base.:&(g1::AbstractGatingMethod, g2::AbstractGatingMethod)
+    return AndGate(g1, g2)
+end
+
+function Base.:|(g1::AbstractGatingMethod, g2::AbstractGatingMethod)
+    return OrGate(g1, g2)
+end
+
+function Base.:!(g::AbstractGatingMethod)
+    return NotGate(g)
+end
+
+function and(g1::AbstractGatingMethod, g2::AbstractGatingMethod)
+    return g1 & g2
+end
+function or(g1::AbstractGatingMethod, g2::AbstractGatingMethod)
+    return g1 | g2
+end
+
+function not(g::AbstractGatingMethod)
+    return !g
+end
+
+function gate(data, method::AndGate)
+    data = gate(data, method.gate1)
+    data = gate(data, method.gate2)
+    return data
+end
+
+function gate(data, method::OrGate)
+    data = deepcopy(data)
+    data1 = gate(data, method.gate1)
+    data2 = gate(data, method.gate2)
+    mask1 = [true for i in 1:event_count(data)]
+    mask2 = [true for i in 1:event_count(data)]
+    for i in keys(data)
+        mask1 .= mask1 .& (data1[i][:id] .∈ data[i][:id])
+        mask2 .= mask2 .& (data2[i][:id] .∈ data[i][:id])
+    end
+    final_mask = mask1 .| mask2
+    for i in keys(data)
+        data_out[i][:data] = [xi for (xi, m) in zip(data[i][:data], final_mask) if m]
+        data_out[i][:id] = [xi for (xi, m) in zip(data[i][:id], final_mask) if m]
+    end
+    return data_out
+end
+
+function gate(data, method::NotGate)
+    data = deepcopy(data)
+    data1 = gate(data, method.gate1)
+    mask1 = [true for i in 1:event_count(data)]
+    for i in keys(data)
+        mask1 .= mask1 .& (data1[i][:id] .∈ data[i][:id])
+    end
+    final_mask = .!mask1
+    for i in keys(data)
+        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], final_mask) if m]
+        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], final_mask) if m]
+    end
+    return data
 end
