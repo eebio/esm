@@ -221,13 +221,11 @@ function autogate(data, method::KDE)
     threshold = density_values[top_indice]
     # Only keep the values denser than the threshold
     inside_indices = density_values .> threshold
-
-    data_inside = stack(data[i][:data] for i in keys(data))
-    # Keep the data still inside for all the columns
-    data_inside = data_inside[inside_indices, :]
-    # Create the new output dataframe
-    out_df = DataFrame(data_inside, [keys(data)...])
-    return out_df
+    data = deepcopy(data)
+    for i in keys(data)
+        data[i][:data] = data[i][:data][inside_indices]
+    end
+    return data
 end
 
 """

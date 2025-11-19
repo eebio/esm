@@ -39,3 +39,10 @@ end
     MockFlow.data["FSC-A"][:data] = [1.0, 2.0, 3.0, 4.0, 5.0]
     @test event_count(MockFlow.data) == 5
 end
+
+@testitem "autogating" setup = [MockFlow] begin
+    datacopy = deepcopy(MockFlow.data)
+    @test autogate(MockFlow.data, KDE(channels = ["FSC-A", "SSC-A"])) ==
+    gate(MockFlow.data, HighLowGate(channel="FSC-A", min=1.5, max=4.5))
+    @test MockFlow.data == datacopy  # ensure original data is not modified
+end
