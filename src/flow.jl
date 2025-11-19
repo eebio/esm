@@ -224,12 +224,7 @@ function gate(data, method::KDE)
     threshold = density_values[top_indice]
     # Only keep the values denser than the threshold
     inside_indices = density_values .> threshold
-    data = deepcopy(data)
-    for i in keys(data)
-        data[i][:data] = data[i][:data][inside_indices]
-        data[i][:id] = data[i][:id][inside_indices]
-    end
-    return data
+    return apply_mask(data, inside_indices)
 end
 
 """
@@ -250,13 +245,8 @@ function gate end
 end
 
 function gate(data, method::HighLowGate)
-    data = deepcopy(data)
     dat_mask = method.min .<= data[method.channel][:data] .< method.max
-    for i in keys(data)
-        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
-        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], dat_mask) if m]
-    end
-    return data
+    return apply_mask(data, dat_mask)
 end
 
 @kwdef struct RectangleGate <: AbstractManualGate
@@ -269,14 +259,9 @@ end
 end
 
 function gate(data, method::RectangleGate)
-    data = deepcopy(data)
     dat_mask = (method.x_min .<= data[method.channel_x][:data] .< method.x_max) .&
                (method.y_min .<= data[method.channel_y][:data] .< method.y_max)
-    for i in keys(data)
-        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
-        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], dat_mask) if m]
-    end
-    return data
+    return apply_mask(data, dat_mask)
 end
 
 @kwdef struct QuadrantGate <: AbstractManualGate
@@ -288,7 +273,6 @@ end
 end
 
 function gate(data, method::QuadrantGate)
-    data = deepcopy(data)
     if method.quadrant == 1
         dat_mask = (data[method.channel_x][:data] .>= method.x_cutoff) .&
                    (data[method.channel_y][:data] .>= method.y_cutoff)
@@ -304,11 +288,7 @@ function gate(data, method::QuadrantGate)
     else
         error("Quadrant must be between 1 and 4.")
     end
-    for i in keys(data)
-        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], dat_mask) if m]
-        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], dat_mask) if m]
-    end
-    return data
+    return apply_mask(data, dat_mask)
 end
 
 """
@@ -371,7 +351,6 @@ function gate(data, method::AndGate)
 end
 
 function gate(data, method::OrGate)
-    data = deepcopy(data)
     data1 = gate(data, method.gate1)
     data2 = gate(data, method.gate2)
     mask1 = [true for i in 1:event_count(data)]
@@ -381,24 +360,24 @@ function gate(data, method::OrGate)
         mask2 .= mask2 .& (data2[i][:id] .∈ data[i][:id])
     end
     final_mask = mask1 .| mask2
-    for i in keys(data)
-        data_out[i][:data] = [xi for (xi, m) in zip(data[i][:data], final_mask) if m]
-        data_out[i][:id] = [xi for (xi, m) in zip(data[i][:id], final_mask) if m]
-    end
-    return data_out
+    return apply_mask(data, final_mask)
 end
 
 function gate(data, method::NotGate)
-    data = deepcopy(data)
     data1 = gate(data, method.gate1)
     mask1 = [true for i in 1:event_count(data)]
     for i in keys(data)
         mask1 .= mask1 .& (data1[i][:id] .∈ data[i][:id])
     end
     final_mask = .!mask1
+    return apply_mask(data, final_mask)
+end
+
+function apply_mask(data, mask)
+    data = deepcopy(data)
     for i in keys(data)
-        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], final_mask) if m]
-        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], final_mask) if m]
+        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], mask) if m]
+        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], mask) if m]
     end
     return data
 end
