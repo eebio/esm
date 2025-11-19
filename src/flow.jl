@@ -356,8 +356,8 @@ function gate(data, method::OrGate)
     mask1 = [true for i in 1:event_count(data)]
     mask2 = [true for i in 1:event_count(data)]
     for i in keys(data)
-        mask1 .= mask1 .& (data1[i][:id] .∈ data[i][:id])
-        mask2 .= mask2 .& (data2[i][:id] .∈ data[i][:id])
+        mask1 .= mask1 .& [id ∈ data1[i][:id] for id in data[i][:id]]
+        mask2 .= mask2 .& [id ∈ data2[i][:id] for id in data[i][:id]]
     end
     final_mask = mask1 .| mask2
     return apply_mask(data, final_mask)
@@ -367,7 +367,7 @@ function gate(data, method::NotGate)
     data1 = gate(data, method.gate1)
     mask1 = [true for i in 1:event_count(data)]
     for i in keys(data)
-        mask1 .= mask1 .& (data1[i][:id] .∈ data[i][:id])
+        mask1 .= mask1 .& [id ∈ data1[i][:id] for id in data[i][:id]]
     end
     final_mask = .!mask1
     return apply_mask(data, final_mask)

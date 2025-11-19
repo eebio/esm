@@ -23,6 +23,7 @@ export calibrate
 export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
 export gate, event_count
 export HighLowGate, RectangleGate, QuadrantGate
+export and, or, not
 export AndGate, OrGate, NotGate
 export KDE
 export AbstractESMMethod, AbstractPlateReaderMethod

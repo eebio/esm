@@ -10,6 +10,7 @@
 end
 
 @testitem "manual gating" setup = [MockFlow] begin
+    println("manual gating")
     # TODO add tests for other gating constructors
     # TODO check IDs are handled correctly
     datacopy = deepcopy(MockFlow.data)
@@ -27,6 +28,7 @@ end
 end
 
 @testitem "event counting" setup = [MockFlow] begin
+    println("event counting")
     @test event_count(MockFlow.data) == 5
     gated_data = gate(MockFlow.data, HighLowGate(channel="FL1-A", min=530.0))
     @test event_count(gated_data) == 3
@@ -42,8 +44,22 @@ end
 end
 
 @testitem "autogating" setup = [MockFlow] begin
+    println("autogating")
     datacopy = deepcopy(MockFlow.data)
     @test gate(MockFlow.data, KDE(channels = ["FSC-A", "SSC-A"])) ==
     gate(MockFlow.data, HighLowGate(channel="FSC-A", min=1.5, max=4.5))
+    @test MockFlow.data == datacopy  # ensure original data is not modified
+end
+
+@testitem "logical gates" setup = [MockFlow] begin
+    println("logical gates")
+    datacopy = deepcopy(MockFlow.data)
+    @test gate(MockFlow.data, HighLowGate(channel="FL1-A", min=525.0) & HighLowGate(channel="SSC-A", max=450.0))["FL1-A"][:id] == [3, 4]
+    @test gate(MockFlow.data, HighLowGate(channel="FL1-A", min=525.0, max=545.0) | HighLowGate(channel="SSC-A", max=150.0))["FL1-A"][:id] == [1, 3, 4]
+    @test gate(MockFlow.data, !HighLowGate(channel="FL1-A", min=525.0))["FL1-A"][:id] == [1, 2]
+    @test gate(MockFlow.data, and(HighLowGate(channel="FL1-A", min=525.0), HighLowGate(channel="SSC-A", max=450.0)))["FL1-A"][:data] == [530.0, 540.0]
+    @test gate(MockFlow.data, or(HighLowGate(channel="FL1-A", min=525.0, max=545.0), HighLowGate(channel="SSC-A", max=150.0)))["FL1-A"][:id] == [1, 3, 4]
+    @test gate(MockFlow.data, not(HighLowGate(channel="FL1-A", min=525.0)))["FL1-A"][:id] == [1, 2]
+    @test gate(MockFlow.data, KDE(channels = ["FSC-A", "SSC-A"]) & HighLowGate(channel="FSC-A", max=3.5))["FL1-A"][:data] == [520.0, 530.0]
     @test MockFlow.data == datacopy  # ensure original data is not modified
 end
