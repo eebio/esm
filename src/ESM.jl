@@ -18,7 +18,8 @@ include("views.jl")
 
 export read_esm, esm_zones, read_data, write_esm
 export growth_rate, doubling_time
-export MovingWindow, FiniteDiff, Logistic, Endpoints, ExpOnLinear, LinearOnLog
+export MovingWindow, FiniteDiff, Endpoints, ExpOnLinear, LinearOnLog
+export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
 export calibrate
 export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
 export gate, event_count, to_rfi

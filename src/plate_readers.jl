@@ -372,10 +372,37 @@ function growth_rate(df, time_col, method::ExpOnLinear)
     return DataFrame(dict)
 end
 
-struct Logistic <: AbstractGrowthRateMethod
+struct ParametricGrowthRate <: AbstractGrowthRateMethod
+    func::Function
+    initial_params::Vector{Float64}
 end
 
-function growth_rate(df, time_col, ::Logistic)
+# TODO these equations need fixing to ensure they make sense biologically
+function Logistic()
+    return ParametricGrowthRate(
+        (t, p) -> p[2] ./ (1 .+ exp.(-p[1] .* (t .- p[3]))),
+        [1, 1e-3, 10])
+end
+
+function Gompertz()
+    return ParametricGrowthRate(
+        (t, p) -> p[2] .* exp.(-exp(-p[1] .* (t .- p[3]))),
+        [1, 1e-3, 10])
+end
+
+function ModifiedGompertz()
+    return ParametricGrowthRate(
+        (t, p) -> p[2] .* exp.(-exp((p[1] * exp(1) / p[2]) .* (p[3] - t) .+ 1)),
+        [1, 1e-3, 10])
+end
+
+function Richards()
+    return ParametricGrowthRate(
+        (t, p) -> p[2] ./ (1 .+ exp(-p[1] .* (t .- p[3]))).^(1 ./ p[4]),
+        [1, 1e-3, 10, 1])
+end
+
+function growth_rate(df, time_col, method::ParametricGrowthRate)
     dict = Dict()
     time_col = df2time(time_col) ./ 60
     for i in names(df)
@@ -386,18 +413,18 @@ function growth_rate(df, time_col, ::Logistic)
         # signature (res, u, p, t) is used by NonlinearSolve
         residuals! = function (res, u, _)
             for k in eachindex(t)
-                res[k] = u[1] / (1 + exp(-u[2] * (t[k] - u[3]))) - y[k]
+                res[k] = method.func(t[k], u) - y[k]
             end
             return nothing
         end
 
         # initial guess: A ~ max(y), b small, c ~ end of time
-        u0 = [maximum(y), 1e-3, t[end]]
+        u0 = method.initial_params
 
         prob = NonlinearLeastSquaresProblem(NonlinearFunction(residuals!, resid_prototype = zeros(length(y))), u0)
         sol = solve(prob; verbose = false, maxiters = 200)
         psol = sol.u
-        dict[i] = psol[2]
+        dict[i] = psol[1]
     end
     return DataFrame(dict)
 end
