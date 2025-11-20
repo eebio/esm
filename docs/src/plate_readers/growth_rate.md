@@ -1,67 +1,74 @@
 # Growth Rate
 
-There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, Method())` function signature (or `doubling_time(data, Method())`). These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
+There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, time_col, Method())` function signature (or `doubling_time(data, time_col, Method())`). These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
 
 ```@docs
 ESM.growth_rate
 ESM.doubling_time
 ```
 
-!!! todo "todo"
-    Document which is the default method
+## Endpoints
 
-## MovingWindow
+The `Endpoints` method is the same as fitting an exponential curve ``y=A\exp(bt)`` to two points (`start_time` and `end_time`) and returning the growth rate ``b``.
 
-!!! todo "todo"
-    Describe how the moving window method works
+```math
+b = \frac{\ln (od(t_\text{end})) - \ln (od(t_\text{start}))}{t_\text{end} - t_\text{start}}
+```
 
-It can be called using `growth_rate(data, MovingWindow())` or `doubling_time(data, MovingWindow())`.
-
-## FiniteDiff
-
-!!! todo "todo"
-    Describe the finite difference method (central is default but allows backwards or forwards).
-
-It can be called using `growth_rate(data, FiniteDiff())` (defaults to central) or any of `growth_rate(data, FiniteDiff(method=:forward))`, `growth_rate(data, FiniteDiff(method=:backward))` or `growth_rate(data, FiniteDiff(method=:central))`.
-You can also call `doubling_time` with any of the FiniteDiff methods.
+It can be called using `growth_rate(data, time_col, Endpoints(start_time, end_time))` or `doubling_time(data, time_col, Endpoints(start_time, end_time))`. `start_time` and `end_time` are the start and end times of the exponential phase.
 
 ## LinearOnLog
 
-!!! todo "todo"
-    Describe how the linear on log method works
+The `LinearOnLog` method log-transforms the data (removing any points ≤ 0), and then fits a straight line on all the data between `start_time` and `end_time`, returning the gradient of the line of best fit.
 
-It can be called using `growth_rate(data, LinearOnLog(start_time, end_time))` or `doubling_time(data, LinearOnLog(start_time, end_time))`. `start_time` and `end_time` are the start and end times of the exponential phase.
+It can be called using `growth_rate(data, time_col, LinearOnLog(start_time, end_time))` or `doubling_time(data, time_col, LinearOnLog(start_time, end_time))`. `start_time` and `end_time` are the start and end times of the exponential phase.
 
 ## ExpOnLinear
 
+The `ExpOnLinear` method is similar to the `LinearOnLog` method. It fits the line ``y=A\exp(bt)`` through all the data between `start_time` and `end_time`. This means negative points aren't removed, and the residuals (during the curve fitting) are not log-transformed.
+
+It can be called using `growth_rate(data, time_col, ExpOnLinear(start_time, end_time))` or `doubling_time(data, time_col, ExpOnLinear(start_time, end_time))`. `start_time` and `end_time` are the start and end times of the exponential phase.
+
+## MovingWindow
+
+The `MovingWindow` method allows you to use any of the above methods (`Endpoints`, `LinearOnLog`, or `ExpOnLinear`) without defining the start and end points of the exponential phase. Instead, you can provide a number of timepoints (a.k.a. `window_size`, defaults to 10) and it will calculate the growth rate on all consequetive runs of that length and return the maximum growth rate.
+
 !!! todo "todo"
-    Describe how the exp on linear method works
+    `MovingWindow` needs to allow optional method argument
 
-It can be called using `growth_rate(data, ExpOnLinear(start_time, end_time))` or `doubling_time(data, ExpOnLinear(start_time, end_time))`. `start_time` and `end_time` are the start and end times of the exponential phase.
+It can be called using `growth_rate(data, time_col, MovingWindow())` or `doubling_time(data, time_col, MovingWindow())`.
 
-## Endpoints
+## FiniteDiff
+
+The `FiniteDiff` method log-transforms the data (removing any points ≤ 0) and then calculates the local gradients. It does this by traveling along the timepoints one-by-one, either calculating the central or one-sided finite difference. It then returns the maximum gradient.
+
+```math
+\frac{\ln (od(t_{i})) - \ln (od(t_{i-1}))}{t_{i} - t_{i-1}} \quad \text{one-sided} \\
+\frac{\ln (od(t_{i+1})) - \ln (od(t_{i-1}))}{t_{i+1} - t_{i-1}} \quad \text{central}
+```
+
+It can be called using `growth_rate(data, time_col, FiniteDiff())` (defaults to central) or any of `growth_rate(data, time_col, FiniteDiff(method=:onesided))`, or `growth_rate(data, time_col, FiniteDiff(method=:central))`.
+You can also call `doubling_time` with either of the `FiniteDiff` methods.
+
+## Logistic
+
+The `Logistic` method is a parameteric method that fits a logistic curve to the data and returns ``b``.
+
+```math
+\frac{L}{1 + \exp(-b (t - t_0))}
+```
+
+It can be called using `growth_rate(data, time_col, Logistic())` or `doubling_time(data, time_col, Logistic())`.
 
 !!! todo "todo"
-    Describe how the endpoints method works
-
-It can be called using `growth_rate(data, Endpoints(start_time, end_time))` or `doubling_time(data, Endpoints(start_time, end_time))`. `start_time` and `end_time` are the start and end times of the exponential phase.
+    add parametric models here too
 
 ## Spline
 
 !!! todo "todo"
     Describe how the spline method works
 
-It can be called using `growth_rate(data, Spline())` or `doubling_time(data, Spline())`.
-
-## Logistic
-
-!!! todo "todo"
-    Describe how the logistic method works
-
-It can be called using `growth_rate(data, Logistic())` or `doubling_time(data, Logistic())`.
-
-!!! todo "todo"
-    add parametric models here too
+It can be called using `growth_rate(data, time_col, Spline())` or `doubling_time(data, time_col, Spline())`.
 
 ## Implementation Details
 
@@ -70,7 +77,7 @@ If you want to implement a new growth rate method to be included in ESM, you nee
 * Open a pull request with the following code changes
 * Define a new struct for your method type in `src/methods.jl`
 * The type of that struct is a subtype of `AbstractGrowthRateMethod`
-* Define a new method dispatch `growth_rate(data, ::NameOfNewMethodType)`
+* Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
 * Document that method in the growth rate documentation (this page)
 
 If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new growth rate method and explaining how the method should work.

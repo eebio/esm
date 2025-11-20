@@ -2,32 +2,55 @@
 
 There are a variety of types of gates that can be applied to flow cytometry data. Each method uses the `gate(data, Method())` function signature which will return the subset of events in `data` that satisfy that gate. These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
 
-```@docs
+```@docs; canonical=false
+gate
 ```
 
+## HighLowGate
+
+The `HighLowGate` removes any events that are below `lb` in `channel` or above `ub` in channel. If one of the bounds is not specified, it will not be used to remove any data.
+
+It can be called using `gate(data, HighLowGate(channel, lb, ub))`.
+
+!!! note "Upper and Lower Bounds"
+    Lower bounds are always inclusive (`lb`≤`data[channel]`) while upper bounds are always exclusive (`data[channel]`<`ub`).
+
+## RectangleGate
+
+The `RectangleGate` is equivalent to applying two `HighLowGate`s. It returns all data where:
+
+```math
+lb1 ≤ data[channel1] < ub1 \\
+\text{and} \\
+lb2 ≤ data[channel2] < ub2 \\
+```
+
+As with the `HighLowGate`, any of the upper and lower bounds can be left out to avoid gating on that bound.
+
+It can be called using `gate(data, RectangleGate(channel1, channel2, lb1, ub1, lb2, ub2))`.
+
+## QuadrantGate
+
+The `QuadrantGate` is defined by a single point, a pair of values and channels. The values split all events into 4 quadrants, (high channel 1 and high channel 2, high channel 1 and low channel 2, low channel 1 and low channel 2, low channel 1 and high channel 2). You then need to specify a quadrant you want to return, numbered 1 through 4 in that order.
+
+!!! tip "Remembering the quadrant order"
+    If you were to plot the data with `channel1` on the x-axis and `channel2` on the y-axis, then quadrant 1 is in the top right corner, and the remaining quadrants are given by travelling clockwise.
+
+It can be called using `gate(data, QuadrantGate(channel1, channel2, channel1value, channel2value, quadrant))`.
+
+## PolygonGate
+
 !!! todo "todo"
-    logical operations on gates
+    Describe how the polygon gate works
 
-## HighLow
-
-!!! todo "todo"
-    Describe how the high low gate works. lb and ub are optional, but atleast one should be specified
-
-It can be called using `gate(data, HighLow(channel, lb, ub))`.
-
-## Rectangle
+## EllipseGate
 
 !!! todo "todo"
-    Describe how the gate works.
+    Describe how the ellipse gate works
 
-It can be called using `gate(data, Rectangle(channel1, channel2, lb1, ub1, lb2, ub2))`.
+## Logical Operations on Gates
 
-## Quadrant
-
-!!! todo "todo"
-    Describe how the gate works
-
-It can be called using `gate(data, Quadrant(channel1, channel2, channel1value, channel2value, quadrant))`.
+You can also perform logical operations on gates. The logical operations are `and`, `or`, and `not`. They can be used either through operators (`HighLowGate(channel="FL1-A", lb=500.0, ub=2000.0) & QuadrantGate(channel1="SSC-A", ...)`) or through the `and` function (`and(HighLowGate(channel="FL1-A", lb=500.0, ub=2000.0), QuadrantGate(channel1="SSC-A", ...))`). This will return an `AndGate` (`|` and `or` returns an `OrGate`, and `!` and `not` return a `NotGate`) which can then be gated on (`gate(data, HighLowGate(...) & QuadrantGate(...))`).
 
 ## Implementation Details
 
@@ -40,6 +63,6 @@ If you want to implement a new manual gate to be included in ESM, you need to:
 * Document that method in the manual gating documentation (this page)
 
 !!! note
-    Gates can only return a single group that "passes" the gate. For example, it is not possible to have a single `Quadrant` gate that separates the data into all four quadrants. This is so that it plays nicely with the ESM transformations. If you need to gate into all four quadrants, you should define four `Quadrant` gates, each with different values of the `quadrant` parameter.
+    Gates can only return a single group that "passes" the gate. For example, it is not possible to have a single `QuadrantGate` that separates the data into all four quadrants. This is so that it plays nicely with the ESM transformations. If you need to gate into all four quadrants, you should define four `QuadrantGate`s, each with different values of the `quadrant` parameter.
 
 If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new manual gate and explaining how the gate should work.

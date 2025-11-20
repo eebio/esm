@@ -6,6 +6,12 @@ ESM currently supports importing data from flow cytometry `.fcs` files. Specific
 
 If you require support for a different FCS version, please [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose), and let us know what version you require.
 
+## to_rfi
+
+```@docs; canonical=false
+to_rfi
+```
+
 ## Methods
 
 ESM provides a variety of methods for gating flow cytometry data. These are split into two categories: [Automatic Gating](@ref) and [Manual Gating](@ref).

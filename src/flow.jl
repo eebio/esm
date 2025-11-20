@@ -179,15 +179,15 @@ function to_rfi(sample_name; chans = [])
 end
 
 """
-    gate(data, method::AbstractAutoGate)
+    gate(data, method::AbstractGatingMethod)
 
-Automatically perform density gating.
+Filter `data` to only include events within the gate defined by `method`.
 
 Args:
 - `data::Dict`: Dict returned by RFI.
-- `method::AbstractAutoGate`: The method and settings to use for autogating.
+- `method::AbstractGatingMethod`: The method and settings to use for gating.
 """
-function autogate end
+function gate end
 
 @kwdef struct KDE <: AbstractAutoGate
     channels::Vector{String}
@@ -226,17 +226,6 @@ function gate(data, method::KDE)
     inside_indices = density_values .> threshold
     return apply_mask(data, inside_indices)
 end
-
-"""
-    gate(data, method::AbstractManualGate)
-
-Filter `data` to only include events within the gate defined by `method`.
-
-Args:
-- `data::Dict`: Dict returned by RFI.
-- `method::AbstractManualGate`: The method and settings to use for manual gating.
-"""
-function gate end
 
 @kwdef struct HighLowGate <: AbstractManualGate
     channel::String

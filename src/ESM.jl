@@ -21,7 +21,7 @@ export growth_rate, doubling_time
 export MovingWindow, FiniteDiff, Logistic, Endpoints, ExpOnLinear, LinearOnLog
 export calibrate
 export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
-export gate, event_count
+export gate, event_count, to_rfi
 export HighLowGate, RectangleGate, QuadrantGate
 export and, or, not
 export AndGate, OrGate, NotGate
