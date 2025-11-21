@@ -441,18 +441,16 @@ function growth_rate(df, time_col, method::FiniteDiff)
         t = time_col[!, 1]
         y = df[!, i]
 
+        t = t[y .> 0]
+        y = y[y .> 0]
+        ly = log.(y)
+
         n = length(t)
         if n < 2
             @warn "Not enough time points to compute finite differences for $i."
             dict[i] = NaN
             continue
         end
-
-        # compute log of y to match other methods (growth in log-space)
-        if any(y .<= 0)
-            @warn "Non-positive values in column $i; log will produce NaN/Inf."
-        end
-        ly = log.(y)
 
         deriv = zeros(length(ly))
 
