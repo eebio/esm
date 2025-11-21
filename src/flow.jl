@@ -145,11 +145,10 @@ function to_rfi(sample_name; chans = [])
             Float64, split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
         ran = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
         if at[1] == 0
-            local ag
-            if haskey(sub.meta[sub.name .== "$sample_name.$i", :][1], "amp_gain")
-                ag = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
-            else
+            if isnothing(sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
                 ag = 1.0
+            else
+                ag = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
             end
             o[i] = Dict(
                 :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ ag,
