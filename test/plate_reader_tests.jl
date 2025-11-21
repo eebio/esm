@@ -87,6 +87,10 @@ end
     @test ESM.growth_rate(od_df, time_col, Logistic())[1, "A"] ≈ log(2) atol = 1e-3
     @test ESM.growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
     @test ESM.growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
+
+    # Tests for warnings
+    od_df_warn = DataFrame(A = [0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
+    @test_warn "Not enough time points" ESM.growth_rate(od_df_warn, time_col, FiniteDiff())
 end
 
 @testitem "calibrate" begin
