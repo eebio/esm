@@ -65,6 +65,7 @@ end
           DataFrame(A = 1.0)
     @test ESM.doubling_time(od_df, time_col, Logistic()) ≈ DataFrame(A = 1.0) atol = 1e-3
     @test ESM.doubling_time(od_df, time_col, FiniteDiff()) ≈ DataFrame(A = 1.0)
+    @test ESM.doubling_time(od_df, time_col, FiniteDiff(type=:onesided)) ≈ DataFrame(A = 1.0)
 end
 
 @testitem "growth_rate" begin
@@ -85,6 +86,7 @@ end
         1, "A"] ≈ log(2)
     @test ESM.growth_rate(od_df, time_col, Logistic())[1, "A"] ≈ log(2) atol = 1e-3
     @test ESM.growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
+    @test ESM.growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
 end
 
 @testitem "calibrate" begin
