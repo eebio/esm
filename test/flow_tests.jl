@@ -25,6 +25,9 @@ end
     @test gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=3))["SSC-A"][:data] == [100.0, 200.0, 300.0]
     @test gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=4))["FL1-A"][:data] == []
     @test MockFlow.data == datacopy  # ensure original data is not modified
+
+    # Test errors
+    @test_throws "Quadrant must be between" gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=5))
 end
 
 @testitem "event counting" setup = [MockFlow] begin
