@@ -118,6 +118,12 @@ end
     @test !isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
     run(`$(shell) esm summarise -f $(joinpath(dir, "biotek-summarise.csv")) --type biotek -p`)
     @test isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
+
+    cp(joinpath("inputs", "pr_folder"), joinpath(dir, "pr_folder"))
+    run(`$(shell) esm summarise --file $(joinpath(dir, "pr_folder")) --type generic`)
+    @test !isfile(joinpath(dir, "pr_folder.pdf"))
+    run(`$(shell) esm summarise -f $(joinpath(dir, "pr_folder")) --type generic -p`)
+    @test isfile(joinpath(dir, "pr_folder.pdf"))
 end
 
 #The integration tests won't track code coverage, so we repeat them with the Julia interface here
