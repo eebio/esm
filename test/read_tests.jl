@@ -292,6 +292,24 @@ end
     @test DataFrame(ESM.at_time(df, time_col, 1000)) == DataFrame(A = 10, B = 20)
 end
 
+# df2time
+@testitem "df2time" begin
+    println("df2time")
+    using DataFrames
+
+    # Sample data for testing
+    time_col = DataFrame(Time = [
+        "00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38",
+        "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:38:38"])
+
+    result = ESM.df2time(time_col)
+    @test result == DataFrame(Time = [
+        8+38/60, 18+38/60, 28+38/60, 38+38/60, 48+38/60, 58+38/60,
+        68+38/60, 78+38/60, 88+38/60, 98+38/60] .* 60)
+    result2 = ESM.df2time(result)
+    @test result2 == result
+end
+
 # Test at_od
 @testitem "at_od" begin
     println("at_od")
