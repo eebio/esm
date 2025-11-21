@@ -120,9 +120,9 @@ end
     @test isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
 
     cp(joinpath("inputs", "pr_folder"), joinpath(dir, "pr_folder"))
-    run(`$(shell) esm summarise --file $(joinpath(dir, "pr_folder")) --type generic`)
+    run(`$(shell) esm summarise --file $(joinpath(dir, "pr_folder"))`)
     @test !isfile(joinpath(dir, "pr_folder.pdf"))
-    run(`$(shell) esm summarise -f $(joinpath(dir, "pr_folder")) --type generic -p`)
+    run(`$(shell) esm summarise -f $(joinpath(dir, "pr_folder")) -p`)
     @test isfile(joinpath(dir, "pr_folder.pdf"))
 end
 
