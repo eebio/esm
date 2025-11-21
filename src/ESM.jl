@@ -1,31 +1,37 @@
 module ESM
 @doc read(joinpath(dirname(@__DIR__), "README.md"), String) ESM
 
-using CSV
 using Comonicon
-using DataFrames
-using DataStructures
-using Dates
-using FCSFiles
-using FileIO
-using JSON
-using KernelDensity
-using Parameters
-using ProgressMeter
-using Statistics
-using StatsBase
-using XLSX
-import Statistics.mean, DataFrames.hcat
-include("ESM_read.jl")
-include("ESM_write.jl")
-export read_esm, esm_zones, read_data, write_esm
 
-@with_kw struct esm_zones
-    samples::DataFrame
-    groups::Any
-    transformations::Any
-    views::Any
-end
+abstract type AbstractESMMethod end
+
+abstract type AbstractESMDataType end
+
+struct ESMData <: AbstractESMDataType end
+
+include("esm_files.jl")
+include("flow.jl")
+include("main.jl")
+include("plate_readers.jl")
+include("summarise.jl")
+include("views.jl")
+
+export read_esm, esm_zones, read_data, write_esm
+export growth_rate, doubling_time
+export MovingWindow, FiniteDiff, Endpoints, ExpOnLinear, LinearOnLog
+export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
+export calibrate
+export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
+export gate, event_count, to_rfi
+export HighLowGate, RectangleGate, QuadrantGate
+export and, or, not
+export AndGate, OrGate, NotGate
+export KDE
+export AbstractESMMethod, AbstractPlateReaderMethod
+export AbstractGrowthRateMethod
+export AbstractESMDataType, AbstractPlateReader
+export ESMData, FlowCytometryData, BioTek, SpectraMax, GenericTabular
+export summary
 
 """
     esm translate
@@ -92,7 +98,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 # Options
 
 - `-f, --file=<String>`: The data file to be summarised.
-- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm", "spectramax", "biotek", "fcs". If "auto" is selected, the type will be inferred from the file extension (or raise an error if not possible).
+- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm", "spectramax", "biotek", "generic", "fcs". If "auto" is selected, the type will be inferred from the file extension (or raise an error if not possible).
 
 # Flags
 
@@ -109,22 +115,22 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
             type = "esm"
         elseif ext == ".fcs"
             type = "fcs"
+        elseif isdir(file)
+            type = "generic"
         else
-            error("File type $ext cannot be inferred from extension. Supported extensions are .esm and .fcs.")
+            error("File type $ext cannot be inferred from extension. Supported extensions are .esm and .fcs (or directories for generic tabular plate reader data).")
         end
     end
     if type == "esm"
-        # Read the esm file and print a summary
-        summarise_esm(file; plot=plot)
+        summary(file, ESMData(); plot=plot)
     elseif type == "fcs"
-        # Read the fcs file and print a summary
-        summarise_fcs(file; plot=plot)
+        summary(file, FlowCytometryData(); plot=plot)
     elseif type == "spectramax"
-        # Read the data into an ESM format, and then print a summary
-        summarise_spectramax(file; plot=plot)
+        summary(file, SpectraMax(); plot=plot)
     elseif type == "biotek"
-        # Read the data into an ESM format, and then print a summary
-        summarise_biotek(file; plot=plot)
+        summary(file, BioTek(); plot=plot)
+    elseif type == "generic"
+        summary(file, GenericTabular(); plot=plot)
     else
         error("Unsupported file type: $type.")
     end

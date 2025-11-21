@@ -234,7 +234,7 @@
             "type": "timeseries",
             "meta": {}
         },
-        "plate_01_t° read 1:700": {
+        "plate_01_temperature": {
             "values": {
                 "OD": [
                     37.0,
@@ -348,6 +348,120 @@
                     37.0,
                     37.0,
                     37.0,
+                    37.0
+                ],
+                "flo": [
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
                     37.0
                 ]
             },
@@ -22972,7 +23086,7 @@
             "type": "physical",
             "sample_IDs": [
                 "plate_01_time",
-                "plate_01_t° read 1:700",
+                "plate_01_temperature",
                 "plate_01_a1",
                 "plate_01_a2",
                 "plate_01_a3",
@@ -23085,22 +23199,14 @@
         }
     },
     "transformations": {
-        "flow_cyt": {
-            "equation": "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])"
-        },
         "flow_sub": {
-            "equation": "hcat(first_group.flo,second_group.flo).-mean(third_group.flo)"
+            "equation": "hcat(first_group.flo,second_group.flo).-colmean(third_group.flo)"
         },
         "od_sub": {
-            "equation": "hcat(first_group.OD,second_group.OD).-mean(third_group.OD)"
+            "equation": "hcat(first_group.OD,second_group.OD).-colmean(third_group.OD)"
         }
     },
     "views": {
-        "flow_cy": {
-            "data": [
-                "flow_cyt"
-            ]
-        },
         "group1": {
             "data": [
                 "first_group"

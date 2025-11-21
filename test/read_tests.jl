@@ -1,5 +1,6 @@
 # Test read_esm function
 @testmodule MockESM begin
+    println("MockESM")
     using ESM
     mock_data = """
 {
@@ -123,9 +124,9 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                    "ex_pow": null,
                 "FSC": {
                     "range": "1024",
+                    "ex_pow": null,
                     "filter": null,
                     "det_volt": "10.0",
                     "amp_type": "4.0,1.0",
@@ -153,7 +154,7 @@
     },
     "transformations": {
         "flow_cyt": {
-            "equation": "process_fcs(\\\"plate_01\\\",[\\\"FSC\\\",\\\"SSC\\\"],[\\\"FL1\\\"])"
+            "equation": "1"
         }
     },
     "views": {
@@ -175,6 +176,7 @@
 end
 
 @testitem "read_esm tests" setup=[MockESM] begin
+    println("read_esm tests")
     es = ESM.read_esm(MockESM.temp_file)
     @test issetequal(es.samples.name,
         ["plate_01_a1.FL1", "plate_01_a1.SSC", "plate_01_a1.FSC",
@@ -205,18 +207,19 @@ end
     for i in 1:6
         @test issetequal(keys(es.samples.meta[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em"]) broken=(i == 3)
+                "amp_gain", "name_s", "name", "det_type", "perc_em"])
     end
     @test issetequal(es.groups.group, ["plate_01"])
     @test issetequal(es.groups.sample_IDs, [["plate_01_a1", "plate_01_a2"]])
     @test issetequal(es.groups.metadata, [Dict("autodefined" => "true")])
     @test es.transformations ==
-          Dict("flow_cyt" => Dict("equation" => "process_fcs(\"plate_01\",[\"FSC\",\"SSC\"],[\"FL1\"])"))
+          Dict("flow_cyt" => Dict("equation" => "1"))
     @test es.views == Dict("flow_cy" => Dict("data" => ["flow_cyt"]))
 end
 
 # Test index_between_vals
 @testitem "index_between_vals" begin
+    println("index_between_vals")
     using DataFrames
 
     # Sample data for testing
@@ -245,6 +248,7 @@ end
 
 # Test between_times
 @testitem "between_times" begin
+    println("between_times")
     using DataFrames
 
     # Sample data for testing
@@ -271,6 +275,7 @@ end
 
 # Test at_time
 @testitem "at_time" begin
+    println("at_time")
     using DataFrames
 
     # Sample data for testing
@@ -287,8 +292,27 @@ end
     @test DataFrame(ESM.at_time(df, time_col, 1000)) == DataFrame(A = 10, B = 20)
 end
 
+# df2time
+@testitem "df2time" begin
+    println("df2time")
+    using DataFrames
+
+    # Sample data for testing
+    time_col = DataFrame(Time = [
+        "00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38",
+        "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:38:38"])
+
+    result = ESM.df2time(time_col)
+    @test result == DataFrame(Time = [
+        8+38/60, 18+38/60, 28+38/60, 38+38/60, 48+38/60, 58+38/60,
+        68+38/60, 78+38/60, 88+38/60, 98+38/60] .* 60)
+    result2 = ESM.df2time(result)
+    @test result2 == result
+end
+
 # Test at_od
 @testitem "at_od" begin
+    println("at_od")
     using DataFrames
     #TODO unclear how function inputs should be handled here
     # Sample data for at_od
@@ -300,34 +324,8 @@ end
     @test ESM.at_od(od_df, target_df, 0.5) == DataFrame(A = 50, B = 50)
 end
 
-# Test doubling_time
-@testitem "doubling_time" begin
-    using DataFrames
-
-    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
-    time_col = DataFrame(Time = [
-        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
-
-    @test ESM.doubling_time(od_df, time_col) ≈ DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col; max_od = 0.5) ≈ DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col; max_od = 0.3) ≈ DataFrame(A = 1.0)
-    # TODO: Add some more tests with more awkward data
-end
-
-@testitem "growth_rate" begin
-    using DataFrames
-
-    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8])
-    time_col = DataFrame(Time = [
-        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00"])
-
-    @test ESM.growth_rate(od_df, time_col; window_size = 2)[1, "A"] ≈ log(2)
-
-    @test_throws "No growth rate could be calculated" ESM.growth_rate(
-        od_df, time_col; window_size = 0.5)
-end
-
 @testitem "expression" setup=[MockESM] begin
+    println("expression")
     global ESM.es = ESM.read_esm(MockESM.temp_file)
     ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
@@ -342,58 +340,66 @@ end
     # Test accessing transformations
     @test eval(ESM.sexp_to_nested_list(:extra_transform, ESM.es, trans_meta_map)) == 10
     # Test accessing views
-    @test_broken ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) ==
-                 ["process_fcs", "plate_01", ["FSC-H", "SSC-H"], ["FL1-H"]]
+    @test ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) == 1
     # Test accessing groups
     @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) ==
           ESM.form_df(ESM.es.samples)
     # Test other symbols - should just be returned
     @test ESM.sexp_to_nested_list(:not_defined, ESM.es, trans_meta_map) == :not_defined
-    @test_broken ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)),ESM.es,trans_meta_map)
-
+    @test ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)), ESM.es, trans_meta_map) ==
+          :(form_df(ESM.es.samples))
 end
 
 @testitem "produce_views" begin
+    println("produce_views")
     global ESM.es = ESM.read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
     a = ESM.produce_views(ESM.es, trans_meta_map)
     # Test groups
-    @test issetequal(keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "flow_cy", "mega"])
-    @test issetequal(names(a["group1"]), ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo"])
-    @test issetequal(names(a["group2"]), ["plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
-    @test issetequal(names(a["group3"]), ["plate_01_a2.OD", "plate_01_a2.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a3.OD", "plate_01_a3.flo"])
+    @test issetequal(
+        keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "mega"])
+    @test issetequal(names(a["group1"]),
+        ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD",
+            "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo"])
+    @test issetequal(names(a["group2"]),
+        ["plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD",
+            "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
+    @test issetequal(names(a["group3"]),
+        ["plate_01_a2.OD", "plate_01_a2.flo", "plate_01_a1.OD",
+            "plate_01_a1.flo", "plate_01_a3.OD", "plate_01_a3.flo"])
     @test a["group1"][1:3, "plate_01_a5.OD"] == Any[0.169, 0.173, 0.177]
     @test a["group2"][2:4, "plate_01_a8.OD"] == Any[0.152, 0.154, 0.157]
     @test a["group3"][(end - 2):end, "plate_01_a3.flo"] == Any[211, 201, 209]
     # Test mega group
     @test issetequal(names(a["mega"]),
-    ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD", "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo",
-    "plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo", "plate_01_a7.OD", "plate_01_a7.flo"])
+        ["plate_01_a5.OD", "plate_01_a5.flo", "plate_01_a1.OD",
+            "plate_01_a1.flo", "plate_01_a9.OD", "plate_01_a9.flo",
+            "plate_01_a8.OD", "plate_01_a8.flo", "plate_01_a3.OD", "plate_01_a3.flo",
+            "plate_01_a7.OD", "plate_01_a7.flo"])
     @test a["mega"][1:3, "plate_01_a5.OD"] == Any[0.169, 0.173, 0.177]
     @test a["mega"][2:4, "plate_01_a8.OD"] == Any[0.152, 0.154, 0.157]
     @test a["mega"][(end - 2):end, "plate_01_a3.flo"] == Any[211, 201, 209]
     # Test sample
     @test names(a["sample"]) == ["plate_01_time.flo"]
-    @test a["sample"][[1, 2, end - 1, end], "plate_01_time.flo"] == Any["00:09:04", "00:19:04", "18:29:04", "18:39:04"]
+    @test a["sample"][[1, 2, end - 1, end], "plate_01_time.flo"] ==
+          Any["00:09:04", "00:19:04", "18:29:04", "18:39:04"]
     # Test expressions
-    @test issetequal(names(a["flowsub"]), ["plate_01_a5", "plate_01_a1", "plate_01_a9", "plate_01_a8", "plate_01_a3", "plate_01_a7"])
-    @test issetequal(names(a["odsub"]), ["plate_01_a5", "plate_01_a1", "plate_01_a9", "plate_01_a8", "plate_01_a3", "plate_01_a7"])
-    @test a["flowsub"][[1, 2, end - 1, end], "plate_01_a9"] ≈ [0.33333333333333215, -2.666666666666668, -160.66666666666669, -162.33333333333331]
-    @test a["odsub"][[1, 2, end - 1, end], "plate_01_a3"] ≈ [0.0026666666666666783, 0.0026666666666666783, -0.10200000000000009, -0.10133333333333328]
-    # Process FCS
-    @test issetequal(names(a["flow_cy"]), ["plate_02_a1.FL1-H"])
-    @test_broken size(a["flow_cy"])[1] > 0
-end
-
-@testitem "process_fcs" begin
-    global ESM.es = ESM.read_esm("inputs/example.esm")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
-    for i in keys(ESM.es.transformations))
-    ESM.process_fcs("plate_02", ["FSC-H", "SSC-H"], ["FL1-H"])
+    @test issetequal(names(a["flowsub"]),
+        ["plate_01_a5", "plate_01_a1", "plate_01_a9",
+            "plate_01_a8", "plate_01_a3", "plate_01_a7"])
+    @test issetequal(names(a["odsub"]),
+        ["plate_01_a5", "plate_01_a1", "plate_01_a9",
+            "plate_01_a8", "plate_01_a3", "plate_01_a7"])
+    @test a["flowsub"][[1, 2, end - 1, end], "plate_01_a9"] ≈ [
+        0.33333333333333215, -2.666666666666668, -160.66666666666669, -162.33333333333331]
+    @test a["odsub"][[1, 2, end - 1, end], "plate_01_a3"] ≈
+          [0.0026666666666666783, 0.0026666666666666783,
+        -0.10200000000000009, -0.10133333333333328]
 end
 
 @testitem "to_rfi" begin
+    println("to_rfi")
     global ESM.es = ESM.read_esm("inputs/example.esm")
     out = ESM.to_rfi("plate_02_a1")
     # Linear test with no gain
@@ -406,22 +412,32 @@ end
     @test out["SSC-H"][:data] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
 end
 
-@testitem "summarise" begin
-    ESM.summarise_esm("inputs/example.esm"; plot = true)
-    @test isfile("inputs/example.esm.pdf")
-    rm("inputs/example.esm.pdf")
-    ESM.summarise_fcs("inputs/small.fcs"; plot = true)
+@testitem "summary" begin
+    println("summary")
+    summary("inputs/summarise.esm", ESMData(); plot = true)
+    @test isfile("inputs/summarise.esm.pdf")
+    rm("inputs/summarise.esm.pdf")
+    summary("inputs/small.fcs", FlowCytometryData(); plot = true)
     @test isfile("inputs/small.fcs.pdf")
     rm("inputs/small.fcs.pdf")
-    ESM.summarise_spectramax("inputs/spectramax-data.txt"; plot = true)
-    @test isfile("inputs/spectramax-data.txt.pdf")
-    rm("inputs/spectramax-data.txt.pdf")
-    ESM.summarise_biotek("inputs/biotek-data.csv"; plot = true)
-    @test isfile("inputs/biotek-data.csv.pdf")
-    rm("inputs/biotek-data.csv.pdf")
+    summary("inputs/spectramax-summarise.txt", SpectraMax(); plot = true)
+    @test isfile("inputs/spectramax-summarise.txt.pdf")
+    rm("inputs/spectramax-summarise.txt.pdf")
+    summary("inputs/biotek-summarise.csv", BioTek(); plot = true)
+    @test isfile("inputs/biotek-summarise.csv.pdf")
+    rm("inputs/biotek-summarise.csv.pdf")
+    summary("inputs/pr_folder", GenericTabular(); plot = true)
+    @test isfile("inputs/pr_folder.pdf")
+    rm("inputs/pr_folder.pdf")
 
     # Error checking
     @test_throws "Please provide" ESM.summarise()
-    @test_throws "File type" ESM.summarise(file="biotek-data.csv")
-    @test_throws "Unsupported" ESM.summarise(file="inputs/unknown.txt", type="unknown")
+    @test_throws "File type" ESM.summarise(file = "biotek-summarise.csv")
+    @test_throws "Unsupported" ESM.summarise(file = "inputs/unknown.txt", type = "unknown")
+end
+
+@testitem "issue 34" begin
+    # Importing from excel with single channel reads a Int, not a String
+    # which can then fail at regex
+    read_data("inputs/issue34.xlsx")
 end
