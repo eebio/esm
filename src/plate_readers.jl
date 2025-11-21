@@ -34,11 +34,8 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
     loc = unique(samples[!, "Data Location"])
     # Check what the plate-reader type is
     ptype = unique(samples[!, "Plate brand"])
-    try
-        length(loc) == 1
-    catch
+    length(loc) == 1 ||
         error("Please give the location of only one folder containing all the CSVs for one plate. \nLocations given here are: $(Set(samples[!,"Data Location"])...)")
-    end
     length(ptype) == 1 ||
         error("Only one plate type can be used per plate. $(Set(samples[!,"Plate brand"])...) given. ")
     data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
@@ -102,13 +99,11 @@ function read_into_lines(filen)
                 true_encoding = enc
                 break
             end
-        catch e
-            continue
+        catch
         end
     end
-    if true_encoding == ""
+    true_encoding == "" &&
         error("Could not determine encoding for file $filen.")
-    end
     str = decode(bytes, true_encoding)
     str = replace(str, "\r\n" => "\n")  # Normalize line endings
     str = replace(str, "\r" => "\n")    # Handle any remaining carriage returns
@@ -227,7 +222,6 @@ function Base.read(filen::AbstractString, ::GenericTabular; channels=nothing)
     for j in readdir(filen)
         channel = splitext(j)[1] # Remove file extension
         if !isnothing(channels) && !(channel in channels)
-            @info "Skipping channel $channel as not in requested channels."
             continue
         end
         out[channel] = CSV.read(joinpath(filen, j), DataFrame)
@@ -320,7 +314,7 @@ function growth_rate(df, time_col, method::LinearOnLog)
     # Get the indexes for the time range
     indexes = index_between_vals(
         time_col; minv = start_time, maxv = end_time)[names(time_col)[1]]
-    if length(indexes) < 2
+    if indexes[2] - indexes[1] < 1
         @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
     end
     for i in names(df)
@@ -345,7 +339,7 @@ function growth_rate(df, time_col, method::ExpOnLinear)
     # Get the indexes for the time range
     indexes = index_between_vals(
         time_col; minv = start_time, maxv = end_time)[names(time_col)[1]]
-    if length(indexes) < 2
+    if indexes[2] - indexes[1] < 1
         @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
     end
     for i in names(df)

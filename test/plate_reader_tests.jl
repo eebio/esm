@@ -10,6 +10,8 @@
     wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
     wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
     @test issetequal(keys(data[:samples]), wells)
+
+    @test all(keys(read("inputs/spectramax-data.txt", SpectraMax(); channels=["600 700"])) .== ["600 700"])
 end
 
 @testitem "read biotek" setup=[environment_path] begin
@@ -24,6 +26,10 @@ end
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_temperature", "plate_01_time"]  # Flatten to a 1D vector
     @test issetequal(wells, keys(data[:samples]))
+
+    @test all(keys(read(
+        "inputs/biotek-data.csv", BioTek(); channels = ["600"])) .==
+              ["600"])
 end
 
 @testitem "read plate reader directories" setup=[environment_path] begin
@@ -42,6 +48,14 @@ end
     @test data[:samples]["plate_01_time"][:values]["flo"][end] == Dates.Time(18, 39, 04)
     @test data[:samples]["plate_01_a1"][:values]["flo"][1:3] == [21, 22, 20]
     @test data[:samples]["plate_01_h12"][:values]["flo"][end] == 7
+
+    @test all(keys(read(
+        "inputs/pr_folder", GenericTabular(); channels = ["OD"])) .==
+              ["OD"])
+end
+
+@testitem "read pr errors" begin
+    @test_throws "Unknown plate reader type: random_string" ESM.read_multipr_file("anyfile/path", "random_string", ["OD"], Dict())
 end
 
 # Test doubling_time
@@ -85,12 +99,20 @@ end
     @test ESM.growth_rate(od_df, time_col, Endpoints(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
     @test ESM.growth_rate(od_df, time_col, Logistic())[1, "A"] ≈ log(2) atol = 1e-3
+    @test_broken ESM.growth_rate(od_df, time_col, Gompertz())[1, "A"]≈log(2) atol=1e-3
+    @test_broken ESM.growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈log(2) atol=1e-3
+    @test_broken ESM.growth_rate(od_df, time_col, Richards())[1, "A"]≈log(2) atol=1e-3
     @test ESM.growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
     @test ESM.growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
 
     # Tests for warnings
     od_df_warn = DataFrame(A = [0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     @test_warn "Not enough time points" ESM.growth_rate(od_df_warn, time_col, FiniteDiff())
+    @test_warn "Not enough data points" ESM.growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough data points" ESM.growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 1.5))
+
+    # Tests for errors
+    @test_throws "Unknown finite difference type: unknown" ESM.growth_rate(od_df, time_col, FiniteDiff(type=:unknown))
 end
 
 @testitem "calibrate" begin

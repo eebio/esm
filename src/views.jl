@@ -39,14 +39,8 @@ function produce_views(es, trans_meta_map; to_out = [])
                 @warn "Transformation/Group - $j - not found please check your transformation and groups. \n Reminder: Time on plate readers is handled per channel and associated with a specific plate. Please specify the time as: plate_0x_time.channel ."
             end
         end
-        try
-            # Put it all in the same frame and not a vector
-            v_out[i] = hcat(result...)
-        catch
-            # Put in the same vector with different labels because they exist twice
-            @warn "Duplicate labels detected, left DataFrame denoted with _1 right denoted with _2.\n"
-            v_out[i] = hcat(result..., makeunique = true)
-        end
+        # Put it all in the same frame and not a vector
+        v_out[i] = hcat(result..., makeunique = true)
     end
     @info "Views produced."
     return v_out

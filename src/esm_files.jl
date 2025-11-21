@@ -126,11 +126,8 @@ function read_data(filen)
             samples[i]."Data Location"[1] = replace.(samples[i]."Data Location"[1],
                 "\$GITHUB_WORKSPACE" => ENV["GITHUB_WORKSPACE"])
         end
-        try
-            length(ins_type) == 1
-        catch
+        length(ins_type) == 1 ||
             error("All experiments on one plate must be from the same instrument types. \nInstrument types used here are: $(Set(samples[i].Type))")
-        end
         # TODO Get channels should be its own function with separate tests
         # Process channels
         channels = []
@@ -168,7 +165,7 @@ function read_data(filen)
             sample_dict, broad_g = read_flow(
                 samples[i], sample_dict, channels, broad_g, channel_map)
         else
-            error("Unknown instrument type: $ins_type")
+            error("Unknown instrument type: $(first(ins_type))")
         end
         # Add the physical plate to the group dict. This shouldn't be used by the user - this is more for record keeping
         group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, :type => "physical",

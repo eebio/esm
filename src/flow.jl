@@ -36,18 +36,13 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         else
             name = j.Name
         end
-        try
-            temp = Dict()
-            temp[:type] = "population"
-            temp_data = load(j."Data Location")
-            temp[:values] = Dict(channel_map[x] => temp_data["$(x)"] for x in channels)
-            temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, "$x")
+        temp = Dict()
+        temp[:type] = "population"
+        temp_data = load(j."Data Location")
+        temp[:values] = Dict(channel_map[x] => temp_data["$(x)"] for x in channels)
+        temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, "$x")
             for x in channels)
-            sample_dict[name] = temp
-        catch e
-            @warn "\n\nFatal error encountered for well $name as file $(j."Data Location") is invalid - check the specified location or if the file is corrupted."
-            throw(e)
-        end
+        sample_dict[name] = temp
         broad_g = [broad_g; [name]]
     end
     return sample_dict, broad_g
@@ -151,15 +146,10 @@ function to_rfi(sample_name; chans = [])
         ran = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
         if at[1] == 0
             local ag
-            try
+            if haskey(sub.meta[sub.name .== "$sample_name.$i", :][1], "amp_gain")
                 ag = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
-            catch e
-                if isa(e, MethodError)
-                    # If the gain is not defined, set it to 1
-                    ag = 1.0
-                else
-                    rethrow(e)
-                end
+            else
+                ag = 1.0
             end
             o[i] = Dict(
                 :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ ag,
@@ -289,19 +279,22 @@ Args:
 - `data::Dict`: Dict returned by RFI.
 """
 function event_count(data)
-    if !all(length(data[i][:data]) == length(data[first(keys(data))][:data]) for i in keys(data))
+    if !all(length(data[i][:data]) == length(data[first(keys(data))][:data])
+    for i in keys(data))
         error("All channels must have the same number of events.")
     end
     return length(data[first(keys(data))][:data])
 end
 
 # Logical operations on gates
-struct AndGate{X,Y} <: AbstractLogicalGate where {X<:AbstractGatingMethod, Y<:AbstractGatingMethod}
+struct AndGate{X, Y} <:
+       AbstractLogicalGate where {X <: AbstractGatingMethod, Y <: AbstractGatingMethod}
     gate1::X
     gate2::Y
 end
 
-struct OrGate{X, Y} <: AbstractLogicalGate where {X <: AbstractGatingMethod, Y <: AbstractGatingMethod}
+struct OrGate{X, Y} <:
+       AbstractLogicalGate where {X <: AbstractGatingMethod, Y <: AbstractGatingMethod}
     gate1::X
     gate2::Y
 end
