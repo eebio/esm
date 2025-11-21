@@ -3336,7 +3336,20 @@
         }
     },
     "transformations": {
+        "flow_sub": {
+            "equation": "first_group .- colmean(second_group)"
+        }
     },
     "views": {
+        "group1": {
+            "data": [
+                "first_group"
+            ]
+        },
+        "group2": {
+            "data": [
+                "flow_sub"
+            ]
+        }
     }
 }
