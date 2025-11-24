@@ -4,6 +4,7 @@ using FCSFiles
 using FileIO
 using StatsBase
 using KernelDensity
+using Meshes
 
 struct FlowCytometryData <: AbstractESMDataType end
 
@@ -266,6 +267,19 @@ function gate(data, method::QuadrantGate)
     else
         error("Quadrant must be between 1 and 4.")
     end
+    return apply_mask(data, dat_mask)
+end
+
+@kwdef struct PolygonGate <: AbstractManualGate
+    channel_x::String
+    channel_y::String
+    points::Vector{Tuple{Float64, Float64}}
+end
+
+function gate(data, method::PolygonGate)
+    poly = PolyArea(method.points)
+    dat_mask = [Point(xi, yi) ∈ poly for (xi, yi) in
+                zip(data[method.channel_x][:data], data[method.channel_y][:data])]
     return apply_mask(data, dat_mask)
 end
 

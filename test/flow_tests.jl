@@ -24,8 +24,13 @@ end
     @test gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=2))["FL1-A"][:data] == [540.0]
     @test gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=3))["SSC-A"][:data] == [100.0, 200.0, 300.0]
     @test gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=4))["FL1-A"][:data] == []
+    polygon = [(1.5, 150.0), (3.0, 100.0), (4.5, 150.0), (4.0, 450.0), (2.0, 400.0)]
+    @test gate(MockFlow.data, PolygonGate(channel_x="FSC-A", channel_y="SSC-A", points=polygon))["FSC-A"][:data] == [2.0, 3.0, 4.0]
+    # Test with point exactly on polygon edge
+    edge_poly = [(2.0, 200.0), (5.0, 200.0), (5.0, 600.0), (3.5, 500.0), (3.2, 250.0)]
+    @test gate(MockFlow.data, PolygonGate(channel_x="FSC-A", channel_y="SSC-A", points=edge_poly))["FSC-A"][:data] == [2.0, 4.0, 5.0]
     @test MockFlow.data == datacopy  # ensure original data is not modified
-
+    
     # Test errors
     @test_throws "Quadrant must be between" gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=5))
 end
