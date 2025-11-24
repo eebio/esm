@@ -5,6 +5,7 @@ using FileIO
 using StatsBase
 using KernelDensity
 using Meshes
+using FitEllipse
 
 struct FlowCytometryData <: AbstractESMDataType end
 
@@ -280,6 +281,57 @@ function gate(data, method::PolygonGate)
     poly = PolyArea(method.points)
     dat_mask = [Point(xi, yi) ∈ poly for (xi, yi) in
                 zip(data[method.channel_x][:data], data[method.channel_y][:data])]
+    return apply_mask(data, dat_mask)
+end
+
+struct EllipseGate <: AbstractManualGate
+    channel_x::String
+    channel_y::String
+    center::Tuple{Float64, Float64}
+    a::Float64
+    b::Float64
+    angle::Float64
+end
+
+function EllipseGate(; channel_x::String, channel_y::String, center::Union{Tuple{Float64, Float64}, Nothing}=nothing,
+                     points::Vector{Tuple{Float64, Float64}})
+    if (length(points) < 3 && !isnothing(center)) || (length(points) < 5 && isnothing(center))
+        error("At least 3 points and a center or 5 points without a center are required to fit an ellipse.")
+    end
+    # Fit ellipse to points
+    xs = [p[1] for p in points]
+    ys = [p[2] for p in points]
+    if length(points) < 5
+        # Add extra points on ellipse until we have 5
+        for i in length(points)+1:5
+            push!(xs, points[i-length(points)][1] + 2*(center[1] - points[i-length(points)][1]))
+            push!(ys, points[i-length(points)][2] + 2*(center[2] - points[i-length(points)][2]))
+        end
+        points = zip(xs, ys)
+    end
+    # Fit ellipse to 5 points
+    xs = [p[1] for p in points]
+    ys = [p[2] for p in points]
+    a, b, θ, centerx, centery = fit_ellipse(xs, ys)
+    center = (centerx, centery)
+    angle = rad2deg(θ)
+    return EllipseGate(channel_x, channel_y, center, a, b, angle)
+end
+
+function gate(data, method::EllipseGate)
+    cos_angle = cosd(method.angle)
+    sin_angle = sind(method.angle)
+    cx, cy = method.center
+    a, b = method.a, method.b
+    dat_mask = zeros(Bool, length(data[method.channel_x][:data]))
+    for (i, xi, yi) in zip(1:event_count(data),data[method.channel_x][:data], data[method.channel_y][:data])
+        # Rotate points onto ellipse axes
+        x_rot = cos_angle * (xi - cx) + sin_angle * (yi - cy)
+        y_rot = -sin_angle * (xi - cx) + cos_angle * (yi - cy)
+        # Check against canonical ellipse equation
+        val = (x_rot^2) / (a^2) + (y_rot^2) / (b^2)
+        dat_mask[i] = val <= 1.0
+    end
     return apply_mask(data, dat_mask)
 end
 

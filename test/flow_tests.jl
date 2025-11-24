@@ -11,7 +11,6 @@ end
 
 @testitem "manual gating" setup = [MockFlow] begin
     println("manual gating")
-    # TODO add tests for other gating constructors
     # TODO check IDs are handled correctly
     datacopy = deepcopy(MockFlow.data)
     @test gate(MockFlow.data, HighLowGate(channel="FL1-A", min=515.0))["FL1-A"][:data] == [520.0, 530.0, 540.0, 550.0]
@@ -29,6 +28,9 @@ end
     # Test with point exactly on polygon edge
     edge_poly = [(2.0, 200.0), (5.0, 200.0), (5.0, 600.0), (3.5, 500.0), (3.2, 250.0)]
     @test gate(MockFlow.data, PolygonGate(channel_x="FSC-A", channel_y="SSC-A", points=edge_poly))["FSC-A"][:data] == [2.0, 4.0, 5.0]
+    # Ellipse bounds cannot be tested exactly due to numerical precision issues
+    @test gate(MockFlow.data, EllipseGate(channel_x="FSC-A", channel_y="SSC-A", center=(3.0,300.0), points=[(1.9, 200.0), (4.0, 450.0), (3.0, 500.0)]))["FSC-A"][:data] == [2.0, 3.0, 4.0]
+    @test gate(MockFlow.data, EllipseGate(channel_x="FSC-A", channel_y="SSC-A", points=[(1.9, 200.0), (4.0, 450.0), (3.0, 500.0), (2.5, 400.0), (2.5, 100.0)]))["SSC-A"][:data] == [200.0, 300.0]
     @test MockFlow.data == datacopy  # ensure original data is not modified
 
     # Test errors

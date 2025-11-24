@@ -23,7 +23,7 @@ export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
 export calibrate
 export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
 export gate, event_count, gated_proportion, to_rfi
-export HighLowGate, RectangleGate, QuadrantGate, PolygonGate
+export HighLowGate, RectangleGate, QuadrantGate, PolygonGate, EllipseGate
 export and, or, not
 export AndGate, OrGate, NotGate
 export KDE
