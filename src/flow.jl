@@ -299,6 +299,31 @@ function event_count(data)
     return length(data[first(keys(data))][:data])
 end
 
+"""
+    gated_proportion(data, gate)
+    gated_proportion(data_before, data_after)
+
+Calculate the proportion of events remaining after gating.
+
+Args:
+- `data::Dict`: Dict returned by RFI.
+- `gate::AbstractGatingMethod`: A gating method to report on.
+- `data_before::Dict`: Dict returned by RFI before gating.
+- `data_after::Dict`: Dict returned by RFI after gating.
+"""
+function gated_proportion(data, method::AbstractGatingMethod)
+    total_events = event_count(data)
+    gated_data = gate(data, method)
+    gated_events = event_count(gated_data)
+    return gated_events / total_events
+end
+
+function gated_proportion(data_before, data_after)
+    total_events = event_count(data_before)
+    gated_events = event_count(data_after)
+    return gated_events / total_events
+end
+
 # Logical operations on gates
 struct AndGate{X, Y} <:
        AbstractLogicalGate where {X <: AbstractGatingMethod, Y <: AbstractGatingMethod}

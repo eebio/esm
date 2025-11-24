@@ -22,7 +22,7 @@ export MovingWindow, FiniteDiff, Endpoints, ExpOnLinear, LinearOnLog
 export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
 export calibrate
 export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
-export gate, event_count, to_rfi
+export gate, event_count, gated_proportion, to_rfi
 export HighLowGate, RectangleGate, QuadrantGate, PolygonGate
 export and, or, not
 export AndGate, OrGate, NotGate

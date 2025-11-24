@@ -30,7 +30,7 @@ end
     edge_poly = [(2.0, 200.0), (5.0, 200.0), (5.0, 600.0), (3.5, 500.0), (3.2, 250.0)]
     @test gate(MockFlow.data, PolygonGate(channel_x="FSC-A", channel_y="SSC-A", points=edge_poly))["FSC-A"][:data] == [2.0, 4.0, 5.0]
     @test MockFlow.data == datacopy  # ensure original data is not modified
-    
+
     # Test errors
     @test_throws "Quadrant must be between" gate(MockFlow.data, QuadrantGate(channel_x="FL1-A", channel_y="FL2-A", x_cutoff=535.0, y_cutoff=54.5, quadrant=5))
 end
@@ -49,6 +49,18 @@ end
     @test_throws ErrorException event_count(MockFlow.data)
     MockFlow.data["FSC-A"][:data] = [1.0, 2.0, 3.0, 4.0, 5.0]
     @test event_count(MockFlow.data) == 5
+end
+
+@testitem "gated proportions" setup = [MockFlow] begin
+    println("gated proportions")
+    datacopy = deepcopy(MockFlow.data)
+    gated_data = gate(MockFlow.data, HighLowGate(channel="FL1-A", min=530.0))
+    @test gated_proportion(MockFlow.data, gated_data) == 3 / 5
+    @test gated_proportion(MockFlow.data, HighLowGate(channel = "FL1-A", min = 530.0)) == 3 / 5
+    gated_data2 = gate(MockFlow.data, RectangleGate(channel_x="FSC-A", channel_y="SSC-A", x_min=2.0, x_max=4.5, y_min=50.0, y_max=301.0))
+    @test gated_proportion(MockFlow.data, gated_data2) == 2 / 5
+    @test gated_proportion(MockFlow.data, RectangleGate(channel_x="FSC-A", channel_y="SSC-A", x_min=2.0, x_max=4.5, y_min=50.0, y_max=301.0)) == 2 / 5
+    @test MockFlow.data == datacopy  # ensure original data is not modified
 end
 
 @testitem "autogating" setup = [MockFlow] begin
