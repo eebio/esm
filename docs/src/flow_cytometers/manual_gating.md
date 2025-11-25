@@ -40,13 +40,15 @@ It can be called using `gate(data, QuadrantGate(channel1, channel2, channel1valu
 
 ## PolygonGate
 
-!!! todo "todo"
-    Describe how the polygon gate works
+The `PolygonGate` can be used to create arbitrary polygons, gating to remove any data that doesn't fit inside the polygon. A `PolygonGate` can be created from a series of x-y coordinates describing the vertices of the polygon.
+
+It can be called using `gate(data, PolygonGate(channel1, channel2, points))`.
 
 ## EllipseGate
 
-!!! todo "todo"
-    Describe how the ellipse gate works
+The `EllipseGate` can be used to remove data that falls outside of a predefined ellipse. An `EllipseGate` can be created from 5 points that fall on the ellipse, or 3-5 points that fall on the ellipse and the ellipse's center.
+
+It can be called using `gate(data, EllipseGate(channel1, channel2, points))` or `gate(data, EllipseGate(channel1, channel2, center, points))`.
 
 ## Logical Operations on Gates
 
