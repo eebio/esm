@@ -27,8 +27,7 @@ The first column lets you put in labels for plates. Here, we have labelled them 
 
 The second column controls the well name. For example, if you have flow cytometry data from different wells, stored in different `.fcs` files, you can label the well that each `.fcs` file corresponds to.
 
-!!! todo
-    What does name actually do? Fully overwrite the whole name rather than "plate_well"
+The sample names will be stored as plate_0$PLATE NUMBER$_$well name$. That is unless a name is provided in the third column.
 
 The type defines whether the data is "plate reader", "flow", or "qpcr" and how that file should be imported.
 
