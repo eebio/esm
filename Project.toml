@@ -68,3 +68,6 @@ TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [targets]
 test = ["Aqua", "Pkg", "SHA", "Test", "TestItemRunner", "TestItems"]
+
+[sources]
+FitEllipse = {url = "https://github.com/Datseris/FitEllipse.jl"}
