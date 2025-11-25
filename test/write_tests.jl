@@ -1,6 +1,6 @@
 @testitem "read data" setup=[environment_path] begin
     println("read data")
-    es = ESM.read_data("inputs/example.xlsx")
+    es = read_data("inputs/example.xlsx")
     @test es[:samples]["plate_02_a1"][:values]["FSC-H"] == [628, 1023, 373, 1023]
     @test es[:samples]["plate_02_a1"][:values]["FL4-H"] ≈
           [28.133175, 310.590027, 3.819718, 2414.418213]
@@ -12,16 +12,16 @@
     @test es[:groups]["third_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A2", "plate_01_A3"]
 
     # Test errors
-    @test_throws "Unknown instrument type: gibberish" ESM.read_data("inputs/bad_inst_type.xlsx")
+    @test_throws "Unknown instrument type: gibberish" read_data("inputs/bad_inst_type.xlsx")
 end
 
 @testitem "write esm" setup=[environment_path] begin
     println("write esm")
     # write esm from example.xlsx and read it back
-    es = ESM.read_data("inputs/example.xlsx")
+    es = read_data("inputs/example.xlsx")
     filename = joinpath(Base.Filesystem.mktempdir(), "tmp.esm")
-    ESM.write_esm(es, filename)
-    es_written = ESM.read_esm(filename)
+    write_esm(es, filename)
+    es_written = read_esm(filename)
     names = [
         ["plate_01_$(letter)$(number).$(channel)"
          for letter in 'a':'h', number in 1:12, channel in ["OD", "flo"]]...,
@@ -73,4 +73,6 @@ end
     @test ESM.expand_groups("plate_01_a[1:3],plate_01_b[2:4], plate_02_c5,plate_01_d[1,2]") ==
           ["plate_01_a1", "plate_01_a2", "plate_01_a3", "plate_01_b2", "plate_01_b3", "plate_01_b4",
            "plate_02_c5", "plate_01_d1", "plate_01_d2"]
+    # Test without commas
+    @test ESM.expand_groups("plate_01_a[1:3]") == ["plate_01_a1", "plate_01_a2", "plate_01_a3"]
 end

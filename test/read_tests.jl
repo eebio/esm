@@ -177,7 +177,7 @@ end
 
 @testitem "read_esm tests" setup=[MockESM] begin
     println("read_esm tests")
-    es = ESM.read_esm(MockESM.temp_file)
+    es = read_esm(MockESM.temp_file)
     @test issetequal(es.samples.name,
         ["plate_01_a1.FL1", "plate_01_a1.SSC", "plate_01_a1.FSC",
             "plate_01_a2.FL1", "plate_01_a2.SSC", "plate_01_a2.FSC"])
@@ -326,7 +326,7 @@ end
 
 @testitem "expression" setup=[MockESM] begin
     println("expression")
-    global ESM.es = ESM.read_esm(MockESM.temp_file)
+    global ESM.es = read_esm(MockESM.temp_file)
     ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
@@ -352,7 +352,7 @@ end
 
 @testitem "produce_views" begin
     println("produce_views")
-    global ESM.es = ESM.read_esm("inputs/example.esm")
+    global ESM.es = read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
     for i in keys(ESM.es.transformations))
     a = ESM.produce_views(ESM.es, trans_meta_map)
@@ -400,8 +400,8 @@ end
 
 @testitem "to_rfi" begin
     println("to_rfi")
-    global ESM.es = ESM.read_esm("inputs/example.esm")
-    out = ESM.to_rfi("plate_02_a1")
+    global ESM.es = read_esm("inputs/example.esm")
+    out = to_rfi("plate_02_a1")
     # Linear test with no gain
     @test out["FSC-H"][:data] == [628.0, 1023.0, 373.0, 1023.0]
     @test out["FSC-H"][:max] == 1024.0
@@ -431,9 +431,9 @@ end
     rm("inputs/pr_folder.pdf")
 
     # Error checking
-    @test_throws "Please provide" ESM.summarise()
-    @test_throws "File type" ESM.summarise(file = "biotek-summarise.csv")
-    @test_throws "Unsupported" ESM.summarise(file = "inputs/unknown.txt", type = "unknown")
+    @test_throws "Please provide" summarise()
+    @test_throws "File type" summarise(file = "biotek-summarise.csv")
+    @test_throws "Unsupported" summarise(file = "inputs/unknown.txt", type = "unknown")
 end
 
 @testitem "issue 34" begin

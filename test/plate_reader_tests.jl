@@ -1,6 +1,6 @@
 @testitem "read spectramax" setup=[environment_path] begin
     println("read spectramax")
-    data = ESM.read_data("inputs/spectramax.xlsx")
+    data = read_data("inputs/spectramax.xlsx")
     # TODO should probably separate the channels into 600 and 700?
     # TODO channel is currently 535 for fluorescence but the 485 is also relevant
     @test data[:samples]["plate_01_a1"][:values]["abs"][[1, 2, end - 1, end]] ==
@@ -16,7 +16,7 @@ end
 
 @testitem "read biotek" setup=[environment_path] begin
     println("read biotek")
-    data = ESM.read_data("inputs/biotek.xlsx")
+    data = read_data("inputs/biotek.xlsx")
     @test data[:samples]["plate_01_a1"][:values]["od1"][[1, 2, end - 1, end]] ==
           [0.134, 0.133, 0.131, 0.131]
     @test data[:samples]["plate_01_h12"][:values]["od2"][[1, 2, end - 1, end]] == [
@@ -36,7 +36,7 @@ end
     println("read plate reader directories")
     using Dates
 
-    data = ESM.read_data("inputs/example.xlsx")
+    data = read_data("inputs/example.xlsx")
     @test data[:samples]["plate_01_time"][:values]["OD"][1:2] ==
           Dates.Time[Dates.Time(0, 8, 38), Dates.Time(0, 18, 38)]
     @test data[:samples]["plate_01_time"][:values]["OD"][end] == Dates.Time(18, 38, 38)
@@ -69,17 +69,17 @@ end
         "00:07:00", "00:08:00", "00:09:00", "00:10:00"])
 
     # TODO: Add some more tests with more awkward data
-    @test ESM.doubling_time(od_df, time_col, MovingWindow(window_size = 3)) ≈
+    @test doubling_time(od_df, time_col, MovingWindow(window_size = 3)) ≈
           DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5)) ≈
+    @test doubling_time(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5)) ≈
+    @test doubling_time(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col, Endpoints(start_time = 1, end_time = 5)) ≈
+    @test doubling_time(od_df, time_col, Endpoints(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col, Logistic()) ≈ DataFrame(A = 1.0) atol = 1e-3
-    @test ESM.doubling_time(od_df, time_col, FiniteDiff()) ≈ DataFrame(A = 1.0)
-    @test ESM.doubling_time(od_df, time_col, FiniteDiff(type=:onesided)) ≈ DataFrame(A = 1.0)
+    @test doubling_time(od_df, time_col, Logistic()) ≈ DataFrame(A = 1.0) atol = 1e-3
+    @test doubling_time(od_df, time_col, FiniteDiff()) ≈ DataFrame(A = 1.0)
+    @test doubling_time(od_df, time_col, FiniteDiff(type=:onesided)) ≈ DataFrame(A = 1.0)
 end
 
 @testitem "growth_rate" begin
@@ -91,28 +91,28 @@ end
         "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00", "00:05:00", "00:06:00",
         "00:07:00", "00:08:00", "00:09:00", "00:10:00"])
 
-    @test ESM.growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
-    @test ESM.growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5))[
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
-    @test ESM.growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5))[
+    @test growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
-    @test ESM.growth_rate(od_df, time_col, Endpoints(start_time = 1, end_time = 5))[
+    @test growth_rate(od_df, time_col, Endpoints(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
-    @test ESM.growth_rate(od_df, time_col, Logistic())[1, "A"] ≈ log(2) atol = 1e-3
-    @test_broken ESM.growth_rate(od_df, time_col, Gompertz())[1, "A"]≈log(2) atol=1e-3
-    @test_broken ESM.growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈log(2) atol=1e-3
-    @test_broken ESM.growth_rate(od_df, time_col, Richards())[1, "A"]≈log(2) atol=1e-3
-    @test ESM.growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
-    @test ESM.growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, Logistic())[1, "A"] ≈ log(2) atol = 1e-3
+    @test_broken growth_rate(od_df, time_col, Gompertz())[1, "A"]≈log(2) atol=1e-3
+    @test_broken growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈log(2) atol=1e-3
+    @test_broken growth_rate(od_df, time_col, Richards())[1, "A"]≈log(2) atol=1e-3
+    @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
 
     # Tests for warnings
     od_df_warn = DataFrame(A = [0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    @test_warn "Not enough time points" ESM.growth_rate(od_df_warn, time_col, FiniteDiff())
-    @test_warn "Not enough data points" ESM.growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 1.5))
-    @test_warn "Not enough data points" ESM.growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough time points" growth_rate(od_df_warn, time_col, FiniteDiff())
+    @test_warn "Not enough data points" growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough data points" growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 1.5))
 
     # Tests for errors
-    @test_throws "Unknown finite difference type: unknown" ESM.growth_rate(od_df, time_col, FiniteDiff(type=:unknown))
+    @test_throws "Unknown finite difference type: unknown" growth_rate(od_df, time_col, FiniteDiff(type=:unknown))
 end
 
 @testitem "calibrate" begin

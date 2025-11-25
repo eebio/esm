@@ -17,6 +17,7 @@ include("summarise.jl")
 include("views.jl")
 
 export read_esm, esm_zones, read_data, write_esm
+export template, translate, views, summarise
 export growth_rate, doubling_time
 export MovingWindow, FiniteDiff, Endpoints, ExpOnLinear, LinearOnLog
 export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
