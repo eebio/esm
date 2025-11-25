@@ -67,9 +67,6 @@ All these formats can be mixed together in any combination, so "plate_0[1,2]_[a:
 ESM.expand_group
 ```
 
-!!! todo
-    Are spaces allowed in the group samples list
-
 In the example:
 
 * all wells on the left of a 96 well plate (A through H, column 1) are grouped as "blank",
