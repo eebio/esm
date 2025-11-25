@@ -5,7 +5,6 @@ using FileIO
 using StatsBase
 using KernelDensity
 using Meshes
-using FitEllipse
 
 struct FlowCytometryData <: AbstractESMDataType end
 

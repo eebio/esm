@@ -9,6 +9,7 @@ abstract type AbstractESMDataType end
 
 struct ESMData <: AbstractESMDataType end
 
+include("FitEllipse.jl")
 include("esm_files.jl")
 include("flow.jl")
 include("main.jl")
