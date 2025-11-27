@@ -150,6 +150,23 @@ function read_standard(filen, offset)
     return data
 end
 
+function correct_data_length(data, delim)
+    for d in data
+        # Find the most common number of columns
+        col_lengths = [length(split(row, delim)) for row in d]
+        max_length = maximum(col_lengths)
+        # Fill in missing columns with empty cells
+        for i in eachindex(d)
+            current_length = length(split(d[i], delim))
+            if current_length < max_length
+                num_missing = max_length - current_length
+                d[i] *= repeat(delim, num_missing)
+            end
+        end
+    end
+    return data
+end
+
 struct SpectraMax <: AbstractPlateReader end
 
 """
@@ -166,6 +183,7 @@ Optional Args:
 """
 function Base.read(filen::AbstractString, ::SpectraMax; channels=nothing)
     data = read_standard(filen, 1)
+    data = correct_data_length(data, "\t")
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
