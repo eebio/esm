@@ -38,7 +38,7 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
         es.groups[i,"metadata"]["autodefined"]=="true"
         for i in eachindex(es.groups[!,"metadata"])]))"
     group_sizes = Dict(i["group"] => length(i["sample_IDs"]) for i in eachrow(es.groups))
-    for (key, value) in sort(group_sizes)
+    for (key, value) in group_sizes
         @info "Group $key has size $value and is$("autodefined" ∉ keys(first(es.groups[es.groups[!, "group"] .== key, "metadata"])) ? " not" : "") autodefined."
     end
 
@@ -46,7 +46,7 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
     # Summarise transformations
     @info "Summarising transformations"
     @info "Number of transformations: $(length(es.transformations))"
-    for (key, value) in sort(es.transformations)
+    for (key, value) in es.transformations
         @info "Transformation $key: $(value["equation"])"
     end
 
@@ -54,7 +54,7 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
     # Summarise views
     @info "Summarising views"
     @info "Number of views: $(length(es.views))"
-    for (key, value) in sort(es.views)
+    for (key, value) in es.views
         @info "View $key: $(value["data"])"
     end
 
