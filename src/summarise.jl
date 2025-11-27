@@ -15,12 +15,11 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 - `plot::Bool=false`: Produce plots of the data. Defaults to false.
 """
 function Base.summary(file::AbstractString, ::ESMData; plot = false)
-    # Read the esm file
-    es = read_esm(file)
-
     println("")
     # Print a summary of the contents
     @info "Summary of ESM file: $file"
+    # Read the esm file
+    es = read_esm(file)
     # Summarise samples
     @info "Summarising samples"
     # Number of timeseries and populations
@@ -77,9 +76,9 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
 end
 
 function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false)
-    out = read(file, ptype)
     println("")
     @info "Summary of $(typeof(ptype)) file: $file"
+    out = read(file, ptype)
     println("")
     # Summarise channels
     @info "Summarising channels"
@@ -108,9 +107,9 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
 end
 
 function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
-    f = load(file)
     println("")
     @info "Summary of FCS file: $file"
+    f = load(file)
     @show f
     println("")
     # Summarise channels
