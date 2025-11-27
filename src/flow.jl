@@ -60,62 +60,60 @@ Args:
 - `chan::String`: The channel being read from
 """
 function extract_flow(fcs, chan)
-    p = findfirst([i == chan for i in fcs.data.axes[1]])
-    props = unique([i.match[4]
-                    for i in eachmatch(Regex("\\\$P$(p)[A-Z]"), join(keys(fcs.params)))])
+    p = findfirst([i == chan for i in keys(fcs)])
     Dict(
-        :name => if 'N' in props
-            fcs.params["\$P$(p)N"]
+        :name => if hasproperty(fcs, Symbol("p$(p)n"))
+            getproperty(fcs, Symbol("p$(p)n"))
         else
             missing
         end,
-        :amp_type => if 'E' in props
-            fcs.params["\$P$(p)E"]
+        :amp_type => if hasproperty(fcs, Symbol("p$(p)e"))
+            getproperty(fcs, Symbol("p$(p)e"))
         else
             missing
         end,
-        :range => if 'R' in props
-            fcs.params["\$P$(p)R"]
+        :range => if hasproperty(fcs, Symbol("p$(p)r"))
+            getproperty(fcs, Symbol("p$(p)r"))
         else
             missing
         end,
-        :filter => if 'F' in props
-            fcs.params["\$P$(p)F"]
+        :filter => if hasproperty(fcs, Symbol("p$(p)f"))
+            getproperty(fcs, Symbol("p$(p)f"))
         else
             missing
         end,
-        :amp_gain => if 'G' in props
-            fcs.params["\$P$(p)G"]
+        :amp_gain => if hasproperty(fcs, Symbol("p$(p)g"))
+            getproperty(fcs, Symbol("p$(p)g"))
         else
             missing
         end,
-        :ex_wav => if 'L' in props
-            fcs.params["\$P$(p)L"]
+        :ex_wav => if hasproperty(fcs, Symbol("p$(p)l"))
+            getproperty(fcs, Symbol("p$(p)l"))
         else
             missing
         end,
-        :ex_pow => if 'O' in props
-            fcs.params["\$P$(p)O"]
+        :ex_pow => if hasproperty(fcs, Symbol("p$(p)o"))
+            getproperty(fcs, Symbol("p$(p)o"))
         else
             missing
         end,
-        :perc_em => if 'P' in props
-            fcs.params["\$P$(p)P"]
+        :perc_em => if hasproperty(fcs, Symbol("p$(p)p"))
+            getproperty(fcs, Symbol("p$(p)p"))
         else
             missing
         end,
-        :name_s => if 'S' in props
-            fcs.params["\$P$(p)S"]
+        :name_s => if hasproperty(fcs, Symbol("p$(p)s"))
+            getproperty(fcs, Symbol("p$(p)s"))
         else
             missing
         end,
-        :det_type => if 'T' in props
-            fcs.params["\$P$(p)T"]
+        :det_type => if hasproperty(fcs, Symbol("p$(p)t"))
+            getproperty(fcs, Symbol("p$(p)t"))
         else
             missing
         end,
-        :det_volt => if 'V' in props
-            fcs.params["\$P$(p)V"]
+        :det_volt => if hasproperty(fcs, Symbol("p$(p)v"))
+            getproperty(fcs, Symbol("p$(p)v"))
         else
             missing
         end
