@@ -36,9 +36,8 @@ Arguments:
 - `reg_l::Vector{String}`: Vector of strings to filter by.
 """
 function filter_col(df, reg_l)
-    return df[:,
-        filter(colname -> occursin((Regex(join(string.(reg_l), "|"))), string(colname)),
-            names(df))]
+    reg_l = Regex(join(string.(reg_l), "|"))
+    return df[:, filter(colname -> occursin(reg_l, string(colname)), names(df))]
 end
 
 """
@@ -64,7 +63,8 @@ Returns the sample names.
 
 Arguments:
 - `es::esm_zones`: The data set to search.
-- `grn::String`: A string of a group name which can be used to filter the original dataframe.
+- `grn::String`: A string of a group name which can be used to filter the original
+    dataframe.
 """
 function find_group(es, grn)
     return es.groups[es.groups.group .== grn, :sample_IDs][1]
@@ -81,7 +81,8 @@ Returns the indexes between two points so that these can be later isolated.
 This is in dict form to allow for individual points to be separated out.
 Both ends are inclusive.
 
-If minv is larger than all values in the column, or maxv smaller, will return `(nothing,nothing)`.
+If minv is larger than all values in the column, or maxv smaller, will return
+    `(nothing,nothing)`.
 
 Arguments:
 - `df::DataFrame`: DataFrame to work on.
@@ -125,7 +126,8 @@ Arguments:
 function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
     time_col = df2time(time_col)
     # Do time calculations in seconds to avoid floating point math
-    tvals = index_between_vals(time_col; minv = mint * 60, maxv = maxt * 60)[names(time_col)[1]]
+    tvals = index_between_vals(time_col; minv = mint * 60, maxv = maxt * 60)
+    tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[1]) || isnothing(tvals[2])
         @warn "No values found between $mint and $maxt."
         # Return empty dataframe of the same type
@@ -148,7 +150,8 @@ Arguments:
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
     time_col = df2time(time_col)
-    tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60)[names(time_col)[1]]
+    tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60)
+    tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."
         # Return empty dataframe of the same type
@@ -179,7 +182,8 @@ function at_od(od_df, target_df, target_od)
         else
             # Note that NaNs are mapped to 0 to ignore them
             if target_od > maximum(replace(od_df[:, i], NaN => 0.0))
-                @warn "Skipping $i as the target OD ($target_od) is higher than the maximum OD ($(maximum(replace(od_df[:,i],NaN=>0.0))))."
+                @warn "Skipping $i as the target OD ($target_od) is higher than the \
+                    maximum OD ($(maximum(replace(od_df[:,i],NaN=>0.0))))."
             else
                 dic = index_between_vals(
                     filter_col(od_df, [i]); minv = target_od, maxv = target_od)[i]

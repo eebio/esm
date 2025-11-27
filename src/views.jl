@@ -35,7 +35,10 @@ function produce_views(es, trans_meta_map; to_out = [])
                 push!(result, form_df(es.samples[es.samples.name .== j, :]))
             else
                 # Ya dun goofed.
-                @warn "Transformation/Group - $j - not found please check your transformation and groups. \n Reminder: Time on plate readers is handled per channel and associated with a specific plate. Please specify the time as: plate_0x_time.channel ."
+                @warn "Transformation/Group - $j - not found please check your \
+                transformation and groups.\nReminder: Time on plate readers is handled per \
+                channel and associated with a specific plate. Please specify the time as: \
+                plate_0x_time.channel"
             end
         end
         # Put it all in the same frame and not a vector
@@ -70,7 +73,8 @@ end
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
 
-Recursively converts the parsed equations to julia code and produces the correct dataframes over which to operate. This also calls any unprocessed transformations.
+Recursively converts the parsed equations to julia code and produces the correct dataframes
+    over which to operate. This also calls any unprocessed transformations.
 
 Arguments:
 - sexp: Expression or part of expression to be decomposed.
@@ -104,40 +108,37 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
             elseif Symbol(string(sexp.args[1])) in keys(trans_meta_map)
                 # Is it in the transformation map?
                 if string(sexp.args[2].value) in es.groups.group
-                    # Check if the second part of the quote node is in the groups - this allows a group to be sub-specified. e.g. only return the samples that are part of two groups
-                    # `eval` the transformation and then sub filter using the names of the samples
-                    return filter_col(
-                        eval(sexp_to_nested_list(
-                            trans_meta_map[Symbol(string(sexp.args[1]))],
-                            es, trans_meta_map)),
+                    # Check if the second part of the quote node is in the groups
+                    # This allows a group to be sub-specified. e.g. only return the samples
+                    #   that are part of two groups
+                    transform = trans_meta_map[Symbol(string(sexp.args[1]))]
+                    expression = sexp_to_nested_list(transform, es, trans_meta_map)
+                    return filter_col(eval(expression),
                         find_group(es, string(sexp.args[2].value)))
                 else
                     # Just `eval` the other transformation
+                    transform = trans_meta_map[Symbol(string(sexp.args[1]))]
+                    expression = sexp_to_nested_list(transform, es, trans_meta_map)
                     return remove_subcols(
-                        filter_col(
-                            eval(sexp_to_nested_list(
-                                trans_meta_map[Symbol(string(sexp.args[1]))],
-                                es, trans_meta_map)),
-                            [string(sexp.args[2].value)]),
+                        filter_col(eval(expression), [string(sexp.args[2].value)]),
                         sexp.args[2].value)
                 end
             else
-                if string(sexp.args[2].value) in es.groups.group
+                second_value = string(sexp.args[2].value)
+                if second_value in es.groups.group
                     # Is the symbol a group - create the data frame
                     return filter_col(form_df(filter_row(es, sexp.args[1])),
-                        find_group(es, string(sexp.args[2].value)))
-                elseif string(sexp.args[1]) * "." * string(sexp.args[2].value) in es.samples.name
+                        find_group(es, second_value))
+                elseif string(sexp.args[1]) * "." * second_value in es.samples.name
                     # Is the group a single data frame?
                     # Filter the original sample frame and create a data frame from that
                     return form_df(es.samples[
-                        es.samples.name .== string(sexp.args[1]) * "." * string(sexp.args[2].value),
-                        :])
+                        es.samples.name .== string(sexp.args[1]) * "." * second_value, :])
                 else
-                    # Have a go - will probs cause a crash, but at this point its on the user, in my opinion
+                    # Have a go - will probs cause a crash
                     return remove_subcols(
-                        filter_col(
-                            form_df(filter_row(es, sexp.args[1])), [sexp.args[2].value]),
-                        sexp.args[2].value)
+                        filter_col(form_df(filter_row(es, sexp.args[1])), [second_value]),
+                        second_value)
                 end
             end
         else
@@ -157,7 +158,7 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
         # Catches and keep any number that comes through the transformations
         return sexp
     elseif isa(sexp, String)
-        # Catches any parsed strings and keeps them. This allows for certain keyword args to be parsed
+        # Catches any parsed strings and keeps them. Allows for keyword args to be parsed
         return sexp
     else
         # Ya dun goofed

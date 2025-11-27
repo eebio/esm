@@ -41,7 +41,7 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         temp_data = load(j."Data Location")
         temp[:values] = Dict(channel_map[x] => temp_data["$(x)"] for x in channels)
         temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, "$x")
-            for x in channels)
+        for x in channels)
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
     end
@@ -59,62 +59,25 @@ Arguments:
 """
 function extract_flow(fcs, chan)
     p = findfirst([i == chan for i in keys(fcs)])
-    Dict(
-        :name => if hasproperty(fcs, Symbol("p$(p)n"))
-            getproperty(fcs, Symbol("p$(p)n"))
+    function mapper(char)
+        if hasproperty(fcs, Symbol("p$(p)$(char)"))
+            return getproperty(fcs, Symbol("p$(p)$(char)"))
         else
-            missing
-        end,
-        :amp_type => if hasproperty(fcs, Symbol("p$(p)e"))
-            getproperty(fcs, Symbol("p$(p)e"))
-        else
-            missing
-        end,
-        :range => if hasproperty(fcs, Symbol("p$(p)r"))
-            getproperty(fcs, Symbol("p$(p)r"))
-        else
-            missing
-        end,
-        :filter => if hasproperty(fcs, Symbol("p$(p)f"))
-            getproperty(fcs, Symbol("p$(p)f"))
-        else
-            missing
-        end,
-        :amp_gain => if hasproperty(fcs, Symbol("p$(p)g"))
-            getproperty(fcs, Symbol("p$(p)g"))
-        else
-            missing
-        end,
-        :ex_wav => if hasproperty(fcs, Symbol("p$(p)l"))
-            getproperty(fcs, Symbol("p$(p)l"))
-        else
-            missing
-        end,
-        :ex_pow => if hasproperty(fcs, Symbol("p$(p)o"))
-            getproperty(fcs, Symbol("p$(p)o"))
-        else
-            missing
-        end,
-        :perc_em => if hasproperty(fcs, Symbol("p$(p)p"))
-            getproperty(fcs, Symbol("p$(p)p"))
-        else
-            missing
-        end,
-        :name_s => if hasproperty(fcs, Symbol("p$(p)s"))
-            getproperty(fcs, Symbol("p$(p)s"))
-        else
-            missing
-        end,
-        :det_type => if hasproperty(fcs, Symbol("p$(p)t"))
-            getproperty(fcs, Symbol("p$(p)t"))
-        else
-            missing
-        end,
-        :det_volt => if hasproperty(fcs, Symbol("p$(p)v"))
-            getproperty(fcs, Symbol("p$(p)v"))
-        else
-            missing
+            return missing
         end
+    end
+    Dict(
+        :name => mapper('n'),
+        :amp_type => mapper('e'),
+        :range => mapper('r'),
+        :filter => mapper('f'),
+        :amp_gain => mapper('g'),
+        :ex_wav => mapper('l'),
+        :ex_pow => mapper('o'),
+        :perc_em => mapper('p'),
+        :name_s => mapper('s'),
+        :det_type => mapper('t'),
+        :det_volt => mapper('v')
     )
 end
 
@@ -138,26 +101,27 @@ function to_rfi(sample_name; chans = [])
     o = Dict()
     for i in chans
         # Load metadata for channel
-        at = parse.(
+        amp_type = parse.(
             Float64, split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
-        ran = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
-        if at[1] == 0
+        range = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
+        if amp_type[1] == 0
             if isnothing(sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
-                ag = 1.0
+                amp_gain = 1.0
             else
-                ag = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
+                amp_gain = sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
+                amp_gain = parse(Int, amp_gain)
             end
             o[i] = Dict(
-                :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ ag,
-                :min => 1 / ag, :max => ran / ag)
+                :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain,
+                :min => 1 / amp_gain, :max => range / amp_gain)
         else
             # Non-linear gain
             o[i] = Dict(
-                :data => at[2] *
-                         10 .^ (at[1] *
-                          (sub.values[sub.name .== "$sample_name.$i", :][1] / ran)),
-                :min => at[2] * 10^(at[1] * (1 / ran)),
-                :max => at[2] * 10^(at[1] * (ran / ran)))
+                :data => amp_type[2] *
+                         10 .^ (amp_type[1] *
+                          (sub.values[sub.name .== "$sample_name.$i", :][1] / range)),
+                :min => amp_type[2] * 10^(amp_type[1] * (1 / range)),
+                :max => amp_type[2] * 10^(amp_type[1] * (range / range)))
         end
         o[i][:id] = 1:length(o[i][:data])
     end
@@ -274,8 +238,8 @@ end
 
 function gate(data, method::PolygonGate)
     poly = PolyArea(method.points)
-    dat_mask = [Point(xi, yi) ∈ poly for (xi, yi) in
-                zip(data[method.channel_x][:data], data[method.channel_y][:data])]
+    combined_data = zip(data[method.channel_x][:data], data[method.channel_y][:data])
+    dat_mask = [Point(xi, yi) ∈ poly for (xi, yi) in combined_data]
     return apply_mask(data, dat_mask)
 end
 
@@ -288,19 +252,21 @@ struct EllipseGate <: AbstractManualGate
     angle::Float64
 end
 
-function EllipseGate(; channel_x::String, channel_y::String, center::Union{Tuple{Float64, Float64}, Nothing}=nothing,
-                     points::Vector{Tuple{Float64, Float64}})
-    if (length(points) < 3 && !isnothing(center)) || (length(points) < 5 && isnothing(center))
-        error("At least 3 points and a center or 5 points without a center are required to fit an ellipse.")
+function EllipseGate(; channel_x::String, channel_y::String, center = nothing, points)
+    n = length(points)
+    if (n < 3 && !isnothing(center)) || (n < 5 && isnothing(center))
+        error("At least 3 points and a center or 5 points without a center are required to \
+            fit an ellipse.")
     end
     # Fit ellipse to points
     xs = [p[1] for p in points]
     ys = [p[2] for p in points]
     if length(points) < 5
         # Add extra points on ellipse until we have 5
-        for i in length(points)+1:5
-            push!(xs, points[i-length(points)][1] + 2*(center[1] - points[i-length(points)][1]))
-            push!(ys, points[i-length(points)][2] + 2*(center[2] - points[i-length(points)][2]))
+        for i in (length(points) + 1):5
+            point = points[i - length(points)]
+            push!(xs, point[1] + 2 * (center[1] - point[1]))
+            push!(ys, point[2] + 2 * (center[2] - point[2]))
         end
         points = zip(xs, ys)
     end
@@ -319,7 +285,8 @@ function gate(data, method::EllipseGate)
     cx, cy = method.center
     a, b = method.a, method.b
     dat_mask = zeros(Bool, length(data[method.channel_x][:data]))
-    for (i, xi, yi) in zip(1:event_count(data),data[method.channel_x][:data], data[method.channel_y][:data])
+    for (i, xi, yi) in zip(1:event_count(data), data[method.channel_x][:data],
+        data[method.channel_y][:data])
         # Rotate points onto ellipse axes
         x_rot = cos_angle * (xi - cx) + sin_angle * (yi - cy)
         y_rot = -sin_angle * (xi - cx) + cos_angle * (yi - cy)

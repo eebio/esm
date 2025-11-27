@@ -34,9 +34,11 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
     # Check what the plate-reader type is
     ptype = unique(samples[!, "Plate brand"])
     length(loc) == 1 ||
-        error("Please give the location of only one folder containing all the CSVs for one plate. \nLocations given here are: $(Set(samples[!,"Data Location"])...)")
+        error("Please give the location of only one folder containing all the CSVs for one \
+        plate. \nLocations given here are: $(Set(samples[!,"Data Location"])...)")
     length(ptype) == 1 ||
-        error("Only one plate type can be used per plate. $(Set(samples[!,"Plate brand"])...) given. ")
+        error("Only one plate type can be used per plate. \
+        $(Set(samples[!,"Plate brand"])...) given.")
     data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
     channels = keys(data)
     # Just so that the broader physical group can be defined using the set difference
@@ -55,7 +57,8 @@ end
 """
     read_multipr_file(file,ptype,channels,channel_map)
 
-Function for reading files containing multiple reads from multple channels from a single CSV file.
+Function for reading files containing multiple reads from multple channels from a single CSV
+    file.
 Returns a Dictionary of DataFrames with keys being the channels.
 
 Arguments:
@@ -125,7 +128,7 @@ function read_standard(file, offset)
     data = []
     for i in datalocations
         table = []
-        # Find and push header onto table (first row before i that contains Time and the row above it)
+        # Push header onto table (first row before i that contains Time and row above)
         for j in (i - 1):-1:1
             if occursin("Time", f[j])
                 push!(table, f[j - offset])
@@ -173,9 +176,10 @@ Read data from plate reader file `file` of assuming the format of `AbstractPlate
 Arguments:
 - `file::AbstractString`: File to read from.
 - `::AbstractPlateReader`: Plate reader type.
-- `channels`: Vector of channels (as strings) to be read in. Defaults to nothing (all channels).
+- `channels`: Vector of channels (as strings) to be read in. Defaults to nothing (all
+    channels).
 """
-function Base.read(file::AbstractString, ::SpectraMax; channels=nothing)
+function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
     data = read_standard(file, 1)
     data = correct_data_length(data, "\t")
     # Create the dataframes
@@ -202,7 +206,7 @@ end
 
 struct BioTek <: AbstractPlateReader end
 
-function Base.read(filen::AbstractString, ::BioTek; channels=nothing)
+function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
     data = read_standard(filen, 2)
     # Create the dataframes
     out = Dict()
@@ -229,7 +233,7 @@ end
 
 struct GenericTabular <: AbstractPlateReader end
 
-function Base.read(file::AbstractString, ::GenericTabular; channels=nothing)
+function Base.read(file::AbstractString, ::GenericTabular; channels = nothing)
     out = Dict()
     for j in readdir(file)
         channel = splitext(j)[1] # Remove file extension
@@ -274,12 +278,12 @@ Arguments:
 function growth_rate(df, time_col, method::Endpoints)
     dict_2 = Dict()
     for i in names(df)
-        start_od = at_time(df, time_col, method.start_time) # It is broken because at_time is always returning the last value - maybe weird unit stuff?
+        start_od = at_time(df, time_col, method.start_time)
         end_od = at_time(df, time_col, method.end_time)
         start_time = at_time(df2time(time_col), time_col, method.start_time)[1] / 60
         end_time = at_time(df2time(time_col), time_col, method.end_time)[1] / 60
         dict_2[i] = (log(end_od[i]) - log(start_od[i])) /
-                     (end_time - start_time)
+                    (end_time - start_time)
     end
     return DataFrame(dict_2)
 end
@@ -297,7 +301,7 @@ function growth_rate(df, time_col, method::MovingWindow)
         for j in 1:(nrow(df) - window_size)
             # TODO change this to allow any method to be used as a moving window
             rate = (log(df[j + window_size, i]) - log(df[j, i])) /
-                   (time_col[j + window_size, 1]/60 - time_col[j, 1]/60)
+                   (time_col[j + window_size, 1] / 60 - time_col[j, 1] / 60)
             if rate > max_rate
                 max_rate = rate
             end
@@ -321,12 +325,13 @@ function growth_rate(df, time_col, method::LinearOnLog)
     indexes = index_between_vals(
         time_col; minv = start_time, maxv = end_time)[names(time_col)[1]]
     if indexes[2] - indexes[1] < 1
-        @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
+        @warn "Not enough data points between $start_time and $end_time to calculate \
+            growth rate."
     end
+    indexes = indexes[1]:indexes[2]
     for i in names(df)
-        lm_df = DataFrame(time = time_col[indexes[1]:indexes[2], 1],
-                         log_od = log.(df[indexes[1]:indexes[2], i]))
-        lm_model = lm(@formula(log_od ~ time), lm_df)
+        lm_df = DataFrame(time = time_col[indexes, 1], log_od = log.(df[indexes, i]))
+        lm_model = lm(@formula(log_od~time), lm_df)
         dict[i] = coef(lm_model)[2]
     end
     return DataFrame(dict)
@@ -346,7 +351,8 @@ function growth_rate(df, time_col, method::ExpOnLinear)
     indexes = index_between_vals(
         time_col; minv = start_time, maxv = end_time)[names(time_col)[1]]
     if indexes[2] - indexes[1] < 1
-        @warn "Not enough data points between $start_time and $end_time to calculate growth rate."
+        @warn "Not enough data points between $start_time and $end_time to calculate \
+            growth rate."
     end
     for i in names(df)
         t = time_col[indexes[1]:indexes[2], 1]
@@ -363,8 +369,8 @@ function growth_rate(df, time_col, method::ExpOnLinear)
 
         # initial guess: A ~ max(y), b small
         u0 = [maximum(y), 1e-3]
-
-        prob = NonlinearLeastSquaresProblem(NonlinearFunction(residuals!, resid_prototype = zeros(length(y))), u0)
+        nonlinfun = NonlinearFunction(residuals!, resid_prototype = zeros(length(y)))
+        prob = NonlinearLeastSquaresProblem(nonlinfun, u0)
         sol = solve(prob; verbose = false, maxiters = 200)
         psol = sol.u
         dict[i] = psol[2]
@@ -398,7 +404,7 @@ end
 
 function Richards()
     return ParametricGrowthRate(
-        (t, p) -> p[2] ./ (1 .+ exp(-p[1] .* (t .- p[3]))).^(1 ./ p[4]),
+        (t, p) -> p[2] ./ (1 .+ exp(-p[1] .* (t .- p[3]))) .^ (1 ./ p[4]),
         [1, 1e-3, 10, 1])
 end
 
@@ -420,8 +426,8 @@ function growth_rate(df, time_col, method::ParametricGrowthRate)
 
         # initial guess: A ~ max(y), b small, c ~ end of time
         u0 = method.initial_params
-
-        prob = NonlinearLeastSquaresProblem(NonlinearFunction(residuals!, resid_prototype = zeros(length(y))), u0)
+        nonlinfun = NonlinearFunction(residuals!, resid_prototype = zeros(length(y)))
+        prob = NonlinearLeastSquaresProblem(nonlinfun, u0)
         sol = solve(prob; verbose = false, maxiters = 200)
         psol = sol.u
         dict[i] = psol[1]

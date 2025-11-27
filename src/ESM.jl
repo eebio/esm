@@ -59,8 +59,9 @@ Produce and save the views from a .esm file.
 # Options
 
 - `-e, --esm-file=<String>`: The .esm file to be read.
-- `-v, --view=<String>`: The view to be produced. If not specified, all views will be produced.
-- `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the current directory.
+- `-v, --view=<String>`: The view to be produced. All views if not specified.
+- `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the
+    current directory.
 
 """
 @cast function views(; esm_file::String, view = nothing, output_dir::String = ".")
@@ -83,7 +84,8 @@ Produce a template excel file for data entry into the ESM.
 
 # Options
 
-- `-o, --output-path=<String>`: The path to create the template in. Defaults to ESM.xlsx in the current directory.
+- `-o, --output-path=<String>`: The path to create the template in. Defaults to ESM.xlsx in
+    the current directory.
 
 """
 @cast function template(; output_path::String = "ESM.xlsx")
@@ -100,13 +102,15 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 # Options
 
 - `-f, --file=<String>`: The data file to be summarised.
-- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm", "spectramax", "biotek", "generic", "fcs". If "auto" is selected, the type will be inferred from the file extension (or raise an error if not possible).
+- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm",
+    "spectramax", "biotek", "generic", "fcs". If "auto" is selected, the type will be
+    inferred from the file extension (or raise an error if not possible).
 
 # Flags
 
 - `-p, --plot`: Produce plots of the data. Only available for some types.
 """
-@cast function summarise(; file=nothing, type="auto", plot::Bool=false)
+@cast function summarise(; file = nothing, type = "auto", plot::Bool = false)
     if isnothing(file)
         error("Please provide a file to be summarised using the -f or --file option.")
     end
@@ -120,19 +124,20 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         elseif isdir(file)
             type = "generic"
         else
-            error("File type $ext cannot be inferred from extension. Supported extensions are .esm and .fcs (or directories for generic tabular plate reader data).")
+            error("File type $ext cannot be inferred from extension. Supported extensions \
+            are .esm or .fcs (or directories for generic tabular plate reader data).")
         end
     end
     if type == "esm"
-        summary(file, ESMData(); plot=plot)
+        summary(file, ESMData(); plot = plot)
     elseif type == "fcs"
-        summary(file, FlowCytometryData(); plot=plot)
+        summary(file, FlowCytometryData(); plot = plot)
     elseif type == "spectramax"
-        summary(file, SpectraMax(); plot=plot)
+        summary(file, SpectraMax(); plot = plot)
     elseif type == "biotek"
-        summary(file, BioTek(); plot=plot)
+        summary(file, BioTek(); plot = plot)
     elseif type == "generic"
-        summary(file, GenericTabular(); plot=plot)
+        summary(file, GenericTabular(); plot = plot)
     else
         error("Unsupported file type: $type.")
     end

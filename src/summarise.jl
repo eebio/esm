@@ -29,14 +29,17 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
     # Summarise groups
     @info "Summarising groups"
     @info "Number of groups: $(nrow(es.groups))"
-    @info "Number of manually defined groups: $(sum("autodefined" .∉ keys.(es.groups[!,"metadata"])))"
-    @info "Number of autodefined groups (such as for plates): $(sum([
-        "autodefined" ∈ keys(es.groups[i,"metadata"]) &&
-        es.groups[i,"metadata"]["autodefined"]=="true"
-        for i in eachindex(es.groups[!,"metadata"])]))"
+    count = sum("autodefined" .∉ keys.(es.groups[!, "metadata"]))
+    @info "Number of manually defined groups: $count"
+    count = (sum(["autodefined" ∈ keys(es.groups[i, "metadata"]) &&
+                  es.groups[i, "metadata"]["autodefined"] == "true"
+                  for i in eachindex(es.groups[!, "metadata"])]))
+    @info "Number of autodefined groups (such as for plates): $count"
     group_sizes = Dict(i["group"] => length(i["sample_IDs"]) for i in eachrow(es.groups))
     for (key, value) in group_sizes
-        @info "Group $key has size $value and is$("autodefined" ∉ keys(first(es.groups[es.groups[!, "group"] .== key, "metadata"])) ? " not" : "") autodefined."
+        isautodefined = "autodefined" ∈
+                        keys(first(es.groups[es.groups[!, "group"] .== key, "metadata"]))
+        @info "Group $key has size $value and is$(isautodefined ? " not" : "") autodefined."
     end
 
     println("")
@@ -120,7 +123,8 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
         @info "Channel $key: $(length(f[key])) events."
         @info "Values range from $(minimum(f[key])) to $(maximum(f[key]))."
     end
-    @info "Time ranges from $(minimum(f["Time"])) to $(maximum(f["Time"])) with $(length(f["Time"])) timepoints."
+    @info "Time ranges from $(minimum(f["Time"])) to $(maximum(f["Time"])) with \
+        $(length(f["Time"])) timepoints."
 
     if plot
         @info "Plotting FCS data"

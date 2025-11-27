@@ -57,7 +57,7 @@ function read_esm(file::AbstractString)
         transformations = ef["transformations"],
         views = ef["views"]
     )
-    # Add channels to sample names - important for creating dataframes from the samples down the line
+    # Add channels to sample names
     es.samples.name = string.(es.samples.name, ".", es.samples.channel)
     @info "ESM file successfully read."
     return es
@@ -105,7 +105,8 @@ function read_data(file::AbstractString)
                 "\$GITHUB_WORKSPACE" => ENV["GITHUB_WORKSPACE"])
         end
         length(ins_type) == 1 ||
-            error("All experiments on one plate must be from the same instrument types. \nInstrument types used here are: $(Set(samples[i].Type))")
+            error("All experiments on one plate must be from the same instrument types. \
+            Instrument types used here are: $(Set(samples[i].Type))")
         # TODO Get channels should be its own function with separate tests
         # Process channels
         channels = []
@@ -131,7 +132,8 @@ function read_data(file::AbstractString)
                            else
                                i
                            end for i in channels)
-        @info "Channels $(join([string(j)*", " for j in channels])[1:end-2]) being used to process plate $i"
+        tmp = join([string(j) * ", " for j in channels])[1:(end - 2)]
+        @info "Channels $tmp being used to process plate $i"
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
         @info "Channel map: \n$(prb...)\n"
@@ -145,7 +147,7 @@ function read_data(file::AbstractString)
         else
             error("Unknown instrument type: $(first(ins_type))")
         end
-        # Add the physical plate to the group dict. This shouldn't be used by the user - this is more for record keeping
+        # Add the physical plate to the group dict
         group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, :type => "physical",
             "metadata" => :autodefined => "true")
     end
@@ -186,10 +188,12 @@ function expand_group(group::AbstractString)
                     step = "1"
                 end
                 if occursin(r"\d", start)
+                    indexes = parse(Int, start):parse(Int, step):parse(Int, stop)
                     append!(expanded,
-                        string.(parse(Int, start):parse(Int, step):parse(Int, stop)))
+                        string.(indexes))
                 else
-                    append!(expanded, collect(start[1]:parse(Int, step):stop[1]))
+                    indexes = start[1]:parse(Int, step):stop[1]
+                    append!(expanded, collect(indexes))
                 end
             else
                 push!(expanded, item)
