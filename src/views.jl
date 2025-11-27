@@ -1,13 +1,12 @@
 """
     produce_views(es, trans_meta_map;to_out=[])
 
-Produces the views specified in `to_out` else all views in `esm.views`.
+Produces the subset of views specified in `to_out` or all views if unspecified.
 
-Args:
-
-- `es=<esm_zones>`: The esm_zones object (global)
-- `trans_meta_map=<Dict>`: A dictionary mapping transformations to their names.
-- `to_out=<Array>`: A list of all the views to be produced.
+Arguments:
+- `es::esm_zones`: The esm_zones object (global)
+- `trans_meta_map::Dict`: A dictionary mapping transformations to their names.
+- `to_out::Vector{String}`: A list of all the views to be produced.
 """
 function produce_views(es, trans_meta_map; to_out = [])
     # No views specified? Do all then
@@ -49,14 +48,13 @@ end
 """
     view_to_csv(es,trans_meta_map;out_dir,to_out)
 
-Controls the calling of the view producer and writes the outputted views to a csv file.
+Produces views and writes them to CSV files.
 
-Args:
-
-- `es=<esm_zones>`: The original esm struct
-- `trans_meta_map=<Dict>`: The transformations that have been parsed at the top level.
-- `out_dir=<String>`: The specified output dir - defaults to nothing.
-- `to_out=<Array{String}>`: The views to be processed.
+Arguments:
+- `es::esm_zones`: The original esm struct
+- `trans_meta_map::Dict`: The transformations that have been parsed at the top level.
+- `outdir::String`: The specified output dir - defaults to nothing.
+- `to_out::Vector{String}`: The views to be processed.
 """
 function view_to_csv(es, trans_meta_map; outdir = "", to_out = [])
     # Process the views
@@ -74,13 +72,12 @@ end
 
 Recursively converts the parsed equations to julia code and produces the correct dataframes over which to operate. This also calls any unprocessed transformations.
 
-Args:
-
-- sexp - Expression or part of expression to be decomposed.
-- es - The esm_zones data type that contains the data (global variable).
-- trans_meta_map - The transformation map of the parsed transformations.
+Arguments:
+- sexp: Expression or part of expression to be decomposed.
+- es: The esm_zones data type that contains the data (global variable).
+- trans_meta_map: The transformation map of the parsed transformations.
 """
-function sexp_to_nested_list(sexp::Any, es, trans_meta_map)
+function sexp_to_nested_list(sexp, es, trans_meta_map)
     if isa(sexp, Symbol)
         if isdefined(ESM, sexp)
             # Is the symbol a function?

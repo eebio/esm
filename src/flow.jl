@@ -21,8 +21,7 @@ abstract type AbstractLogicalGate <: AbstractGatingMethod end
 
 Read the flow cytometry data from a file.
 
-Args:
-
+Arguments:
 - `samples::DataFrame`: DataFrame of samples to read from.
 - `sample_dict::Dict`: Output sample Dict.
 - `channels::Vector`: Channels to read.
@@ -52,12 +51,11 @@ end
 """
     extract_flow(fcs,chan)
 
-Extract the metadata from a fcs file.
+Extract the metadata from a FCSFiles.FlowSample.
 
-Args:
-
-- `fcs::FCSFile`: The read FCS file
-- `chan::String`: The channel being read from
+Arguments:
+- `fcs`: The parsed FCS file.
+- `chan::String`: The channel being read from.
 """
 function extract_flow(fcs, chan)
     p = findfirst([i == chan for i in keys(fcs)])
@@ -125,7 +123,7 @@ end
 
 Calculates relative fluorescence of given sample.
 
-Args:
+Arguments:
 - `sample_name::String`: channel to use.
 - `chans::Vector`: vector of channels to keep.
 """
@@ -171,8 +169,8 @@ end
 
 Filter `data` to only include events within the gate defined by `method`.
 
-Args:
-- `data::Dict`: Dict returned by RFI.
+Arguments:
+- `data::Dict`: Dict returned by [to_rfi](@ref).
 - `method::AbstractGatingMethod`: The method and settings to use for gating.
 """
 function gate end
@@ -337,8 +335,8 @@ end
 
 Count the number of events in the flow cytometry data.
 
-Args:
-- `data::Dict`: Dict returned by RFI.
+Arguments:
+- `data::Dict`: Dict returned by [to_rfi](@ref).
 """
 function event_count(data)
     if !all(length(data[i][:data]) == length(data[first(keys(data))][:data])
@@ -354,11 +352,11 @@ end
 
 Calculate the proportion of events remaining after gating.
 
-Args:
-- `data::Dict`: Dict returned by RFI.
+Arguments:
+- `data::Dict`: Dict returned by [to_rfi](@ref).
 - `gate::AbstractGatingMethod`: A gating method to report on.
-- `data_before::Dict`: Dict returned by RFI before gating.
-- `data_after::Dict`: Dict returned by RFI after gating.
+- `data_before::Dict`: Dict returned by [to_rfi](@ref) before gating.
+- `data_after::Dict`: Dict returned by [to_rfi](@ref) after gating.
 """
 function gated_proportion(data, method::AbstractGatingMethod)
     total_events = event_count(data)

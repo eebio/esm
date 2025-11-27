@@ -18,10 +18,9 @@ abstract type AbstractFluorescenceMethod <: AbstractPlateReaderMethod end
 """
     read_pr(samples,sample_dict,channels,broad_g,channel_map)
 
-Reads plate reader data - the master controller function.
+Reads plate reader data.
 
-Args:
-
+Arguments:
 - `samples::DataFrame`: Dataframe of samples to be read into sample_dict.
 - `sample_dict::Dict`: A dictionary of the samples.
 - `channels::Vector`: Channels to use.
@@ -54,21 +53,18 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
 end
 
 """
-    read_multipr_file(filen,ptype,channels,channel_map)
+    read_multipr_file(file,ptype,channels,channel_map)
 
 Function for reading files containing multiple reads from multple channels from a single CSV file.
 Returns a Dictionary of DataFrames with keys being the channels.
-Currently works for Agilent (agilent), Tecan (tecan) and Spectramax (spectramax).
-Presently uses regexes to seperate the files.
 
-Args:
-
-- `filen::String`: File to read from.
+Arguments:
+- `file::String`: File to read from.
 - `ptype::String`: The plate reader type being used.
 - `channels::Vector`: Channels to be read in.
 - `channel_map`: The new names for the channels.
 """
-function read_multipr_file(filen, ptype, channels, channel_map)
+function read_multipr_file(file, ptype, channels, channel_map)
     # TODO: Add bmg labtech reading
     if lowercase(ptype) == "spectramax"
         ptype = SpectraMax()
@@ -79,7 +75,7 @@ function read_multipr_file(filen, ptype, channels, channel_map)
     else
         error("Unknown plate reader type: $ptype.")
     end
-    o_dict = read(filen, ptype; channels = channels)
+    o_dict = read(file, ptype; channels = channels)
     # Apply channel map
     o_dict = Dict(get(channel_map, k, k) => v for (k, v) in o_dict)
     for i in keys(o_dict)
@@ -88,10 +84,10 @@ function read_multipr_file(filen, ptype, channels, channel_map)
     return o_dict
 end
 
-function read_into_lines(filen)
+function read_into_lines(file)
     encodings = ["UTF-16", "UTF-8", "windows-1252", "ISO-8859-1", "ASCII"]
     true_encoding = ""
-    bytes = read(filen)
+    bytes = read(file)
     for enc in encodings
         try
             str = decode(bytes, enc)
@@ -103,7 +99,7 @@ function read_into_lines(filen)
         end
     end
     true_encoding == "" &&
-        error("Could not determine encoding for file $filen.")
+        error("Could not determine encoding for file $file.")
     str = decode(bytes, true_encoding)
     str = replace(str, "\r\n" => "\n")  # Normalize line endings
     str = replace(str, "\r" => "\n")    # Handle any remaining carriage returns
@@ -120,8 +116,8 @@ function runlength(a, i)
     end
 end
 
-function read_standard(filen, offset)
-    f = read_into_lines(filen)
+function read_standard(file, offset)
+    f = read_into_lines(file)
     containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
     rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
     datalocations = findall(x -> x == maximum(rl), rl)
@@ -170,19 +166,17 @@ end
 struct SpectraMax <: AbstractPlateReader end
 
 """
-    read(filen::AbstractString, ::AbstractPlateReader; channels)
+    read(file::AbstractString, ::AbstractPlateReader; channels)
 
-Read data from plate reader file `filen` of assuming the format of `AbstractPlateReader`.
+Read data from plate reader file `file` of assuming the format of `AbstractPlateReader`.
 
-Args:
-- `filen::AbstractString`: File to read from.
+Arguments:
+- `file::AbstractString`: File to read from.
 - `::AbstractPlateReader`: Plate reader type.
-
-Optional Args:
-- `channels::Vector{String}`: Channels to be read in. Defaults to all channels.
+- `channels`: Vector of channels (as strings) to be read in. Defaults to nothing (all channels).
 """
-function Base.read(filen::AbstractString, ::SpectraMax; channels=nothing)
-    data = read_standard(filen, 1)
+function Base.read(file::AbstractString, ::SpectraMax; channels=nothing)
+    data = read_standard(file, 1)
     data = correct_data_length(data, "\t")
     # Create the dataframes
     out = Dict()
@@ -235,31 +229,27 @@ end
 
 struct GenericTabular <: AbstractPlateReader end
 
-function Base.read(filen::AbstractString, ::GenericTabular; channels=nothing)
+function Base.read(file::AbstractString, ::GenericTabular; channels=nothing)
     out = Dict()
-    for j in readdir(filen)
+    for j in readdir(file)
         channel = splitext(j)[1] # Remove file extension
         if !isnothing(channels) && !(channel in channels)
             continue
         end
-        out[channel] = CSV.read(joinpath(filen, j), DataFrame)
+        out[channel] = CSV.read(joinpath(file, j), DataFrame)
     end
     return out
 end
 
 """
-    doubling_time(df, time_col)
     doubling_time(df, time_col, method::AbstractGrowthRateMethod; kwargs...)
 
 Calculates the doubling time of a given DataFrame. Returns result in minutes.
 
-Args:
-
-- `df=<DataFrame>`: DataFrame containing the data.
-- `time_col=<DatFrame>`: DataFrame containing the times.
+Arguments:
+- `df::DataFrame`: DataFrame containing the data.
+- `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`: Method to use for calculating growth rate.
-
-Optional Args:
 - `kwargs...`: Additional keyword arguments to pass to the growth rate method.
 """
 function doubling_time(args...; kwargs...)
@@ -272,15 +262,13 @@ end
 end
 
 """
-    growth_rate(df, timecol)
     growth_rate(df, time_col, method::AbstractGrowthRateMethod)
 
 Calculates the growth rate of a given dataframe. Returns in min^-1 using base e.
 
-Args:
-
-- `df=<DataFrame>`: DataFrame containing the data.
-- `time_col=<DataFrame>`: DataFrame containing the times.
+Arguments:
+- `df::DataFrame`: DataFrame containing the data.
+- `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`: Method to use for calculating growth rate.
 """
 function growth_rate(df, time_col, method::Endpoints)
@@ -493,9 +481,9 @@ struct TimeseriesBlank <: AbstractCalibrationMethod end
 
 Calibrate data, for example, to remove background OD signal.
 
-Args:
-- `data=<DataFrame>`: DataFrame containing the data to be calibrated.
-- `blanks=<DataFrame>`: DataFrame containing the blank measurements.
+Arguments:
+- `data::DataFrame`: DataFrame containing the data to be calibrated.
+- `blanks::DataFrame`: DataFrame containing the blank measurements.
 - `method::AbstractCalibrationMethod`: Method to use for calibration.
 """
 function calibrate(data, blanks, ::TimeseriesBlank)

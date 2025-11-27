@@ -17,10 +17,9 @@ end
 
 Filter the original es.samples dataframe by a specific group defined in the esm.
 
-Args:
-
-- `es=<esm_zones>`: esm zones data type. global
-- `group=<string || vector>`: what group/groups to filter by.
+Arguments:
+- `es::esm_zones`: esm zones data type. global
+- `group::Union{String,Vector}`: what group/groups to filter by.
 """
 function filter_row(es, group)
     return es.samples[es.samples[!, group] .== true, :]
@@ -29,12 +28,12 @@ end
 """
     filter_col(df, reg_l)
 
-Filters a df by a set of columns or parts of columns given in reg_l. reg_l is joined to form regex using `|`.
+Filters a df by a set of columns or parts of columns given in reg_l.
+reg_l is joined to form regex using `|`.
 
-Args:
-
-- `df=<DataFrame>` DataFrame to filter.
-- `reg_l=<Array{String}>`: Array of strings to filter by.
+Arguments:
+- `df::DataFrame`: DataFrame to filter.
+- `reg_l::Vector{String}`: Vector of strings to filter by.
 """
 function filter_col(df, reg_l)
     return df[:,
@@ -45,11 +44,11 @@ end
 """
     form_df(df)
 
-Creates the data frame from the dataframe it is passed. This is to turn the es.samples.values arrays into dfs.
+Creates the data frame from the dataframe it is passed.
+This is to turn the es.samples.values arrays into dfs.
 
-Args:
-
-- `df=<DataFrame>`: A dataframe of es.samples to parse.
+Arguments:
+- `df::DataFrame`: A dataframe of es.samples to parse.
 """
 function form_df(df)
     max_dat = maximum(length.(df.values))
@@ -60,12 +59,12 @@ end
 """
     find_group(es,grn)
 
-Finds a specific group from the original es.groups dataframe and returns the sample names.
+Finds a specific group from the original es.groups dataframe.
+Returns the sample names.
 
-Args:
-
-- `es=<esm_zones>`: the original es object.
-- `grn=<String>`: A string of a group name which can be used to filter the original dataframe.
+Arguments:
+- `es::esm_zones`: The data set to search.
+- `grn::String`: A string of a group name which can be used to filter the original dataframe.
 """
 function find_group(es, grn)
     return es.groups[es.groups.group .== grn, :sample_IDs][1]
@@ -76,17 +75,18 @@ colmean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 vcat(x...) = return vcat(x)
 
 """
-    index_between_vals(df; minv, maxv)
+    index_between_vals(df; minv=-Inf, maxv=Inf)
 
-Returns the indexes between two points so that these can be later isolated. This is in dict form to allow for individual points to be separated out.
+Returns the indexes between two points so that these can be later isolated.
+This is in dict form to allow for individual points to be separated out.
 Both ends are inclusive.
 
 If minv is larger than all values in the column, or maxv smaller, will return `(nothing,nothing)`.
-Args:
 
-- `df=<DataFrame>`: DataFrame to work on.
-- `minv=<Float64>`: Minimum value.
-- `maxv=<Float64>`: Maximum value.
+Arguments:
+- `df::DataFrame`: DataFrame to work on.
+- `minv::Float64=-Inf`: Minimum value.
+- `maxv::Float64=Inf`: Maximum value.
 """
 function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
     return Dict(col => (findfirst(x -> minv <= x <= maxv, df[:, col]),
@@ -98,8 +98,8 @@ end
 
 Converts a time column in a DataFrame with String elements to time in seconds.
 
-Args:
-- `time_col=<DataFrame>`: DataFrame with time values.
+Arguments:
+- `time_col::DataFrame`: DataFrame with time values.
 """
 function df2time(time_col::DataFrame)
     if typeof(time_col[1, 1]) != String
@@ -112,16 +112,15 @@ function df2time(time_col::DataFrame)
 end
 
 """
-    between_times(df,time_col;mint,maxt)
+    between_times(df,time_col;mint=-Inf,maxt=Inf)
 
 Returns the DataFrame between two timepoints.
 
-Args:
-
-- `df=<DataFrame>`: DataFrame to work on.
-- `time_col=<DataFrame>`: DataFrame of time values.
-- `mint=<Float64>`: Minimum time in mins.
-- `maxt=<Float64>`: Max time in mins.
+Arguments:
+- `df::DataFrame`: DataFrame to work on.
+- `time_col::DataFrame`: DataFrame of time values.
+- `mint::Float64=-Inf`: Minimum time in mins.
+- `maxt::Float64=Inf`: Max time in mins.
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
     time_col = df2time(time_col)
@@ -142,11 +141,10 @@ Returns values at a specific time point.
 If no value at specific timepoint, return the last recording before the timepoint.
 If time_point < minimum(time_col), return `nothing`.
 
-Args:
-
-- `df=<DataFrame>`: DataFrame on which to work.
-- `time_col=<DataFrame>`: Time values in a DataFrame.
-- `time_point=<Float64>`: Time point in mins at which to report the measurement.
+Arguments:
+- `df::DataFrame`: DataFrame on which to work.
+- `time_col::DataFrame`: Time values in a DataFrame.
+- `time_point::Float64`: Time point in mins at which to report the measurement.
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
     time_col = df2time(time_col)
@@ -166,11 +164,11 @@ A function to return a set of values from a different dataframe based on another
 In theory this can be used for many types of data, but this adds the functionality
 to target a specific OD and return the values from another dataframe at that index.
 
-Args:
+Arguments:
 
-- `od_df=<DataFrame>`: The DataFrame you are getting the indexes from.
-- `target_df=<DataFrame>`: The DataFrame you want to get the values from.
-- `target_od=<Float64>`: The value at which you are limiting the data to
+- `od_df::DataFrame`: The DataFrame you are getting the indexes from.
+- `target_df::DataFrame`: The DataFrame you want to get the values from.
+- `target_od::Number`: The value at which you are limiting the data to
 """
 function at_od(od_df, target_df, target_od)
     dict_2 = Dict()

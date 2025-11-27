@@ -12,27 +12,14 @@ using DataStructures
 end
 
 """
-    read_esm(filen)
+    read_esm(file::AbstractString)
 
-Reads and processes the esm file produced at a file name and creates the esm_zones struct.
-
-Args:
-
-- `filen=<String>`
-
-esm.samples DataFrame cols: |name | channel | type | values | meta | group... |
-
-- name - name.channel
-- channel - data channel
-- type - type of sample - time series or population
-- values - Arrays of data values.
-- meta - any meta data associated with the data.
-- group - boolean columns associating the groups with samples.
+Parse an esm file found at `file` into an esm_zones object.
 """
-function read_esm(filen)
-    @info "Reading ESM file at: $filen"
+function read_esm(file::AbstractString)
+    @info "Reading ESM file at: $file"
     # Read in the file in a JSON format
-    ef = JSON.parsefile(filen)
+    ef = JSON.parsefile(file)
     max_len = 0
     # Loop over the samples to look for maximum length of array
     for i in keys(ef["samples"])
@@ -77,37 +64,28 @@ function read_esm(filen)
 end
 
 """
-    write_esm(esm_dict, name)
+    write_esm(data, file::AbstractString)
 
-Write the esm_dict from read_data() to the path/file `name`.
-
-Args:
-
-- `esm_dict::Dict`: Dictionary describing the esm.
-- `name::String`: Path to deposit the ESM to.
+Write the esm data to the path `file`.
 """
-function write_esm(esm_dict, name)
-    open(name, "w") do file
-        JSON.print(file, esm_dict, 4)
+function write_esm(data, file::AbstractString)
+    open(file, "w") do file
+        JSON.print(file, data, 4)
     end
-    @info "ESM written to $name"
+    @info "ESM written to $file"
 end
 
 """
-    read_data(filen)
+    read_data(file::AbstractString)
 
-Read the data from path filen into the ESM structure for writing.
-
-Args:
-
-- `filen::String`: String to where the excel file is.
+Read the data from path `file` into the correct structure.
 """
-function read_data(filen)
-    samples = groupby(DataFrame(XLSX.readtable(filen, "Samples")), :Plate)
-    groups = DataFrame(XLSX.readtable(filen, "Groups"))
-    trans = DataFrame(XLSX.readtable(filen, "Transformations"))
-    views = DataFrame(XLSX.readtable(filen, "Views"))
-    channel_map = DataFrame(XLSX.readtable(filen, "Channel Map"))
+function read_data(file::AbstractString)
+    samples = groupby(DataFrame(XLSX.readtable(file, "Samples")), :Plate)
+    groups = DataFrame(XLSX.readtable(file, "Groups"))
+    trans = DataFrame(XLSX.readtable(file, "Transformations"))
+    views = DataFrame(XLSX.readtable(file, "Views"))
+    channel_map = DataFrame(XLSX.readtable(file, "Channel Map"))
     # Create the dict to show what channels need to be changed
     channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
     sample_dict = OrderedDict()
@@ -187,7 +165,7 @@ Expand a condensed group name into the sample IDs it contains.
 For example, if the group is "plate_0[1,2]_[a:c]2", it will return all sample IDs
 from plate 1 to 2 and wells a2, b2, and c2.
 
-Args:
+Arguments:
 - `group::AbstractString`: The group name to expand.
 
 Returns:
@@ -234,6 +212,8 @@ end
 
 """
     expand_groups(groups::AbstractString)
+
+Iteratively call `expand_group` on a comma-separated list of group names.
 """
 function expand_groups(groups::AbstractString)
     expanded = []
