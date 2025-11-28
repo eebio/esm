@@ -396,6 +396,11 @@ end
     @test a["odsub"][[1, 2, end - 1, end], "plate_01_a3"] ≈
           [0.0026666666666666783, 0.0026666666666666783,
         -0.10200000000000009, -0.10133333333333328]
+
+    # Test errors
+    ESM.es.views["bad_view"] = Dict{String, Any}("data" => ["nonexistent_group"])
+    msg = "View bad_view = nonexistent_group is not a sample, group or transformation"
+    @test_throws msg ESM.produce_views(ESM.es, trans_meta_map; to_out = ["bad_view"])
 end
 
 @testitem "to_rfi" begin

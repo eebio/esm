@@ -34,11 +34,7 @@ function produce_views(es, trans_meta_map; to_out = [])
                 # If its a sample, create the df and push it
                 push!(result, form_df(es.samples[es.samples.name .== j, :]))
             else
-                # Ya dun goofed.
-                @warn "Transformation/Group - $j - not found please check your \
-                transformation and groups.\nReminder: Time on plate readers is handled per \
-                channel and associated with a specific plate. Please specify the time as: \
-                plate_0x_time.channel"
+                error("View $i = $j is not a sample, group or transformation")
             end
         end
         # Put it all in the same frame and not a vector
