@@ -397,6 +397,28 @@ end
           [0.0026666666666666783, 0.0026666666666666783,
         -0.10200000000000009, -0.10133333333333328]
 
+    # Test non-DataFrame handling
+    # Numbers
+    using DataFrames
+    ESM.es.views["number_view"] = Dict{String, Any}("data" => ["extra_transform"])
+    ESM.es.views["numbers_view2"] = Dict{String, Any}("data" => ["extra_transform", "extra_transform2"])
+    ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "42")
+    ESM.es.transformations["extra_transform2"] = Dict{String, Any}("equation" => "7")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
+    for i in keys(ESM.es.transformations))
+    out = ESM.produce_views(ESM.es, trans_meta_map; to_out = ["number_view"])
+    @test all(out["number_view"] .== Tables.table([42;;]))
+    out = ESM.produce_views(ESM.es, trans_meta_map; to_out = ["numbers_view2"])
+    @test all(out["numbers_view2"] .== Tables.table([42 7]))
+    # Matrices
+    ESM.es.views["matrix_view"] = Dict{String, Any}("data" => ["extra_transform3", "extra_transform4"])
+    ESM.es.transformations["extra_transform3"] = Dict{String, Any}("equation" => "[1 2 3; 4 5 6]")
+    ESM.es.transformations["extra_transform4"] = Dict{String, Any}("equation" => "[7 8; 10 11]")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
+    for i in keys(ESM.es.transformations))
+    out = ESM.produce_views(ESM.es, trans_meta_map; to_out = ["matrix_view"])
+    @test all(out["matrix_view"] .== Tables.table([1 2 3 7 8; 4 5 6 10 11]))
+
     # Test errors
     ESM.es.views["bad_view"] = Dict{String, Any}("data" => ["nonexistent_group"])
     msg = "View bad_view = nonexistent_group is not a sample, group or transformation"

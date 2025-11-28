@@ -1,3 +1,6 @@
+using CSV
+using DataFrames
+
 """
     produce_views(es, trans_meta_map;to_out=[])
 
@@ -38,7 +41,11 @@ function produce_views(es, trans_meta_map; to_out = [])
             end
         end
         # Put it all in the same frame and not a vector
-        v_out[i] = hcat(result..., makeunique = true)
+        if any(isa.(result, AbstractVecOrMat)) || any(isa.(result, Number))
+            v_out[i] = Tables.table(hcat(result...))
+        else
+            v_out[i] = hcat(result..., makeunique = true)
+        end
     end
     @info "Views produced."
     return v_out
