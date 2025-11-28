@@ -22,6 +22,7 @@ export template, translate, views, summarise
 export growth_rate, doubling_time
 export MovingWindow, FiniteDiff, Endpoints, ExpOnLinear, LinearOnLog
 export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
+export Regularization
 export calibrate
 export TimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
 export gate, event_count, gated_proportion, to_rfi

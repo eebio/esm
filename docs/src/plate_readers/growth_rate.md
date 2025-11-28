@@ -63,12 +63,11 @@ It can be called using `growth_rate(data, time_col, Logistic())` or `doubling_ti
 !!! todo "todo"
     add parametric models here too
 
-## Spline
+## Regularization
 
-!!! todo "todo"
-    Describe how the spline method works
+For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The derivative of the cubic spline is then calculated at all timepoints and the maximum derivative is returned.
 
-It can be called using `growth_rate(data, time_col, Spline())` or `doubling_time(data, time_col, Spline())`.
+It can be called using `growth_rate(data, time_col, Regularization())` or `doubling_time(data, time_col, Regularization())`.
 
 ## Implementation Details
 

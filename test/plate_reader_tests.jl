@@ -80,6 +80,8 @@ end
     @test doubling_time(od_df, time_col, Logistic()) ≈ DataFrame(A = 1.0) atol = 1e-3
     @test doubling_time(od_df, time_col, FiniteDiff()) ≈ DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, FiniteDiff(type=:onesided)) ≈ DataFrame(A = 1.0)
+    @test doubling_time(od_df, time_col, Regularization(order=4.0)) ≈
+          DataFrame(A = 1.0)
 end
 
 @testitem "growth_rate" begin
@@ -104,12 +106,14 @@ end
     @test_broken growth_rate(od_df, time_col, Richards())[1, "A"]≈log(2) atol=1e-3
     @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, Regularization())[1, "A"] ≈ log(2)
 
     # Tests for warnings
     od_df_warn = DataFrame(A = [0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     @test_warn "Not enough time points" growth_rate(od_df_warn, time_col, FiniteDiff())
     @test_warn "Not enough data points" growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 1.5))
     @test_warn "Not enough data points" growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough time points" growth_rate(od_df_warn, time_col, Regularization())
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" growth_rate(od_df, time_col, FiniteDiff(type=:unknown))

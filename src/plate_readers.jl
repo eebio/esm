@@ -4,6 +4,8 @@ using CSV
 using StringEncodings
 using NonlinearSolve
 import Base.read
+using RegularizationTools
+using DataInterpolations
 
 abstract type AbstractPlateReader <: AbstractESMDataType end
 
@@ -371,7 +373,7 @@ function growth_rate(df, time_col, method::ExpOnLinear)
         u0 = [maximum(y), 1e-3]
         nonlinfun = NonlinearFunction(residuals!, resid_prototype = zeros(length(y)))
         prob = NonlinearLeastSquaresProblem(nonlinfun, u0)
-        sol = solve(prob; verbose = false, maxiters = 200)
+        sol = NonlinearSolve.solve(prob; verbose = false, maxiters = 200)
         psol = sol.u
         dict[i] = psol[2]
     end
@@ -428,7 +430,7 @@ function growth_rate(df, time_col, method::ParametricGrowthRate)
         u0 = method.initial_params
         nonlinfun = NonlinearFunction(residuals!, resid_prototype = zeros(length(y)))
         prob = NonlinearLeastSquaresProblem(nonlinfun, u0)
-        sol = solve(prob; verbose = false, maxiters = 200)
+        sol = NonlinearSolve.solve(prob; verbose = false, maxiters = 200)
         psol = sol.u
         dict[i] = psol[1]
     end
@@ -473,6 +475,37 @@ function growth_rate(df, time_col, method::FiniteDiff)
             error("Unknown finite difference type: $type")
         end
 
+        # maximum derivative (growth rate)
+        dict[i] = maximum(deriv)
+    end
+    return DataFrame(dict)
+end
+
+@kwdef struct Regularization <: AbstractGrowthRateMethod
+    order::Int = 4
+end
+
+function growth_rate(df, time_col, method::Regularization)
+    d = method.order
+    dict = Dict()
+    time_col = df2time(time_col) ./ 60
+    for i in names(df)
+        t = time_col[!, 1]
+        y = df[!, i]
+
+        t = t[y .> 0]
+        y = y[y .> 0]
+        ly = log.(y)
+
+        n = length(t)
+        if n < 2
+            @warn "Not enough time points to compute finite differences for $i."
+            dict[i] = NaN
+            continue
+        end
+
+        A = RegularizationSmooth(ly, t, d; alg = :gcv_svd)
+        deriv = [DataInterpolations.derivative(A, ti) for ti in t]
         # maximum derivative (growth rate)
         dict[i] = maximum(deriv)
     end
