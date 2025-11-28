@@ -8,6 +8,8 @@ If you require support for a different FCS version, please [open an issue on Git
 
 ## to_rfi
 
+The `to_rfi` function is used to rescale the data according to amplifier settings and covert the data from the form described in ESM (a DataFrame), to the form used for gating and processing.
+
 ```@docs; canonical=false
 to_rfi
 ```
