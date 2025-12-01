@@ -33,10 +33,9 @@ It can be called using `growth_rate(data, time_col, ExpOnLinear(start_time, end_
 
 The `MovingWindow` method allows you to use any of the above methods (`Endpoints`, `LinearOnLog`, or `ExpOnLinear`) without defining the start and end points of the exponential phase. Instead, you can provide a number of timepoints (a.k.a. `window_size`, defaults to 10) and it will calculate the growth rate on all consequetive runs of that length and return the maximum growth rate.
 
-!!! todo "todo"
-    `MovingWindow` needs to allow optional method argument
+By default, the growth rates on each window are calculated using the `Endpoints` method. This can be changed by supplying a `method` keyword argument to `MovingWindow`. The available options are `:Endpoints` (default), `:LinearOnLog`, and `:ExpOnLinear`.
 
-It can be called using `growth_rate(data, time_col, MovingWindow())` or `doubling_time(data, time_col, MovingWindow())`.
+It can be called using `growth_rate(data, time_col, MovingWindow(window_size, method))` or `doubling_time(data, time_col, MovingWindow(window_size, method))`.
 
 ## FiniteDiff
 

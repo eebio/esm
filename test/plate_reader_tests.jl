@@ -71,6 +71,12 @@ end
     # TODO: Add some more tests with more awkward data
     @test doubling_time(od_df, time_col, MovingWindow(window_size = 3)) ≈
           DataFrame(A = 1.0)
+    @test doubling_time(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints)) ≈
+          DataFrame(A = 1.0)
+    @test doubling_time(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog)) ≈
+          DataFrame(A = 1.0)
+    @test doubling_time(od_df, time_col, MovingWindow(window_size = 3, method = :ExpOnLinear)) ≈
+          DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5)) ≈
@@ -94,6 +100,9 @@ end
         "00:07:00", "00:08:00", "00:09:00", "00:10:00"])
 
     @test growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :ExpOnLinear))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5))[

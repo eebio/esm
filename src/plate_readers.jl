@@ -292,20 +292,28 @@ end
 
 @kwdef struct MovingWindow <: AbstractGrowthRateMethod
     window_size::Int = 10
+    method::Symbol = :Endpoints
 end
 
 function growth_rate(df, time_col, method::MovingWindow)
     window_size = method.window_size
     dict = Dict()
-    time_col = df2time(time_col)
     for i in names(df)
-        max_rate = 0.0
+        max_rate = -Inf
         for j in 1:(nrow(df) - window_size)
-            # TODO change this to allow any method to be used as a moving window
-            rate = (log(df[j + window_size, i]) - log(df[j, i])) /
-                   (time_col[j + window_size, 1] / 60 - time_col[j, 1] / 60)
-            if rate > max_rate
-                max_rate = rate
+            start_time = df2time(time_col)[j, 1] / 60
+            end_time = df2time(time_col)[j + window_size - 1, 1] / 60
+            if method.method == :Endpoints
+                rate = growth_rate(df, time_col, Endpoints(start_time, end_time))
+            elseif method.method == :LinearOnLog
+                rate = growth_rate(df, time_col, LinearOnLog(start_time, end_time))
+            elseif method.method == :ExpOnLinear
+                rate = growth_rate(df, time_col, ExpOnLinear(start_time, end_time))
+            else
+                error("Unknown moving window method: $(method.method).")
+            end
+            if rate[1, i] > max_rate
+                max_rate = rate[1, i]
             end
         end
         dict[i] = max_rate
