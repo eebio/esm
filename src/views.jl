@@ -86,86 +86,44 @@ Arguments:
 """
 function sexp_to_nested_list(sexp, es, trans_meta_map)
     if isa(sexp, Symbol)
-        if isdefined(ESM, sexp)
-            # Is the symbol a function?
-            return sexp
-        elseif sexp in keys(trans_meta_map)
+        if sexp in keys(trans_meta_map)
             # Is the symbol a transformation
             # TODO Needs circular referencing of transformations adjusted
-            return eval(sexp_to_nested_list(trans_meta_map[sexp], es, trans_meta_map))
+            return sexp_to_nested_list(trans_meta_map[sexp], es, trans_meta_map)
         elseif string(sexp) in es.groups.group
             # Is the symbol a group?
-            return form_df(filter_row(es, sexp))
-        else
-            # Just return it - its something else
-            return sexp
+            return ESM.form_df(ESM.filter_row(es, sexp))
+        elseif string(sexp) in first.(splitext.(es.samples.name))
+            # Is the symbol a sample?
+            return ESM.form_df(es.samples[string(sexp) .== first.(splitext.(es.samples.name)), :])
         end
-    elseif isa(sexp, Expr)
-        # Check if the symbol is an expression as this could mean further processing
-        result = []
-        if true in [isa(i, QuoteNode) for i in sexp.args]
-            # Check if there is a quote node - this allows the `.` syntax in the ESM
-            if isa(sexp.args[1], Expr)
-                # If its a normal expression process it normally
-                return sexp
-            elseif Symbol(string(sexp.args[1])) in keys(trans_meta_map)
-                # Is it in the transformation map?
-                if string(sexp.args[2].value) in es.groups.group
-                    # Check if the second part of the quote node is in the groups
-                    # This allows a group to be sub-specified. e.g. only return the samples
-                    #   that are part of two groups
-                    transform = trans_meta_map[Symbol(string(sexp.args[1]))]
-                    expression = sexp_to_nested_list(transform, es, trans_meta_map)
-                    return filter_col(eval(expression),
-                        find_group(es, string(sexp.args[2].value)))
-                else
-                    # Just `eval` the other transformation
-                    transform = trans_meta_map[Symbol(string(sexp.args[1]))]
-                    expression = sexp_to_nested_list(transform, es, trans_meta_map)
-                    return remove_subcols(
-                        filter_col(eval(expression), [string(sexp.args[2].value)]),
-                        sexp.args[2].value)
-                end
-            else
-                second_value = string(sexp.args[2].value)
-                if second_value in es.groups.group
-                    # Is the symbol a group - create the data frame
-                    return filter_col(form_df(filter_row(es, sexp.args[1])),
-                        find_group(es, second_value))
-                elseif string(sexp.args[1]) * "." * second_value in es.samples.name
-                    # Is the group a single data frame?
-                    # Filter the original sample frame and create a data frame from that
-                    return form_df(es.samples[
-                        es.samples.name .== string(sexp.args[1]) * "." * second_value, :])
-                else
-                    # Have a go - will probs cause a crash
-                    return remove_subcols(
-                        filter_col(form_df(filter_row(es, sexp.args[1])), [second_value]),
-                        second_value)
-                end
-            end
-        else
-            # Just process it normally - its nothing special
-            for arg in sexp.args
-                push!(result, sexp_to_nested_list(arg, es, trans_meta_map))
-            end
-        end
-        return Expr(sexp.head, result...)
-    elseif isa(sexp, LineNumberNode)
-        # Just to catch exceptions
-        return []
-    elseif isa(sexp, QuoteNode)
-        # Probably does nothing
-        return sexp_to_nested_list(sexp.value, es, trans_meta_map)
-    elseif isa(sexp, Number)
-        # Catches and keep any number that comes through the transformations
+        # Just return it - its something else
         return sexp
-    elseif isa(sexp, String)
-        # Catches any parsed strings and keeps them. Allows for keyword args to be parsed
-        return sexp
-    else
-        # Ya dun goofed
-        print(sexp)
-        error("Unexpected type: $(typeof(sexp))")
     end
+    if isa(sexp, Expr)
+        # Check if the symbol is an expression as this could mean further processing
+        for i in eachindex(sexp.args)
+            # Recursively process each argument of the expression
+            sexp.args[i] = sexp_to_nested_list(sexp.args[i], es, trans_meta_map)
+        end
+        if sexp.head == :.
+            # If there is a dot expression, this could be a channel access
+            channel = sexp.args[end]
+            if channel isa QuoteNode
+                channel = channel.value
+            end
+            if channel isa Symbol && length(sexp.args) == 2
+                channel = string(channel)
+                # Want to make sure this isn't some other dot expression
+                if any(last.(splitext.(es.samples.name)) .== ".$channel")
+                    # This is channel access
+                    return ESM.filter_channel(sexp.args[1], channel)
+                end
+            end
+        end
+        # Just return the expression as is now its processed
+        return sexp
+    end
+    # Not a symbol or expression - return as is
+    return sexp
 end

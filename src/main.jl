@@ -25,6 +25,11 @@ function filter_row(es, group)
     return es.samples[es.samples[!, group] .== true, :]
 end
 
+function filter_channel(df, channel)
+    channel = string(channel)
+    return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel", names(df))], channel)
+end
+
 """
     filter_col(df, reg_l)
 

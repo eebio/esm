@@ -326,6 +326,7 @@ end
 
 @testitem "expression" setup=[MockESM] begin
     println("expression")
+    using DataFrames
     global ESM.es = read_esm(MockESM.temp_file)
     ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
@@ -343,11 +344,34 @@ end
     @test ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) == 1
     # Test accessing groups
     @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) ==
-          ESM.form_df(ESM.es.samples)
+          ESM.form_df(ESM.filter_row(ESM.es, :plate_01))
     # Test other symbols - should just be returned
     @test ESM.sexp_to_nested_list(:not_defined, ESM.es, trans_meta_map) == :not_defined
     @test ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)), ESM.es, trans_meta_map) ==
           :(form_df(ESM.es.samples))
+    # Test samples
+    @test ESM.sexp_to_nested_list(:plate_01_a1, ESM.es, trans_meta_map) ==
+          ESM.form_df(ESM.es.samples["plate_01_a1" .== first.(splitext.(ESM.es.samples.name)), :])
+    # Test channels
+    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1), ESM.es, trans_meta_map) == DataFrame(
+        "plate_01_a1.FL1" => Any[169472, -117439489, 24444930, 202496, 1946157137])
+    @test ESM.sexp_to_nested_list(:(plate_01.SSC), ESM.es, trans_meta_map) == DataFrame(
+        "plate_01_a2.SSC" => Any[-822083441, 7536640, 0, -1073741504, 15269888],
+        "plate_01_a1.SSC" => Any[251658858, 63373312, 0, 1090519744, 41025536])
+
+    # Complicated example
+    # Includes function calls, groups, samples, channels of samples, channels of groups and transformations
+    ESM.es.transformations["long_transform"] =
+          Dict{String, Any}("equation" => "(sum(eachcol(plate_01.SSC .+ ones(size(plate_01.SSC)) .* 5 .- 3)) .+ plate_01_a1.FSC) .* extra_transform")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
+    for i in keys(ESM.es.transformations))
+    expr = ESM.sexp_to_nested_list(:long_transform, ESM.es, trans_meta_map)
+    @test eval(expr) == DataFrame(
+        "plate_01_a1.FSC" => 10 .* Any[22020098 + (251658858 + -822083441 + 5*2 - 3*2),
+            255488 + (63373312 + 7536640 + 5*2 - 3*2),
+            -83885057 + (0 + 0 + 5*2 - 3*2),
+            21954562 + (1090519744 + -1073741504 + 5*2 - 3*2),
+            169472 + (41025536 + 15269888 + 5*2 - 3*2)])
 end
 
 @testitem "produce_views" begin
