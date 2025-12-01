@@ -8,7 +8,7 @@ e.g. \n
     a1.flo -> a1
 """
 function remove_subcols(df, sub)
-    rename!(s -> replace(s, Regex("." * string(sub)) => ""), df)
+    df = rename(s -> replace(s, Regex("." * string(sub)) => ""), df)
     return df
 end
 
