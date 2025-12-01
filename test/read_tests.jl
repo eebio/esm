@@ -354,10 +354,10 @@ end
           ESM.form_df(ESM.es.samples["plate_01_a1" .== first.(splitext.(ESM.es.samples.name)), :])
     # Test channels
     @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1), ESM.es, trans_meta_map) == DataFrame(
-        "plate_01_a1.FL1" => Any[169472, -117439489, 24444930, 202496, 1946157137])
+        "plate_01_a1" => Any[169472, -117439489, 24444930, 202496, 1946157137])
     @test ESM.sexp_to_nested_list(:(plate_01.SSC), ESM.es, trans_meta_map) == DataFrame(
-        "plate_01_a2.SSC" => Any[-822083441, 7536640, 0, -1073741504, 15269888],
-        "plate_01_a1.SSC" => Any[251658858, 63373312, 0, 1090519744, 41025536])
+        "plate_01_a2" => Any[-822083441, 7536640, 0, -1073741504, 15269888],
+        "plate_01_a1" => Any[251658858, 63373312, 0, 1090519744, 41025536])
 
     # Complicated example
     # Includes function calls, groups, samples, channels of samples, channels of groups and transformations
@@ -367,7 +367,7 @@ end
     for i in keys(ESM.es.transformations))
     expr = ESM.sexp_to_nested_list(:long_transform, ESM.es, trans_meta_map)
     @test eval(expr) == DataFrame(
-        "plate_01_a1.FSC" => 10 .* Any[22020098 + (251658858 + -822083441 + 5*2 - 3*2),
+        "plate_01_a1" => 10 .* Any[22020098 + (251658858 + -822083441 + 5*2 - 3*2),
             255488 + (63373312 + 7536640 + 5*2 - 3*2),
             -83885057 + (0 + 0 + 5*2 - 3*2),
             21954562 + (1090519744 + -1073741504 + 5*2 - 3*2),
