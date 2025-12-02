@@ -7,7 +7,7 @@ using DataFrames
 Produces the subset of views specified in `to_out` or all views if unspecified.
 
 Arguments:
-- `es::esm_zones`: The esm_zones object (global)
+- `es::esm_zones`: The esm_zones object
 - `trans_meta_map::Dict`: A dictionary mapping transformations to their names.
 - `to_out::Vector{String}`: A list of all the views to be produced.
 """
@@ -81,7 +81,7 @@ Recursively converts the parsed equations to julia code and produces the correct
 
 Arguments:
 - sexp: Expression or part of expression to be decomposed.
-- es: The esm_zones data type that contains the data (global variable).
+- es: The esm_zones data type that contains the data.
 - trans_meta_map: The transformation map of the parsed transformations.
 """
 function sexp_to_nested_list(sexp, es, trans_meta_map)

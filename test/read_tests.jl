@@ -324,23 +324,23 @@ end
 @testitem "expression" setup=[MockESM] begin
     println("expression")
     using DataFrames
-    global ESM.es = read_esm(MockESM.temp_file)
-    ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
-    for i in keys(ESM.es.transformations))
+    es = read_esm(MockESM.temp_file)
+    es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
 
     #Test numbers
-    @test ESM.sexp_to_nested_list(5, ESM.es, trans_meta_map) == 5
+    @test ESM.sexp_to_nested_list(5, es, trans_meta_map) == 5
     # Test strings
-    @test ESM.sexp_to_nested_list(:("hello"), ESM.es, trans_meta_map) == "hello"
+    @test ESM.sexp_to_nested_list(:("hello"), es, trans_meta_map) == "hello"
     # Test functions
-    @test eval(ESM.sexp_to_nested_list(:(sum([1, 2, 3])), ESM.es, trans_meta_map)) == 6
+    @test eval(ESM.sexp_to_nested_list(:(sum([1, 2, 3])), es, trans_meta_map)) == 6
     # Test accessing transformations
-    @test eval(ESM.sexp_to_nested_list(:extra_transform, ESM.es, trans_meta_map)) == 10
+    @test eval(ESM.sexp_to_nested_list(:extra_transform, es, trans_meta_map)) == 10
     # Test accessing views
-    @test ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) == 1
+    @test ESM.sexp_to_nested_list(:flow_cyt, es, trans_meta_map) == 1
     # Test accessing groups
-    @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) == Dict{Any, Any}(
+    @test ESM.sexp_to_nested_list(:plate_01, es, trans_meta_map) == Dict{Any, Any}(
         "FL1_A" => Dict(
             :data => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
             :id => collect(1:8), :max => 1024.0, :min => 1.0),
@@ -354,11 +354,11 @@ end
             :id => collect(1:8), :max => 1024.0, :min => 1.0)
         )
     # Test other symbols - should just be returned
-    @test ESM.sexp_to_nested_list(:not_defined, ESM.es, trans_meta_map) == :not_defined
-    @test ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)), ESM.es, trans_meta_map) ==
-          :(form_df(ESM.es.samples))
+    @test ESM.sexp_to_nested_list(:not_defined, es, trans_meta_map) == :not_defined
+    @test ESM.sexp_to_nested_list(:(form_df(es.samples)), es, trans_meta_map) ==
+          :(form_df(es.samples))
     # Test samples
-    @test ESM.sexp_to_nested_list(:plate_01_a1, ESM.es, trans_meta_map) == Dict{Any, Any}(
+    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) == Dict{Any, Any}(
         "FL1_A" => Dict{Symbol, Any}(
             :max => 1024.0, :id => 1:4, :data => [54.0, 143.0, 25.0, 71.0], :min => 1.0),
         "SSC_H" => Dict{Symbol, Any}(:max => 1.0,
@@ -369,10 +369,10 @@ end
         "FSC_H" => Dict{Symbol, Any}(
             :max => 1024.0, :id => 1:4, :data => [634.0, 965.0, 643.0, 1015.0], :min => 1.0))
     # Test channels
-    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), ESM.es, trans_meta_map) ==
+    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) ==
           Dict{String, Dict{Symbol, Any}}("FL1_A" => Dict(
         :max => 1024.0, :id => 1:4, :data => [54.0, 143.0, 25.0, 71.0], :min => 1.0))
-    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), ESM.es, trans_meta_map) ==
+    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) ==
           Dict{String, Dict{Symbol, Any}}("SSC_H" => Dict(:max => 1.0,
         :id => [1, 2, 3, 4, 5, 6, 7, 8],
         :data => [0.11039991779173976, 0.18187190885323648,
@@ -380,7 +380,7 @@ end
             0.272613196449465, 0.01778279410038923, 0.9955128609158501],
         :min => 0.010045073642544625))
     # Test groups
-    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), ESM.es, trans_meta_map) ==
+    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) ==
           Dict{String, Dict{Symbol, Any}}("FL1_A" => Dict(
         :max => 1024.0, :id => [1, 2, 3, 4, 5, 6, 7, 8],
         :data => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0], :min => 1.0))
@@ -388,10 +388,10 @@ end
 
 @testitem "produce_views" begin
     println("produce_views")
-    global ESM.es = read_esm("inputs/example.esm")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
-    for i in keys(ESM.es.transformations))
-    a = ESM.produce_views(ESM.es, trans_meta_map)
+    es = read_esm("inputs/example.esm")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    a = ESM.produce_views(es, trans_meta_map)
     # Test groups
     @test issetequal(
         keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "mega"])
@@ -436,35 +436,35 @@ end
     # Test non-DataFrame handling
     # Numbers
     using DataFrames
-    ESM.es.views["number_view"] = Dict{String, Any}("data" => ["extra_transform"])
-    ESM.es.views["numbers_view2"] = Dict{String, Any}("data" => ["extra_transform", "extra_transform2"])
-    ESM.es.transformations["extra_transform"] = Dict{String, Any}("equation" => "42")
-    ESM.es.transformations["extra_transform2"] = Dict{String, Any}("equation" => "7")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
-    for i in keys(ESM.es.transformations))
-    out = ESM.produce_views(ESM.es, trans_meta_map; to_out = ["number_view"])
+    es.views["number_view"] = Dict{String, Any}("data" => ["extra_transform"])
+    es.views["numbers_view2"] = Dict{String, Any}("data" => ["extra_transform", "extra_transform2"])
+    es.transformations["extra_transform"] = Dict{String, Any}("equation" => "42")
+    es.transformations["extra_transform2"] = Dict{String, Any}("equation" => "7")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    out = ESM.produce_views(es, trans_meta_map; to_out = ["number_view"])
     @test all(out["number_view"] .== Tables.table([42;;]))
-    out = ESM.produce_views(ESM.es, trans_meta_map; to_out = ["numbers_view2"])
+    out = ESM.produce_views(es, trans_meta_map; to_out = ["numbers_view2"])
     @test all(out["numbers_view2"] .== Tables.table([42 7]))
     # Matrices
-    ESM.es.views["matrix_view"] = Dict{String, Any}("data" => ["extra_transform3", "extra_transform4"])
-    ESM.es.transformations["extra_transform3"] = Dict{String, Any}("equation" => "[1 2 3; 4 5 6]")
-    ESM.es.transformations["extra_transform4"] = Dict{String, Any}("equation" => "[7 8; 10 11]")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
-    for i in keys(ESM.es.transformations))
-    out = ESM.produce_views(ESM.es, trans_meta_map; to_out = ["matrix_view"])
+    es.views["matrix_view"] = Dict{String, Any}("data" => ["extra_transform3", "extra_transform4"])
+    es.transformations["extra_transform3"] = Dict{String, Any}("equation" => "[1 2 3; 4 5 6]")
+    es.transformations["extra_transform4"] = Dict{String, Any}("equation" => "[7 8; 10 11]")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    out = ESM.produce_views(es, trans_meta_map; to_out = ["matrix_view"])
     @test all(out["matrix_view"] .== Tables.table([1 2 3 7 8; 4 5 6 10 11]))
 
     # Test errors
-    ESM.es.views["bad_view"] = Dict{String, Any}("data" => ["nonexistent_group"])
+    es.views["bad_view"] = Dict{String, Any}("data" => ["nonexistent_group"])
     msg = "View bad_view = nonexistent_group is not a sample, group or transformation"
-    @test_throws msg ESM.produce_views(ESM.es, trans_meta_map; to_out = ["bad_view"])
+    @test_throws msg ESM.produce_views(es, trans_meta_map; to_out = ["bad_view"])
 end
 
 @testitem "to_rfi" begin
     println("to_rfi")
-    global ESM.es = read_esm("inputs/example.esm")
-    out = ESM.to_rfi(ESM.es, "plate_02_a1")
+    es = read_esm("inputs/example.esm")
+    out = ESM.to_rfi(es, "plate_02_a1")
     # Linear test with no gain
     @test out["FSC_H"][:data] == [628.0, 1023.0, 373.0, 1023.0]
     @test out["FSC_H"][:max] == 1024.0

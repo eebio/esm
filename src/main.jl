@@ -18,7 +18,7 @@ end
 Filter the original es.samples dataframe by a specific group defined in the esm.
 
 Arguments:
-- `es::esm_zones`: esm zones data type. global
+- `es::esm_zones`: esm zones data type.
 - `group::Union{String,Vector}`: what group/groups to filter by.
 """
 function filter_row(es, group)

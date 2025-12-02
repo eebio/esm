@@ -66,7 +66,7 @@ Produce and save the views from a .esm file.
 
 """
 @cast function views(; esm_file::String, view = nothing, output_dir::String = ".")
-    global es = read_esm(esm_file)
+    es = read_esm(esm_file)
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
     @info "Producing views."
