@@ -6,14 +6,6 @@ ESM currently supports importing data from flow cytometry `.fcs` files. Specific
 
 If you require support for a different FCS version, please [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose), and let us know what version you require.
 
-## to_rfi
-
-The `to_rfi` function is used to rescale the data according to amplifier settings and covert the data from the form described in ESM (a DataFrame), to the form used for gating and processing.
-
-```@docs; canonical=false
-to_rfi
-```
-
 ## Methods
 
 ESM provides a variety of methods for gating flow cytometry data. These are split into two categories: [Automatic Gating](@ref) and [Manual Gating](@ref).
