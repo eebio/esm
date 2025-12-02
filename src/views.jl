@@ -92,10 +92,10 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
             return sexp_to_nested_list(trans_meta_map[sexp], es, trans_meta_map)
         elseif string(sexp) in es.groups.group
             # Is the symbol a group?
-            return ESM.form_df(ESM.filter_row(es, sexp))
+            return ESM.get_group(es, sexp)
         elseif string(sexp) in first.(splitext.(es.samples.name))
             # Is the symbol a sample?
-            return ESM.form_df(es.samples[string(sexp) .== first.(splitext.(es.samples.name)), :])
+            return ESM.get_sample(es, string(sexp))
         end
         # Just return it - its something else
         return sexp

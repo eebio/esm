@@ -95,14 +95,12 @@ Arguments:
 - `sample_name::String`: channel to use.
 - `chans::Vector`: vector of channels to keep.
 """
-function to_rfi(sample_name; chans = [])
+function to_rfi(es, sample_name)
     sub = es.samples[
         map(x -> !isnothing(match(Regex(string(sample_name * raw"\.")), x)),
             es.samples.name),
         :]
-    if chans == []
-        chans = sub.channel
-    end
+    chans = sub.channel
     o = Dict()
     for i in chans
         # Load metadata for channel

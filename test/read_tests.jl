@@ -7,66 +7,63 @@
     "samples": {
         "plate_01_a1": {
             "values": {
-                "FL1": [
-                    169472,
-                    -117439489,
-                    24444930,
-                    202496,
-                    1946157137
+                "FL1_A": [
+                    54.0,
+                    143.0,
+                    25.0,
+                    71.0
                 ],
-                "SSC": [
-                    251658858,
-                    63373312,
-                    0,
-                    1090519744,
-                    41025536
+                "SSC_H": [
+                    534.0,
+                    645.0,
+                    346.0,
+                    1254.0
                 ],
-                "FSC": [
-                    22020098,
-                    255488,
-                    -83885057,
-                    21954562,
-                    169472
+                "FSC_H": [
+                    634.0,
+                    965.0,
+                    643.0,
+                    1015.0
                 ]
             },
             "type": "population",
             "meta": {
-                "FL1": {
+                "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
-                    "det_volt": "850",
-                    "amp_type": "4.0,1.0",
-                    "ex_wav": "488,561",
+                    "det_volt": null,
+                    "amp_type": "0,0",
+                    "ex_wav": null,
                     "amp_gain": null,
                     "name_s": null,
-                    "name": "FL1",
+                    "name": "FL1-A",
                     "det_type": null,
                     "perc_em": null
                 },
-                "SSC": {
+                "SSC_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
-                    "det_volt": "460",
-                    "amp_type": "0,0",
-                    "ex_wav": "488,561",
+                    "det_volt": null,
+                    "amp_type": "2,0.01",
+                    "ex_wav": null,
                     "amp_gain": null,
-                    "name_s": null,
-                    "name": "SSC",
+                    "name_s": "SSC-H",
+                    "name": "SSC-H",
                     "det_type": null,
                     "perc_em": null
                 },
-                "FSC": {
+                "FSC_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
-                    "det_volt": "10.0",
+                    "det_volt": null,
                     "amp_type": "0,0",
-                    "ex_wav": "488,561",
+                    "ex_wav": null,
                     "amp_gain": null,
-                    "name_s": null,
-                    "name": "FSC",
+                    "name_s": "FSC-H",
+                    "name": "FSC-H",
                     "det_type": null,
                     "perc_em": null
                 }
@@ -74,66 +71,63 @@
         },
         "plate_01_a2": {
             "values": {
-                "FL1": [
-                    10240,
-                    0,
-                    38600706,
-                    61440,
-                    0
+                "FL1_A": [
+                    0.0,
+                    143.0,
+                    0.0,
+                    61.0
                 ],
-                "SSC": [
-                    -822083441,
-                    7536640,
-                    0,
-                    -1073741504,
-                    15269888
+                "SSC_H": [
+                    280.0,
+                    735.0,
+                    128.0,
+                    1023.0
                 ],
-                "FSC": [
-                    39387138,
-                    58112,
-                    0,
-                    34996226,
-                    61952
+                "FSC_H": [
+                    628.0,
+                    1023.0,
+                    373.0,
+                    1023.0
                 ]
             },
             "type": "population",
             "meta": {
-                "FL1": {
+                "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
-                    "det_volt": "850",
-                    "amp_type": "4.0,1.0",
-                    "ex_wav": "488,561",
+                    "det_volt": null,
+                    "amp_type": "0,0",
+                    "ex_wav": null,
                     "amp_gain": null,
                     "name_s": null,
-                    "name": "FL1",
+                    "name": "FL1-A",
                     "det_type": null,
                     "perc_em": null
                 },
-                "SSC": {
+                "SSC_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
-                    "det_volt": "600",
-                    "amp_type": "4.0,1.0",
-                    "ex_wav": "488,561",
+                    "det_volt": null,
+                    "amp_type": "2,0.01",
+                    "ex_wav": null,
                     "amp_gain": null,
-                    "name_s": null,
-                    "name": "SSC",
+                    "name_s": "SSC-H",
+                    "name": "SSC-H",
                     "det_type": null,
                     "perc_em": null
                 },
-                "FSC": {
+                "FSC_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
-                    "det_volt": "10.0",
-                    "amp_type": "4.0,1.0",
-                    "ex_wav": "488,561",
+                    "det_volt": null,
+                    "amp_type": "0,0",
+                    "ex_wav": null,
                     "amp_gain": null,
-                    "name_s": null,
-                    "name": "FSC",
+                    "name_s": "FSC-H",
+                    "name": "FSC-H",
                     "det_type": null,
                     "perc_em": null
                 }
@@ -179,31 +173,34 @@ end
     println("read_esm tests")
     es = read_esm(MockESM.temp_file)
     @test issetequal(es.samples.name,
-        ["plate_01_a1.FL1", "plate_01_a1.SSC", "plate_01_a1.FSC",
-            "plate_01_a2.FL1", "plate_01_a2.SSC", "plate_01_a2.FSC"])
-    @test issetequal(es.samples.channel, ["FL1", "SSC", "FSC", "FL1", "SSC", "FSC"])
+        ["plate_01_a1.FL1_A", "plate_01_a1.SSC_H", "plate_01_a1.FSC_H",
+            "plate_01_a2.FL1_A", "plate_01_a2.SSC_H", "plate_01_a2.FSC_H"])
+    @test issetequal(es.samples.channel, ["FL1_A", "SSC_H", "FSC_H", "FL1_A", "SSC_H", "FSC_H"])
     @test issetequal(es.samples.type,
         ["population", "population", "population",
             "population", "population", "population"])
     @test issetequal(es.samples.values,
-        [[169472, -117439489, 24444930, 202496, 1946157137],
-            [251658858, 63373312, 0, 1090519744, 41025536],
-            [22020098, 255488, -83885057, 21954562, 169472],
-            [10240, 0, 38600706, 61440, 0],
-            [-822083441, 7536640, 0, -1073741504, 15269888],
-            [39387138, 58112, 0, 34996226, 61952]])
+        [
+            [54.0, 143.0, 25.0, 71.0],
+            [534.0, 645.0, 346.0, 1254.0],
+            [634.0, 965.0, 643.0, 1015.0],
+            [0.0, 143.0, 0.0, 61.0],
+            [280.0, 735.0, 128.0, 1023.0],
+            [628.0, 1023.0, 373.0, 1023.0]
+        ])
     # Why this order?
-    @test es.samples.name[1] == "plate_01_a2.FL1"
-    @test es.samples.name[5] == "plate_01_a1.SSC"
-    @test es.samples.meta[1] == Dict("amp_type" => "4.0,1.0", "filter" => nothing,
-        "det_type" => nothing, "name" => "FL1", "range" => "1024",
-        "ex_pow" => nothing, "det_volt" => "850", "amp_gain" => nothing,
-        "ex_wav" => "488,561", "perc_em" => nothing, "name_s" => nothing)
-    @test es.samples.meta[6] ==
-          Dict("amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
-        "name" => "FSC", "range" => "1024", "ex_pow" => nothing,
-        "det_volt" => "10.0", "amp_gain" => nothing,
-        "ex_wav" => "488,561", "perc_em" => nothing, "name_s" => nothing)
+    @test es.samples.name[1] == "plate_01_a2.FL1_A"
+    @test es.samples.name[5] == "plate_01_a1.SSC_H"
+    @test es.samples.meta[1] == Dict{String, Any}(
+        "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
+        "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
+        "amp_gain" => nothing, "name_s" => nothing,
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
+    @test es.samples.meta[6] == Dict{String, Any}(
+        "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
+        "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
+        "amp_gain" => nothing, "name_s" => "FSC-H",
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
     for i in 1:6
         @test issetequal(keys(es.samples.meta[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
@@ -343,35 +340,50 @@ end
     # Test accessing views
     @test ESM.sexp_to_nested_list(:flow_cyt, ESM.es, trans_meta_map) == 1
     # Test accessing groups
-    @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) ==
-          ESM.form_df(ESM.filter_row(ESM.es, :plate_01))
+    @test ESM.sexp_to_nested_list(:plate_01, ESM.es, trans_meta_map) == Dict{Any, Any}(
+        "FL1_A" => Dict(
+            :data => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
+            :id => collect(1:8), :max => 1024.0, :min => 1.0),
+        "SSC_H" => Dict(
+            :data => [0.11039991779173976, 0.18187190885323648,
+                0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
+                0.272613196449465, 0.01778279410038923, 0.9955128609158501],
+            :id => collect(1:8), :max => 1.0, :min => 0.010045073642544625),
+        "FSC_H" => Dict(
+            :data => [634.0, 965.0, 643.0, 1015.0, 628.0, 1023.0, 373.0, 1023.0],
+            :id => collect(1:8), :max => 1024.0, :min => 1.0)
+        )
     # Test other symbols - should just be returned
     @test ESM.sexp_to_nested_list(:not_defined, ESM.es, trans_meta_map) == :not_defined
     @test ESM.sexp_to_nested_list(:(form_df(ESM.es.samples)), ESM.es, trans_meta_map) ==
           :(form_df(ESM.es.samples))
     # Test samples
-    @test ESM.sexp_to_nested_list(:plate_01_a1, ESM.es, trans_meta_map) ==
-          ESM.form_df(ESM.es.samples["plate_01_a1" .== first.(splitext.(ESM.es.samples.name)), :])
+    @test ESM.sexp_to_nested_list(:plate_01_a1, ESM.es, trans_meta_map) == Dict{Any, Any}(
+        "FL1_A" => Dict{Symbol, Any}(
+            :max => 1024.0, :id => 1:4, :data => [54.0, 143.0, 25.0, 71.0], :min => 1.0),
+        "SSC_H" => Dict{Symbol, Any}(:max => 1.0,
+            :id => 1:4,
+            :data => [0.11039991779173976, 0.18187190885323648,
+                0.04740031742312117, 2.8133175148587766],
+            :min => 0.010045073642544625),
+        "FSC_H" => Dict{Symbol, Any}(
+            :max => 1024.0, :id => 1:4, :data => [634.0, 965.0, 643.0, 1015.0], :min => 1.0))
     # Test channels
-    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1), ESM.es, trans_meta_map) == DataFrame(
-        "plate_01_a1" => Any[169472, -117439489, 24444930, 202496, 1946157137])
-    @test ESM.sexp_to_nested_list(:(plate_01.SSC), ESM.es, trans_meta_map) == DataFrame(
-        "plate_01_a2" => Any[-822083441, 7536640, 0, -1073741504, 15269888],
-        "plate_01_a1" => Any[251658858, 63373312, 0, 1090519744, 41025536])
-
-    # Complicated example
-    # Includes function calls, groups, samples, channels of samples, channels of groups and transformations
-    ESM.es.transformations["long_transform"] =
-          Dict{String, Any}("equation" => "(sum(eachcol(plate_01.SSC .+ ones(size(plate_01.SSC)) .* 5 .- 3)) .+ plate_01_a1.FSC) .* extra_transform")
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(ESM.es.transformations[i]["equation"])
-    for i in keys(ESM.es.transformations))
-    expr = ESM.sexp_to_nested_list(:long_transform, ESM.es, trans_meta_map)
-    @test eval(expr) == DataFrame(
-        "plate_01_a1" => 10 .* Any[22020098 + (251658858 + -822083441 + 5*2 - 3*2),
-            255488 + (63373312 + 7536640 + 5*2 - 3*2),
-            -83885057 + (0 + 0 + 5*2 - 3*2),
-            21954562 + (1090519744 + -1073741504 + 5*2 - 3*2),
-            169472 + (41025536 + 15269888 + 5*2 - 3*2)])
+    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), ESM.es, trans_meta_map) ==
+          Dict{String, Dict{Symbol, Any}}("FL1_A" => Dict(
+        :max => 1024.0, :id => 1:4, :data => [54.0, 143.0, 25.0, 71.0], :min => 1.0))
+    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), ESM.es, trans_meta_map) ==
+          Dict{String, Dict{Symbol, Any}}("SSC_H" => Dict(:max => 1.0,
+        :id => [1, 2, 3, 4, 5, 6, 7, 8],
+        :data => [0.11039991779173976, 0.18187190885323648,
+            0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
+            0.272613196449465, 0.01778279410038923, 0.9955128609158501],
+        :min => 0.010045073642544625))
+    # Test groups
+    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), ESM.es, trans_meta_map) ==
+          Dict{String, Dict{Symbol, Any}}("FL1_A" => Dict(
+        :max => 1024.0, :id => [1, 2, 3, 4, 5, 6, 7, 8],
+        :data => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0], :min => 1.0))
 end
 
 @testitem "produce_views" begin
@@ -452,7 +464,7 @@ end
 @testitem "to_rfi" begin
     println("to_rfi")
     global ESM.es = read_esm("inputs/example.esm")
-    out = to_rfi("plate_02_a1")
+    out = ESM.to_rfi(ESM.es, "plate_02_a1")
     # Linear test with no gain
     @test out["FSC_H"][:data] == [628.0, 1023.0, 373.0, 1023.0]
     @test out["FSC_H"][:max] == 1024.0

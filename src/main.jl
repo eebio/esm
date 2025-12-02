@@ -27,6 +27,9 @@ end
 
 function filter_channel(df, channel)
     channel = string(channel)
+    if df isa Dict
+        return Dict(channel => df[channel])
+    end
     return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel", names(df))], channel)
 end
 
@@ -73,6 +76,49 @@ Arguments:
 """
 function find_group(es, grn)
     return es.groups[es.groups.group .== grn, :sample_IDs][1]
+end
+
+function get_group(es, grn)
+    # Is the group a flow group?
+    sample_types = es.samples.type[getproperty(es.samples, grn)]
+    if all(sample_types .== "population")
+        data = [ESM.to_rfi(es, sample) for sample in find_group(es, string(grn))]
+        # Check the data is compatible
+        # All samples must have the same channels
+        channels = [sort(collect(keys(d))) for d in data]
+        @assert all([all(c .== channels[1]) for c in channels]) "Samples in group $grn have different channels."
+        events = 0
+        tmp = Dict{eltype(keys(data[1])), eltype(values(data[1]))}()
+        for d in data
+            for k in keys(d)
+                if !haskey(tmp, k)
+                    tmp[k] = Dict(:max => d[k][:max], :min => d[k][:min], :data => Float64[], :id => Int[])
+                end
+                append!(tmp[k][:data], d[k][:data])
+                append!(tmp[k][:id], (events .+ d[k][:id]))
+            end
+            events += ESM.event_count(d)
+        end
+        return tmp
+    elseif all(sample_types .== "timeseries")
+        return ESM.form_df(ESM.filter_row(es, grn))
+    else
+        error("Group $grn contains mixed sample types (population and timeseries).")
+    end
+end
+
+function get_sample(es, sample)
+    # Is the sample a flow sample?
+    sample_types = es.samples[sample .== get_sample_id.(es.samples.name), :type]
+    if all(sample_types .== "population")
+        return ESM.to_rfi(es, sample)
+    end
+    # Otherwise return DataFrame
+    return ESM.form_df(es.samples[sample .== get_sample_id.(es.samples.name), :])
+end
+
+function get_sample_id(sample)
+    return first(splitext(sample))
 end
 
 colmean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
