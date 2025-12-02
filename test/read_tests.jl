@@ -454,13 +454,13 @@ end
     global ESM.es = read_esm("inputs/example.esm")
     out = to_rfi("plate_02_a1")
     # Linear test with no gain
-    @test out["FSC-H"][:data] == [628.0, 1023.0, 373.0, 1023.0]
-    @test out["FSC-H"][:max] == 1024.0
-    @test out["FSC-H"][:min] == 1.0
+    @test out["FSC_H"][:data] == [628.0, 1023.0, 373.0, 1023.0]
+    @test out["FSC_H"][:max] == 1024.0
+    @test out["FSC_H"][:min] == 1.0
     # Scaling factor gain test
-    @test out["FL1-H"][:data] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
+    @test out["FL1_H"][:data] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
     # Log scaling test
-    @test out["SSC-H"][:data] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
+    @test out["SSC_H"][:data] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
 end
 
 @testitem "summary" begin

@@ -120,7 +120,8 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
         if key == "Time"
             continue
         end
-        @info "Channel $key: $(length(f[key])) events."
+        esm_channel = replace(key, "-" => "_")
+        @info "Channel $esm_channel: $(length(f[key])) events."
         @info "Values range from $(minimum(f[key])) to $(maximum(f[key]))."
     end
     @info "Time ranges from $(minimum(f["Time"])) to $(maximum(f["Time"])) with \
@@ -131,7 +132,7 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
         dir = mktempdir()
         channels = [c for c in keys(f) if c != "Time"]
         for c in channels
-            p = histogram(f[c],
+            p = histogram(f[ESM.flow_channel(c)],
                 xlabel = "$c", ylabel = "Count")
             savefig(p, joinpath(dir, string(c) * ".pdf"))
         end
@@ -139,7 +140,7 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
         merge_pdfs(filepaths, string(file) * ".pdf")
         dir = mktempdir()
         for (c1, c2) in combinations(channels, 2)
-            p = histogram2d(f[c1], f[c2],
+            p = histogram2d(f[ESM.flow_channel(c1)], f[ESM.flow_channel(c2)],
                 xlabel = "$c1", ylabel = "$c2")
             savefig(p, joinpath(dir, string(c1) * string(c2) * ".pdf"))
         end

@@ -1,12 +1,12 @@
 @testitem "read data" setup=[environment_path] begin
     println("read data")
     es = read_data("inputs/example.xlsx")
-    @test es[:samples]["plate_02_a1"][:values]["FSC-H"] == [628, 1023, 373, 1023]
-    @test es[:samples]["plate_02_a1"][:values]["FL4-H"] ≈
+    @test es[:samples]["plate_02_a1"][:values]["FSC_H"] == [628, 1023, 373, 1023]
+    @test es[:samples]["plate_02_a1"][:values]["FL4_H"] ≈
           [28.133175, 310.590027, 3.819718, 2414.418213]
     @test es[:samples]["plate_02_a1"][:type] == "population"
-    @test es[:samples]["plate_02_a1"][:meta]["FL1-H"][:range] == "1024"
-    @test es[:samples]["plate_02_a1"][:meta]["FL1-H"][:amp_type] == "0,0"
+    @test es[:samples]["plate_02_a1"][:meta]["FL1_H"][:range] == "1024"
+    @test es[:samples]["plate_02_a1"][:meta]["FL1_H"][:amp_type] == "0,0"
     @test es[:groups]["first_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A5", "plate_01_A9"]
     @test es[:groups]["second_group"]["sample_IDs"] == ["plate_01_A3", "plate_01_A8", "plate_01_A7"]
     @test es[:groups]["third_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A2", "plate_01_A3"]
@@ -26,7 +26,7 @@ end
         ["plate_01_$(letter)$(number).$(channel)"
          for letter in 'a':'h', number in 1:12, channel in ["OD", "flo"]]...,
         ["plate_02_a1.$(channel)"
-         for channel in ["FSC-H", "SSC-H", "FL1-H", "FL1-H", "FL3-H", "FL1-A", "FL4-H"]]...,
+         for channel in ["FSC_H", "SSC_H", "FL1_H", "FL1_H", "FL3_H", "FL1_A", "FL4_H"]]...,
         "plate_01_t° read 1:700.OD", "plate_01_time.OD", "plate_01_time.flo"] # TODO tidy up some of the name reading
     names = []
     for (i,j) in es[:samples]
@@ -37,7 +37,7 @@ end
     @test issetequal(names,
         es_written.samples.name)
     @test issetequal(
-        unique(es_written.samples.channel), ["OD", "flo", "FL1-H", "SSC-H", "FL3-H", "FL1-A", "FL4-H", "FSC-H"])
+        unique(es_written.samples.channel), ["OD", "flo", "FL1_H", "SSC_H", "FL3_H", "FL1_A", "FL4_H", "FSC_H"])
     @test es_written.samples.type[end-5:end] ==
           ["population", "population", "population", "population", "population", "population"]
     @test es[:samples]["plate_01_b3"][:values]["flo"] ==

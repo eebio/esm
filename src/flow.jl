@@ -39,13 +39,18 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         temp = Dict()
         temp[:type] = "population"
         temp_data = load(j."Data Location")
-        temp[:values] = Dict(channel_map[x] => temp_data["$(x)"] for x in channels)
-        temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, "$x")
+        temp[:values] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
+        for x in channels)
+        temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, flow_channel("$x"))
         for x in channels)
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
     end
     return sample_dict, broad_g
+end
+
+function flow_channel(channel)
+    return replace(channel, "_" => "-")
 end
 
 """
