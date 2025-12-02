@@ -3164,37 +3164,37 @@
         },
         "plate_02_a1": {
             "values": {
-                "FL1-H": [
+                "FL1_H": [
                     9.057978,
                     537.61176,
                     6.152654,
                     259.45526
                 ],
-                "SSC-H": [
+                "SSC_H": [
                     280.0,
                     735.0,
                     128.0,
                     1023.0
                 ],
-                "FL3-H": [
+                "FL3_H": [
                     10.273508,
                     6.915821,
                     2.3290966,
                     39.241898
                 ],
-                "FL1-A": [
+                "FL1_A": [
                     0.0,
                     143.0,
                     0.0,
                     61.0
                 ],
-                "FL4-H": [
+                "FL4_H": [
                     28.133175,
                     310.59003,
                     3.8197176,
                     2414.4182
                 ],
-                "FSC-H": [
+                "FSC_H": [
                     628.0,
                     1023.0,
                     373.0,
@@ -3203,7 +3203,7 @@
             },
             "type": "population",
             "meta": {
-                "FL1-H": {
+                "FL1_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -3216,7 +3216,7 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                "SSC-H": {
+                "SSC_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -3229,7 +3229,7 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                "FL3-H": {
+                "FL3_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -3242,7 +3242,7 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                "FL1-A": {
+                "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -3255,7 +3255,7 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                "FL4-H": {
+                "FL4_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -3268,7 +3268,7 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                "FSC-H": {
+                "FSC_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
