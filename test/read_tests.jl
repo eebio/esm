@@ -499,7 +499,7 @@ end
     @test_throws "Unsupported" summarise(file = "inputs/unknown.txt", type = "unknown")
 end
 
-@testitem "issue 34" begin
+@testitem "issue 34" setup = [environment_path] begin
     # Importing from excel with single channel reads a Int, not a String
     # which can then fail at regex
     read_data("inputs/issue34.xlsx")
