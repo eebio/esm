@@ -38,12 +38,12 @@ end
         es_written.samples.name)
     @test issetequal(
         unique(es_written.samples.channel), ["OD", "flo", "FL1_H", "SSC_H", "FL3_H", "FL1_A", "FL4_H", "FSC_H"])
-    @test es_written.samples.type[end-5:end] ==
+    @test es_written.samples.type[.!occursin.(r"(OD|flo)", es_written.samples.name)] ==
           ["population", "population", "population", "population", "population", "population"]
     @test es[:samples]["plate_01_b3"][:values]["flo"] ==
           es_written.samples.values[findfirst(es_written.samples.name .==
                                               "plate_01_b3.flo")]
-    for i in length(es_written.samples.meta)-5:length(es_written.samples.meta)
+    for i in findall(.!occursin.(r"(OD|flo)", es_written.samples.name))
         @test issetequal(keys(es_written.samples.meta[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
                 "amp_gain", "name_s", "name", "det_type", "perc_em"])

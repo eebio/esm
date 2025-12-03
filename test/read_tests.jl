@@ -188,15 +188,12 @@ end
             [280.0, 735.0, 128.0, 1023.0],
             [628.0, 1023.0, 373.0, 1023.0]
         ])
-    # Why this order?
-    @test es.samples.name[1] == "plate_01_a2.FL1_A"
-    @test es.samples.name[5] == "plate_01_a1.SSC_H"
-    @test es.samples.meta[1] == Dict{String, Any}(
+    @test es.samples.meta[es.samples.name .== "plate_01_a2.FL1_A"][1] == Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
         "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
-    @test es.samples.meta[6] == Dict{String, Any}(
+    @test es.samples.meta[es.samples.name .== "plate_01_a2.FSC_H"][1] == Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
