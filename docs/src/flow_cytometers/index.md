@@ -4,6 +4,9 @@
 
 ESM currently supports importing data from flow cytometry `.fcs` files. Specifically, it supports FCS versions XXXX.
 
+!!! todo "todo"
+    fcs versions compatibility
+
 If you require support for a different FCS version, please [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose), and let us know what version you require.
 
 ## Methods
@@ -31,4 +34,4 @@ esm summarise --file path/to/data.fcs
 esm summarise --file path/to/data.fcs --plot
 ```
 
-If plots are included (either through the flag on the CLI or the keyword arguement through the Julia package), then a PDF file at `path/to/data.fcs.pdf` will be created with histograms of each channel, and 2d heatmaps of all pairs of channels.
+If plots are included (either through the flag on the CLI or the keyword arguement through the Julia package), then a PDF file at `path/to/data.fcs.pdf` will be created with histograms of each channel, and 2D heatmaps of all pairs of channels.

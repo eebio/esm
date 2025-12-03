@@ -70,13 +70,13 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
         },
         "plate_02_a1":{
             "values":{
-                "FL1-H":[
+                "FL1_H":[
                     9.057978,
                     537.61176,
                     6.152654,
                     259.45526
                 ],
-                "SSC-H":[
+                "SSC_H":[
                     280.0,
                     735.0,
                     128.0,
@@ -85,7 +85,7 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
             },
             "type":"population",
             "meta":{
-                "FL1-H":{
+                "FL1_H":{
                     "range":"1024",
                     "ex_pow":null,
                     "filter":null,
@@ -98,7 +98,7 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
                     "det_type":null,
                     "perc_em":null
                 },
-                "SSC-H":{
+                "SSC_H":{
                     "range":"1024",
                     "ex_pow":null,
                     "filter":null,
@@ -121,7 +121,7 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
 
 Under groups, we have key-value pairs (the name of the group is the key) with:
 
-* a variable called "type" that defines XXXX,
+* a variable called "type" that defines whether the group is a physical group (plates), or an experimental group (like blanks or controls),
 * a variable called "sample_IDs" that defines which samples are included in the group as an ordered list,
 * and a variable called "metadata" that may include any additional information about the group, such as whether the group was automatically defined, as is done with the "plate" groups.
 
@@ -188,7 +188,7 @@ Under transformations, we have key-value pairs (the name of the transformation i
 {
     "transformations":{
         "flow_cyt":{
-            "equation":"process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])"
+            "equation":"process_fcs(\"plate_02\",[\"FSC_H\",\"SSC_H\"],[\"FL1_H\"])"
         },
         "flow_sub":{
             "equation":"hcat(first_group.flo,second_group.flo).-mean(third_group.flo)"

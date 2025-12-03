@@ -2,6 +2,9 @@
 
 There are a variety of types of gates that can be applied to flow cytometry data. Each method uses the `gate(data, Method())` function signature which will return the subset of events in `data` that satisfy that gate. These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
 
+!!! tip "Flow cytometry samples and groups"
+    When using ESM transformations, samples and groups are automatically converted to relative fluoresence intensity. This allows you to use `gate` on any flow sample or group of flow samples.
+
 ```@docs; canonical=false
 gate
 ```
@@ -52,7 +55,7 @@ It can be called using `gate(data, EllipseGate(channel1, channel2, points))` or 
 
 ## Logical Operations on Gates
 
-You can also perform logical operations on gates. The logical operations are `and`, `or`, and `not`. They can be used either through operators (`HighLowGate(channel="FL1-A", lb=500.0, ub=2000.0) & QuadrantGate(channel1="SSC-A", ...)`) or through the `and` function (`and(HighLowGate(channel="FL1-A", lb=500.0, ub=2000.0), QuadrantGate(channel1="SSC-A", ...))`). This will return an `AndGate` (`|` and `or` returns an `OrGate`, and `!` and `not` return a `NotGate`) which can then be gated on (`gate(data, HighLowGate(...) & QuadrantGate(...))`).
+You can also perform logical operations on gates. The logical operations are `and`, `or`, and `not`. They can be used either through operators (`HighLowGate(channel="FL1_A", lb=500.0, ub=2000.0) & QuadrantGate(channel1="SSC_A", ...)`) or through the `and` function (`and(HighLowGate(channel="FL1_A", lb=500.0, ub=2000.0), QuadrantGate(channel1="SSC_A", ...))`). This will return an `AndGate` (`|` and `or` returns an `OrGate`, and `!` and `not` return a `NotGate`) which can then be gated on (`gate(data, HighLowGate(...) & QuadrantGate(...))`).
 
 ## Implementation Details
 

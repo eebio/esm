@@ -64,6 +64,9 @@ It can be called using `growth_rate(data, time_col, Logistic())` or `doubling_ti
 
 ## Regularization
 
+!!! todo "tidi"
+    maths of regularization
+
 For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The derivative of the cubic spline is then calculated at all timepoints and the maximum derivative is returned.
 
 It can be called using `growth_rate(data, time_col, Regularization())` or `doubling_time(data, time_col, Regularization())`.
