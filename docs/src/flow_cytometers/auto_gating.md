@@ -1,26 +1,22 @@
 # Automatic Gating
 
-There are a couple of methods for automatically gating flow cytometry data. Each method uses the `autogate(data, Method())` function signature which will return XXX. These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
+There are a couple of methods for automatically gating flow cytometry data. Each method uses the `gate(data, Method())` function signature which will return all the data that passes the automatic gating algorithm. These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
 
-```@docs
+!!! tip "Flow cytometry samples and groups"
+    When using ESM transformations, samples and groups are automatically converted to relative fluoresence intensity. This allows you to use `gate` on any flow sample or group of flow samples.
+
+```@docs; canonical=false
+gate
 ```
-
-!!! todo "todo"
-    Document which is the default method
 
 ## KDE
 
-!!! todo "todo"
-    Describe how the KDE gate works.
+The `KDE` method (Kernal Density Estimation) is an automatic gating method based on [FlowCal](https://github.com/taborlab/FlowCal). It generates an 2D histogram in the provided channels. It then smoothes out the densities of this histogram using `KernalDensity.jl` to remove isolated bins of high density (noise). It then returns some fraction of the data (`gate_frac` which defaults to 0.65) which is highest in density.
 
-It can be called using `autogate(data, KDE())`.
+!!! todo "Animation"
+    This is an awkward method to explain, best to create an animation for it.
 
-## TDA
-
-!!! todo "todo"
-    Describe how the TDA gate works.
-
-It can be called using `autogate(data, TDA())`.
+It can be called using `gate(data, KDE(channels=["FSC_A", "SSC_A"], gate_frac=0.65, nbins=1024))` where `gate_frac` and `nbins` are optional.
 
 ## Implementation Details
 
@@ -29,7 +25,7 @@ If you want to implement a new automatic gating method to be included in ESM, yo
 * Open a pull request with the following code changes
 * Define a new struct for your method type in `src/methods.jl`
 * The type of that struct is a subtype of `AbstractAutoGate`
-* Define a new method dispatch `autogate(data, ::NameOfNewMethodType)`
+* Define a new method dispatch `gate(data, ::NameOfNewMethodType)`
 * Document that method in the automatic gating documentation (this page)
 
 If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new automatic gating method and explaining how the gate should work.

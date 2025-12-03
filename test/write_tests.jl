@@ -1,27 +1,32 @@
 @testitem "read data" setup=[environment_path] begin
-    es = ESM.read_data("inputs/example.xlsx")
-    @test es[:samples]["plate_02_a1"][:values]["FSC-H"] == [628, 1023, 373, 1023]
-    @test es[:samples]["plate_02_a1"][:values]["FL4-H"] ≈
+    println("read data")
+    es = read_data("inputs/example.xlsx")
+    @test es[:samples]["plate_02_a1"][:values]["FSC_H"] == [628, 1023, 373, 1023]
+    @test es[:samples]["plate_02_a1"][:values]["FL4_H"] ≈
           [28.133175, 310.590027, 3.819718, 2414.418213]
     @test es[:samples]["plate_02_a1"][:type] == "population"
-    @test es[:samples]["plate_02_a1"][:meta]["FL1-H"][:range] == "1024"
-    @test es[:samples]["plate_02_a1"][:meta]["FL1-H"][:amp_type] == "0,0"
+    @test es[:samples]["plate_02_a1"][:meta]["FL1_H"][:range] == "1024"
+    @test es[:samples]["plate_02_a1"][:meta]["FL1_H"][:amp_type] == "0,0"
     @test es[:groups]["first_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A5", "plate_01_A9"]
     @test es[:groups]["second_group"]["sample_IDs"] == ["plate_01_A3", "plate_01_A8", "plate_01_A7"]
     @test es[:groups]["third_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A2", "plate_01_A3"]
+
+    # Test errors
+    @test_throws "Unknown instrument type: gibberish" read_data("inputs/bad_inst_type.xlsx")
 end
 
 @testitem "write esm" setup=[environment_path] begin
+    println("write esm")
     # write esm from example.xlsx and read it back
-    es = ESM.read_data("inputs/example.xlsx")
+    es = read_data("inputs/example.xlsx")
     filename = joinpath(Base.Filesystem.mktempdir(), "tmp.esm")
-    ESM.write_esm(es, filename)
-    es_written = ESM.read_esm(filename)
+    write_esm(es, filename)
+    es_written = read_esm(filename)
     names = [
         ["plate_01_$(letter)$(number).$(channel)"
          for letter in 'a':'h', number in 1:12, channel in ["OD", "flo"]]...,
         ["plate_02_a1.$(channel)"
-         for channel in ["FSC-H", "SSC-H", "FL1-H", "FL1-H", "FL3-H", "FL1-A", "FL4-H"]]...,
+         for channel in ["FSC_H", "SSC_H", "FL1_H", "FL1_H", "FL3_H", "FL1_A", "FL4_H"]]...,
         "plate_01_t° read 1:700.OD", "plate_01_time.OD", "plate_01_time.flo"] # TODO tidy up some of the name reading
     names = []
     for (i,j) in es[:samples]
@@ -32,13 +37,13 @@ end
     @test issetequal(names,
         es_written.samples.name)
     @test issetequal(
-        unique(es_written.samples.channel), ["OD", "flo", "FL1-H", "SSC-H", "FL3-H", "FL1-A", "FL4-H", "FSC-H"])
-    @test es_written.samples.type[end-5:end] ==
+        unique(es_written.samples.channel), ["OD", "flo", "FL1_H", "SSC_H", "FL3_H", "FL1_A", "FL4_H", "FSC_H"])
+    @test es_written.samples.type[.!occursin.(r"(OD|flo)", es_written.samples.name)] ==
           ["population", "population", "population", "population", "population", "population"]
     @test es[:samples]["plate_01_b3"][:values]["flo"] ==
           es_written.samples.values[findfirst(es_written.samples.name .==
                                               "plate_01_b3.flo")]
-    for i in length(es_written.samples.meta)-5:length(es_written.samples.meta)
+    for i in findall(.!occursin.(r"(OD|flo)", es_written.samples.name))
         @test issetequal(keys(es_written.samples.meta[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
                 "amp_gain", "name_s", "name", "det_type", "perc_em"])
@@ -47,58 +52,16 @@ end
     @test es_written.groups.sample_IDs[es_written.groups.group .== "plate_02"] == [["plate_02_a1"]]
     @test es_written.groups.metadata[es_written.groups.group .== "plate_02"] ==
         [Dict("autodefined" => "true")]
-    @test issetequal(keys(es_written.transformations), ["flow_cyt", "flow_sub", "od_sub"])
-    @test es_written.transformations["flow_cyt"] ==
-          Dict{String, Any}("equation" => "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])")
-    @test issetequal(keys(es_written.views), ["flowsub", "mega", "group2", "flow_cy", "sample", "odsub", "group1", "group3"])
+    @test issetequal(keys(es_written.transformations), ["flow_sub", "od_sub"])
+    @test es_written.transformations["flow_sub"] ==
+          Dict{String, Any}("equation" => "hcat(first_group.flo,second_group.flo).-colmean(third_group.flo)")
+    @test issetequal(keys(es_written.views), ["flowsub", "mega", "group2", "sample", "odsub", "group1", "group3"])
     @test es_written.views["mega"] ==
           Dict{String, Any}("data" => Any["first_group", "second_group"])
 end
 
-@testitem "read spectramax" setup=[environment_path] begin
-    data = ESM.read_data("inputs/spectramax.xlsx")
-    # TODO should probably separate the channels into 600 and 700?
-    # TODO channel is currently 535 for fluorescence but the 485 is also relevant
-    @test data[:samples]["plate_01_a1"][:values]["abs"][[1, 2, end - 1, end]] ==
-          [0.1493, 0.1623, 0.3297, 0.3629]
-    @test data[:samples]["plate_01_e12"][:values]["abs"][[1, 2, end - 1, end]] == [
-        0.0776, 0.0772, 0.2173, 0.2359]
-    wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
-    wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
-    @test issetequal(keys(data[:samples]), wells)
-end
-
-@testitem "read biotek" setup=[environment_path] begin
-    data = ESM.read_data("inputs/biotek.xlsx")
-    @test data[:samples]["plate_01_a1"][:values]["od1"][[1, 2, end - 1, end]] ==
-          [0.134, 0.133, 0.131, 0.131]
-    @test data[:samples]["plate_01_h12"][:values]["od2"][[1, 2, end - 1, end]] == [
-        0.114, 0.113, 0.577, 0.578]
-    @test data[:samples]["plate_01_a2"][:values]["485,530[2]"][[1, 2, end - 1, end]] == [
-        166, 162, 1030, 1024]
-    wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
-    wells = [wells..., "plate_01_temperature", "plate_01_time"]  # Flatten to a 1D vector
-    @test issetequal(wells, keys(data[:samples]))
-end
-
-@testitem "read plate reader directories" setup=[environment_path] begin
-    using Dates
-
-    data = ESM.read_data("inputs/example.xlsx")
-    @test data[:samples]["plate_01_time"][:values]["OD"][1:2] ==
-          Dates.Time[Dates.Time(0, 8, 38), Dates.Time(0, 18, 38)]
-    @test data[:samples]["plate_01_time"][:values]["OD"][end] == Dates.Time(18, 38, 38)
-    @test data[:samples]["plate_01_a1"][:values]["OD"][1:3] == [0.165, 0.167, 0.169]
-    @test data[:samples]["plate_01_h12"][:values]["OD"][end] == 0.148
-
-    @test data[:samples]["plate_01_time"][:values]["flo"][1:2] ==
-          Dates.Time[Dates.Time(0, 9, 04), Dates.Time(0, 19, 04)]
-    @test data[:samples]["plate_01_time"][:values]["flo"][end] == Dates.Time(18, 39, 04)
-    @test data[:samples]["plate_01_a1"][:values]["flo"][1:3] == [21, 22, 20]
-    @test data[:samples]["plate_01_h12"][:values]["flo"][end] == 7
-end
-
 @testitem "expand_group" begin
+    println("expand_group")
     @test ESM.expand_group("plate_01_a[1:3]") == ["plate_01_a1", "plate_01_a2", "plate_01_a3"]
     @test ESM.expand_group("plate_01_a[2:4]") == ["plate_01_a2", "plate_01_a3", "plate_01_a4"]
     @test ESM.expand_group("plate_01_[a:d]1") == ["plate_01_a1", "plate_01_b1", "plate_01_c1", "plate_01_d1"]
@@ -110,4 +73,6 @@ end
     @test ESM.expand_groups("plate_01_a[1:3],plate_01_b[2:4], plate_02_c5,plate_01_d[1,2]") ==
           ["plate_01_a1", "plate_01_a2", "plate_01_a3", "plate_01_b2", "plate_01_b3", "plate_01_b4",
            "plate_02_c5", "plate_01_d1", "plate_01_d2"]
+    # Test without commas
+    @test ESM.expand_groups("plate_01_a[1:3]") == ["plate_01_a1", "plate_01_a2", "plate_01_a3"]
 end

@@ -5,9 +5,6 @@ There are a variety of methods for calculating per cell fluorescence. Each metho
 ```@docs
 ```
 
-!!! todo "todo"
-    Document which is the default method
-
 ## RatioAtMaxGrowth
 
 !!! todo "todo"

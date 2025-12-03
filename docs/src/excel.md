@@ -20,15 +20,11 @@ Each row specifies a new file that should be imported into the final `.esm` file
 
 The first few rows control the naming scheme for the samples. By default this will look something like "plate_01_a1.600".
 
-The first column lets you put in labels for plates. Here, we have labelled them "1", "2", "3", and "4". The final names for these plates will be "plate_01", "plate_02", "plate_03", and "plate_04".
-
-!!! todo
-    Do they need to be numbers? I am assuming yes since they are written as plate_01 not plate_1. We probably don't need the "plate_" part, maybe autofil plate_01, etc if nothing filled in but otherwise do exactly as told, so it would be "1_...", 2_..." etc in the given example
+The first column lets you put in labels for plates. Here, we have labelled them "1", "2", "3", and "4". The final names for these plates will be "plate\_01", "plate\_02", "plate\_03", and "plate\_04".
 
 The second column controls the well name. For example, if you have flow cytometry data from different wells, stored in different `.fcs` files, you can label the well that each `.fcs` file corresponds to.
 
-!!! todo
-    What does name actually do? Fully overwrite the whole name rather than "plate_well"
+The sample names will be stored as plate\_0\$PLATE NUMBER\$\_\$well name\$. That is unless a name is provided in the third column.
 
 The type defines whether the data is "plate reader", "flow", or "qpcr" and how that file should be imported.
 
@@ -36,16 +32,13 @@ The data location gives the full filepath to the data.
 
 Channels identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved.
 
-!!! todo
-    save all in channels left blank
-
 Finally, we have the plate reader brand. This identifies the format the data will be in. Available options are: "spectramax", "biotek", and "tecan". Leave it blank for other data types.
 
 ![alt text](assets/samples.png)
 
 ## ID
 
-Here you can rename any channels. On the left, provide the channel name, as specified on the previous sheet. On the right, provide the new name for the channel. In this example, rather than using "plate_01_a5.600", we would then use "plate_01_a5.od".
+Here you can rename any channels. On the left, provide the channel name, as specified on the previous sheet. On the right, provide the new name for the channel. In this example, rather than using "plate\_01\_a5.600", we would then use "plate\_01\_a5.od".
 
 ![alt text](assets/ids.png)
 
@@ -53,7 +46,7 @@ Here you can rename any channels. On the left, provide the channel name, as spec
 
 In this sheet, you can group samples together. For example, you may want to group all of your blank well together to make them easier to refer to.
 
-There are a few formats for doing this. The simplest is to just write out all the samples in a comma separated list (i.e. "plate_01_a1, plate_01_a2, plate_01_a3").
+There are a few formats for doing this. The simplest is to just write out all the samples in a comma separated list (i.e. "plate\_01\_a1, plate\_01\_a2, plate\_01\_a3").
 
 To make this a bit shorter, you may choose to use the compressed format. In this format, anything specified in `[]` is expanded.
 
@@ -62,14 +55,11 @@ To make this a bit shorter, you may choose to use the compressed format. In this
 * `[a,d,e]` gets expanded to `a`, `d`, and `e`.
 * Numerals are treated likewise.
 
-All these formats can be mixed together in any combination, so "plate_0[1,2]_[a:c]1, plate_04_a2" is treated the same as "plate_01_a1, plate_01_b1, plate_01_c1, plate_02_a1, plate_02_b1, plate_02_c1, plate_04_a2".
+All these formats can be mixed together in any combination, so "plate\_0[1,2]\_[a:c]1, plate\_04\_a2" is treated the same as "plate\_01\_a1, plate\_01\_b1, plate\_01\_c1, plate\_02\_a1, plate\_02\_b1, plate\_02\_c1, plate\_04\_a2".
 
 ```@docs; canonical=false
 ESM.expand_group
 ```
-
-!!! todo
-    Are spaces allowed in the group samples list
 
 In the example:
 

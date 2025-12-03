@@ -48,11 +48,14 @@ Channels identifies the specific channels that you would like to save in the ESM
 
 Finally, we have the plate reader brand. This identifies the format the data will be in. Available options are: "spectramax", "biotek", and "tecan". Leave it blank for other data types.
 
+!!! todo "todo"
+    FSC-H is no longer valid syntax. Now it needs to be FSC_H
+
 ![alt text](assets/samples.png)
 
 ### Step 3.2: The ID Sheet
 
-Here you can rename any channels. On the left, provide the channel name, as specified on the previous sheet. On the right, provide the new name for the channel. In this example, rather than using "plate_01_a5.600", we would then use "plate_01_a5.od".
+Here you can rename any channels. On the left, provide the channel name, as specified on the previous sheet. On the right, provide the new name for the channel. In this example, rather than using "plate\_01\_a5.600", we would then use "plate\_01\_a5.od".
 
 ![alt text](assets/ids.png)
 
@@ -60,7 +63,7 @@ Here you can rename any channels. On the left, provide the channel name, as spec
 
 In this sheet, you can group samples together. For example, you may want to group all of your blank well together to make them easier to refer to.
 
-There are a few formats for doing this. The simplest is to just write out all the samples in a comma separated list (i.e. "plate_01_a1, plate_01_a2, plate_01_a3").
+There are a few formats for doing this. The simplest is to just write out all the samples in a comma separated list (i.e. "plate\_01\_a1, plate\_01\_a2, plate\_01\_a3").
 
 To make this a bit shorter, you may choose to use the compressed format. In this format, anything specified in `[]` is expanded.
 
@@ -81,6 +84,9 @@ On the transformations sheet, you can define the post-processing you want to app
 In the example below, we calibrate our groups based on the blank group, then calculate growth rates on each of the calibrated transformations. Finally, the data is collected together (the "processed" variable appends the different DataFrames together) and this is normalised by the mean of the controls.
 
 More details about some of the inbuilt methods in ESM, like `growth_rate` can be found in the [Plate Reader](@ref plate_reader), [Flow Cytometry](@ref flow_cytometry), and [qPCR](@ref qpcr) documentation.
+
+!!! todo "todo"
+    The growth rate and calibration transformations are different to this
 
 ![alt text](assets/transformations.png)
 
@@ -114,14 +120,14 @@ This will:
 We can now look at our calculated growth rates from our data.
 
 ```bash
-# Get an overview of processed data
-esm views experiment.esm
+# Save the view to a .csv file
+esm views --esm-file experiment.esm
 ```
 
 ## Best Practices
 
 1. **Summarise Data Early**: Looking at plots of the data can help identify issues like contaminated wells, that may change how you want to analyse the data.
-2. **Start Small**: Its easy to .
+2. **Start Small**: Its easy to fill out the template at the start, but this can make it harder to debug the transformations. Try going through, writing a transformation at a time and export it as a view to keep an eye on whats happening.
 3. **Close Excel**: `.xlsx` files behave differently if they are open vs. closed and `esm translate` will only work properly if you don't have the template open at the same time.
 4. **Remember the order of ESM operations**: Using `esm translate` will import and check your raw data, and collect groups, but it won't check your transformations and views. If you are getting errors when trying to generate views, this may be due to transformations being incorrectly defined, rather than just your views.
 

@@ -234,7 +234,7 @@
             "type": "timeseries",
             "meta": {}
         },
-        "plate_01_t° read 1:700": {
+        "plate_01_temperature": {
             "values": {
                 "OD": [
                     37.0,
@@ -348,6 +348,120 @@
                     37.0,
                     37.0,
                     37.0,
+                    37.0
+                ],
+                "flo": [
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    37.0,
+                    36.9,
                     37.0
                 ]
             },
@@ -22820,85 +22934,46 @@
         },
         "plate_02_a1": {
             "values": {
-                "FL1-H": [
-                    9.057978,
-                    537.61176,
-                    6.152654,
-                    259.45526
-                ],
-                "SSC-H": [
-                    280.0,
-                    735.0,
-                    128.0,
-                    1023.0
-                ],
-                "FL3-H": [
-                    10.273508,
-                    6.915821,
-                    2.3290966,
-                    39.241898
-                ],
-                "FL1-A": [
+                "FL1_A": [
                     0.0,
                     143.0,
                     0.0,
                     61.0
                 ],
-                "FL4-H": [
+                "SSC_H": [
+                    280.0,
+                    735.0,
+                    128.0,
+                    1023.0
+                ],
+                "FL4_H": [
                     28.133175,
                     310.59003,
                     3.8197176,
                     2414.4182
                 ],
-                "FSC-H": [
+                "FL1_H": [
+                    9.057978,
+                    537.61176,
+                    6.152654,
+                    259.45526
+                ],
+                "FSC_H": [
                     628.0,
                     1023.0,
                     373.0,
                     1023.0
+                ],
+                "FL3_H": [
+                    10.273508,
+                    6.915821,
+                    2.3290966,
+                    39.241898
                 ]
             },
             "type": "population",
             "meta": {
-                "FL1-H": {
-                    "range": "1024",
-                    "ex_pow": null,
-                    "filter": null,
-                    "det_volt": null,
-                    "amp_type": "0,0",
-                    "ex_wav": null,
-                    "amp_gain": "4",
-                    "name_s": null,
-                    "name": "FL1-H",
-                    "det_type": null,
-                    "perc_em": null
-                },
-                "SSC-H": {
-                    "range": "1024",
-                    "ex_pow": null,
-                    "filter": null,
-                    "det_volt": null,
-                    "amp_type": "2,0.01",
-                    "ex_wav": null,
-                    "amp_gain": null,
-                    "name_s": "SSC-H",
-                    "name": "SSC-H",
-                    "det_type": null,
-                    "perc_em": null
-                },
-                "FL3-H": {
-                    "range": "1024",
-                    "ex_pow": null,
-                    "filter": null,
-                    "det_volt": null,
-                    "amp_type": "0,0",
-                    "ex_wav": null,
-                    "amp_gain": null,
-                    "name_s": null,
-                    "name": "FL3-H",
-                    "det_type": null,
-                    "perc_em": null
-                },
-                "FL1-A": {
+                "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -22911,7 +22986,20 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                "FL4-H": {
+                "SSC_H": {
+                    "range": "1024",
+                    "ex_pow": null,
+                    "filter": null,
+                    "det_volt": null,
+                    "amp_type": "2,0.01",
+                    "ex_wav": null,
+                    "amp_gain": null,
+                    "name_s": "SSC-H",
+                    "name": "SSC-H",
+                    "det_type": null,
+                    "perc_em": null
+                },
+                "FL4_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -22924,7 +23012,20 @@
                     "det_type": null,
                     "perc_em": null
                 },
-                "FSC-H": {
+                "FL1_H": {
+                    "range": "1024",
+                    "ex_pow": null,
+                    "filter": null,
+                    "det_volt": null,
+                    "amp_type": "0,0",
+                    "ex_wav": null,
+                    "amp_gain": "4",
+                    "name_s": null,
+                    "name": "FL1-H",
+                    "det_type": null,
+                    "perc_em": null
+                },
+                "FSC_H": {
                     "range": "1024",
                     "ex_pow": null,
                     "filter": null,
@@ -22934,6 +23035,19 @@
                     "amp_gain": null,
                     "name_s": "FSC-H",
                     "name": "FSC-H",
+                    "det_type": null,
+                    "perc_em": null
+                },
+                "FL3_H": {
+                    "range": "1024",
+                    "ex_pow": null,
+                    "filter": null,
+                    "det_volt": null,
+                    "amp_type": "0,0",
+                    "ex_wav": null,
+                    "amp_gain": null,
+                    "name_s": null,
+                    "name": "FL3-H",
                     "det_type": null,
                     "perc_em": null
                 }
@@ -22972,7 +23086,7 @@
             "type": "physical",
             "sample_IDs": [
                 "plate_01_time",
-                "plate_01_t° read 1:700",
+                "plate_01_temperature",
                 "plate_01_a1",
                 "plate_01_a2",
                 "plate_01_a3",
@@ -23085,22 +23199,14 @@
         }
     },
     "transformations": {
-        "flow_cyt": {
-            "equation": "process_fcs(\"plate_02\",[\"FSC-H\",\"SSC-H\"],[\"FL1-H\"])"
-        },
         "flow_sub": {
-            "equation": "hcat(first_group.flo,second_group.flo).-mean(third_group.flo)"
+            "equation": "hcat(first_group.flo,second_group.flo).-colmean(third_group.flo)"
         },
         "od_sub": {
-            "equation": "hcat(first_group.OD,second_group.OD).-mean(third_group.OD)"
+            "equation": "hcat(first_group.OD,second_group.OD).-colmean(third_group.OD)"
         }
     },
     "views": {
-        "flow_cy": {
-            "data": [
-                "flow_cyt"
-            ]
-        },
         "group1": {
             "data": [
                 "first_group"
