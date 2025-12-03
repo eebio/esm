@@ -36,19 +36,19 @@ end
 
 @testitem "Translate integration" setup=[environment_path, build, getshell] begin
     println("Translate integration")
-    using SHA
     using JSON
+    using StableHashTraits
 
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm translate --excel $(joinpath("inputs", "example.xlsx")) --target $(joinpath(dir, "tmp.esm"))`)
     @test isfile(joinpath(dir, "tmp.esm"))
     f = JSON.parsefile(joinpath(dir, "tmp.esm"))
-    @test hash(f) == 0x17bea86f2a5a12f0
+    @test bytes2hex(stable_hash(f; version=4)) == "481a404666c215a84ec2f004e6a16fbfd9c5e0d763435cb9ef4a9d303caf9620"
 
     run(`$(shell) esm translate -e $(joinpath("inputs", "example.xlsx")) -t $(joinpath(dir, "tmp2.esm"))`)
     @test isfile(joinpath(dir, "tmp2.esm"))
     f = JSON.parsefile(joinpath(dir, "tmp2.esm"))
-    @test hash(f) == 0x17bea86f2a5a12f0
+    @test bytes2hex(stable_hash(f; version=4)) == "481a404666c215a84ec2f004e6a16fbfd9c5e0d763435cb9ef4a9d303caf9620"
 end
 
 @testitem "Views integration" setup=[environment_path, build, getshell] begin

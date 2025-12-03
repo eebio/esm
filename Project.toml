@@ -51,6 +51,7 @@ Plots = "1.41.1"
 ProgressMeter = "1.10"
 RegularizationTools = "0.6.0"
 SHA = "0.7.0, 1"
+StableHashTraits = "2.0.2"
 Statistics = "1.10"
 StatsBase = "0.34.7"
 StringEncodings = "0.3.7"
@@ -64,9 +65,10 @@ julia = "1"
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+StableHashTraits = "c5dd0088-6c3f-4803-b00e-f31a60c170fa"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [targets]
-test = ["Aqua", "Pkg", "SHA", "Test", "TestItemRunner", "TestItems"]
+test = ["Aqua", "Pkg", "SHA", "Test", "TestItemRunner", "TestItems", "StableHashTraits"]
