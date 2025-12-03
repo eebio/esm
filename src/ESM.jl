@@ -129,15 +129,15 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
             are .esm or .fcs (or directories for generic tabular plate reader data).")
         end
     end
-    if type == "esm"
+    if lowercase(type) == "esm"
         summary(file, ESMData(); plot = plot)
-    elseif type == "fcs"
+    elseif lowercase(type) == "fcs"
         summary(file, FlowCytometryData(); plot = plot)
-    elseif type == "spectramax"
+    elseif lowercase(type) == "spectramax"
         summary(file, SpectraMax(); plot = plot)
-    elseif type == "biotek"
+    elseif lowercase(type) == "biotek"
         summary(file, BioTek(); plot = plot)
-    elseif type == "generic"
+    elseif lowercase(type) == "generic"
         summary(file, GenericTabular(); plot = plot)
     else
         error("Unsupported file type: $type.")
