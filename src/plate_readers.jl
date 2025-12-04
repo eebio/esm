@@ -553,6 +553,25 @@ function calibrate(data, time_col, method::TimeseriesBlank)
     return data .- averaged_blanks
 end
 
+@kwdef struct SmoothedTimeseriesBlank <: AbstractCalibrationMethod
+    blanks::DataFrame
+    time_col::Union{DataFrame, Nothing} = nothing
+end
+
+function calibrate(data, time_col, method::SmoothedTimeseriesBlank)
+    blanks = deepcopy(method.blanks)
+    if !isnothing(method.time_col)
+        blank_time_col = method.time_col
+    else
+        blank_time_col = time_col
+    end
+    averaged_blanks = colmean(blanks)
+    df = DataFrame(od = averaged_blanks, Time = ESM.df2time(blank_time_col)[!, 1])
+    model = lm(@formula(od~Time), df)
+    smoothed_blanks = predict(model, ESM.df2time(time_col))
+    return data .- smoothed_blanks
+end
+
 @kwdef struct MeanBlank <: AbstractCalibrationMethod
     blanks::DataFrame
 end
