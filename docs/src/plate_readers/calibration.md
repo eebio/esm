@@ -12,6 +12,12 @@ The `TimeseriesBlank` method averages across the blank wells, to get a single bl
 
 It can be called using `calibrate(data, time_col, TimeseriesBlank(blanks, blank_time_col))`.
 
+## SmoothedTimeseriesBlank
+
+The `SmoothedTimeseriesBlank` method averages across the blank wells, and then fits a straight line through the blank data (equivalent to fitting through all the blank wells without averaging). It then subtracts this line of best fit from each well in the data.
+
+It can be called using `calibrate(data, time_col, SmoothedTimeseriesBlank(blanks, blank_time_col))`.
+
 ## MeanBlank
 
 The `MeanBlank` method averages both over wells and over time. This gives a single value to calibrate the data against which is subtracted from the `data`.
