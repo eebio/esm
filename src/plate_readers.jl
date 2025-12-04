@@ -542,16 +542,15 @@ function calibrate(data, time_col, method::TimeseriesBlank)
     else
         blank_time_col = time_col
     end
+    averaged_blanks = colmean(blanks)
     # Interpolate blanks to data time points if necessary
     if !isequal(blank_time_col, time_col)
-        for i in names(blanks)
-            li = LinearInterpolation(
-                ESM.df2time(blank_time_col)[!, 1],
-                blanks[!, i])
-            blanks[!, i] = li.(ESM.df2time(time_col)[!, 1])
-        end
+        li = LinearInterpolation(averaged_blanks,
+            ESM.df2time(blank_time_col)[!, 1];
+            extrapolation = ExtrapolationType.Constant)
+        averaged_blanks = li.(ESM.df2time(time_col)[!, 1])
     end
-    return data .- colmean(blanks)
+    return data .- averaged_blanks
 end
 
 @kwdef struct MeanBlank <: AbstractCalibrationMethod

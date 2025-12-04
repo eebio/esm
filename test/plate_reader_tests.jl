@@ -142,6 +142,16 @@ end
           DataFrame(A = [0.5 - 0.155, 0.65 - 0.205, 0.79 - 0.21, 0.83 - 0.2, 0.95 - 0.14],
         B = [1.11 - 0.155, 1.05 - 0.205, 1.23 - 0.21, 1.36 - 0.2, 1.44 - 0.14])
     @test data == datacopy # Check mutation free
+    new_blanks = DataFrame(C = [0.12, 0.14, 0.19], D = [0.22, 0.25, 0.21])
+    new_blanks_copy = deepcopy(new_blanks)
+    blank_time_col = DataFrame(Time = [
+        "00:05:00", "00:25:00", "00:35:00"])
+    @test calibrate(data, time_col,
+        TimeseriesBlank(blanks = new_blanks, time_col = blank_time_col)) ≈
+          DataFrame(A = [0.5 - 0.17, 0.65 - (0.75*0.17+0.25*0.195), 0.79 - (0.25*0.17+0.75*0.195), 0.83 - (0.5*0.195+0.5*0.20), 0.95 - 0.20],
+        B = [1.11 - 0.17, 1.05 - (0.75*0.17+0.25*0.195), 1.23 - (0.25*0.17+0.75*0.195), 1.36 - (0.5*0.195+0.5*0.20), 1.44 - 0.20])
+    @test data == datacopy
+    @test new_blanks == new_blanks_copy
     @test calibrate(data, time_col, MeanBlank(blanks = blanks)) ==
           DataFrame(
         A = [0.5 - 0.182, 0.65 - 0.182, 0.79 - 0.182, 0.83 - 0.182, 0.95 - 0.182],

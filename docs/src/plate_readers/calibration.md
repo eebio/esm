@@ -8,9 +8,6 @@ calibrate
 
 ## TimeseriesBlank
 
-!!! todo "todo"
-    It should probably interpolate if times are different
-
 The `TimeseriesBlank` method averages across the blank wells, to get a single blank timeseries (assuming all the blanks were measured at the same timepoints). It then subtracts this from the data, timepoint by timepoint. So the first timepoint is calibrated by the average of all the blank wells at the first timepoint, the second is calibrated at the second timepoint and so on.
 
 It can be called using `calibrate(data, time_col, TimeseriesBlank(blanks, blank_time_col))`.
