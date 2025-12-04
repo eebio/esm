@@ -133,35 +133,29 @@ end
     using DataFrames
 
     data = DataFrame(A = [0.5, 0.65, 0.79, 0.83, 0.95], B = [1.11, 1.05, 1.23, 1.36, 1.44])
+    time_col = DataFrame(Time = [
+        "00:00:00", "00:10:00", "00:20:00", "00:30:00", "00:40:00"])
     datacopy = deepcopy(data)
     blanks = DataFrame(C = [0.1, 0.15, 0.2, 0.17, 0.08], D = [0.21, 0.26, 0.22, 0.23, 0.2])
 
-    @test calibrate(data, blanks, TimeseriesBlank()) ≈
+    @test calibrate(data, time_col, TimeseriesBlank(blanks = blanks)) ≈
           DataFrame(A = [0.5 - 0.155, 0.65 - 0.205, 0.79 - 0.21, 0.83 - 0.2, 0.95 - 0.14],
         B = [1.11 - 0.155, 1.05 - 0.205, 1.23 - 0.21, 1.36 - 0.2, 1.44 - 0.14])
     @test data == datacopy # Check mutation free
-    @test calibrate(data, blanks, MeanBlank()) ==
+    @test calibrate(data, time_col, MeanBlank(blanks = blanks)) ==
           DataFrame(
         A = [0.5 - 0.182, 0.65 - 0.182, 0.79 - 0.182, 0.83 - 0.182, 0.95 - 0.182],
         B = [1.11 - 0.182, 1.05 - 0.182, 1.23 - 0.182, 1.36 - 0.182, 1.44 - 0.182])
     @test data == datacopy
-    @test calibrate(data, blanks, MinBlank()) ==
+    @test calibrate(data, time_col, MinBlank(blanks = blanks)) ==
           DataFrame(A = [0.5 - 0.08, 0.65 - 0.08, 0.79 - 0.08, 0.83 - 0.08, 0.95 - 0.08],
         B = [1.11 - 0.08, 1.05 - 0.08, 1.23 - 0.08, 1.36 - 0.08, 1.44 - 0.08])
     @test data == datacopy
-    @test calibrate(data, blanks, MinData()) ==
+    @test calibrate(data, time_col, MinData()) ==
           DataFrame(A = [0.5 - 0.5, 0.65 - 0.5, 0.79 - 0.5, 0.83 - 0.5, 0.95 - 0.5],
         B = [1.11 - 1.05, 1.05 - 1.05, 1.23 - 1.05, 1.36 - 1.05, 1.44 - 1.05])
     @test data == datacopy
-    @test calibrate(data, blanks, StartZero()) ==
-          DataFrame(A = [0.5 - 0.5, 0.65 - 0.5, 0.79 - 0.5, 0.83 - 0.5, 0.95 - 0.5],
-        B = [1.11 - 1.11, 1.05 - 1.11, 1.23 - 1.11, 1.36 - 1.11, 1.44 - 1.11])
-    @test data == datacopy
-    @test calibrate(data, MinData()) ==
-          DataFrame(A = [0.5 - 0.5, 0.65 - 0.5, 0.79 - 0.5, 0.83 - 0.5, 0.95 - 0.5],
-        B = [1.11 - 1.05, 1.05 - 1.05, 1.23 - 1.05, 1.36 - 1.05, 1.44 - 1.05])
-    @test data == datacopy
-    @test calibrate(data, StartZero()) ==
+    @test calibrate(data, time_col, StartZero()) ==
           DataFrame(A = [0.5 - 0.5, 0.65 - 0.5, 0.79 - 0.5, 0.83 - 0.5, 0.95 - 0.5],
         B = [1.11 - 1.11, 1.05 - 1.11, 1.23 - 1.11, 1.36 - 1.11, 1.44 - 1.11])
     @test data == datacopy
