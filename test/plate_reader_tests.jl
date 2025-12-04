@@ -152,6 +152,12 @@ end
         B = [1.11 - 0.17, 1.05 - (0.75*0.17+0.25*0.195), 1.23 - (0.25*0.17+0.75*0.195), 1.36 - (0.5*0.195+0.5*0.20), 1.44 - 0.20])
     @test data == datacopy
     @test new_blanks == new_blanks_copy
+
+    tmp = calibrate(data, time_col, SmoothedTimeseriesBlank(blanks = blanks))
+    @test all(all.(eachcol(tmp .< data)))
+    diffs = diff.(eachcol(tmp.-data))
+    @test all(all.([d .≈ diffs[1][1] for d in diffs]))
+
     @test calibrate(data, time_col, MeanBlank(blanks = blanks)) ==
           DataFrame(
         A = [0.5 - 0.182, 0.65 - 0.182, 0.79 - 0.182, 0.83 - 0.182, 0.95 - 0.182],
