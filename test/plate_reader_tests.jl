@@ -157,6 +157,14 @@ end
     @test all(all.(eachcol(tmp .< data)))
     diffs = diff.(eachcol(tmp.-data))
     @test all(all.([d .≈ diffs[1][1] for d in diffs]))
+    @test data == datacopy
+
+    tmp = calibrate(data, time_col, SmoothedTimeseriesBlank(blanks = new_blanks, time_col = blank_time_col))
+    @test all(all.(eachcol(tmp .< data)))
+    diffs = diff.(eachcol(tmp .- data))
+    @test all(all.([d .≈ diffs[1][1] for d in diffs]))
+    @test data == datacopy
+    @test new_blanks == new_blanks_copy
 
     @test calibrate(data, time_col, MeanBlank(blanks = blanks)) ==
           DataFrame(
