@@ -83,11 +83,27 @@ end
           DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, Endpoints(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
-    @test doubling_time(od_df, time_col, Logistic()) ≈ DataFrame(A = 1.0) atol = 1e-3
     @test doubling_time(od_df, time_col, FiniteDiff()) ≈ DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, FiniteDiff(type=:onesided)) ≈ DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, Regularization(order=4.0)) ≈
           DataFrame(A = 1.0)
+
+    # Parametric tests
+    using Dates
+    time_col = DataFrame(:Time => [string(Time(0, 0, 0) + Second(10) * i) for i in 0:60])
+    # Requires full curve, not just a bit of exponential growth
+    f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0))))
+    od_df = f.(ESM.df2time(time_col) ./ 60)
+    rename!(od_df, :Time => :A)
+
+    # Check that the actual growth rate is around 0.35
+    @test doubling_time(od_df, time_col, FiniteDiff())[1, "A"]≈1.95 atol=0.1
+
+    # Test the parametric methods
+    @test doubling_time(od_df, time_col, Logistic())[1, "A"]≈1.95 atol=0.1
+    @test doubling_time(od_df, time_col, Gompertz())[1, "A"]≈1.95 atol=0.1
+    @test doubling_time(od_df, time_col, ModifiedGompertz())[1, "A"]≈1.95 atol=0.1
+    @test doubling_time(od_df, time_col, Richards())[1, "A"]≈1.95 atol=0.1
 end
 
 @testitem "growth_rate" begin
@@ -123,10 +139,9 @@ end
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" growth_rate(od_df, time_col, FiniteDiff(type=:unknown))
 
-    using Dates
-    time_col = DataFrame(:Time => [string(Time(0,0,0) + Second(10) * i) for i in 0:60])
-
     # Parametric tests
+    using Dates
+    time_col = DataFrame(:Time => [string(Time(0, 0, 0) + Second(10) * i) for i in 0:60])
     # Requires full curve, not just a bit of exponential growth
     f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0))))
     od_df = f.(ESM.df2time(time_col)./60)
