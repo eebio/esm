@@ -109,10 +109,6 @@ end
         1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, Endpoints(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, Logistic())[1, "A"] ≈ log(2) atol = 1e-3
-    @test_broken growth_rate(od_df, time_col, Gompertz())[1, "A"]≈log(2) atol=1e-3
-    @test_broken growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈log(2) atol=1e-3
-    @test_broken growth_rate(od_df, time_col, Richards())[1, "A"]≈log(2) atol=1e-3
     @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, Regularization())[1, "A"] ≈ log(2)
@@ -126,6 +122,24 @@ end
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" growth_rate(od_df, time_col, FiniteDiff(type=:unknown))
+
+    using Dates
+    time_col = DataFrame(:Time => [string(Time(0,0,0) + Second(10) * i) for i in 0:60])
+
+    # Parametric tests
+    # Requires full curve, not just a bit of exponential growth
+    f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0))))
+    od_df = f.(ESM.df2time(time_col)./60)
+    rename!(od_df, :Time => :A)
+
+    # Check that the actual growth rate is around 0.35
+    @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"]≈0.35 atol=1e-2
+
+    # Test the parametric methods
+    @test growth_rate(od_df, time_col, Logistic())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Richards())[1, "A"]≈0.35 atol=1e-2
 end
 
 @testitem "calibrate" begin
