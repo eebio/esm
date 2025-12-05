@@ -520,34 +520,75 @@ function growth_rate(df, time_col, method::Regularization)
     return DataFrame(dict)
 end
 
-struct TimeseriesBlank <: AbstractCalibrationMethod end
+@kwdef struct TimeseriesBlank <: AbstractCalibrationMethod
+    blanks::DataFrame
+    time_col::Union{DataFrame, Nothing} = nothing
+end
 
 """
-    calibrate(data, method::AbstractCalibrationMethod)
-    calibrate(data, blanks, method::AbstractCalibrationMethod)
+    calibrate(data, time_col, method::AbstractCalibrationMethod)
 
 Calibrate data, for example, to remove background OD signal.
 
 Arguments:
 - `data::DataFrame`: DataFrame containing the data to be calibrated.
-- `blanks::DataFrame`: DataFrame containing the blank measurements.
+- `time_col::Union{DataFrame, Nothing}`: Time column associated with the data.
 - `method::AbstractCalibrationMethod`: Method to use for calibration.
 """
-function calibrate(data, blanks, ::TimeseriesBlank)
-    return data .- colmean(blanks)
+function calibrate(data, time_col, method::TimeseriesBlank)
+    blanks = deepcopy(method.blanks)
+    if !isnothing(method.time_col)
+        blank_time_col = method.time_col
+    else
+        blank_time_col = time_col
+    end
+    averaged_blanks = colmean(blanks)
+    # Interpolate blanks to data time points if necessary
+    if !isequal(blank_time_col, time_col)
+        li = LinearInterpolation(averaged_blanks,
+            ESM.df2time(blank_time_col)[!, 1];
+            extrapolation = ExtrapolationType.Constant)
+        averaged_blanks = li.(ESM.df2time(time_col)[!, 1])
+    end
+    return data .- averaged_blanks
 end
 
-struct MeanBlank <: AbstractCalibrationMethod end
+@kwdef struct SmoothedTimeseriesBlank <: AbstractCalibrationMethod
+    blanks::DataFrame
+    time_col::Union{DataFrame, Nothing} = nothing
+end
 
-function calibrate(data, blanks, ::MeanBlank)
+function calibrate(data, time_col, method::SmoothedTimeseriesBlank)
+    blanks = deepcopy(method.blanks)
+    if !isnothing(method.time_col)
+        blank_time_col = method.time_col
+    else
+        blank_time_col = time_col
+    end
+    averaged_blanks = colmean(blanks)
+    df = DataFrame(od = averaged_blanks, Time = ESM.df2time(blank_time_col)[!, 1])
+    model = lm(@formula(od~Time), df)
+    smoothed_blanks = predict(model, ESM.df2time(time_col))
+    return data .- smoothed_blanks
+end
+
+@kwdef struct MeanBlank <: AbstractCalibrationMethod
+    blanks::DataFrame
+end
+
+function calibrate(data, _, method::MeanBlank)
+    blanks = method.blanks
     # Average blanks over time
     means = mean(colmean(blanks))
     return data .- means
 end
 
-struct MinBlank <: AbstractCalibrationMethod end
+@kwdef struct MinBlank <: AbstractCalibrationMethod
+    blanks::DataFrame
+end
 
-function calibrate(data, blanks, ::MinBlank)
+function calibrate(data, _, method::MinBlank)
+    blanks = method.blanks
     # Minimum blank over time
     mins = minimum(minimum(eachcol(blanks)))
     return data .- mins
@@ -565,10 +606,6 @@ function calibrate(data, _, ::MinData)
     return data
 end
 
-function calibrate(data, ::MinData)
-    calibrate(data, nothing, MinData())
-end
-
 struct StartZero <: AbstractCalibrationMethod end
 
 function calibrate(data, _, ::StartZero)
@@ -579,8 +616,4 @@ function calibrate(data, _, ::StartZero)
         data[!, i] .-= starts[i]
     end
     return data
-end
-
-function calibrate(data, ::StartZero)
-    calibrate(data, nothing, StartZero())
 end
