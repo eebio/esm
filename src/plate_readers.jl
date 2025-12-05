@@ -396,26 +396,26 @@ end
 # TODO these equations need fixing to ensure they make sense biologically
 function Logistic()
     return ParametricGrowthRate(
-        (t, p) -> p[2] ./ (1 .+ exp.(-p[1] .* (t .- p[3]))),
-        [1, 1e-3, 10])
+        (t, p) -> p[2] ./ (1 .+ exp.(4*p[1]/p[2] .* (p[3] .- t) .+ 2)),
+        [1.0, 4.0, 5.0])
 end
 
 function Gompertz()
     return ParametricGrowthRate(
-        (t, p) -> p[2] .* exp.(-exp(-p[1] .* (t .- p[3]))),
-        [1, 1e-3, 10])
+        (t, p) -> p[2] .* exp.(-exp.(p[1].*exp(1)./p[2] .* (p[3] .- t) .+ 1)),
+        [1.0, 4.0, 5.0])
 end
 
 function ModifiedGompertz()
     return ParametricGrowthRate(
-        (t, p) -> p[2] .* exp.(-exp((p[1] * exp(1) / p[2]) .* (p[3] - t) .+ 1)),
-        [1, 1e-3, 10])
+        (t, p) -> p[2] .* exp.(-exp.((p[1] .* exp(1) ./ p[2]) .* (p[3] .- t) .+ 1)) .+ p[2] .* exp.(p[4]*(t .- p[5])),
+        [1.0, 4.0, 5.0, 1.0, 4.0])
 end
 
 function Richards()
     return ParametricGrowthRate(
-        (t, p) -> p[2] ./ (1 .+ exp(-p[1] .* (t .- p[3]))) .^ (1 ./ p[4]),
-        [1, 1e-3, 10, 1])
+        (t, p) -> p[2] ./ ((1 .+ exp(p[4]) .* exp(1+exp(p[4])) .* exp.(p[1]/p[2] .* (1+exp(p[4]))^(1+1/exp(p[4])) .* (p[3] .- t))) .^ (1 ./ exp(p[4]))),
+        [1.0, 4.0, 5.0, 0.0]) # Shape parameter is log transformed to ensure it's positive
 end
 
 function growth_rate(df, time_col, method::ParametricGrowthRate)
@@ -425,11 +425,14 @@ function growth_rate(df, time_col, method::ParametricGrowthRate)
         t = time_col[!, 1]
         y = df[!, i]
 
+        t = t[y .> 0]
+        y = y[y .> 0]
+        ly = log.(y./first(y))
         # residual function for NonlinearLeastSquaresProblem
         # signature (res, u, p, t) is used by NonlinearSolve
         residuals! = function (res, u, _)
             for k in eachindex(t)
-                res[k] = method.func(t[k], u) - y[k]
+                res[k] = method.func(t[k], u) .- ly[k]
             end
             return nothing
         end
