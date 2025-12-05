@@ -96,7 +96,7 @@ end
     od_df = f.(ESM.df2time(time_col) ./ 60)
     rename!(od_df, :Time => :A)
 
-    # Check that the actual growth rate is around 0.35
+    # Check that the actual doubling time is around 1.95
     @test doubling_time(od_df, time_col, FiniteDiff())[1, "A"]≈1.95 atol=0.1
 
     # Test the parametric methods
