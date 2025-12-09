@@ -1,6 +1,8 @@
 using GLM
 using Statistics
 using CSV
+using Printf
+using XLSX
 using StringEncodings
 using NonlinearSolve
 import Base.read
@@ -75,6 +77,8 @@ function read_multipr_file(file, ptype, channels, channel_map)
         ptype = SpectraMax()
     elseif lowercase(ptype) == "biotek"
         ptype = BioTek()
+    elseif lowercase(ptype) == "tecan"
+        ptype = Tecan()
     elseif lowercase(ptype) == "generic"
         ptype = GenericTabular()
     else
@@ -225,6 +229,49 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
         rename!(df, temp_name => "temperature")
         time_name = names(df)[1]
         rename!(df, time_name => "time")
+        # Remove empty columns
+        df = df[:, Not(all.(ismissing, eachcol(df)))]
+        # Do I need to drop temperature?)
+        out[channel] = df
+    end
+    return out
+end
+
+struct Tecan <: AbstractPlateReader end
+
+function Base.read(file::AbstractString, ::Tecan; channels = nothing)
+    workbook = XLSX.readxlsx(file)
+    sh = workbook["Sheet2"]
+    isdata = .! ismissing.(sh[:, 1])
+    rl = [runlength(isdata, i) for i in eachindex(isdata)]
+    datalocations = findall(x -> x == maximum(rl), rl)
+    data = []
+    for i in datalocations
+        # Find and push the data onto table
+        tmp = sh[i:(i + rl[i] - 1), :]
+        push!(data, permutedims(tmp))
+    end
+    # Create the dataframes
+    out = Dict()
+    for i in eachindex(data)
+        channel = data[i][1, 1]
+        if !isnothing(channels) && !(channel in channels)
+            continue
+        end
+        df = DataFrame(data[i][2:end, 3:end], :auto)
+        rename!(df, convert(Vector{String}, data[i][1, 3:end]))
+        temp_name = names(df)[2]
+        rename!(df, temp_name => "temperature")
+        time_name = names(df)[1]
+        rename!(df, time_name => "time")
+        # Change time format
+        function seconds_to_hms(x)
+            h = x ÷ 3600
+            m = (x % 3600) ÷ 60
+            s = round(x % 60)
+            return @sprintf("%02d:%02d:%02d", h, m, s)
+        end
+        df[!, "time"] = seconds_to_hms.(convert(Vector{Int}, round.(df[!, "time"])))
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Do I need to drop temperature?)
