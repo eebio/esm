@@ -137,6 +137,8 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         summary(file, SpectraMax(); plot = plot)
     elseif lowercase(type) == "biotek"
         summary(file, BioTek(); plot = plot)
+    elseif lowercase(type) == "tecan"
+        summary(file, Tecan(); plot = plot)
     elseif lowercase(type) == "generic"
         summary(file, GenericTabular(); plot = plot)
     else
