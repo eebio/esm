@@ -244,7 +244,7 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
     sh = workbook["Sheet2"]
     isdata = .! ismissing.(sh[:, 1])
     rl = [runlength(isdata, i) for i in eachindex(isdata)]
-    datalocations = findall(x -> x == maximum(rl), rl)
+    datalocations = findall(isequal("Cycle Nr."), vec(sh[:, 1])) .- 1
     data = []
     for i in datalocations
         # Find and push the data onto table
