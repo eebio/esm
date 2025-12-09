@@ -114,21 +114,23 @@ function to_rfi(es, sample_name)
                 amp_gain = sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
                 amp_gain = parse(Int, amp_gain)
             end
-            o[i] = Dict(
-                :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain,
-                :min => 1 / amp_gain, :max => range / amp_gain)
+            data = sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain
+            min = 1 / amp_gain
+            max = range / amp_gain
         else
             # Non-linear gain
-            o[i] = Dict(
-                :data => amp_type[2] *
-                         10 .^ (amp_type[1] *
-                          (sub.values[sub.name .== "$sample_name.$i", :][1] / range)),
-                :min => amp_type[2] * 10^(amp_type[1] * (1 / range)),
-                :max => amp_type[2] * 10^(amp_type[1] * (range / range)))
+            data = amp_type[2] *
+                   10 .^ (amp_type[1] *
+                    (sub.values[sub.name .== "$sample_name.$i", :][1] / range))
+            min = amp_type[2] * 10^(amp_type[1] * (1 / range))
+            max = amp_type[2] * 10^(amp_type[1] * (range / range))
         end
-        o[i][:id] = 1:length(o[i][:data])
+        o["$i.min"] = min
+        o["$i.max"] = max
+        o[i] = data
     end
-    return o
+    o["id"] = 1:length(o[i])
+    return DataFrame(o)
 end
 
 """
