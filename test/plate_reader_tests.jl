@@ -11,7 +11,7 @@
     wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
     @test issetequal(keys(data[:samples]), wells)
 
-    @test all(keys(read("inputs/spectramax-data.txt", SpectraMax(); channels=["600 700"])) .== ["600 700"])
+    @test issetequal(keys(read("inputs/spectramax-data.txt", SpectraMax(); channels=["600 700"])), ["600 700"])
 end
 
 @testitem "read biotek" setup=[environment_path] begin
@@ -27,9 +27,27 @@ end
     wells = [wells..., "plate_01_temperature", "plate_01_time"]  # Flatten to a 1D vector
     @test issetequal(wells, keys(data[:samples]))
 
-    @test all(keys(read(
-        "inputs/biotek-data.csv", BioTek(); channels = ["600"])) .==
-              ["600"])
+    @test issetequal(keys(read(
+        "inputs/biotek-data.csv", BioTek(); channels = ["600"])), ["600"])
+end
+
+@testitem "read tecan" setup=[environment_path] begin
+    println("read tecan")
+    data = read_data("inputs/tecan.xlsx")
+    @test issetequal(keys(data[:samples]["plate_01_a1"][:values]), ["OD 600", "OD 700", "GFP"])
+    @test data[:samples]["plate_01_a1"][:values]["OD 600"][[1, 2, end - 1, end]] ==
+          convert.(Float32, [0.1378, 0.1437, 0.1451, 0.1453])
+    @test data[:samples]["plate_01_h12"][:values]["GFP"][[1, 2, end - 1, end]] == [
+        68, 70, 84, 84]
+    wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
+    wells = [wells..., "plate_01_temperature", "plate_01_time"]
+    @test issetequal(keys(data[:samples]), wells)
+
+    @test data[:samples]["plate_01_time"][:values]["OD 600"][[1, 2, end-1, end]] ==
+          ["00:00:00", "00:12:46", "15:43:43", "15:56:28"]
+
+    @test issetequal(keys(read(
+        "inputs/tecan-data.xlsx", Tecan(); channels = ["OD 600", "GFP"])), ["OD 600", "GFP"])
 end
 
 @testitem "read plate reader directories" setup=[environment_path] begin
@@ -49,9 +67,8 @@ end
     @test data[:samples]["plate_01_a1"][:values]["flo"][1:3] == [21, 22, 20]
     @test data[:samples]["plate_01_h12"][:values]["flo"][end] == 7
 
-    @test all(keys(read(
-        "inputs/pr_folder", GenericTabular(); channels = ["OD"])) .==
-              ["OD"])
+    @test issetequal(keys(read(
+        "inputs/pr_folder", GenericTabular(); channels = ["OD"])), ["OD"])
 end
 
 @testitem "read pr errors" begin

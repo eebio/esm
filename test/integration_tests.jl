@@ -115,6 +115,12 @@ end
     run(`$(shell) esm summarise -f $(joinpath(dir, "biotek-summarise.csv")) --type biotek -p`)
     @test isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
 
+    cp(joinpath("inputs", "tecan-summarise.xlsx"), joinpath(dir, "tecan-summarise.xlsx"))
+    run(`$(shell) esm summarise --file $(joinpath(dir, "tecan-summarise.xlsx")) --type tecan`)
+    @test !isfile(joinpath(dir, "tecan-summarise.xlsx.pdf"))
+    run(`$(shell) esm summarise -f $(joinpath(dir, "tecan-summarise.xlsx")) --type tecan -p`)
+    @test isfile(joinpath(dir, "tecan-summarise.xlsx.pdf"))
+
     cp(joinpath("inputs", "pr_folder"), joinpath(dir, "pr_folder"))
     run(`$(shell) esm summarise --file $(joinpath(dir, "pr_folder"))`)
     @test !isfile(joinpath(dir, "pr_folder.pdf"))
@@ -135,9 +141,11 @@ end
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
     cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))
     cp(joinpath("inputs", "biotek-summarise.csv"), joinpath(dir, "biotek-summarise.csv"))
+    cp(joinpath("inputs", "tecan-summarise.xlsx"), joinpath(dir, "tecan-summarise.xlsx"))
     cp(joinpath("inputs", "pr_folder"), joinpath(dir, "pr_folder"))
     summarise(file = joinpath(dir, "small.fcs"), plot = true)
     summarise(file = joinpath(dir, "spectramax-summarise.txt"), type = "spectramax", plot = true)
     summarise(file = joinpath(dir, "biotek-summarise.csv"), type = "biotek", plot = true)
+    summarise(file = joinpath(dir, "tecan-summarise.xlsx"), type = "tecan", plot = true)
     summarise(file = joinpath(dir, "pr_folder"), plot = true)
 end

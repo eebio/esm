@@ -33,7 +33,7 @@ export KDE
 export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
 export AbstractESMDataType, AbstractPlateReader
-export ESMData, FlowCytometryData, BioTek, SpectraMax, GenericTabular
+export ESMData, FlowCytometryData, BioTek, SpectraMax, Tecan, GenericTabular
 export summary
 
 """
@@ -137,6 +137,8 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         summary(file, SpectraMax(); plot = plot)
     elseif lowercase(type) == "biotek"
         summary(file, BioTek(); plot = plot)
+    elseif lowercase(type) == "tecan"
+        summary(file, Tecan(); plot = plot)
     elseif lowercase(type) == "generic"
         summary(file, GenericTabular(); plot = plot)
     else
