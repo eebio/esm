@@ -179,7 +179,7 @@ function gate(data, method::KDE)
     threshold = density_values[top_indice]
     # Only keep the values denser than the threshold
     inside_indices = density_values .> threshold
-    return apply_mask(data, inside_indices)
+    return data[inside_indices, :]
 end
 
 @kwdef struct HighLowGate <: AbstractManualGate
@@ -190,7 +190,7 @@ end
 
 function gate(data, method::HighLowGate)
     dat_mask = method.min .<= data[!, method.channel] .< method.max
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 @kwdef struct RectangleGate <: AbstractManualGate
@@ -205,7 +205,7 @@ end
 function gate(data, method::RectangleGate)
     dat_mask = (method.x_min .<= data[!, method.channel_x] .< method.x_max) .&
                (method.y_min .<= data[!, method.channel_y] .< method.y_max)
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 @kwdef struct QuadrantGate <: AbstractManualGate
@@ -232,7 +232,7 @@ function gate(data, method::QuadrantGate)
     else
         error("Quadrant must be between 1 and 4.")
     end
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 @kwdef struct PolygonGate <: AbstractManualGate
@@ -245,7 +245,7 @@ function gate(data, method::PolygonGate)
     poly = PolyArea(method.points)
     combined_data = zip(data[!, method.channel_x], data[!, method.channel_y])
     dat_mask = [Point(xi, yi) ∈ poly for (xi, yi) in combined_data]
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 struct EllipseGate <: AbstractManualGate
@@ -299,7 +299,7 @@ function gate(data, method::EllipseGate)
         val = (x_rot^2) / (a^2) + (y_rot^2) / (b^2)
         dat_mask[i] = val <= 1.0
     end
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 """
@@ -399,7 +399,7 @@ function gate(data, method::OrGate)
         mask2 .= mask2 .& [id ∈ data2["id"] for id in data["id"]]
     end
     final_mask = mask1 .| mask2
-    return apply_mask(data, final_mask)
+    return data[final_mask, :]
 end
 
 function gate(data, method::NotGate)
@@ -409,14 +409,5 @@ function gate(data, method::NotGate)
         mask1 .= mask1 .& [id ∈ data1["id"] for id in data["id"]]
     end
     final_mask = .!mask1
-    return apply_mask(data, final_mask)
-end
-
-function apply_mask(data, mask)
-    data = deepcopy(data)
-    for i in keys(data)
-        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], mask) if m]
-        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], mask) if m]
-    end
-    return data
+    return data[final_mask, :]
 end
