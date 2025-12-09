@@ -1,11 +1,19 @@
 @testmodule MockFlow begin
     println("MockFlow")
-    # Example output from to_rfi
-    data = Dict(
-        "FSC_A" => Dict(:max => 1e5, :min => 0.0, :data => [1.0, 2.0, 3.0, 4.0, 5.0], :id => [1,2,3,4,5]),
-        "SSC_A" => Dict(:max => 1e5, :min => 0.0, :data => [100.0, 200.0, 300.0, 400.0, 500.0], :id => [1,2,3,4,5]),
-        "FL1_A" => Dict(:max => 1e5, :min => 0.0, :data => [510.0, 520.0, 530.0, 540.0, 550.0], :id => [1,2,3,4,5]),
-        "FL2_A" => Dict(:max => 1e5, :min => 0.0, :data => [51.0, 52.0, 53.0, 54.0, 55.0], :id => [1,2,3,4,5]),
+    data = DataFrame(
+        "FSC_A" => [1.0, 2.0, 3.0, 4.0, 5.0],
+        "FSC_A.min" => fill(0.0, 5),
+        "FSC_A.max" => fill(1e5, 5),
+        "SSC_A" => [100.0, 200.0, 300.0, 400.0, 500.0],
+        "SSC_A.min" => fill(0.0, 5),
+        "SSC_A.max" => fill(1e5, 5),
+        "FL1_A" => [510.0, 520.0, 530.0, 540.0, 550.0],
+        "FL1_A.min" => fill(0.0, 5),
+        "FL1_A.max" => fill(1e5, 5),
+        "FL2_A" => [51.0, 52.0, 53.0, 54.0, 55.0],
+        "FL2_A.min" => fill(0.0, 5),
+        "FL2_A.max" => fill(1e5, 5),
+        "id" => [1, 2, 3, 4, 5]
     )
 end
 
