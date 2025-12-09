@@ -82,22 +82,16 @@ function get_group(es, grn)
     # Is the group a flow group?
     sample_types = es.samples.type[getproperty(es.samples, grn)]
     if all(sample_types .== "population")
-        data = [ESM.to_rfi(es, sample) for sample in find_group(es, string(grn))]
+        data = [deepcopy(ESM.to_rfi(es, sample)) for sample in find_group(es, string(grn))]
         # Check the data is compatible
         # All samples must have the same channels
         channels = [sort(collect(keys(d))) for d in data]
         @assert all([all(c .== channels[1]) for c in channels]) "Samples in group $grn have different channels."
-        events = 0
-        tmp = Dict{eltype(keys(data[1])), eltype(values(data[1]))}()
-        for d in data
-            for k in keys(d)
-                if !haskey(tmp, k)
-                    tmp[k] = Dict(:max => d[k][:max], :min => d[k][:min], :data => Float64[], :id => Int[])
-                end
-                append!(tmp[k][:data], d[k][:data])
-                append!(tmp[k][:id], (events .+ d[k][:id]))
-            end
-            events += ESM.event_count(d)
+        tmp = data[1]
+        for d in data[2:end]
+            id_offset = maximum(tmp.id)
+            d.id .+= id_offset
+            tmp = vcat(tmp, d)
         end
         return tmp
     elseif all(sample_types .== "timeseries")
