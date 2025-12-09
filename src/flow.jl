@@ -311,11 +311,7 @@ Arguments:
 - `data::Dict`: Dict returned by [to_rfi](@ref).
 """
 function event_count(data)
-    if !all(length(data[i]) == length(data[first(keys(data))])
-    for i in keys(data))
-        error("All channels must have the same number of events.")
-    end
-    return length(data[first(keys(data))])
+    return nrow(data)
 end
 
 """
