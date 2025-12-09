@@ -27,8 +27,8 @@ end
 
 function filter_channel(df, channel)
     channel = string(channel)
-    if df isa Dict
-        return Dict(channel => df[channel])
+    if haskey(df, "id")
+        return df[:, contains.(names(df), "FL1_A") .|| names(df) .== "id"]
     end
     return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel", names(df))], channel)
 end
