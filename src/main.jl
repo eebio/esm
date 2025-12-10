@@ -27,8 +27,8 @@ end
 
 function filter_channel(df, channel)
     channel = string(channel)
-    if haskey(df, "id")
-        return df[:, contains.(names(df), "FL1_A") .|| names(df) .== "id"]
+    if "id" in names(df)
+        return df[:, contains.(names(df), channel) .|| names(df) .== "id"]
     end
     return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel", names(df))], channel)
 end
@@ -85,8 +85,7 @@ function get_group(es, grn)
         data = [deepcopy(ESM.to_rfi(es, sample)) for sample in find_group(es, string(grn))]
         # Check the data is compatible
         # All samples must have the same channels
-        channels = [sort(collect(keys(d))) for d in data]
-        @assert all([all(c .== channels[1]) for c in channels]) "Samples in group $grn have different channels."
+        @assert all([sort(names(d))==sort(names(data[1])) for d in data]) "Samples in group $grn have different channels."
         tmp = data[1]
         for d in data[2:end]
             id_offset = maximum(tmp.id)

@@ -129,8 +129,8 @@ function to_rfi(es, sample_name)
         o["$i.max"] = max
         o[i] = data
     end
-    o["id"] = 1:length(o[i])
     return DataFrame(o)
+    o["id"] = 1:length(o[chans[1]])
 end
 
 """
@@ -388,22 +388,15 @@ end
 function gate(data, method::OrGate)
     data1 = gate(data, method.gate1)
     data2 = gate(data, method.gate2)
-    mask1 = [true for i in 1:event_count(data)]
-    mask2 = [true for i in 1:event_count(data)]
-    for i in keys(data)
-        mask1 .= mask1 .& [id ∈ data1["id"] for id in data["id"]]
-        mask2 .= mask2 .& [id ∈ data2["id"] for id in data["id"]]
-    end
+    mask1 = [id ∈ data1.id for id in data.id]
+    mask2 = [id ∈ data2.id for id in data.id]
     final_mask = mask1 .| mask2
     return data[final_mask, :]
 end
 
 function gate(data, method::NotGate)
     data1 = gate(data, method.gate1)
-    mask1 = [true for i in 1:event_count(data)]
-    for i in keys(data)
-        mask1 .= mask1 .& [id ∈ data1["id"] for id in data["id"]]
-    end
+    mask1 = [id ∈ data1.id for id in data.id]
     final_mask = .!mask1
     return data[final_mask, :]
 end

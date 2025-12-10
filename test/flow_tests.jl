@@ -1,5 +1,6 @@
 @testmodule MockFlow begin
     println("MockFlow")
+    using DataFrames
     data = DataFrame(
         "FSC_A" => [1.0, 2.0, 3.0, 4.0, 5.0],
         "FSC_A.min" => fill(0.0, 5),
