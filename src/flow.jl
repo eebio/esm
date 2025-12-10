@@ -114,21 +114,23 @@ function to_rfi(es, sample_name)
                 amp_gain = sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
                 amp_gain = parse(Int, amp_gain)
             end
-            o[i] = Dict(
-                :data => sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain,
-                :min => 1 / amp_gain, :max => range / amp_gain)
+            data = sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain
+            min = 1 / amp_gain
+            max = range / amp_gain
         else
             # Non-linear gain
-            o[i] = Dict(
-                :data => amp_type[2] *
-                         10 .^ (amp_type[1] *
-                          (sub.values[sub.name .== "$sample_name.$i", :][1] / range)),
-                :min => amp_type[2] * 10^(amp_type[1] * (1 / range)),
-                :max => amp_type[2] * 10^(amp_type[1] * (range / range)))
+            data = amp_type[2] *
+                   10 .^ (amp_type[1] *
+                    (sub.values[sub.name .== "$sample_name.$i", :][1] / range))
+            min = amp_type[2] * 10^(amp_type[1] * (1 / range))
+            max = amp_type[2] * 10^(amp_type[1] * (range / range))
         end
-        o[i][:id] = 1:length(o[i][:data])
+        o["$i.min"] = min
+        o["$i.max"] = max
+        o[i] = data
     end
-    return o
+    o["id"] = 1:length(o[chans[1]])
+    return DataFrame(o)[!, sort(names(DataFrame(o)))]
 end
 
 """
@@ -153,8 +155,8 @@ function gate(data, method::KDE)
     gate_frac = method.gate_frac
     nbins = method.nbins
     length(channels) == 2 || error("2 channels must be specified for density gating.")
-    x = data[channels[1]][:data]
-    y = data[channels[2]][:data]
+    x = data[!, channels[1]]
+    y = data[!, channels[2]]
     N = length(x)
 
     hist_counts = fit(Histogram, (x, y); nbins = nbins)
@@ -177,7 +179,7 @@ function gate(data, method::KDE)
     threshold = density_values[top_indice]
     # Only keep the values denser than the threshold
     inside_indices = density_values .> threshold
-    return apply_mask(data, inside_indices)
+    return data[inside_indices, :]
 end
 
 @kwdef struct HighLowGate <: AbstractManualGate
@@ -187,8 +189,8 @@ end
 end
 
 function gate(data, method::HighLowGate)
-    dat_mask = method.min .<= data[method.channel][:data] .< method.max
-    return apply_mask(data, dat_mask)
+    dat_mask = method.min .<= data[!, method.channel] .< method.max
+    return data[dat_mask, :]
 end
 
 @kwdef struct RectangleGate <: AbstractManualGate
@@ -201,9 +203,9 @@ end
 end
 
 function gate(data, method::RectangleGate)
-    dat_mask = (method.x_min .<= data[method.channel_x][:data] .< method.x_max) .&
-               (method.y_min .<= data[method.channel_y][:data] .< method.y_max)
-    return apply_mask(data, dat_mask)
+    dat_mask = (method.x_min .<= data[!, method.channel_x] .< method.x_max) .&
+               (method.y_min .<= data[!, method.channel_y] .< method.y_max)
+    return data[dat_mask, :]
 end
 
 @kwdef struct QuadrantGate <: AbstractManualGate
@@ -216,21 +218,21 @@ end
 
 function gate(data, method::QuadrantGate)
     if method.quadrant == 1
-        dat_mask = (data[method.channel_x][:data] .>= method.x_cutoff) .&
-                   (data[method.channel_y][:data] .>= method.y_cutoff)
+        dat_mask = (data[!, method.channel_x] .>= method.x_cutoff) .&
+                   (data[!, method.channel_y] .>= method.y_cutoff)
     elseif method.quadrant == 2
-        dat_mask = (data[method.channel_x][:data] .>= method.x_cutoff) .&
-                   (data[method.channel_y][:data] .< method.y_cutoff)
+        dat_mask = (data[!, method.channel_x] .>= method.x_cutoff) .&
+                   (data[!, method.channel_y] .< method.y_cutoff)
     elseif method.quadrant == 3
-        dat_mask = (data[method.channel_x][:data] .< method.x_cutoff) .&
-                   (data[method.channel_y][:data] .< method.y_cutoff)
+        dat_mask = (data[!, method.channel_x] .< method.x_cutoff) .&
+                   (data[!, method.channel_y] .< method.y_cutoff)
     elseif method.quadrant == 4
-        dat_mask = (data[method.channel_x][:data] .< method.x_cutoff) .&
-                   (data[method.channel_y][:data] .>= method.y_cutoff)
+        dat_mask = (data[!, method.channel_x] .< method.x_cutoff) .&
+                   (data[!, method.channel_y] .>= method.y_cutoff)
     else
         error("Quadrant must be between 1 and 4.")
     end
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 @kwdef struct PolygonGate <: AbstractManualGate
@@ -241,9 +243,9 @@ end
 
 function gate(data, method::PolygonGate)
     poly = PolyArea(method.points)
-    combined_data = zip(data[method.channel_x][:data], data[method.channel_y][:data])
+    combined_data = zip(data[!, method.channel_x], data[!, method.channel_y])
     dat_mask = [Point(xi, yi) ∈ poly for (xi, yi) in combined_data]
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 struct EllipseGate <: AbstractManualGate
@@ -287,9 +289,9 @@ function gate(data, method::EllipseGate)
     sin_angle = sind(method.angle)
     cx, cy = method.center
     a, b = method.a, method.b
-    dat_mask = zeros(Bool, length(data[method.channel_x][:data]))
-    for (i, xi, yi) in zip(1:event_count(data), data[method.channel_x][:data],
-        data[method.channel_y][:data])
+    dat_mask = zeros(Bool, length(data[!, method.channel_x]))
+    for (i, xi, yi) in zip(1:event_count(data), data[!, method.channel_x],
+        data[!, method.channel_y])
         # Rotate points onto ellipse axes
         x_rot = cos_angle * (xi - cx) + sin_angle * (yi - cy)
         y_rot = -sin_angle * (xi - cx) + cos_angle * (yi - cy)
@@ -297,7 +299,7 @@ function gate(data, method::EllipseGate)
         val = (x_rot^2) / (a^2) + (y_rot^2) / (b^2)
         dat_mask[i] = val <= 1.0
     end
-    return apply_mask(data, dat_mask)
+    return data[dat_mask, :]
 end
 
 """
@@ -309,11 +311,7 @@ Arguments:
 - `data::Dict`: Dict returned by [to_rfi](@ref).
 """
 function event_count(data)
-    if !all(length(data[i][:data]) == length(data[first(keys(data))][:data])
-    for i in keys(data))
-        error("All channels must have the same number of events.")
-    end
-    return length(data[first(keys(data))][:data])
+    return nrow(data)
 end
 
 """
@@ -390,31 +388,15 @@ end
 function gate(data, method::OrGate)
     data1 = gate(data, method.gate1)
     data2 = gate(data, method.gate2)
-    mask1 = [true for i in 1:event_count(data)]
-    mask2 = [true for i in 1:event_count(data)]
-    for i in keys(data)
-        mask1 .= mask1 .& [id ∈ data1[i][:id] for id in data[i][:id]]
-        mask2 .= mask2 .& [id ∈ data2[i][:id] for id in data[i][:id]]
-    end
+    mask1 = [id ∈ data1.id for id in data.id]
+    mask2 = [id ∈ data2.id for id in data.id]
     final_mask = mask1 .| mask2
-    return apply_mask(data, final_mask)
+    return data[final_mask, :]
 end
 
 function gate(data, method::NotGate)
     data1 = gate(data, method.gate1)
-    mask1 = [true for i in 1:event_count(data)]
-    for i in keys(data)
-        mask1 .= mask1 .& [id ∈ data1[i][:id] for id in data[i][:id]]
-    end
+    mask1 = [id ∈ data1.id for id in data.id]
     final_mask = .!mask1
-    return apply_mask(data, final_mask)
-end
-
-function apply_mask(data, mask)
-    data = deepcopy(data)
-    for i in keys(data)
-        data[i][:data] = [xi for (xi, m) in zip(data[i][:data], mask) if m]
-        data[i][:id] = [xi for (xi, m) in zip(data[i][:id], mask) if m]
-    end
-    return data
+    return data[final_mask, :]
 end
