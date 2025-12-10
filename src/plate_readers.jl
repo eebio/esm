@@ -195,8 +195,9 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
     all_channels = []
     for i in eachindex(data)
         tmp = split(data[i][1], "\t")
+        tmp = [strip(t) for t in tmp if !isempty(strip(t))]
         type = tmp[6]
-        channel = strip(type == "Fluorescence" ? tmp[14] * "_" * tmp[18] : tmp[13])
+        channel = type == "Fluorescence" ? tmp[14] * "_" * tmp[18] : tmp[13]
         push!(all_channels, (channel, type))
     end
     # Process possible duplicate channel names
@@ -232,7 +233,6 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         end
     end
     for i in eachindex(data)
-        tmp = split(data[i][1], "\t")
         channel = all_channels[i][1]
         if !isnothing(channels) && !(channel in channels)
             continue
