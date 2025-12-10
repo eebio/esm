@@ -6,10 +6,14 @@
     @test data[:samples]["plate_01_e12"][:values]["abs600"][[1, 2, end - 1, end]] == [
         0.0764, 0.1030, 0.4580, 0.5212]
     wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
-    wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
+    wells = [string("plate_02_", row, col) for row in 'a':'h', col in 1:12]
+    wells = [wells..., "plate_01_time", "plate_01_temperature", "plate_02_time", "plate_02_temperature"]  # Flatten to a 1D vector
     @test issetequal(keys(data[:samples]), wells)
 
     @test issetequal(keys(read("inputs/spectramax-data.txt", SpectraMax(); channels=["600", "700"])), ["600", "700"])
+    @test issetequal(
+        keys(read("inputs/spectramax-data.txt", SpectraMax(); channels = ["535_485_1", "535_485_2", "535_485_3"])),
+        ["535_485_1", "535_485_2", "535_485_3"])
 end
 
 @testitem "read biotek" setup=[environment_path] begin
