@@ -337,50 +337,61 @@ end
     # Test accessing views
     @test ESM.sexp_to_nested_list(:flow_cyt, es, trans_meta_map) == 1
     # Test accessing groups
-    @test ESM.sexp_to_nested_list(:plate_01, es, trans_meta_map) == Dict{Any, Any}(
-        "FL1_A" => Dict(
-            :data => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
-            :id => collect(1:8), :max => 1024.0, :min => 1.0),
-        "SSC_H" => Dict(
-            :data => [0.11039991779173976, 0.18187190885323648,
+    df = DataFrame(
+        "FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
+        "SSC_H" => [0.11039991779173976, 0.18187190885323648,
                 0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
                 0.272613196449465, 0.01778279410038923, 0.9955128609158501],
-            :id => collect(1:8), :max => 1.0, :min => 0.010045073642544625),
-        "FSC_H" => Dict(
-            :data => [634.0, 965.0, 643.0, 1015.0, 628.0, 1023.0, 373.0, 1023.0],
-            :id => collect(1:8), :max => 1024.0, :min => 1.0)
-        )
+        "FSC_H" => [
+            634.0, 965.0, 643.0, 1015.0,
+            628.0, 1023.0, 373.0, 1023.0],
+        "id" => collect(1:8),
+        "FL1_A.max" => fill(1024.0, 8),
+        "FL1_A.min" => fill(1.0, 8),
+        "SSC_H.max" => fill(1.0, 8),
+        "SSC_H.min" => fill(0.010045073642544625, 8),
+        "FSC_H.max" => fill(1024.0, 8),
+        "FSC_H.min" => fill(1.0, 8))
+    @test ESM.sexp_to_nested_list(:plate_01, es, trans_meta_map) == df[!, sort(names(df))]
     # Test other symbols - should just be returned
     @test ESM.sexp_to_nested_list(:not_defined, es, trans_meta_map) == :not_defined
     @test ESM.sexp_to_nested_list(:(form_df(es.samples)), es, trans_meta_map) ==
           :(form_df(es.samples))
     # Test samples
-    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) == Dict{Any, Any}(
-        "FL1_A" => Dict{Symbol, Any}(
-            :max => 1024.0, :id => 1:4, :data => [54.0, 143.0, 25.0, 71.0], :min => 1.0),
-        "SSC_H" => Dict{Symbol, Any}(:max => 1.0,
-            :id => 1:4,
-            :data => [0.11039991779173976, 0.18187190885323648,
-                0.04740031742312117, 2.8133175148587766],
-            :min => 0.010045073642544625),
-        "FSC_H" => Dict{Symbol, Any}(
-            :max => 1024.0, :id => 1:4, :data => [634.0, 965.0, 643.0, 1015.0], :min => 1.0))
+    df = DataFrame(
+        "FL1_A" => [54.0, 143.0, 25.0, 71.0],
+        "SSC_H" => [
+            0.11039991779173976, 0.18187190885323648,
+            0.04740031742312117, 2.8133175148587766],
+        "FSC_H" => [634.0, 965.0, 643.0, 1015.0],
+        "id" => [1, 2, 3, 4],
+        "FL1_A.max" => fill(1024.0, 4),
+        "FL1_A.min" => fill(1.0, 4),
+        "SSC_H.max" => fill(1.0, 4),
+        "SSC_H.min" => fill(0.010045073642544625, 4),
+        "FSC_H.max" => fill(1024.0, 4),
+        "FSC_H.min" => fill(1.0, 4))
+    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) == df[!, sort(names(df))]
     # Test channels
-    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) ==
-          Dict{String, Dict{Symbol, Any}}("FL1_A" => Dict(
-        :max => 1024.0, :id => 1:4, :data => [54.0, 143.0, 25.0, 71.0], :min => 1.0))
-    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) ==
-          Dict{String, Dict{Symbol, Any}}("SSC_H" => Dict(:max => 1.0,
-        :id => [1, 2, 3, 4, 5, 6, 7, 8],
-        :data => [0.11039991779173976, 0.18187190885323648,
+    df = DataFrame(
+        "FL1_A" => [54.0, 143.0, 25.0, 71.0],
+        "id" => [1, 2, 3, 4],
+        "FL1_A.max" => fill(1024.0, 4),
+        "FL1_A.min" => fill(1.0, 4))
+    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) == df[!, sort(names(df))]
+    df = DataFrame(
+        "SSC_H" => [
+            0.11039991779173976, 0.18187190885323648,
             0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
             0.272613196449465, 0.01778279410038923, 0.9955128609158501],
-        :min => 0.010045073642544625))
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8],
+        "SSC_H.max" => fill(1.0, 8),
+        "SSC_H.min" => fill(0.010045073642544625, 8))
+    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) == df[!, sort(names(df))]
     # Test groups
-    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) ==
-          Dict{String, Dict{Symbol, Any}}("FL1_A" => Dict(
-        :max => 1024.0, :id => [1, 2, 3, 4, 5, 6, 7, 8],
-        :data => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0], :min => 1.0))
+    df = DataFrame("FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(1.0, 8))
+    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) == df[!, sort(names(df))]
 end
 
 @testitem "produce_views" begin
