@@ -221,6 +221,11 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
             else
                 # Its fluorescence, probably at multiple gain settings
                 all_channels[i] = (channel * "_$(channel_counts[channel])", type)
+                if channel_counts[channel] == 2
+                    # First duplicate, rename the original too
+                    j = findfirst(x -> x[1] == channel, all_channels)
+                    all_channels[j] = (channel * "_1", type)
+                end
             end
         else
             channel_counts[channel] = 1
