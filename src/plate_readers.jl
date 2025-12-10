@@ -190,9 +190,49 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
     data = correct_data_length(data, "\t")
     # Create the dataframes
     out = Dict()
+
+    # Process channel metadata
+    all_channels = []
     for i in eachindex(data)
         tmp = split(data[i][1], "\t")
-        channel = strip(tmp[6] == "Fluorescence" ? tmp[14] : tmp[13])
+        type = tmp[6]
+        channel = strip(type == "Fluorescence" ? tmp[14] * "_" * tmp[18] : tmp[13])
+        push!(all_channels, (channel, type))
+    end
+    # Process possible duplicate channel names
+    # OD channels may be repeated if multiple wavelengths were read in a single measurement
+    # i.e. 600nm and 650nm in the same read is recorded as "600 650"
+    # Fluorescence channels may be repeated if read at multiple gain settings
+    channel_counts = Dict{String, Int}()
+    for i in eachindex(all_channels)
+        channel, type = all_channels[i]
+        if haskey(channel_counts, channel)
+            channel_counts[channel] += 1
+            # Duplicate channel
+            if type == "Absorbance"
+                # We probably have OD wavelengths read in a single measurement action
+                # Seperate the wavelengths
+                all_channels[i] = (split(channel, " ")[i], type)
+                if channel_counts[channel] == 2
+                    # First duplicate, rename the original too
+                    for j in 1:(i - 1)
+                        if all_channels[j][1] == channel
+                            all_channels[j] = (split(channel, " ")[1], type)
+                            break
+                        end
+                    end
+                end
+            else
+                # Its fluorescence, probably at multiple gain settings
+                all_channels[i] = (channel * "_$(channel_counts[channel])", type)
+            end
+        else
+            channel_counts[channel] = 1
+        end
+    end
+    for i in eachindex(data)
+        tmp = split(data[i][1], "\t")
+        channel = all_channels[i][1]
         if !isnothing(channels) && !(channel in channels)
             continue
         end
