@@ -129,8 +129,8 @@ function to_rfi(es, sample_name)
         o["$i.max"] = max
         o[i] = data
     end
-    return DataFrame(o)
     o["id"] = 1:length(o[chans[1]])
+    return DataFrame(o)[!, sort(names(DataFrame(o)))]
 end
 
 """
