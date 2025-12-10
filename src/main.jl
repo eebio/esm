@@ -117,8 +117,6 @@ end
 
 colmean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 
-vcat(x...) = return vcat(x)
-
 """
     index_between_vals(df; minv=-Inf, maxv=Inf)
 
