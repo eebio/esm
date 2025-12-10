@@ -1,17 +1,15 @@
 @testitem "read spectramax" setup=[environment_path] begin
     println("read spectramax")
     data = read_data("inputs/spectramax.xlsx")
-    # TODO should probably separate the channels into 600 and 700?
-    # TODO channel is currently 535 for fluorescence but the 485 is also relevant
-    @test data[:samples]["plate_01_a1"][:values]["abs"][[1, 2, end - 1, end]] ==
+    @test data[:samples]["plate_01_a1"][:values]["abs700"][[1, 2, end - 1, end]] ==
           [0.1493, 0.1623, 0.3297, 0.3629]
-    @test data[:samples]["plate_01_e12"][:values]["abs"][[1, 2, end - 1, end]] == [
-        0.0776, 0.0772, 0.2173, 0.2359]
+    @test data[:samples]["plate_01_e12"][:values]["abs600"][[1, 2, end - 1, end]] == [
+        0.0764, 0.1030, 0.4580, 0.5212]
     wells = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
     wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
     @test issetequal(keys(data[:samples]), wells)
 
-    @test issetequal(keys(read("inputs/spectramax-data.txt", SpectraMax(); channels=["600 700"])), ["600 700"])
+    @test issetequal(keys(read("inputs/spectramax-data.txt", SpectraMax(); channels=["600", "700"])), ["600", "700"])
 end
 
 @testitem "read biotek" setup=[environment_path] begin
