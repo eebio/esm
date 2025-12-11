@@ -13,7 +13,7 @@ include("FitEllipse.jl")
 include("esm_files.jl")
 include("flow.jl")
 include("main.jl")
-include("plate_readers.jl")
+include("plate_readers/main.jl")
 include("summarise.jl")
 include("views.jl")
 
