@@ -45,6 +45,82 @@ function growth_rate(df, time_col, method::AbstractGrowthRateMethod)
     return DataFrame(dict_2)
 end
 
+"""
+    max_od(df, time_col, method::AbstractGrowthRateMethod)
+
+Calculates the maximum OD of a given dataframe. This may depend on the growth rate method
+used.
+
+Arguments:
+- `df::DataFrame`: DataFrame containing the data.
+- `time_col::DataFrame`: DataFrame containing the times.
+- `method::AbstractGrowthRateMethod`.
+"""
+function max_od(df, time_col, method::AbstractGrowthRateMethod)
+    dict_2 = Dict()
+    for i in names(df)
+        dict_2[i] = _growth_rate(df[!, [i]], time_col, method)["maxOD"]
+    end
+    return DataFrame(dict_2)
+end
+
+"""
+    time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod)
+
+Calculates the time at which growth is maximised.
+
+Arguments:
+- `df::DataFrame`: DataFrame containing the data.
+- `time_col::DataFrame`: DataFrame containing the times.
+- `method::AbstractGrowthRateMethod`.
+"""
+function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod)
+    dict_2 = Dict()
+    for i in names(df)
+        dict_2[i] = _growth_rate(df[!, [i]], time_col, method)["time_to_max_growth"]
+    end
+    return DataFrame(dict_2)
+end
+
+
+"""
+    od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod)
+
+The OD at which growth is maximised.
+
+Arguments:
+- `df::DataFrame`: DataFrame containing the data.
+- `time_col::DataFrame`: DataFrame containing the times.
+- `method::AbstractGrowthRateMethod`.
+"""
+function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod)
+    dict_2 = Dict()
+    for i in names(df)
+        dict_2[i] = _growth_rate(df[!, [i]], time_col, method)["od_at_max_growth"]
+    end
+    return DataFrame(dict_2)
+end
+
+"""
+    lag_time(df, time_col, method::AbstractGrowthRateMethod)
+
+Calculates the lag time of the growth curve. This is given as the t-axis intercept of the
+tangent at the point of maximum growth (defined by the growth rate, time to max growth, and
+od at max growth).
+
+Arguments:
+- `df::DataFrame`: DataFrame containing the data.
+- `time_col::DataFrame`: DataFrame containing the times.
+- `method::AbstractGrowthRateMethod`.
+"""
+function lag_time(df, time_col, method::AbstractGrowthRateMethod)
+    dict_2 = Dict()
+    for i in names(df)
+        dict_2[i] = _growth_rate(df[!, [i]], time_col, method)["lag_time"]
+    end
+    return DataFrame(dict_2)
+end
+
 function _growth_rate(df, time_col, method::Endpoints)
     start_od = at_time(df, time_col, method.start_time)[1]
     end_od = at_time(df, time_col, method.end_time)[1]
