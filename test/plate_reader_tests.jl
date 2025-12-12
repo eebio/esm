@@ -150,10 +150,10 @@ end
 
     # Tests for warnings
     od_df_warn = DataFrame(A = [0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    @test_warn "Not enough time points" growth_rate(od_df_warn, time_col, FiniteDiff())
+    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, FiniteDiff())
     @test_warn "Not enough data points" growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 1.5))
     @test_warn "Not enough data points" growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 1.5))
-    @test_warn "Not enough time points" growth_rate(od_df_warn, time_col, Regularization())
+    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Regularization())
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" growth_rate(od_df, time_col, FiniteDiff(type=:unknown))
