@@ -94,11 +94,7 @@ end
           DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog)) ≈
           DataFrame(A = 1.0)
-    @test doubling_time(od_df, time_col, MovingWindow(window_size = 3, method = :ExpOnLinear)) ≈
-          DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5)) ≈
-          DataFrame(A = 1.0)
-    @test doubling_time(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, Endpoints(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
@@ -137,10 +133,7 @@ end
     @test growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :ExpOnLinear))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5))[
-        1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, Endpoints(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
@@ -151,8 +144,7 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, FiniteDiff())
-    @test_warn "Not enough data points" growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 1.5))
-    @test_warn "Not enough data points" growth_rate(od_df, time_col, ExpOnLinear(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, LinearOnLog(start_time = 1.1, end_time = 1.2))
     @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Regularization())
 
     # Tests for errors
@@ -174,6 +166,144 @@ end
     @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=1e-2
     @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=1e-2
     @test growth_rate(od_df, time_col, Richards())[1, "A"]≈0.35 atol=1e-2
+end
+
+@testitem "time to max growth" begin
+    println("time to max growth")
+    using DataFrames
+    function f(t)
+        if t < 5
+            return 0
+        elseif t < 15
+            return 1 / (1 + exp(-2 * (t - 10)))
+        else
+            return 1
+        end
+    end
+    t = 0:0.5:20
+    r = [0.5847079560316877, 0.45840079479217205, -1.2615416418439265, -0.19302484376033796, -0.4244814803886498, -0.18088313464643485, -0.5045323424725897, -0.5141211372683038, 1.1616201463480844, 1.3296851114162132, -0.43120471016998424, 1.2613828599505037, -0.4646636774845288, -0.908398391727798, 0.9282112244792343, 0.15692696269233736, -0.0401373009174321, -0.312658487708534, -0.8446115669549681, -0.15644528491336934, 0.22969924085412563, -1.7463816740617624, -0.9362537306327118, 1.0494677762330453, -2.21499715347752, 1.0574000162409678, -0.2865517812478418, 1.5192666194062108, -0.2152836487775379, -0.621802452401734, -1.3307105978023612, 0.29757022692826623, 1.2294126967973198, -0.7646230207734392, -0.11071786613263836, -0.022308315590345632, -2.023482208299797, -1.433631515044935, -0.1421872400744148, -1.4318637059194546, -0.4371826293473729]
+    od = f.(t) + 0.01 * r
+    od_df = DataFrame(A = od)
+    using Dates
+    time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
+
+    @test 7 < time_to_max_growth(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:LinearOnLog))[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, LinearOnLog(start_time=6, end_time=9))[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, Endpoints(start_time=6, end_time=9))[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff())[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, Regularization())[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, Logistic())[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, Gompertz())[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, ModifiedGompertz())[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, Richards())[1, "A"] < 10
+
+    # Tests for warnings
+    od_df_warn = DataFrame(A = [
+        0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
+    time_col_warn = DataFrame(:Time => [string(Time(0, 0, 0) + Minute(1) * i) for i in 0:10])
+    @test_warn "Not enough data points" time_to_max_growth(od_df_warn, time_col_warn, FiniteDiff())
+    @test_warn "Not enough data points" time_to_max_growth(
+        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough data points" time_to_max_growth(od_df_warn, time_col_warn, Regularization())
+
+    # Tests for errors
+    @test_throws "Unknown finite difference type: unknown" time_to_max_growth(
+        od_df, time_col, FiniteDiff(type = :unknown))
+end
+
+@testitem "lag time" begin
+    println("lag time")
+    using DataFrames
+    function f(t)
+        if t < 5
+            return 0
+        elseif t < 15
+            return 1 / (1 + exp(-2 * (t - 10)))
+        else
+            return 1
+        end
+    end
+    t = 0:0.5:20
+    r = [0.5847079560316877, 0.45840079479217205, -1.2615416418439265, -0.19302484376033796, -0.4244814803886498, -0.18088313464643485, -0.5045323424725897, -0.5141211372683038, 1.1616201463480844, 1.3296851114162132, -0.43120471016998424, 1.2613828599505037, -0.4646636774845288, -0.908398391727798, 0.9282112244792343, 0.15692696269233736, -0.0401373009174321, -0.312658487708534, -0.8446115669549681, -0.15644528491336934, 0.22969924085412563, -1.7463816740617624, -0.9362537306327118, 1.0494677762330453, -2.21499715347752, 1.0574000162409678, -0.2865517812478418, 1.5192666194062108, -0.2152836487775379, -0.621802452401734, -1.3307105978023612, 0.29757022692826623, 1.2294126967973198, -0.7646230207734392, -0.11071786613263836, -0.022308315590345632, -2.023482208299797, -1.433631515044935, -0.1421872400744148, -1.4318637059194546, -0.4371826293473729]
+    od = f.(t) + 0.01 * r
+    od_df = DataFrame(A = od)
+    using Dates
+    time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
+
+    @test 5 < lag_time(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, MovingWindow(window_size=5, method=:LinearOnLog))[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, LinearOnLog(start_time=7, end_time=10))[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, Endpoints(start_time=7, end_time=10))[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, FiniteDiff())[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, Regularization())[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, Logistic())[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, Gompertz())[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, ModifiedGompertz())[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, Richards())[1, "A"] < 8
+
+    # Tests for warnings
+    od_df_warn = DataFrame(A = [
+        0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
+    time_col_warn = DataFrame(:Time => [string(Time(0, 0, 0) + Minute(1) * i) for i in 0:10])
+    @test_warn "Not enough data points" lag_time(od_df_warn, time_col_warn, FiniteDiff())
+    @test_warn "Not enough data points" lag_time(
+        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough data points" lag_time(od_df_warn, time_col_warn, Regularization())
+
+    # Tests for errors
+    @test_throws "Unknown finite difference type: unknown" lag_time(
+        od_df, time_col, FiniteDiff(type = :unknown))
+end
+
+@testitem "od at max growth" begin
+    println("od at max growth")
+    using DataFrames
+    function f(t)
+        if t < 5
+            return 0
+        elseif t < 15
+            return 1 / (1 + exp(-2 * (t - 10)))
+        else
+            return 1
+        end
+    end
+    t = 0:0.5:20
+    r = [0.5847079560316877, 0.45840079479217205, -1.2615416418439265, -0.19302484376033796, -0.4244814803886498, -0.18088313464643485, -0.5045323424725897, -0.5141211372683038, 1.1616201463480844, 1.3296851114162132, -0.43120471016998424, 1.2613828599505037, -0.4646636774845288, -0.908398391727798, 0.9282112244792343, 0.15692696269233736, -0.0401373009174321, -0.312658487708534, -0.8446115669549681, -0.15644528491336934, 0.22969924085412563, -1.7463816740617624, -0.9362537306327118, 1.0494677762330453, -2.21499715347752, 1.0574000162409678, -0.2865517812478418, 1.5192666194062108, -0.2152836487775379, -0.621802452401734, -1.3307105978023612, 0.29757022692826623, 1.2294126967973198, -0.7646230207734392, -0.11071786613263836, -0.022308315590345632, -2.023482208299797, -1.433631515044935, -0.1421872400744148, -1.4318637059194546, -0.4371826293473729]
+    od = f.(t) + 0.01 * r
+    od_df = DataFrame(A = od)
+    using Dates
+    time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
+
+    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:LinearOnLog))[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, LinearOnLog(start_time=7, end_time=10))[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, Endpoints(start_time=7, end_time=10))[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff())[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, Regularization())[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, Logistic())[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, Gompertz())[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, ModifiedGompertz())[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, Richards())[1, "A"] < 0.1
+
+    # Tests for warnings
+    od_df_warn = DataFrame(A = [
+        0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
+    time_col_warn = DataFrame(:Time => [string(Time(0, 0, 0) + Minute(1) * i) for i in 0:10])
+    @test_warn "Not enough data points" od_at_max_growth(od_df_warn, time_col_warn, FiniteDiff())
+    @test_warn "Not enough data points" od_at_max_growth(
+        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
+    @test_warn "Not enough data points" od_at_max_growth(od_df_warn, time_col_warn, Regularization())
+
+    # Tests for errors
+    @test_throws "Unknown finite difference type: unknown" od_at_max_growth(
+        od_df, time_col, FiniteDiff(type = :unknown))
 end
 
 @testitem "calibrate" begin
