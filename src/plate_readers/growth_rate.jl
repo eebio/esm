@@ -337,7 +337,7 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate)
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
         "lag_time" => lag_time,
-        "max_od" => maxOD
+        "maxOD" => maxOD
     )
 end
 
