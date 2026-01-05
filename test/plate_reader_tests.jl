@@ -279,18 +279,18 @@ end
     using Dates
     time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
 
-    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:LinearOnLog))[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, LinearOnLog(start_time=7, end_time=10))[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, Endpoints(start_time=7, end_time=10))[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff())[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, Regularization())[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, Logistic())[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, Gompertz())[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, ModifiedGompertz())[1, "A"] < 0.1
-    @test 0 < od_at_max_growth(od_df, time_col, Richards())[1, "A"] < 0.1
+    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:LinearOnLog))[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, LinearOnLog(start_time=7, end_time=10))[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, Endpoints(start_time=7, end_time=10))[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff())[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, Regularization())[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, Logistic())[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, Gompertz())[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, ModifiedGompertz())[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, Richards())[1, "A"] < f(10)
 
     # Tests for warnings
     od_df_warn = DataFrame(A = [
