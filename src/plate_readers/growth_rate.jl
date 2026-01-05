@@ -328,8 +328,9 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate)
     psol = sol.u
     growth_rate = psol[1]
     lag_time = psol[3]
-    dOD = ForwardDiff.derivative.(ti -> method.func(ti, psol), t)
-    time_to_max_growth = t[findmin(abs.(dOD .- growth_rate))[2]]
+    t_refined = range(first(t), last(t), length=100*n)
+    dOD = ForwardDiff.derivative.(ti -> method.func(ti, psol), t_refined)
+    time_to_max_growth = t_refined[findmin(abs.(dOD .- growth_rate))[2]]
     od_at_max_growth = exp(method.func(time_to_max_growth, psol)) * first(y)
     maxOD = exp(psol[2]) * first(y)
     return Dict(
