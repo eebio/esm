@@ -3,10 +3,11 @@
     using Pkg
     Pkg.build()
     if !occursin("/.julia/bin", ENV["PATH"])
+        path = joinpath(first(DEPOT_PATH), "bin")
         if Sys.iswindows()
-            ENV["PATH"] *= ";" * first(DEPOT_PATH)
+            ENV["PATH"] *= ";" * path
         else
-            ENV["PATH"] *= ":" * first(DEPOT_PATH)
+            ENV["PATH"] *= ":" * path
         end
     end
 end
