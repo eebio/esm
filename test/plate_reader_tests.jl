@@ -146,9 +146,12 @@ end
     @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, FiniteDiff())
     @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, LinearOnLog(start_time = 1.1, end_time = 1.2))
     @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Regularization())
+    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Logistic())
+    @test_warn "No data points found between start_time" growth_rate(od_df, time_col, LinearOnLog(start_time = -2, end_time = -1))
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" growth_rate(od_df, time_col, FiniteDiff(type=:unknown))
+    @test_throws "Unknown moving window method: unknown." growth_rate(od_df, time_col, MovingWindow(method=:unknown))
 
     # Parametric tests
     using Dates
