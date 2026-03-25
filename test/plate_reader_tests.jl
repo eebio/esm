@@ -36,8 +36,8 @@ end
 @testitem "read tecan" setup=[environment_path] begin
     println("read tecan")
     data = read_data("inputs/tecan.xlsx")
-    @test issetequal(keys(data[:samples]["plate_01_a1"][:values]), ["OD 600", "OD 700", "GFP"])
-    @test data[:samples]["plate_01_a1"][:values]["OD 600"][[1, 2, end - 1, end]] ==
+    @test issetequal(keys(data[:samples]["plate_01_a1"][:values]), ["600", "700", "GFP"])
+    @test data[:samples]["plate_01_a1"][:values]["600"][[1, 2, end - 1, end]] ==
           convert.(Float32, [0.1378, 0.1437, 0.1451, 0.1453])
     @test data[:samples]["plate_01_h12"][:values]["GFP"][[1, 2, end - 1, end]] == [
         68, 70, 84, 84]
@@ -45,11 +45,11 @@ end
     wells = [wells..., "plate_01_temperature", "plate_01_time"]
     @test issetequal(keys(data[:samples]), wells)
 
-    @test data[:samples]["plate_01_time"][:values]["OD 600"][[1, 2, end-1, end]] ==
+    @test data[:samples]["plate_01_time"][:values]["600"][[1, 2, end-1, end]] ==
           ["00:00:00", "00:12:46", "15:43:43", "15:56:28"]
 
     @test issetequal(keys(read(
-        "inputs/tecan-data.xlsx", Tecan(); channels = ["OD 600", "GFP"])), ["OD 600", "GFP"])
+        "inputs/tecan-data.xlsx", Tecan(); channels = ["600", "GFP"])), ["600", "GFP"])
 end
 
 @testitem "read plate reader directories" setup=[environment_path] begin
