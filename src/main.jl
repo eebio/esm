@@ -132,6 +132,15 @@ Arguments:
 - `maxv::Float64=Inf`: Maximum value.
 """
 function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
+    if df[1,1] > maxv
+        #println("First time is larger than maxv by ", df[1,1] - maxv)
+    end
+    if minv isa Float64
+        minv = prevfloat(minv)
+    end
+    if maxv isa Float64
+        maxv = nextfloat(maxv)
+    end
     return Dict(col => (findfirst(x -> minv <= x <= maxv, df[:, col]),
                     findlast(x -> minv <= x <= maxv, df[:, col])) for col in names(df))
 end
