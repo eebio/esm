@@ -30,7 +30,7 @@ function filter_channel(df, channel)
     if df isa Expr || df isa QuoteNode
         df = eval(df)
     end
-    return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel" || colname == "id", names(df))], channel)
+    return remove_subcols(df[:, filter(colname -> channel in split(colname, ".")  || colname == "id", names(df))], channel)
 end
 
 """
