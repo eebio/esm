@@ -281,6 +281,7 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
     out = Dict()
     for i in eachindex(data)
         channel = data[i][1, 1]
+        channel = replace(channel, "OD " => "")
         if !isnothing(channels) && !(channel in channels)
             continue
         end
