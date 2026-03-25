@@ -27,10 +27,10 @@ end
 
 function filter_channel(df, channel)
     channel = string(channel)
-    if "id" in names(df)
-        return df[:, contains.(names(df), channel) .|| names(df) .== "id"]
+    if df isa Expr || df isa QuoteNode
+        df = eval(df)
     end
-    return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel", names(df))], channel)
+    return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel" || colname == "id", names(df))], channel)
 end
 
 """
