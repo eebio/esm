@@ -44,6 +44,7 @@ function produce_views(es, trans_meta_map; to_out = [])
         if any(isa.(result, AbstractVecOrMat)) || any(isa.(result, Number))
             v_out[i] = Tables.table(hcat(result...))
         else
+            # TODO If transforms are a comma separated list (internally a tuple), then a view of that transform will be [(results...)], which when splatted is still a tuple of results
             v_out[i] = hcat(result..., makeunique = true)
         end
     end
