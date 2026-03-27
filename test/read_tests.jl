@@ -515,3 +515,16 @@ end
     # which can then fail at regex
     read_data("inputs/issue34.xlsx")
 end
+
+@testitem "empty template rows" setup = [environment_path] begin
+    # Test the empty rows in the template don't stop data being imported
+    es = read_data("inputs/blank_rows.xlsx")
+    @test "plate_01_time" in keys(es[:samples])
+    @test "plate_02_time" in keys(es[:samples])
+    @test "g1" in keys(es[:groups])
+    @test "g2" in keys(es[:groups])
+    @test "t1" in keys(es[:transformations])
+    @test "t2" in keys(es[:transformations])
+    @test "v1" in keys(es[:views])
+    @test "v2" in keys(es[:views])
+end
