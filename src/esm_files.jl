@@ -81,11 +81,11 @@ end
 Read the data from path `file` into the correct structure.
 """
 function read_data(file::AbstractString)
-    samples = groupby(DataFrame(XLSX.readtable(file, "Samples")), :Plate)
-    groups = DataFrame(XLSX.readtable(file, "Groups"))
-    trans = DataFrame(XLSX.readtable(file, "Transformations"))
-    views = DataFrame(XLSX.readtable(file, "Views"))
-    channel_map = DataFrame(XLSX.readtable(file, "Channel Map"))
+    @show samples = groupby(DataFrame(XLSX.readtable(file, "Samples"; stop_in_empty_row = false)), :Plate)
+    @show groups = DataFrame(XLSX.readtable(file, "Groups"; stop_in_empty_row = false))
+    @show trans = DataFrame(XLSX.readtable(file, "Transformations"; stop_in_empty_row = false))
+    @show views = DataFrame(XLSX.readtable(file, "Views"; stop_in_empty_row = false))
+    @show channel_map = DataFrame(XLSX.readtable(file, "Channel Map"; stop_in_empty_row = false))
     # Create the dict to show what channels need to be changed
     channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
     sample_dict = OrderedDict()
