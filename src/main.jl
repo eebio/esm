@@ -27,10 +27,7 @@ end
 
 function filter_channel(df, channel)
     channel = string(channel)
-    if "id" in names(df)
-        return df[:, contains.(names(df), channel) .|| names(df) .== "id"]
-    end
-    return remove_subcols(df[:, filter(colname -> splitext(colname)[2] == ".$channel", names(df))], channel)
+    return remove_subcols(df[:, filter(colname -> channel in split(colname, ".")  || colname == "id", names(df))], channel)
 end
 
 """
@@ -132,6 +129,12 @@ Arguments:
 - `maxv::Float64=Inf`: Maximum value.
 """
 function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
+    if minv isa Float64
+        minv = prevfloat(minv)
+    end
+    if maxv isa Float64
+        maxv = nextfloat(maxv)
+    end
     return Dict(col => (findfirst(x -> minv <= x <= maxv, df[:, col]),
                     findlast(x -> minv <= x <= maxv, df[:, col])) for col in names(df))
 end

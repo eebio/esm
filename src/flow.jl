@@ -112,7 +112,7 @@ function to_rfi(es, sample_name)
                 amp_gain = 1.0
             else
                 amp_gain = sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
-                amp_gain = parse(Int, amp_gain)
+                amp_gain = parse(Int, replace(amp_gain, ".0" => ""))
             end
             data = sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain
             min = 1 / amp_gain

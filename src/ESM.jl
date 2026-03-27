@@ -36,6 +36,9 @@ export AbstractESMDataType, AbstractPlateReader
 export ESMData, FlowCytometryData, BioTek, SpectraMax, Tecan, GenericTabular
 export summary
 
+using Statistics: median
+export median
+
 """
     esm translate
 

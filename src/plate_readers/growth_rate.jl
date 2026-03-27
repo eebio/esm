@@ -328,7 +328,7 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate)
     psol = sol.u
     growth_rate = psol[1]
     lag_time = psol[3]
-    t_refined = range(first(t), last(t), length=100*n)
+    t_refined = range(first(t), last(t), length = 100 * n)
     dOD = ForwardDiff.derivative.(ti -> method.func(ti, psol), t_refined)
     time_to_max_growth = t_refined[findmin(abs.(dOD .- growth_rate))[2]]
     od_at_max_growth = exp(method.func(time_to_max_growth, psol)) * first(y)
@@ -411,7 +411,7 @@ end
 
 function _growth_rate(df, time_col, method::Regularization)
     d = method.order
-    time_col = df2time(time_col) ./ 60
+    time_col = ESM.df2time(time_col) ./ 60
     t = time_col[!, 1]
     y = df[!, 1]
 
@@ -430,20 +430,20 @@ function _growth_rate(df, time_col, method::Regularization)
             "maxOD" => NaN
         )
     end
-
+    t_refined = range(first(t), last(t), length = 100 * n)
     A = RegularizationSmooth(ly, t, d; alg = :gcv_svd)
-    deriv = [DataInterpolations.derivative(A, ti) for ti in t] # TODO do we only want the derivative at the measurement times?
+    deriv = [DataInterpolations.derivative(A, ti) for ti in t_refined]
     # maximum derivative (growth rate)
     growth_rate, i = findmax(deriv)
-    time_to_max_growth = t[i]
-    od_at_max_growth = df[i, 1]
+    time_to_max_growth = t_refined[i]
+    od_at_max_growth = exp(A(time_to_max_growth))
     lag_time = _lagtime(time_to_max_growth, growth_rate,
-        od_at_max_growth, df[1, 1])
+        od_at_max_growth, exp(A(first(t))))
     return Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
         "lag_time" => lag_time,
-        "maxOD" => maximum(df[!, 1])
+        "maxOD" => maximum([exp(A(ti)) for ti in t_refined])
     )
 end
