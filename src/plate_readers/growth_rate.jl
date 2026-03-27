@@ -243,12 +243,8 @@ function _growth_rate(df, time_col, method::LinearOnLog)
     lm_model = lm(@formula(log_od~time), lm_df)
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
-    if start_time < minimum(time_col[!, 1]) / 60
-        od_at_max_growth = NaN
-    else
-        od_at_max_growth = exp((NaNMath.log(at_time(df, time_col, start_time)[1]) +
-                                NaNMath.log(at_time(df, time_col, end_time)[1])) / 2)
-    end
+    od_at_max_growth = exp((NaNMath.log(at_time(df, time_col, start_time)[1]) +
+                            NaNMath.log(at_time(df, time_col, end_time)[1])) / 2)
     lag_time = _lagtime(time_to_max_growth, growth_rate,
         od_at_max_growth, df[1, 1])
     return Dict(
