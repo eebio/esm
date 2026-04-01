@@ -45,6 +45,11 @@ function growth_rate(df, time_col, method::AbstractGrowthRateMethod)
         mask = df[!, i] .> 0
         filtered_df = df[mask, [i]]
         filtered_time_col = time_col[mask, :]
+        if nrow(filtered_df) == 0
+            @warn "No positive values found for column $i after filtering. Returning NaN."
+            dict_2[i] = NaN
+            continue
+        end
         dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["growth_rate"]
     end
     return DataFrame(dict_2)
@@ -67,6 +72,11 @@ function max_od(df, time_col, method::AbstractGrowthRateMethod)
         mask = df[!, i] .> 0
         filtered_df = df[mask, [i]]
         filtered_time_col = time_col[mask, :]
+        if nrow(filtered_df) == 0
+            @warn "No positive values found for column $i after filtering. Returning NaN."
+            dict_2[i] = NaN
+            continue
+        end
         dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["maxOD"]
     end
     return DataFrame(dict_2)
@@ -88,6 +98,11 @@ function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod)
         mask = df[!, i] .> 0
         filtered_df = df[mask, [i]]
         filtered_time_col = time_col[mask, :]
+        if nrow(filtered_df) == 0
+            @warn "No positive values found for column $i after filtering. Returning NaN."
+            dict_2[i] = NaN
+            continue
+        end
         dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["time_to_max_growth"]
     end
     return DataFrame(dict_2)
@@ -109,6 +124,11 @@ function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod)
         mask = df[!, i] .> 0
         filtered_df = df[mask, [i]]
         filtered_time_col = time_col[mask, :]
+        if nrow(filtered_df) == 0
+            @warn "No positive values found for column $i after filtering. Returning NaN."
+            dict_2[i] = NaN
+            continue
+        end
         dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["od_at_max_growth"]
     end
     return DataFrame(dict_2)
@@ -132,6 +152,11 @@ function lag_time(df, time_col, method::AbstractGrowthRateMethod)
         mask = df[!, i] .> 0
         filtered_df = df[mask, [i]]
         filtered_time_col = time_col[mask, :]
+        if nrow(filtered_df) == 0
+            @warn "No positive values found for column $i after filtering. Returning NaN."
+            dict_2[i] = NaN
+            continue
+        end
         dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["lag_time"]
     end
     return DataFrame(dict_2)
