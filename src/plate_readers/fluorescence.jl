@@ -1,14 +1,14 @@
 abstract type AbstractFluorescenceMethod <: AbstractPlateReaderMethod end
 
 """
-    fluorescence(fluorescence, time_fl, od, time_od, method::AbstractFluorescenceMethod)
+    fluorescence(data_fl, time_fl, data_od, time_od, method::AbstractFluorescenceMethod)
 
 Calculate fluorescence per cell (normalised by OD).
 
 # Arguments
-- `fluorescence`: a DataFrame of fluorescence measurements.
+- `data_fl`: a DataFrame of fluorescence measurements.
 - `time_fl`: a DataFrame of times for the fluorescence measurements.
-- `od`: a DataFrame of OD measurements.
+- `data_od`: a DataFrame of OD measurements.
 - `time_od`: a DataFrame of times for the OD measurements.
 - `method`: the method to use for calculating fluorescence per cell.
 """
@@ -18,10 +18,10 @@ function fluorescence end
     time::Float64
 end
 
-function fluorescence(fl, time_fl, od, time_od, method::RatioAtTime)
+function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtTime)
     time = method.time
-    fluorescence_at_time = at_time(fl, time_fl, time)
-    od_at_time = at_time(od, time_od, time)
+    fluorescence_at_time = at_time(data_fl, time_fl, time)
+    od_at_time = at_time(data_od, time_od, time)
     out = DataFrame()
     for col in names(od_at_time)
         if isnan(time) || ! (fluorescence_at_time isa DataFrameRow) || ! (od_at_time isa DataFrameRow)
@@ -38,11 +38,11 @@ end
     method::AbstractGrowthRateMethod
 end
 
-function fluorescence(fl, time_fl, od, time_od, method::RatioAtMaxGrowth)
-    time = time_to_max_growth(od, time_od, method.method)
+function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtMaxGrowth)
+    time = time_to_max_growth(data_od, time_od, method.method)
     out = DataFrame()
-    for col in names(od)
-        out[!, col] = ESM.fluorescence(fl, time_fl, od, time_od, RatioAtTime(time[1, col]))[:, col]
+    for col in names(data_od)
+        out[!, col] = ESM.fluorescence(data_fl, time_fl, data_od, time_od, RatioAtTime(time[1, col]))[:, col]
     end
     return out
 end
