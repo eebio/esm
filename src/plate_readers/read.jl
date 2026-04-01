@@ -249,6 +249,9 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
         end
         # Remove channel name from the first row
         data[i][2] = replace(data[i][2], " $(data[i][1])" => "")
+        for j in 3:length(data[i])
+            data[i][j] = replace(data[i][j], "OVRFLW" => "")
+        end
         # Read the data into a DataFrame
         df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame)
         temp_name = names(df)[2]
