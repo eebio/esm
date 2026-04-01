@@ -411,3 +411,33 @@ end
         B = [1.11 - 1.11, 1.05 - 1.11, 1.23 - 1.11, 1.36 - 1.11, 1.44 - 1.11])
     @test data == datacopy
 end
+
+@testitem "fluorescence per cell" setup=[environment_path] begin
+    println("fluorescence per cell")
+    es = read_data("inputs/biotek.xlsx")
+    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.esm")
+    write_esm(es, filename)
+    es = read_esm(filename)
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+
+    # Single sample with no calibration
+    od = eval(ESM.sexp_to_nested_list(:(plate_01_a2.od1), es, trans_meta_map))
+    fl = eval(ESM.sexp_to_nested_list(:(plate_01_a2.flu1), es, trans_meta_map))
+    time_od = eval(ESM.sexp_to_nested_list(:(plate_01_time.od1), es, trans_meta_map))
+    time_fl = eval(ESM.sexp_to_nested_list(:(plate_01_time.flu1), es, trans_meta_map))
+
+    # Doesn't include any calibration (od or flu) so numbers are kind of meaningless
+    @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4*60))[1,1]) == 5455
+    @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtMaxGrowth(method=FiniteDiff(type=:central)))[1,1]) == 4069
+
+    # Including calibration and groups
+    od = eval(ESM.sexp_to_nested_list(:(plate1.od1), es, trans_meta_map))
+    fl = eval(ESM.sexp_to_nested_list(:(plate1.flu1), es, trans_meta_map))
+    time_od = eval(ESM.sexp_to_nested_list(:(plate_01_time.od1), es, trans_meta_map))
+    time_fl = eval(ESM.sexp_to_nested_list(:(plate_01_time.flu1), es, trans_meta_map))
+    od = calibrate(od, time_od, StartZero())
+    fl = calibrate(fl, time_fl, StartZero())
+    @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4*60))[1, "plate_01_b6"]) == 102
+    @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtMaxGrowth(method=FiniteDiff()))[1, "plate_01_a10"]) == -584
+end
