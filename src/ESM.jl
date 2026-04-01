@@ -46,15 +46,15 @@ export median
 
 Translates the completed .xlsx template file to a .esm file.
 
-# Options
+# Args
 
-- `-e, --excel=<String>`: The .xlsx template file to be read.
-- `-t, --target=<String>`: The name of the output .esm file.
+- `input`: The completed .xlsx template file to be read.
+- `output`: The filepath/destination for the .esm file.
 
 """
-@cast function translate(; excel::String, target::String)
-    x = read_data(excel)
-    write_esm(x, target)
+@cast function translate(input::String, output::String)
+    x = read_data(input)
+    write_esm(x, output)
 end
 
 """
@@ -62,15 +62,17 @@ end
 
 Produce and save the views from a .esm file.
 
-# Options
+# Args
 
-- `-e, --esm-file=<String>`: The .esm file to be read.
+- `esm_file`: The .esm file to be read.
+
+# Options
 - `-v, --view=<String>`: The view to be produced. All views if not specified.
 - `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the
     current directory.
 
 """
-@cast function views(; esm_file::String, view = nothing, output_dir::String = ".")
+@cast function views(esm_file::String; view = nothing, output_dir::String = ".")
     es = read_esm(esm_file)
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
@@ -105,9 +107,12 @@ end
 
 Summarise a data file (.esm, plate reader, .fcs, etc.).
 
+# Args
+
+- `file`: The data file to be summarised.
+
 # Options
 
-- `-f, --file=<String>`: The data file to be summarised.
 - `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm",
     "spectramax", "biotek", "generic", "fcs". If "auto" is selected, the type will be
     inferred from the file extension (or raise an error if not possible).
@@ -116,10 +121,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 
 - `-p, --plot`: Produce plots of the data. Only available for some types.
 """
-@cast function summarise(; file = nothing, type = "auto", plot::Bool = false)
-    if isnothing(file)
-        error("Please provide a file to be summarised using the -f or --file option.")
-    end
+@cast function summarise(file; type = "auto", plot::Bool = false)
     # If type=="auto", attempt to infer from file extension
     if type == "auto"
         ext = splitext(file)[end]
