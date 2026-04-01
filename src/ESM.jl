@@ -23,6 +23,8 @@ export growth_rate, doubling_time, lag_time, max_od, time_to_max_growth, od_at_m
 export MovingWindow, FiniteDiff, Endpoints, LinearOnLog
 export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
 export Regularization
+export fluorescence
+export RatioAtTime, RatioAtMaxGrowth
 export calibrate
 export TimeseriesBlank, SmoothedTimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
 export gate, event_count, gated_proportion
