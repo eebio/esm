@@ -122,6 +122,8 @@ function read_data(file::AbstractString)
             end
         end
         channels = [c for c in channels if !isempty(c)]
+        # Remove duplicates (for example, specifying the same channels for every well in a flow cytometry plate)
+        channels = unique(channels)
         # Create the channel map
         channel_map = Dict(i => if i in keys(channel_map)
                                channel_map[i]
