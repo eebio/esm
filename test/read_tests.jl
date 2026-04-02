@@ -396,6 +396,8 @@ end
 
 @testitem "produce_views" begin
     println("produce_views")
+    data = read_data("inputs/example.xlsx")
+    write_esm(data, "inputs/example.esm")
     es = read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
