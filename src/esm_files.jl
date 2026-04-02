@@ -113,13 +113,6 @@ function read_data(file::AbstractString)
         for j in samples[i].Channels
             # Convert to string if not already
             str_j = string(j)
-            # Add any channels that are in brackets to the list of channels
-            for k in eachmatch(r"\(.+?\)", str_j)
-                # Remove the brackets
-                push!(channels, replace((string(k.match)), "(" => "", ")" => ""))
-            end
-            # Remove the bracket channels from the string
-            str_j = replace(str_j, r"\(.+?\)" => "")
             # Add the remaining channels to the list
             for k in split(str_j, ",")
                 push!(channels, k)
