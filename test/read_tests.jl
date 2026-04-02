@@ -536,3 +536,7 @@ end
     @test_throws "Some channels in the channel map are not in a valid format" read_data("inputs/invalid_channel_map.xlsx")
 end
 
+@testitem "requested missing channel" setup = [environment_path] begin
+    # Test that requesting a channel that isn't in the data throws an error
+    @test_throws "Requested channel missing_channel_i_want not found in file" read_data("inputs/requested_but_missing_channel.xlsx")
+end
