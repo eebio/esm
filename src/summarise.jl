@@ -111,7 +111,6 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
     println("")
     @info "Summary of FCS file: $file"
     f = load(file)
-    @show f
     println("")
     # Summarise channels
     @info "Summarising channels"

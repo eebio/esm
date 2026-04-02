@@ -70,6 +70,12 @@ function read_multipr_file(file, ptype, channels, channel_map)
         error("Unknown plate reader type: $ptype.")
     end
     o_dict = read(file, ptype; channels = channels)
+    # Check that no channels are requested but missing
+    for k in channels
+        if !haskey(o_dict, k)
+            error("Requested channel $k not found in file $file.")
+        end
+    end
     # Apply channel map
     o_dict = Dict(get(channel_map, k, k) => v for (k, v) in o_dict)
     for i in keys(o_dict)
@@ -218,7 +224,7 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         end
     end
     for i in eachindex(data)
-        channel = all_channels[i][1]
+        channel = format_channel(all_channels[i][1])
         if !isnothing(channels) && !(channel in channels)
             continue
         end
@@ -243,7 +249,7 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
-        channel = strip(split(data[i][1], ":")[end])
+        channel = format_channel(data[i][1])
         if !isnothing(channels) && !(channel in channels)
             continue
         end
@@ -283,8 +289,7 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
-        channel = data[i][1, 1]
-        channel = replace(channel, "OD " => "")
+        channel = format_channel(data[i][1, 1])
         if !isnothing(channels) && !(channel in channels)
             continue
         end
@@ -315,7 +320,7 @@ struct GenericTabular <: AbstractPlateReader end
 function Base.read(file::AbstractString, ::GenericTabular; channels = nothing)
     out = Dict()
     for j in readdir(file)
-        channel = splitext(j)[1] # Remove file extension
+        channel = format_channel(splitext(j)[1]) # Remove file extension
         if !isnothing(channels) && !(channel in channels)
             continue
         end

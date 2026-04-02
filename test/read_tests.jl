@@ -396,6 +396,8 @@ end
 
 @testitem "produce_views" begin
     println("produce_views")
+    data = read_data("inputs/example.xlsx")
+    write_esm(data, "inputs/example.esm")
     es = read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
@@ -526,4 +528,14 @@ end
     @test "t2" in keys(es[:transformations])
     @test "v1" in keys(es[:views])
     @test "v2" in keys(es[:views])
+end
+
+@testitem "invalid channel map" setup = [environment_path] begin
+    # Test that invalid channel map entries are handled gracefully
+    @test_throws "Some channels in the channel map are not in a valid format" read_data("inputs/invalid_channel_map.xlsx")
+end
+
+@testitem "requested missing channel" setup = [environment_path] begin
+    # Test that requesting a channel that isn't in the data throws an error
+    @test_throws "Requested channel missing_channel_i_want not found in file" read_data("inputs/requested_but_missing_channel.xlsx")
 end

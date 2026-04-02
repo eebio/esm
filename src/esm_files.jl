@@ -88,6 +88,9 @@ function read_data(file::AbstractString)
     channel_map = DataFrame(XLSX.readtable(file, "Channel Map"; stop_in_empty_row = false))
     # Create the dict to show what channels need to be changed
     channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
+    if any(val != format_channel(val) for val in values(channel_map))
+        error("Some channels in the channel map are not in a valid format. Channels should only contain letters, numbers, and underscores.")
+    end
     sample_dict = OrderedDict()
     group_dict = OrderedDict(i.Name => Dict(
                                  "sample_IDs" => expand_groups(i.Samples),
@@ -97,7 +100,6 @@ function read_data(file::AbstractString)
     for i in eachrow(groups)) # Get all the experimental groups.
     @info "Reading $(length(keys(samples))) plates"
     for i in range(1, length(keys(samples)))
-        data = Dict()
         # Check what instrument was used
         ins_type = Set(samples[i].Type)
         if contains(samples[i]."Data Location"[1], "\$GITHUB_WORKSPACE")
@@ -107,25 +109,19 @@ function read_data(file::AbstractString)
         length(ins_type) == 1 ||
             error("All experiments on one plate must be from the same instrument types. \
             Instrument types used here are: $(Set(samples[i].Type))")
-        # TODO Get channels should be its own function with separate tests
         # Process channels
         channels = []
         for j in samples[i].Channels
             # Convert to string if not already
             str_j = string(j)
-            # Add any channels that are in brackets to the list of channels
-            for k in eachmatch(r"\(.+?\)", str_j)
-                # Remove the brackets
-                push!(channels, replace((string(k.match)), "(" => "", ")" => ""))
-            end
-            # Remove the bracket channels from the string
-            str_j = replace(str_j, r"\(.+?\)" => "")
             # Add the remaining channels to the list
             for k in split(str_j, ",")
-                push!(channels, k)
+                push!(channels, strip(k))
             end
         end
         channels = [c for c in channels if !isempty(c)]
+        # Remove duplicates (for example, specifying the same channels for every well in a flow cytometry plate)
+        channels = unique(channels)
         # Create the channel map
         channel_map = Dict(i => if i in keys(channel_map)
                                channel_map[i]
@@ -154,7 +150,7 @@ function read_data(file::AbstractString)
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => i.Equation for i in eachrow(trans))
     # Add the views
-    views_dict = OrderedDict(i.Name => :data => [split(i.View, ",")...]
+    views_dict = OrderedDict(i.Name => :data => [strip.(split(i.View, ","))...]
     for i in eachrow(views))
     return OrderedDict(:samples => sample_dict, :groups => group_dict,
         :transformations => trans_dict, :views => views_dict)
