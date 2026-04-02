@@ -242,3 +242,13 @@ function at_od(od_df, target_df, target_od)
     end
     return DataFrame(dict_2)
 end
+
+function format_channel(channel)
+    # Replace any non-alphanumeric character with _
+    channel = replace(channel, r"[^a-zA-Z0-9]" => "_")
+    # Remove any leading or trailing _ separators
+    channel = strip(channel, '_')
+    # Remove any duplicate _ separators
+    channel = replace(channel, r"_+" => "_")
+    return channel
+end
