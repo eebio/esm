@@ -70,6 +70,12 @@ function read_multipr_file(file, ptype, channels, channel_map)
         error("Unknown plate reader type: $ptype.")
     end
     o_dict = read(file, ptype; channels = channels)
+    # Check that no channels are requested but missing
+    for k in channels
+        if !haskey(o_dict, k)
+            error("Requested channel $k not found in file $file.")
+        end
+    end
     # Apply channel map
     o_dict = Dict(get(channel_map, k, k) => v for (k, v) in o_dict)
     for i in keys(o_dict)
