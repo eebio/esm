@@ -530,3 +530,9 @@ end
     @test "v1" in keys(es[:views])
     @test "v2" in keys(es[:views])
 end
+
+@testitem "invalid channel map" setup = [environment_path] begin
+    # Test that invalid channel map entries are handled gracefully
+    @test_throws "Some channels in the channel map are not in a valid format" read_data("inputs/invalid_channel_map.xlsx")
+end
+
