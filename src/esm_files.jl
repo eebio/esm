@@ -115,7 +115,7 @@ function read_data(file::AbstractString)
             str_j = string(j)
             # Add the remaining channels to the list
             for k in split(str_j, ",")
-                push!(channels, k)
+                push!(channels, strip(k))
             end
         end
         channels = [c for c in channels if !isempty(c)]
