@@ -152,7 +152,7 @@ function read_data(file::AbstractString)
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => i.Equation for i in eachrow(trans))
     # Add the views
-    views_dict = OrderedDict(i.Name => :data => [split(i.View, ",")...]
+    views_dict = OrderedDict(i.Name => :data => [strip.(split(i.View, ","))...]
     for i in eachrow(views))
     return OrderedDict(:samples => sample_dict, :groups => group_dict,
         :transformations => trans_dict, :views => views_dict)
