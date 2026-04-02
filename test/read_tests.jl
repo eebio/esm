@@ -505,9 +505,8 @@ end
     rm("inputs/pr_folder.pdf")
 
     # Error checking
-    @test_throws "Please provide" summarise()
-    @test_throws "File type" summarise(file = "biotek-summarise.csv")
-    @test_throws "Unsupported" summarise(file = "inputs/unknown.txt", type = "unknown")
+    @test_throws "File type" summarise("biotek-summarise.csv")
+    @test_throws "Unsupported" summarise("inputs/unknown.txt"; type = "unknown")
 end
 
 @testitem "issue 34" setup = [environment_path] begin
