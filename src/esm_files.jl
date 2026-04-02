@@ -100,7 +100,6 @@ function read_data(file::AbstractString)
     for i in eachrow(groups)) # Get all the experimental groups.
     @info "Reading $(length(keys(samples))) plates"
     for i in range(1, length(keys(samples)))
-        data = Dict()
         # Check what instrument was used
         ins_type = Set(samples[i].Type)
         if contains(samples[i]."Data Location"[1], "\$GITHUB_WORKSPACE")
@@ -110,7 +109,6 @@ function read_data(file::AbstractString)
         length(ins_type) == 1 ||
             error("All experiments on one plate must be from the same instrument types. \
             Instrument types used here are: $(Set(samples[i].Type))")
-        # TODO Get channels should be its own function with separate tests
         # Process channels
         channels = []
         for j in samples[i].Channels
