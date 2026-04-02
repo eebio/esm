@@ -89,7 +89,7 @@ function read_data(file::AbstractString)
     # Create the dict to show what channels need to be changed
     channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
     if any(val != format_channel(val) for val in values(channel_map))
-        @error "Some channels in the channel map are not in a valid format. Channels should only contain letters, numbers, and underscores."
+        error("Some channels in the channel map are not in a valid format. Channels should only contain letters, numbers, and underscores.")
     end
     sample_dict = OrderedDict()
     group_dict = OrderedDict(i.Name => Dict(
