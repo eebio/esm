@@ -1,4 +1,5 @@
 using Plots
+using Plots.PlotMeasures
 using PDFmerger
 using Combinatorics
 
@@ -90,16 +91,58 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
     end
 
     if plot
-        # Plot all timeseries
+        # Plot all timeseries in a single multipanel plot with 12 columns
         @info "Plotting timeseries data"
-        # TODO need to know the times for all samples automatically
         dir = mktempdir()
         for (key, value) in out
-            for col in names(value)[2:end]
-                p = Plots.plot(value[!, 1], value[!, col],
-                    xlabel = "Time (#units missing#)", ylabel = "Value",
-                    title = "Timeseries for $col: Channel $key")
-                savefig(p, joinpath(dir, string(col) * string(key) * ".pdf"))
+            time = ESM.df2time(value[!, 1])
+            data = value[:, Not(1, 2)]
+
+            # Multipanel plot with 12 columns
+            nplots = ncol(data)
+            ncols = min(nplots, 12)
+            nrows = ceil(Int, nplots / 12)
+            for scale in [:identity, :log10]
+                plt = Plots.plot(
+                    layout = (nrows, ncols), size = (150 * ncols, 150 * nrows), link = :both,
+                    plot_title = "Multipanel timeseries for:\nChannel - $key, Scale - $(scale == :identity ? "Linear" : "Log10")")
+                if scale == :log10
+                    max_data = 10^ceil(log10(maximum(Matrix(data)) * 1.05))
+                    min_data = 10^floor(log10(minimum(Matrix(data)) * 0.95))
+                end
+                if scale == :identity
+                    max_data = maximum(Matrix(data)) * 1.05
+                    min_data = 0.0
+                end
+                for row in 1:nrows, col in 1:ncols
+                    # Determine subplot position
+                    idx = (row - 1) * ncols + col
+                    if idx > nplots
+                        plot!(plt, subplot = idx, framestyle = :none)
+                        continue
+                    end
+                    show_xticklabels = row == nrows
+                    show_yticklabels = col == 1
+                    plot!(plt, time[!, 1] ./ 60, data[!, idx], subplot = idx,
+                        title = names(data)[idx], label = nothing,
+                        xformatter = show_xticklabels ? :auto : (x->""),
+                        yformatter = show_yticklabels ? :auto : (y->""),
+                        xrotation = 60,
+                        xlabel = show_xticklabels ? "Time (min)" : nothing,
+                        ylims = (min_data, max_data),
+                        bottom_margin = show_xticklabels ? 7mm : :match,
+                        linewidth = 2.0, colour = :black, yscale = scale)
+                end
+                savefig(plt, joinpath(dir, string(key) * "_" * string(scale) * "_multipanel.pdf"))
+
+                # Single panel plot
+                plt = Plots.plot(xlabel = "Time (min)",
+                    title = "Overlaid timeseries for:\nChannel - $key, Scale - $(scale == :identity ? "Linear" : "Log10")")
+                for i in 1:nplots
+                    plot!(plt, time[!, 1] ./ 60, data[!, i], label = nothing, linewidth = 2.0, alpha = 0.5,
+                    yscale = scale)
+                end
+                savefig(plt, joinpath(dir, string(key) * "_" * string(scale) * "_singlepanel.pdf"))
             end
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
