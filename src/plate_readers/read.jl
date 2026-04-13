@@ -236,7 +236,8 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         rename!(df, time_name => "time")
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
-        # Do I need to drop temperature?)
+        # Make sure time is in milliseconds
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
     return out
@@ -266,7 +267,8 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
         rename!(df, time_name => "time")
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
-        # Do I need to drop temperature?)
+        # Make sure time is in milliseconds
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
     return out
@@ -299,17 +301,9 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
         rename!(df, temp_name => "temperature")
         time_name = names(df)[1]
         rename!(df, time_name => "time")
-        # Change time format
-        function seconds_to_hms(x)
-            h = x ÷ 3600
-            m = (x % 3600) ÷ 60
-            s = round(x % 60)
-            return @sprintf("%02d:%02d:%02d", h, m, s)
-        end
-        df[!, "time"] = seconds_to_hms.(convert(Vector{Int}, round.(df[!, "time"])))
-        # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
-        # Do I need to drop temperature?)
+        # Make sure time is in milliseconds
+        df[!, "time"] = [Int64(t*1000) for t in df[!, "time"]]
         out[channel] = df
     end
     return out
@@ -324,7 +318,9 @@ function Base.read(file::AbstractString, ::GenericTabular; channels = nothing)
         if !isnothing(channels) && !(channel in channels)
             continue
         end
-        out[channel] = CSV.read(joinpath(file, j), DataFrame)
+        df = CSV.read(joinpath(file, j), DataFrame)
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
+        out[channel] = df
     end
     return out
 end
