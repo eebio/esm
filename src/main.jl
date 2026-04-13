@@ -140,24 +140,6 @@ function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
 end
 
 """
-    df2time(time_col)
-
-Converts a time column in a DataFrame with String elements to time in seconds.
-
-Arguments:
-- `time_col::DataFrame`: DataFrame with time values.
-"""
-function df2time(time_col::DataFrame)
-    if typeof(time_col[1, 1]) != String
-        # Assume already converted
-        return time_col
-    end
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
-    return time_col
-end
-
-"""
     between_times(df,time_col;mint=-Inf,maxt=Inf)
 
 Returns the DataFrame between two timepoints.
