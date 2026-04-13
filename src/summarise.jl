@@ -77,7 +77,7 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
     end
 end
 
-function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false)
+function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false, csv = false)
     println("")
     @info "Summary of $(typeof(ptype)) file: $file"
     out = read(file, ptype)
@@ -148,9 +148,17 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
         merge_pdfs(filepaths, string(file) * ".pdf")
     end
+
+    if csv
+        @info "Saving plate reader data as CSV files"
+        for (key, value) in out
+            @info "Saving channel $key as CSV file"
+            CSV.write(string(file) * "_" * string(key) * ".csv", value)
+        end
+    end
 end
 
-function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
+function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, csv = false)
     println("")
     @info "Summary of FCS file: $file"
     f = load(file)
@@ -189,5 +197,11 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false)
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
         merge_pdfs(filepaths, joinpath(dir, "temp.pdf"))
         append_pdf!(string(file) * ".pdf", joinpath(dir, "temp.pdf"))
+    end
+
+    if csv
+        @info "Saving FCS data as CSV file"
+        df = DataFrame(Dict(key => f[key] for key in keys(f)))
+        CSV.write(string(file) * ".csv", df)
     end
 end
