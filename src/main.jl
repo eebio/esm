@@ -169,9 +169,8 @@ Arguments:
 - `maxt::Float64=Inf`: Max time in mins.
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
-    time_col = df2time(time_col)
     # Do time calculations in seconds to avoid floating point math
-    tvals = index_between_vals(time_col; minv = mint * 60, maxv = maxt * 60)
+    tvals = index_between_vals(time_col; minv = mint * 60000, maxv = maxt * 60000)
     tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[1]) || isnothing(tvals[2])
         @warn "No values found between $mint and $maxt."
@@ -194,8 +193,7 @@ Arguments:
 - `time_point::Float64`: Time point in mins at which to report the measurement.
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
-    time_col = df2time(time_col)
-    tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60)
+    tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60000)
     tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."
