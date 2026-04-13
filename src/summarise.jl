@@ -1,4 +1,5 @@
 using Plots
+using Printf
 using PDFmerger
 using Combinatorics
 
@@ -77,6 +78,15 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
 end
 
 function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false)
+    function ms2hmsms(ms)
+        h = floor(Int, ms / 3600000)
+        ms -= h * 3600000
+        m = floor(Int, ms / 60000)
+        ms -= m * 60000
+        s = floor(Int, ms / 1000)
+        ms -= s * 1000
+        return @sprintf("%02d:%02d:%02d.%03d", h, m, s, ms)
+    end
     println("")
     @info "Summary of $(typeof(ptype)) file: $file"
     out = read(file, ptype)
@@ -86,7 +96,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
     @info "Number of channels: $(length(keys(out)))"
     for (key, value) in out
         @info "Channel $key: $(nrow(value)) timepoints and $(ncol(value) - 1) samples."
-        @info "Timepoints range from $(value[1, 1]) to $(value[end, 1])."
+        @info "Timepoints range from $(ms2hmsms(value[1,1])) to $(ms2hmsms(value[end, 1]))."
     end
 
     if plot
@@ -96,8 +106,8 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
         dir = mktempdir()
         for (key, value) in out
             for col in names(value)[2:end]
-                p = Plots.plot(value[!, 1], value[!, col],
-                    xlabel = "Time (#units missing#)", ylabel = "Value",
+                p = Plots.plot(value[!, 1]/60000, value[!, col],
+                    xlabel = "Time (min)", ylabel = "Value",
                     title = "Timeseries for $col: Channel $key")
                 savefig(p, joinpath(dir, string(col) * string(key) * ".pdf"))
             end
