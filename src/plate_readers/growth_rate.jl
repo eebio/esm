@@ -165,8 +165,8 @@ end
 function _growth_rate(df, time_col, method::Endpoints)
     start_od = at_time(df, time_col, method.start_time)[1]
     end_od = at_time(df, time_col, method.end_time)[1]
-    start_time = at_time(df2time(time_col), time_col, method.start_time)[1] / 60
-    end_time = at_time(df2time(time_col), time_col, method.end_time)[1] / 60
+    start_time = at_time(df2time(time_col), time_col, method.start_time)[1] / 60000
+    end_time = at_time(df2time(time_col), time_col, method.end_time)[1] / 60000
     growth_rate = (NaNMath.log(end_od) - NaNMath.log(start_od)) /
                   ((end_time) - (start_time))
     time_to_max_growth = (start_time + end_time) / 2
@@ -198,8 +198,8 @@ function _growth_rate(df, time_col, method::MovingWindow)
     time_to_max_growth = NaN
     od_at_max_growth = NaN
     for j in 1:(nrow(df) - window_size)
-        start_time = df2time(time_col)[j, 1] / 60
-        end_time = df2time(time_col)[j + window_size - 1, 1] / 60
+        start_time = df2time(time_col)[j, 1] / 60000
+        end_time = df2time(time_col)[j + window_size - 1, 1] / 60000
         if method.method == :Endpoints
             rate = growth_rate(df, time_col, Endpoints(start_time, end_time))
         elseif method.method == :LinearOnLog
@@ -249,7 +249,7 @@ function _growth_rate(df, time_col, method::LinearOnLog)
 
     # Get the indexes for the time range
     indexes = index_between_vals(
-        time_col; minv = start_time * 60, maxv = end_time * 60)[names(time_col)[1]]
+        time_col; minv = start_time * 60000, maxv = end_time * 60000)[names(time_col)[1]]
 
     if isnothing(indexes[1]) || isnothing(indexes[2])
         @warn "No data points found between start_time=$(start_time) and \
@@ -264,7 +264,7 @@ function _growth_rate(df, time_col, method::LinearOnLog)
     indexes = indexes[1]:indexes[2]
 
     lm_df = DataFrame(
-        time = time_col[indexes, 1] ./ 60, log_od = NaNMath.log.(df[indexes, 1]))
+        time = time_col[indexes, 1] ./ 60000, log_od = NaNMath.log.(df[indexes, 1]))
     lm_model = lm(@formula(log_od~time), lm_df)
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
@@ -316,7 +316,7 @@ function Richards()
 end
 
 function _growth_rate(df, time_col, method::ParametricGrowthRate)
-    time_col = df2time(time_col) ./ 60
+    time_col = df2time(time_col) ./ 60000
     t = time_col[!, 1]
     y = df[!, 1]
 
@@ -373,7 +373,7 @@ end
 
 function _growth_rate(df, time_col, method::FiniteDiff)
     type = method.type
-    time_col = df2time(time_col) ./ 60
+    time_col = df2time(time_col) ./ 60000
     t = time_col[!, 1]
     y = df[!, 1]
     t = t[y .> 0]
@@ -436,7 +436,7 @@ end
 
 function _growth_rate(df, time_col, method::Regularization)
     d = method.order
-    time_col = ESM.df2time(time_col) ./ 60
+    time_col = ESM.df2time(time_col) ./ 60000
     t = time_col[!, 1]
     y = df[!, 1]
 
