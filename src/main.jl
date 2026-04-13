@@ -157,6 +157,10 @@ function df2time(time_col::DataFrame)
     return time_col
 end
 
+function df2time(time_col)
+    return df2time(DataFrame(time = time_col))
+end
+
 """
     between_times(df,time_col;mint=-Inf,maxt=Inf)
 
