@@ -490,21 +490,42 @@ end
     summary("inputs/summarise.esm", ESMData(); plot = true)
     @test isfile("inputs/summarise.esm.pdf")
     rm("inputs/summarise.esm.pdf")
-    summary("inputs/small.fcs", FlowCytometryData(); plot = true)
+    summary("inputs/small.fcs", FlowCytometryData(); plot = true, csv = true)
     @test isfile("inputs/small.fcs.pdf")
+    @test isfile("inputs/small.fcs.csv")
     rm("inputs/small.fcs.pdf")
-    summary("inputs/spectramax-summarise.txt", SpectraMax(); plot = true)
+    summary("inputs/spectramax-summarise.txt", SpectraMax(); plot = true, csv = true)
     @test isfile("inputs/spectramax-summarise.txt.pdf")
-    rm("inputs/spectramax-summarise.txt.pdf")
-    summary("inputs/biotek-summarise.csv", BioTek(); plot = true)
+    @test isfile("inputs/spectramax-summarise.txt_600.csv")
+    @test isfile("inputs/spectramax-summarise.txt_700.csv")
+    @test isfile("inputs/spectramax-summarise.txt_535_485.csv")
+    rm.(["inputs/spectramax-summarise.txt.pdf",
+        "inputs/spectramax-summarise.txt_600.csv",
+        "inputs/spectramax-summarise.txt_700.csv",
+        "inputs/spectramax-summarise.txt_535_485.csv"])
+    summary("inputs/biotek-summarise.csv", BioTek(); plot = true, csv = true)
     @test isfile("inputs/biotek-summarise.csv.pdf")
-    rm("inputs/biotek-summarise.csv.pdf")
-    summary("inputs/tecan-summarise.xlsx", Tecan(); plot = true)
+    @test isfile("inputs/biotek-summarise.csv_OD_700.csv")
+    @test isfile("inputs/biotek-summarise.csv_OD_600.csv")
+    @test isfile("inputs/biotek-summarise.csv_GFP_485_530.csv")
+    rm.(["inputs/biotek-summarise.csv.pdf",
+        "inputs/biotek-summarise.csv_OD_700.csv",
+        "inputs/biotek-summarise.csv_OD_600.csv",
+        "inputs/biotek-summarise.csv_GFP_485_530.csv"])
+    summary("inputs/tecan-summarise.xlsx", Tecan(); plot = true, csv = true)
     @test isfile("inputs/tecan-summarise.xlsx.pdf")
-    rm("inputs/tecan-summarise.xlsx.pdf")
-    summary("inputs/pr_folder", GenericTabular(); plot = true)
+    @test isfile("inputs/tecan-summarise.xlsx_OD_600.csv")
+    @test isfile("inputs/tecan-summarise.xlsx_OD_700.csv")
+    @test isfile("inputs/tecan-summarise.xlsx_GFP.csv")
+    rm.(["inputs/tecan-summarise.xlsx.pdf",
+        "inputs/tecan-summarise.xlsx_OD_600.csv",
+        "inputs/tecan-summarise.xlsx_OD_700.csv",
+        "inputs/tecan-summarise.xlsx_GFP.csv"])
+    summary("inputs/pr_folder", GenericTabular(); plot = true, csv = true)
     @test isfile("inputs/pr_folder.pdf")
-    rm("inputs/pr_folder.pdf")
+    @test isfile("inputs/pr_folder_OD.csv")
+    @test isfile("inputs/pr_folder_flo.csv")
+    rm.(["inputs/pr_folder.pdf", "inputs/pr_folder_OD.csv", "inputs/pr_folder_flo.csv"])
 
     # Error checking
     @test_throws "File type" summarise("biotek-summarise.csv")
