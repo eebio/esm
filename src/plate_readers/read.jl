@@ -228,6 +228,9 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         if !isnothing(channels) && !(channel in channels)
             continue
         end
+        for j in 3:length(data[i])
+            data[i][j] = replace(data[i][j], "#SAT" => "NaN")
+        end
         # Get the data
         df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
         temp_name = names(df)[2]
