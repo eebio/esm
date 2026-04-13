@@ -95,7 +95,11 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
         @info "Plotting timeseries data"
         dir = mktempdir()
         for (key, value) in out
-            time = ESM.df2time(value[!, 1])
+            if eltype(value[!, 1]) <: AbstractString
+                time = ESM.df2time(value[!, 1])[!, 1]
+            else
+                time = [hour(t) * 60 + minute(t) + second(t) / 60 for t in value[!, 1]]
+            end
             data = value[:, Not(1, 2)]
 
             # Multipanel plot with 12 columns
@@ -123,7 +127,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
                     end
                     show_xticklabels = row == nrows
                     show_yticklabels = col == 1
-                    plot!(plt, time[!, 1] ./ 60, data[!, idx], subplot = idx,
+                    plot!(plt, time, data[!, idx], subplot = idx,
                         title = names(data)[idx], label = nothing,
                         xformatter = show_xticklabels ? :auto : (x->""),
                         yformatter = show_yticklabels ? :auto : (y->""),
@@ -139,7 +143,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
                 plt = Plots.plot(xlabel = "Time (min)",
                     title = "Overlaid timeseries for:\nChannel - $key, Scale - $(scale == :identity ? "Linear" : "Log10")")
                 for i in 1:nplots
-                    plot!(plt, time[!, 1] ./ 60, data[!, i], label = nothing, linewidth = 2.0, alpha = 0.5,
+                    plot!(plt, time, data[!, i], label = nothing, linewidth = 2.0, alpha = 0.5,
                     yscale = scale)
                 end
                 savefig(plt, joinpath(dir, string(key) * "_" * string(scale) * "_singlepanel.pdf"))
