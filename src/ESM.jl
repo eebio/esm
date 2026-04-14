@@ -119,9 +119,10 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 
 # Flags
 
-- `-p, --plot`: Produce plots of the data. Only available for some types.
+- `-p, --plot`: Produce plots of the data. Not available for --type=esm.
+- `-c, --csv`: Save the data as CSV files. Not available for --type=esm.
 """
-@cast function summarise(file; type = "auto", plot::Bool = false)
+@cast function summarise(file; type = "auto", plot::Bool = false, csv::Bool = false)
     # If type=="auto", attempt to infer from file extension
     if type == "auto"
         ext = splitext(file)[end]
@@ -139,15 +140,15 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
     if lowercase(type) == "esm"
         summary(file, ESMData(); plot = plot)
     elseif lowercase(type) == "fcs"
-        summary(file, FlowCytometryData(); plot = plot)
+        summary(file, FlowCytometryData(); plot = plot, csv = csv)
     elseif lowercase(type) == "spectramax"
-        summary(file, SpectraMax(); plot = plot)
+        summary(file, SpectraMax(); plot = plot, csv = csv)
     elseif lowercase(type) == "biotek"
-        summary(file, BioTek(); plot = plot)
+        summary(file, BioTek(); plot = plot, csv = csv)
     elseif lowercase(type) == "tecan"
-        summary(file, Tecan(); plot = plot)
+        summary(file, Tecan(); plot = plot, csv = csv)
     elseif lowercase(type) == "generic"
-        summary(file, GenericTabular(); plot = plot)
+        summary(file, GenericTabular(); plot = plot, csv = csv)
     else
         error("Unsupported file type: $type.")
     end
