@@ -78,7 +78,6 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
     end
 end
 
-=======
 function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false, csv = false)
     function ms2hmsms(ms)
         h = floor(Int, ms / 3600000)
