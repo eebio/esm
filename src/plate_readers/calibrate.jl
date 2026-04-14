@@ -20,6 +20,7 @@ Arguments:
 - `method::AbstractCalibrationMethod`: Method to use for calibration.
 """
 function calibrate(data, time_col, method::TimeseriesBlank)
+    check_multiple_channels(method.blanks)
     blanks = deepcopy(method.blanks)
     if !isnothing(method.time_col)
         blank_time_col = method.time_col
@@ -43,6 +44,7 @@ end
 end
 
 function calibrate(data, time_col, method::SmoothedTimeseriesBlank)
+    check_multiple_channels(method.blanks)
     blanks = deepcopy(method.blanks)
     if !isnothing(method.time_col)
         blank_time_col = method.time_col
@@ -61,6 +63,7 @@ end
 end
 
 function calibrate(data, _, method::MeanBlank)
+    check_multiple_channels(method.blanks)
     blanks = method.blanks
     # Average blanks over time
     means = mean(colmean(blanks))
@@ -72,6 +75,7 @@ end
 end
 
 function calibrate(data, _, method::MinBlank)
+    check_multiple_channels(method.blanks)
     blanks = method.blanks
     # Minimum blank over time
     mins = minimum(minimum(eachcol(blanks)))
@@ -100,4 +104,17 @@ function calibrate(data, _, ::StartZero)
         data[!, i] .-= starts[i]
     end
     return data
+end
+
+function check_multiple_channels(blanks)
+    # First check if there are channels in the blanks DataFrame
+    columnnames = names(blanks)
+    if all([!contains(name, ".") for name in columnnames])
+        return nothing
+    end
+    # Since there are channels, get them
+    channels = unique([convert(String, split(name, ".")[end]) for name in columnnames if contains(name, ".")])
+    if length(channels) > 1
+        throw(ArgumentError("Multiple channels detected in blanks DataFrame. You may have forgotten to qualify the calibration data with a channel name. Detected channels: $(channels)."))
+    end
 end
