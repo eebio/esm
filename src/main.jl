@@ -129,36 +129,8 @@ Arguments:
 - `maxv::Float64=Inf`: Maximum value.
 """
 function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
-    if minv isa Float64
-        minv = prevfloat(minv)
-    end
-    if maxv isa Float64
-        maxv = nextfloat(maxv)
-    end
     return Dict(col => (findfirst(x -> minv <= x <= maxv, df[:, col]),
                     findlast(x -> minv <= x <= maxv, df[:, col])) for col in names(df))
-end
-
-"""
-    df2time(time_col)
-
-Converts a time column in a DataFrame with String elements to time in seconds.
-
-Arguments:
-- `time_col::DataFrame`: DataFrame with time values.
-"""
-function df2time(time_col::DataFrame)
-    if typeof(time_col[1, 1]) != String
-        # Assume already converted
-        return time_col
-    end
-    time_col = mapcols(col -> Dates.Time.(col, dateformat"H:M:S"), time_col)
-    time_col = mapcols(col -> [i.instant.value * (1e-9) for i in col], time_col)
-    return time_col
-end
-
-function df2time(time_col)
-    return df2time(DataFrame(time = time_col))
 end
 
 """
@@ -173,9 +145,8 @@ Arguments:
 - `maxt::Float64=Inf`: Max time in mins.
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
-    time_col = df2time(time_col)
     # Do time calculations in seconds to avoid floating point math
-    tvals = index_between_vals(time_col; minv = mint * 60, maxv = maxt * 60)
+    tvals = index_between_vals(time_col; minv = mint * 60000, maxv = maxt * 60000)
     tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[1]) || isnothing(tvals[2])
         @warn "No values found between $mint and $maxt."
@@ -198,8 +169,7 @@ Arguments:
 - `time_point::Float64`: Time point in mins at which to report the measurement.
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
-    time_col = df2time(time_col)
-    tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60)
+    tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60000)
     tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."

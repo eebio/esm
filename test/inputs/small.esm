@@ -1,0 +1,144 @@
+{
+    "groups": {
+        "plate_01": {
+            "metadata": {
+                "autodefined": "true"
+            },
+            "sample_IDs": [
+                "plate_01_a1"
+            ],
+            "type": "physical"
+        }
+    },
+    "samples": {
+        "plate_01_a1": {
+            "meta": {
+                "FL1_H": {
+                    "amp_gain": "4",
+                    "amp_type": "0,0",
+                    "det_type": null,
+                    "det_volt": null,
+                    "ex_pow": null,
+                    "ex_wav": null,
+                    "filter": null,
+                    "name": "FL1-H",
+                    "name_s": null,
+                    "perc_em": null,
+                    "range": "1024"
+                },
+                "SSC_H": {
+                    "amp_gain": null,
+                    "amp_type": "2,0.01",
+                    "det_type": null,
+                    "det_volt": null,
+                    "ex_pow": null,
+                    "ex_wav": null,
+                    "filter": null,
+                    "name": "SSC-H",
+                    "name_s": "SSC-H",
+                    "perc_em": null,
+                    "range": "1024"
+                },
+                "forward": {
+                    "amp_gain": null,
+                    "amp_type": "0,0",
+                    "det_type": null,
+                    "det_volt": null,
+                    "ex_pow": null,
+                    "ex_wav": null,
+                    "filter": null,
+                    "name": "FSC-H",
+                    "name_s": "FSC-H",
+                    "perc_em": null,
+                    "range": "1024"
+                },
+                "newtime": {
+                    "amp_gain": null,
+                    "amp_type": "0,0",
+                    "det_type": null,
+                    "det_volt": null,
+                    "ex_pow": null,
+                    "ex_wav": null,
+                    "filter": null,
+                    "name": "Time",
+                    "name_s": "Time (51.20 sec.)",
+                    "perc_em": null,
+                    "range": "1024"
+                }
+            },
+            "type": "population",
+            "values": {
+                "FL1_H": [
+                    9.057978,
+                    537.61176,
+                    6.152654,
+                    259.45526
+                ],
+                "SSC_H": [
+                    280.0,
+                    735.0,
+                    128.0,
+                    1023.0
+                ],
+                "forward": [
+                    628.0,
+                    1023.0,
+                    373.0,
+                    1023.0
+                ],
+                "newtime": [
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    },
+    "transformations": {
+        "alldata": {
+            "equation": "plate_01_a1"
+        },
+        "f": {
+            "equation": "plate_01_a1.forward"
+        },
+        "ssc": {
+            "equation": "plate_01_a1.SSC_H"
+        },
+        "t": {
+            "equation": "plate_01_a1.newtime"
+        }
+    },
+    "views": {
+        "valldata": {
+            "data": [
+                "alldata"
+            ]
+        },
+        "vf": {
+            "data": [
+                "f"
+            ]
+        },
+        "vplate_01": {
+            "data": [
+                "plate_01"
+            ]
+        },
+        "vplate_01_a1": {
+            "data": [
+                "plate_01_a1"
+            ]
+        },
+        "vssc": {
+            "data": [
+                "ssc"
+            ]
+        },
+        "vt": {
+            "data": [
+                "t"
+            ]
+        }
+    }
+}

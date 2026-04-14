@@ -247,9 +247,8 @@ end
 
     # Sample data for testing
     df = DataFrame(A = 1:10, B = 11:20)
-    time_col = DataFrame(Time = [
-        "00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38",
-        "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:30:00"])
+    time_col = DataFrame(Time = [518000, 1118000, 1718000, 2318000, 2918000,
+        3518000, 4118000, 4718000, 5318000, 5400000])
 
     result = ESM.between_times(df, time_col; mint = 0, maxt = 0)
     @test result == DataFrame(A = [], B = [])
@@ -274,9 +273,8 @@ end
 
     # Sample data for testing
     df = DataFrame(A = 1:10, B = 11:20)
-    time_col = DataFrame(Time = [
-        "00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38",
-        "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:38:38"])
+    time_col = DataFrame(Time = [518000, 1118000, 1718000, 2318000, 2918000,
+        3518000, 4118000, 4718000, 5318000, 5918000])
 
     # Recasts into DataFrame again as this removes the Row indexes (which are used as part of DataFrame equality comparison)
     @test DataFrame(ESM.at_time(df, time_col, 30)) == DataFrame(A = 3, B = 13)
@@ -284,24 +282,6 @@ end
     @test DataFrame(ESM.at_time(df, time_col, 0)) == DataFrame(A = [], B = [])
 
     @test DataFrame(ESM.at_time(df, time_col, 1000)) == DataFrame(A = 10, B = 20)
-end
-
-# df2time
-@testitem "df2time" begin
-    println("df2time")
-    using DataFrames
-
-    # Sample data for testing
-    time_col = DataFrame(Time = [
-        "00:08:38", "00:18:38", "00:28:38", "00:38:38", "00:48:38",
-        "00:58:38", "01:08:38", "01:18:38", "01:28:38", "01:38:38"])
-
-    result = ESM.df2time(time_col)
-    @test result == DataFrame(Time = [
-        8+38/60, 18+38/60, 28+38/60, 38+38/60, 48+38/60, 58+38/60,
-        68+38/60, 78+38/60, 88+38/60, 98+38/60] .* 60)
-    result2 = ESM.df2time(result)
-    @test result2 == result
 end
 
 # Test at_od
@@ -429,7 +409,7 @@ end
     # Test sample
     @test names(a["sample"]) == ["plate_01_time.flo"]
     @test a["sample"][[1, 2, end - 1, end], "plate_01_time.flo"] ==
-          Any["00:09:04", "00:19:04", "18:29:04", "18:39:04"]
+          [544714, 1144314, 66544764, 67144719]
     # Test expressions
     @test issetequal(names(a["flowsub"]),
         ["plate_01_a5", "plate_01_a1", "plate_01_a9",

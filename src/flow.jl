@@ -50,6 +50,9 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
 end
 
 function flow_channel(channel)
+    if channel == "time"
+        return "Time"
+    end
     return replace(channel, "_" => "-")
 end
 
@@ -71,7 +74,7 @@ function extract_flow(fcs, chan)
             return missing
         end
     end
-    Dict(
+    return Dict(
         :name => mapper('n'),
         :amp_type => mapper('e'),
         :range => mapper('r'),

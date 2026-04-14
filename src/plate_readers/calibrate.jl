@@ -30,9 +30,9 @@ function calibrate(data, time_col, method::TimeseriesBlank)
     # Interpolate blanks to data time points if necessary
     if !isequal(blank_time_col, time_col)
         li = LinearInterpolation(averaged_blanks,
-            ESM.df2time(blank_time_col)[!, 1];
+            blank_time_col[!, 1];
             extrapolation = ExtrapolationType.Constant)
-        averaged_blanks = li.(ESM.df2time(time_col)[!, 1])
+        averaged_blanks = li.(time_col[!, 1])
     end
     return data .- averaged_blanks
 end
@@ -50,9 +50,9 @@ function calibrate(data, time_col, method::SmoothedTimeseriesBlank)
         blank_time_col = time_col
     end
     averaged_blanks = colmean(blanks)
-    df = DataFrame(od = averaged_blanks, Time = ESM.df2time(blank_time_col)[!, 1])
+    df = DataFrame(od = averaged_blanks, Time = blank_time_col[!, 1])
     model = lm(@formula(od~Time), df)
-    smoothed_blanks = predict(model, ESM.df2time(time_col))
+    smoothed_blanks = predict(model, time_col)
     return data .- smoothed_blanks
 end
 

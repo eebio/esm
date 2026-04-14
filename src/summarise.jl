@@ -1,4 +1,5 @@
 using Plots
+using Printf
 using Plots.PlotMeasures
 using PDFmerger
 using Combinatorics
@@ -78,6 +79,15 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
 end
 
 function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false, csv = false)
+    function ms2hmsms(ms)
+        h = floor(Int, ms / 3600000)
+        ms -= h * 3600000
+        m = floor(Int, ms / 60000)
+        ms -= m * 60000
+        s = floor(Int, ms / 1000)
+        ms -= s * 1000
+        return @sprintf("%02d:%02d:%02d.%03d", h, m, s, ms)
+    end
     println("")
     @info "Summary of $(typeof(ptype)) file: $file"
     out = read(file, ptype)
@@ -87,7 +97,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
     @info "Number of channels: $(length(keys(out)))"
     for (key, value) in out
         @info "Channel $key: $(nrow(value)) timepoints and $(ncol(value) - 1) samples."
-        @info "Timepoints range from $(value[1, 1]) to $(value[end, 1])."
+        @info "Timepoints range from $(ms2hmsms(value[1,1])) to $(ms2hmsms(value[end, 1]))."
     end
 
     if plot
@@ -95,11 +105,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
         @info "Plotting timeseries data"
         dir = mktempdir()
         for (key, value) in out
-            if eltype(value[!, 1]) <: AbstractString
-                time = ESM.df2time(value[!, 1])[!, 1]
-            else
-                time = [hour(t) * 60 + minute(t) + second(t) / 60 for t in value[!, 1]]
-            end
+            time = value[:, 1]/60000
             data = value[:, Not(1, 2)]
 
             # Multipanel plot with 12 columns
@@ -179,7 +185,7 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
         @info "Values range from $(minimum(f[key])) to $(maximum(f[key]))."
     end
     @info "Time ranges from $(minimum(f["Time"])) to $(maximum(f["Time"])) with \
-        $(length(f["Time"])) timepoints."
+        $(length(f["Time"])) timepoints. Accessed through channel: time"
 
     if plot
         @info "Plotting FCS data"
@@ -189,6 +195,9 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
             p = histogram(f[ESM.flow_channel(c)],
                 xlabel = "$c", ylabel = "Count")
             savefig(p, joinpath(dir, string(c) * ".pdf"))
+            p = scatter(f["Time"], f[ESM.flow_channel(c)],
+                xlabel = "Time", ylabel = "$c", marker = :auto)
+            savefig(p, joinpath(dir, string(c) * "_time.pdf"))
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
         merge_pdfs(filepaths, string(file) * ".pdf")

@@ -46,7 +46,7 @@ end
     @test issetequal(keys(data[:samples]), wells)
 
     @test data[:samples]["plate_01_time"][:values]["OD_600"][[1, 2, end-1, end]] ==
-          ["00:00:00", "00:12:46", "15:43:43", "15:56:28"]
+          [0, 765900, 56622900, 57388100]
 
     @test issetequal(keys(read(
         "inputs/tecan-data.xlsx", Tecan(); channels = ["OD_600", "GFP"])), ["OD_600", "GFP"])
@@ -58,14 +58,13 @@ end
 
     data = read_data("inputs/example.xlsx")
     @test data[:samples]["plate_01_time"][:values]["OD"][1:2] ==
-          Dates.Time[Dates.Time(0, 8, 38), Dates.Time(0, 18, 38)]
-    @test data[:samples]["plate_01_time"][:values]["OD"][end] == Dates.Time(18, 38, 38)
+          [518000, 1118000]
+    @test data[:samples]["plate_01_time"][:values]["OD"][end] == 67118000
     @test data[:samples]["plate_01_a1"][:values]["OD"][1:3] == [0.165, 0.167, 0.169]
     @test data[:samples]["plate_01_h12"][:values]["OD"][end] == 0.148
 
-    @test data[:samples]["plate_01_time"][:values]["flo"][1:2] ==
-          Dates.Time[Dates.Time(0, 9, 04), Dates.Time(0, 19, 04)]
-    @test data[:samples]["plate_01_time"][:values]["flo"][end] == Dates.Time(18, 39, 04)
+    @test data[:samples]["plate_01_time"][:values]["flo"][1:2] == [544714, 1144314]
+    @test data[:samples]["plate_01_time"][:values]["flo"][end] == 67144719
     @test data[:samples]["plate_01_a1"][:values]["flo"][1:3] == [21, 22, 20]
     @test data[:samples]["plate_01_h12"][:values]["flo"][end] == 7
 
@@ -83,11 +82,8 @@ end
     using DataFrames
 
     od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6, 51.2])
-    time_col = DataFrame(Time = [
-        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00", "00:05:00", "00:06:00",
-        "00:07:00", "00:08:00", "00:09:00", "00:10:00"])
+    time_col = DataFrame(Time = 0:60000:600000)
 
-    # TODO: Add some more tests with more awkward data
     @test doubling_time(od_df, time_col, MovingWindow(window_size = 3)) ≈
           DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints)) ≈
@@ -105,10 +101,10 @@ end
 
     # Parametric tests
     using Dates
-    time_col = DataFrame(:Time => [string(Time(0, 0, 0) + Second(10) * i) for i in 0:60])
+    time_col = DataFrame(:Time => 0:10000:600000)
     # Requires full curve, not just a bit of exponential growth
     f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0))))
-    od_df = f.(ESM.df2time(time_col) ./ 60)
+    od_df = f.(time_col ./ 60000)
     rename!(od_df, :Time => :A)
 
     # Check that the actual doubling time is around 1.95
@@ -126,9 +122,7 @@ end
     using DataFrames
     # TODO add tests with more columns and more awkward data
     od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6, 51.2])
-    time_col = DataFrame(Time = [
-        "00:00:00", "00:01:00", "00:02:00", "00:03:00", "00:04:00", "00:05:00", "00:06:00",
-        "00:07:00", "00:08:00", "00:09:00", "00:10:00"])
+    time_col = DataFrame(Time = 0:60000:600000)
 
     @test growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"] ≈ log(2)
@@ -155,10 +149,10 @@ end
 
     # Parametric tests
     using Dates
-    time_col = DataFrame(:Time => [string(Time(0, 0, 0) + Second(10) * i) for i in 0:60])
+    time_col = DataFrame(:Time => 0:10000:600000)
     # Requires full curve, not just a bit of exponential growth
     f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0))))
-    od_df = f.(ESM.df2time(time_col)./60)
+    od_df = f.(time_col ./ 60000)
     rename!(od_df, :Time => :A)
 
     # Check that the actual growth rate is around 0.35
@@ -188,7 +182,7 @@ end
     od = f.(t) + 0.01 * r
     od_df = DataFrame(A = od)
     using Dates
-    time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
+    time_col = DataFrame(Time = t*60000)
 
     @test 7 < time_to_max_growth(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < 10
@@ -206,7 +200,7 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    time_col_warn = DataFrame(:Time => [string(Time(0, 0, 0) + Minute(1) * i) for i in 0:10])
+    time_col_warn = DataFrame(:Time => 0:60000:600000)
     @test_warn "Not enough data points" time_to_max_growth(od_df_warn, time_col_warn, FiniteDiff())
     @test_warn "Not enough data points" time_to_max_growth(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
@@ -234,7 +228,7 @@ end
     od = f.(t) + 0.01 * r
     od_df = DataFrame(A = od)
     using Dates
-    time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
+    time_col = DataFrame(Time = t*60000)
 
     @test 5 < lag_time(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < 8
@@ -252,7 +246,7 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    time_col_warn = DataFrame(:Time => [string(Time(0, 0, 0) + Minute(1) * i) for i in 0:10])
+    time_col_warn = DataFrame(:Time => 0:60000:600000)
     @test_warn "Not enough data points" lag_time(od_df_warn, time_col_warn, FiniteDiff())
     @test_warn "Not enough data points" lag_time(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
@@ -280,7 +274,7 @@ end
     od = f.(t) + 0.01 * r
     od_df = DataFrame(A = od)
     using Dates
-    time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
+    time_col = DataFrame(Time = t*60000)
 
     @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < f(10)
     @test 0 < od_at_max_growth(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < f(10)
@@ -298,7 +292,7 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    time_col_warn = DataFrame(:Time => [string(Time(0, 0, 0) + Minute(1) * i) for i in 0:10])
+    time_col_warn = DataFrame(:Time => 0:60000:600000)
     @test_warn "Not enough data points" od_at_max_growth(od_df_warn, time_col_warn, FiniteDiff())
     @test_warn "Not enough data points" od_at_max_growth(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
@@ -326,7 +320,7 @@ end
     od = f.(t) + 0.01 * r
     od_df = DataFrame(A = od)
     using Dates
-    time_col = DataFrame(Time = [string(Time(0, 0, 0) + Second(30) * i) for i in 0:(length(t)-1)])
+    time_col = DataFrame(Time = t*60000)
 
     @test 0.95 < max_od(od_df, time_col, MovingWindow(window_size=5))[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, MovingWindow(window_size=5, method=:Endpoints))[1, "A"] < 1.05
@@ -344,7 +338,7 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    time_col_warn = DataFrame(:Time => [string(Time(0, 0, 0) + Minute(1) * i) for i in 0:10])
+    time_col_warn = DataFrame(:Time => 0:60000:600000)
     @test_warn "Not enough data points" max_od(od_df_warn, time_col_warn, FiniteDiff())
     @test_warn "Not enough data points" max_od(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
@@ -360,8 +354,7 @@ end
     using DataFrames
 
     data = DataFrame(A = [0.5, 0.65, 0.79, 0.83, 0.95], B = [1.11, 1.05, 1.23, 1.36, 1.44])
-    time_col = DataFrame(Time = [
-        "00:00:00", "00:10:00", "00:20:00", "00:30:00", "00:40:00"])
+    time_col = DataFrame(Time = 0:600000:2400000)
     datacopy = deepcopy(data)
     blanks = DataFrame(C = [0.1, 0.15, 0.2, 0.17, 0.08], D = [0.21, 0.26, 0.22, 0.23, 0.2])
 
@@ -372,7 +365,7 @@ end
     new_blanks = DataFrame(C = [0.12, 0.14, 0.19], D = [0.22, 0.25, 0.21])
     new_blanks_copy = deepcopy(new_blanks)
     blank_time_col = DataFrame(Time = [
-        "00:05:00", "00:25:00", "00:35:00"])
+        300000, 1500000, 2100000])
     @test calibrate(data, time_col,
         TimeseriesBlank(blanks = new_blanks, time_col = blank_time_col)) ≈
           DataFrame(A = [0.5 - 0.17, 0.65 - (0.75*0.17+0.25*0.195), 0.79 - (0.25*0.17+0.75*0.195), 0.83 - (0.5*0.195+0.5*0.20), 0.95 - 0.20],
