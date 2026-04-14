@@ -99,4 +99,5 @@ end
           DataFrame(:SSC_H => [0.0352269, 0.272613, 0.0177828, 0.995513], Symbol("SSC_H.max") => fill(1.0, 4), Symbol("SSC_H.min") => fill(0.0100451, 4), :id => [1, 2, 3, 4]); atol=0.0001)
     @test isapprox(eval(ESM.sexp_to_nested_list(:(plate_01_a1.FL1_H), es_written, trans_meta_map)),
           DataFrame(:FL1_H => [2.26449, 134.403, 1.53816, 64.8638], Symbol("FL1_H.max") => fill(256.0, 4), Symbol("FL1_H.min") => fill(0.25, 4), :id => [1, 2, 3, 4]); atol=0.0001)
+    @test issetequal(names(eval(ESM.sexp_to_nested_list(:(plate_01), es_written, trans_meta_map))), ["FL1_H", "FL1_H.max", "FL1_H.min", "SSC_H", "SSC_H.max", "SSC_H.min", "forward", "forward.max", "forward.min", "newtime", "newtime.max", "newtime.min", "newtime.max", "newtime.min", "id"])
 end
