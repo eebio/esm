@@ -76,3 +76,27 @@ end
     # Test without commas
     @test ESM.expand_groups("plate_01_a[1:3]") == ["plate_01_a1", "plate_01_a2", "plate_01_a3"]
 end
+
+@testitem "flow cytometry data" setup=[environment_path] begin
+    println("flow cytometry data")
+
+    using DataFrames
+    es = read_data("inputs/small.xlsx")
+    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.esm")
+    write_esm(es, filename)
+    es_written = read_esm(filename)
+
+    @test issetequal(es_written.samples.name, ["plate_01_a1.FL1_H", "plate_01_a1.SSC_H", "plate_01_a1.forward", "plate_01_a1.newtime"])
+
+    # Run transformations on small.esm
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es_written.transformations[i]["equation"])
+    for i in keys(es_written.transformations))
+    @test eval(ESM.sexp_to_nested_list(:(t), es_written, trans_meta_map)) ==
+          DataFrame(:id => [1, 2, 3, 4], :newtime => [1.0, 1.0, 1.0, 1.0], Symbol("newtime.max") => fill(1024.0, 4), Symbol("newtime.min") => fill(1.0, 4)) # should we have a min and max for time?
+    @test eval(ESM.sexp_to_nested_list(:(f), es_written, trans_meta_map)) ==
+          DataFrame(:forward => [628.0, 1023.0, 373.0, 1023.0], Symbol("forward.max") => fill(1024.0, 4), Symbol("forward.min") => fill(1.0, 4), :id => [1, 2, 3, 4])
+    @test isapprox(eval(ESM.sexp_to_nested_list(:(ssc), es_written, trans_meta_map)),
+          DataFrame(:SSC_H => [0.0352269, 0.272613, 0.0177828, 0.995513], Symbol("SSC_H.max") => fill(1.0, 4), Symbol("SSC_H.min") => fill(0.0100451, 4), :id => [1, 2, 3, 4]); atol=0.0001)
+    @test isapprox(eval(ESM.sexp_to_nested_list(:(plate_01_a1.FL1_H), es_written, trans_meta_map)),
+          DataFrame(:FL1_H => [2.26449, 134.403, 1.53816, 64.8638], Symbol("FL1_H.max") => fill(256.0, 4), Symbol("FL1_H.min") => fill(0.25, 4), :id => [1, 2, 3, 4]); atol=0.0001)
+end
