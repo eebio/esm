@@ -185,7 +185,7 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
         @info "Values range from $(minimum(f[key])) to $(maximum(f[key]))."
     end
     @info "Time ranges from $(minimum(f["Time"])) to $(maximum(f["Time"])) with \
-        $(length(f["Time"])) timepoints."
+        $(length(f["Time"])) timepoints. Accessed through channel: time"
 
     if plot
         @info "Plotting FCS data"
@@ -195,6 +195,9 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
             p = histogram(f[ESM.flow_channel(c)],
                 xlabel = "$c", ylabel = "Count")
             savefig(p, joinpath(dir, string(c) * ".pdf"))
+            p = scatter(f["Time"], f[ESM.flow_channel(c)],
+                xlabel = "Time", ylabel = "$c", marker = :auto)
+            savefig(p, joinpath(dir, string(c) * "_time.pdf"))
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
         merge_pdfs(filepaths, string(file) * ".pdf")
