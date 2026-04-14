@@ -354,7 +354,7 @@ end
     using DataFrames
 
     data = DataFrame(A = [0.5, 0.65, 0.79, 0.83, 0.95], B = [1.11, 1.05, 1.23, 1.36, 1.44])
-    time_col = DataFrame(Time = 0:60000:600000)
+    time_col = DataFrame(Time = 0:600000:2400000)
     datacopy = deepcopy(data)
     blanks = DataFrame(C = [0.1, 0.15, 0.2, 0.17, 0.08], D = [0.21, 0.26, 0.22, 0.23, 0.2])
 
@@ -365,7 +365,7 @@ end
     new_blanks = DataFrame(C = [0.12, 0.14, 0.19], D = [0.22, 0.25, 0.21])
     new_blanks_copy = deepcopy(new_blanks)
     blank_time_col = DataFrame(Time = [
-        30000, 150000, 210000])
+        300000, 1500000, 2100000])
     @test calibrate(data, time_col,
         TimeseriesBlank(blanks = new_blanks, time_col = blank_time_col)) ≈
           DataFrame(A = [0.5 - 0.17, 0.65 - (0.75*0.17+0.25*0.195), 0.79 - (0.25*0.17+0.75*0.195), 0.83 - (0.5*0.195+0.5*0.20), 0.95 - 0.20],
