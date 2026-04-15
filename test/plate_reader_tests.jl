@@ -434,3 +434,16 @@ end
     @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4*60))[1, "plate_01_b6"]) == 102
     @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtMaxGrowth(method=FiniteDiff()))[1, "plate_01_a10"]) == -584
 end
+
+@testitem "warning for calibrating multiple channels" begin
+    es = read_esm("inputs/example.esm")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    data = eval(ESM.sexp_to_nested_list(:(plate_01_a1), es, trans_meta_map))
+    time_col = eval(ESM.sexp_to_nested_list(:(plate_01_time), es, trans_meta_map))
+    blanks = eval(ESM.sexp_to_nested_list(:(plate_01_a2), es, trans_meta_map))
+    methods = [TimeseriesBlank(blanks = blanks), SmoothedTimeseriesBlank(blanks = blanks), MeanBlank(blanks = blanks), MinBlank(blanks = blanks)]
+    for method in methods
+        @test_throws "ArgumentError: Multiple channels detected in blanks DataFrame. You may have forgotten to qualify the calibration data with a channel name. Detected channels: [\"OD\", \"flo\"]." calibrate(data, time_col, method)
+    end
+end
