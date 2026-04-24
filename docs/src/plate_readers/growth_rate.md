@@ -105,10 +105,10 @@ It can be called using `growth_rate(data, time_col, Regularization())` or `doubl
 
 If you want to implement a new growth rate method to be included in ESM, you need to:
 
-* Open a pull request with the following code changes
-* Define a new struct for your method type in `src/methods.jl`
-* The type of that struct is a subtype of `AbstractGrowthRateMethod`
-* Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
-* Document that method in the growth rate documentation (this page)
+- Open a pull request with the following code changes
+- Define a new struct for your method type in `src/methods.jl`
+- The type of that struct is a subtype of `AbstractGrowthRateMethod`
+- Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
+- Document that method in the growth rate documentation (this page)
 
 If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new growth rate method and explaining how the method should work.

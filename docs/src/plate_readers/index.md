@@ -18,5 +18,5 @@ For more details on the plate reader formats we support, how they have been veri
 ESM provides a variety of methods for handling some common summary statistics. These summary statistics are:
 
 * [Growth Rate](@ref) (or doubling time)
-* [Per cell fluorescence](@ref Fluorescence)
+* [Per Cell Fluorescence](@ref Fluorescence)
 * [Calibration](@ref)
