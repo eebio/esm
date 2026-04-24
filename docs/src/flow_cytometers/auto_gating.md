@@ -1,6 +1,6 @@
 # Automatic Gating
 
-There are a couple of methods for automatically gating flow cytometry data. Each method uses the `gate(data, Method())` function signature which will return all the data that passes the automatic gating algorithm. These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
+There are a couple of methods for automatically gating flow cytometry data. Each method uses the `gate(data, Method())` function signature which will return all the data that passes the automatic gating algorithm. These can be used in the transformations in the Excel template.
 
 !!! tip "Flow cytometry samples and groups"
     When using ESM transformations, samples and groups are automatically converted to relative fluoresence intensity. This allows you to use `gate` on any flow sample or group of flow samples.

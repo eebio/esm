@@ -16,7 +16,7 @@ The ESM data format is composed of a structured JSON file (named the `.esm` file
 
 Since we have all the data in a standardised format, we can (and do) provide a set of methods for processing the data. This includes calibration methods, flow cytometry gating, and calculating summary statistics such as growth rate or per cell fluorescence. While we provide many possible methods for each of these, we also offer sensible, robust, benchmark-verified defaults that should work in the majority of cases.
 
-ESM can be used either as a Julia package, or more typically, through its command line interface. If you want to learn how to use ESM, check out the [documentation](https://eebio.github.io/esm/).
+ESM can be used through its command line interface. If you want to learn how to use ESM, check out the [documentation](https://eebio.github.io/esm/).
 
 ## Contributing
 

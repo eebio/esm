@@ -1,6 +1,6 @@
 # Fluorescence
 
-There are a variety of methods for calculating per cell fluorescence. Each method uses the `fluorescence(data_fl, time_fl, data_od, time_od, Method())` function signature. These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
+There are a variety of methods for calculating per cell fluorescence. Each method uses the `fluorescence(data_fl, time_fl, data_od, time_od, Method())` function signature. These can be used in the transformations in the Excel template.
 
 ```@docs; canonical=false
 ESM.fluorescence
