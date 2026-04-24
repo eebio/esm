@@ -5,7 +5,7 @@ The Excel interface is accessed through `esm template ...`. It provides an Excel
 The Excel template features five sheets to be filled out with relevant information:
 
 1. Samples
-2. ID
+2. Channel map
 3. Groups
 4. Transformations
 5. Views
@@ -14,31 +14,33 @@ On this page, we document what is required to be filled out and give examples of
 
 ## Samples
 
-The first sheet is called "Samples" and requires information about where you data is stored and what information should be read from it.
+The first sheet is called **Samples** and requires information about where you data is stored and what information should be read from it.
 
 Each row specifies a new file that should be imported into the final `.esm` file.
 
-The first few rows control the naming scheme for the samples. By default this will look something like "plate_01_a1.600".
+The **Type** defines whether the data is `plate reader` or `flow` to determine how that file should be imported. These are the only two options.
 
-The first column lets you put in labels for plates. Here, we have labelled them "1", "2", "3", and "4". The final names for these plates will be "plate\_01", "plate\_02", "plate\_03", and "plate\_04".
+The **Data Location** gives the full filepath to the data. It should include any filename extensions (like **.xlsx** or **.csv**)
 
-The second column controls the well name. For example, if you have flow cytometry data from different wells, stored in different `.fcs` files, you can label the well that each `.fcs` file corresponds to.
+**Channels** identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved. This should be a comma-separated list is multiple channels are to be included. Spaces may be optionally included after the commas. The channel names should be formatted as they are printed by `esm summarise`.
 
-The sample names will be stored as plate\_0\$PLATE NUMBER\$\_\$well name\$. That is unless a name is provided in the third column.
+The **Plate brand** identifies the format the data will be in and how it should be parsed. Available options are: `spectramax`, `biotek`, and `tecan`. Leave it blank for flow cytometry data.
 
-The type defines whether the data is "plate reader", "flow", or "qpcr" and how that file should be imported.
+The next few columns control the naming scheme for the samples. By default this will look something like `plate_01_a1.OD_600`.
 
-The data location gives the full filepath to the data.
+The **Plate** column lets you put in labels for plates. Here, we have labelled the sample `1`. The final name for this plates will be `plate_01`.
 
-Channels identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved.
+For data where a single file is recorded for each well, such as flow cytometry data, a **Well** can be specified. For example, if you have flow cytometry data from different wells, stored in different `.fcs` files, you can label the well that each `.fcs` file corresponds to, giving you access to the files as `plate_01_a1`, `plate_01_a2`, etc.
 
-Finally, we have the plate reader brand. This identifies the format the data will be in. Available options are: "spectramax", "biotek", and "tecan". Leave it blank for other data types.
+The sample names will be stored as `plate_0$Plate$_$Well$`. That is unless a name is provided in the third column.
+
+The **Name** column can override a plate name. In this case, anything entered into the **Name** column will replace the entire `plate_01`-style name. This only happens for flow cytometry data.
 
 ![alt text](assets/samples.png)
 
-## ID
+## Channel map
 
-Here you can rename any channels. On the left, provide the channel name, as specified on the previous sheet. On the right, provide the new name for the channel. In this example, rather than using "plate\_01\_a5.600", we would then use "plate\_01\_a5.od".
+Here you can rename any channels. On the left, provide the channel name, as specified on the previous sheet. On the right, provide the new name for the channel. In this example, rather than using `plate_01_a5.OD_600`, we would then use `plate_01_a5.od`.
 
 ![alt text](assets/ids.png)
 
@@ -46,7 +48,7 @@ Here you can rename any channels. On the left, provide the channel name, as spec
 
 In this sheet, you can group samples together. For example, you may want to group all of your blank well together to make them easier to refer to.
 
-There are a few formats for doing this. The simplest is to just write out all the samples in a comma separated list (i.e. "plate\_01\_a1, plate\_01\_a2, plate\_01\_a3").
+There are a few formats for doing this. The simplest is to just write out all the samples in a comma separated list (i.e. `plate_01_a1, plate_01_a2, plate_01_a3`).
 
 To make this a bit shorter, you may choose to use the compressed format. In this format, anything specified in `[]` is expanded.
 
@@ -55,17 +57,7 @@ To make this a bit shorter, you may choose to use the compressed format. In this
 * `[a,d,e]` gets expanded to `a`, `d`, and `e`.
 * Numerals are treated likewise.
 
-All these formats can be mixed together in any combination, so "plate\_0[1,2]\_[a:c]1, plate\_04\_a2" is treated the same as "plate\_01\_a1, plate\_01\_b1, plate\_01\_c1, plate\_02\_a1, plate\_02\_b1, plate\_02\_c1, plate\_04\_a2".
-
-```@docs; canonical=false
-ESM.expand_group
-```
-
-In the example:
-
-* all wells on the left of a 96 well plate (A through H, column 1) are grouped as "blank",
-* all wells on the right (A through H, column 12) are groups as "control",
-* the remaining wells (A through H, columns 2 through 11) are split into pairs of rows (A and B, C and D, E and F, G and H) into the groups "ee01", "ee02", "ee03", "ee04".
+All these formats can be mixed together in any combination, so `plate_0[1,2]_[a:c]1, plate_04_a2` is treated the same as `plate_01_a1, plate_01_b1, plate_01_c1, plate_02_a1, plate_02_b1, plate_02_c1, plate_04_a2`.
 
 ![alt text](assets/groups.png)
 
@@ -73,9 +65,9 @@ In the example:
 
 On the transformations sheet, you can define the post-processing you want to apply to your data. This typically involves calibrations and calculating summary statistics.
 
-In the left column, you can name your transformation. In the right column, you can provide the code for the transformation you want to run. This can be arbitrary Julia code, but most commonly is just calling one of the ESM methods for [Plate Reader](@ref plate_reader), [Flow Cytometry](@ref flow_cytometry), and [qPCR](@ref qpcr) data.
+In the left column, you can name your transformation. In the right column, you can provide the code for the transformation you want to run. This can be arbitrary Julia code, but most commonly is just calling one of the ESM methods for [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) data.
 
-In the example below, we calibrate our groups based on the blank group, then calculate growth rates on each of the calibrated transformations. Finally, the data is collected together (the "processed" variable appends the different DataFrames together) and this is normalised by the mean of the controls.
+In the example below, we define a short name for the times from plate 1. Then we calibrate our groups based on the blank group, then calculate doubling times on each of the calibrated transformations.
 
 ![alt text](assets/transformations.png)
 
@@ -83,6 +75,6 @@ In the example below, we calibrate our groups based on the blank group, then cal
 
 Finally, the views describe a subset of transformations, groups and samples that you actually want to look at, outside of ESM. This is typically used for your final post-processed data, but can also be useful for debugging (viewing inputs and outputs from a transformation to make sure it is working as intended).
 
-In the example below, we have a single view named "growth_rate", which uses the "normalized" transformation we defined previously. Instead of using a transformation, we could have also used a group name, or a sample name.
+In the example below, we have three views named `dt_low`, `dt_high`, and `dt_control`, which uses the doubling times calculated by their corresponding transformations. Instead of using a transformation, we could have also used a group name, or a sample name.
 
 ![alt text](assets/views.png)

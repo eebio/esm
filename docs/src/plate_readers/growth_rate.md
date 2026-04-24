@@ -1,6 +1,6 @@
 # Growth Rate
 
-There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, time_col, Method())` function signature (or `doubling_time(data, time_col, Method())`). These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
+There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, time_col, Method())` function signature (or `doubling_time(data, time_col, Method())`). These can be used in the transformations in the Excel template.
 
 ```@docs
 ESM.growth_rate
@@ -19,8 +19,8 @@ lag_time
 ```
 
 !!! note "Lagtime"
-    Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of log(OD/OD_0) where OD_0 is the first OD value in the data set. It is calculated as: time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0).
-    For the parameteric and regularization methods, OD_0 is determined from the fitted curve.
+    Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of `log(OD/OD_0)` where `OD_0` is the first OD value in the data set. It is calculated as: `time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0)`.
+    For the parameteric and regularization methods, `OD_0` is determined from the fitted curve.
 
 ## Endpoints
 
@@ -91,10 +91,9 @@ It can be called using `growth_rate(data, time_col, Logistic())` or `doubling_ti
 
 ## Regularization
 
-!!! todo "tidi"
-    maths of regularization
+For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
 
-For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The derivative of the cubic spline is then calculated at all timepoints and the maximum derivative is returned.
+This method uses the `RegularizationSmooth()` method of DataInterpolations.jl, see [here](@extref DataInterpolations methods).
 
 It can be called using `growth_rate(data, time_col, Regularization())` or `doubling_time(data, time_col, Regularization())`.
 
@@ -106,10 +105,10 @@ It can be called using `growth_rate(data, time_col, Regularization())` or `doubl
 
 If you want to implement a new growth rate method to be included in ESM, you need to:
 
-* Open a pull request with the following code changes
-* Define a new struct for your method type in `src/methods.jl`
-* The type of that struct is a subtype of `AbstractGrowthRateMethod`
-* Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
-* Document that method in the growth rate documentation (this page)
+- Open a pull request with the following code changes
+- Define a new struct for your method type in `src/methods.jl`
+- The type of that struct is a subtype of `AbstractGrowthRateMethod`
+- Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
+- Document that method in the growth rate documentation (this page)
 
 If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new growth rate method and explaining how the method should work.
