@@ -9,9 +9,9 @@ PAGES = [
     "Getting Started with ESM" => "tutorial.md",
     "Plate Readers" => [
         "plate_readers/index.md",
+        "plate_readers/calibration.md",
         "plate_readers/growth_rate.md",
         "plate_readers/fluorescence.md",
-        "plate_readers/calibration.md",
         "plate_readers/compatibility.md",
     ],
     "Flow Cytometry" => [
