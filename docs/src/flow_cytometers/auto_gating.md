@@ -13,9 +13,6 @@ gate
 
 The `KDE` method (Kernal Density Estimation) is an automatic gating method based on [FlowCal](https://github.com/taborlab/FlowCal). It generates an 2D histogram in the provided channels. It then smoothes out the densities of this histogram using `KernalDensity.jl` to remove isolated bins of high density (noise). It then returns some fraction of the data (`gate_frac` which defaults to 0.65) which is highest in density.
 
-!!! todo "Animation"
-    This is an awkward method to explain, best to create an animation for it.
-
 It can be called using `gate(data, KDE(channels=["FSC_A", "SSC_A"], gate_frac=0.65, nbins=1024))` where `gate_frac` and `nbins` are optional.
 
 ## Implementation Details
