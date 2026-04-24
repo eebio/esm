@@ -2,6 +2,7 @@ using Documenter, ESM
 using DocumenterInterLinks
 
 links = InterLinks(
+    "DataInterpolations" => "https://docs.sciml.ai/DataInterpolations/stable/objects.inv",
 )
 
 PAGES = [
