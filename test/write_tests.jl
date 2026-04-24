@@ -22,12 +22,6 @@ end
     filename = joinpath(Base.Filesystem.mktempdir(), "tmp.esm")
     write_esm(es, filename)
     es_written = read_esm(filename)
-    names = [
-        ["plate_01_$(letter)$(number).$(channel)"
-         for letter in 'a':'h', number in 1:12, channel in ["OD", "flo"]]...,
-        ["plate_02_a1.$(channel)"
-         for channel in ["FSC_H", "SSC_H", "FL1_H", "FL1_H", "FL3_H", "FL1_A", "FL4_H"]]...,
-        "plate_01_t° read 1:700.OD", "plate_01_time.OD", "plate_01_time.flo"] # TODO tidy up some of the name reading
     names = []
     for (i,j) in es[:samples]
         for k in keys(j[:values])

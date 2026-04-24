@@ -285,7 +285,6 @@ struct ParametricGrowthRate <: AbstractGrowthRateMethod
     initial_params::Vector{Float64}
 end
 
-# TODO these equations need fixing to ensure they make sense biologically
 function Logistic()
     return ParametricGrowthRate(
         (t, p) -> p[2] ./ (1 .+ exp.(4 * p[1] / p[2] .* (p[3] .- t) .+ 2)),

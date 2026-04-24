@@ -4,9 +4,6 @@
 
 ESM currently supports importing data from flow cytometry `.fcs` files. Specifically, it supports FCS versions 3.0 and 3.1.
 
-!!! todo "todo"
-    fcs versions compatibility
-
 If you require support for a different FCS version, please [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose), and let us know what version you require.
 
 ## Methods

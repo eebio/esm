@@ -288,7 +288,6 @@ end
 @testitem "at_od" begin
     println("at_od")
     using DataFrames
-    #TODO unclear how function inputs should be handled here
     # Sample data for at_od
     od_df = DataFrame(A = [0.1, 0.2, 0.3, 0.4, 0.5], B = [0.2, 0.3, 0.4, 0.5, 0.6])
     target_df = DataFrame(A = [10, 20, 30, 40, 50], B = [20, 30, 40, 50, 60])

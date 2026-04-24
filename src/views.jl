@@ -89,7 +89,6 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
     if isa(sexp, Symbol)
         if sexp in keys(trans_meta_map)
             # Is the symbol a transformation
-            # TODO Needs circular referencing of transformations adjusted
             return sexp_to_nested_list(trans_meta_map[sexp], es, trans_meta_map)
         elseif string(sexp) in es.groups.group
             # Is the symbol a group?
