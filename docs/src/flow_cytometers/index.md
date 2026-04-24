@@ -2,7 +2,7 @@
 
 ## Data Formats
 
-ESM currently supports importing data from flow cytometry `.fcs` files. Specifically, it supports FCS versions XXXX.
+ESM currently supports importing data from flow cytometry `.fcs` files. Specifically, it supports FCS versions 3.0 and 3.1.
 
 !!! todo "todo"
     fcs versions compatibility
