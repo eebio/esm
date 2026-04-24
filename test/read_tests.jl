@@ -473,6 +473,7 @@ end
     @test isfile("inputs/small.fcs.pdf")
     @test isfile("inputs/small.fcs.csv")
     rm("inputs/small.fcs.pdf")
+    rm("inputs/small.fcs.csv")
     summary("inputs/spectramax-summarise.txt", SpectraMax(); plot = true, csv = true)
     @test isfile("inputs/spectramax-summarise.txt.pdf")
     @test isfile("inputs/spectramax-summarise.txt_600.csv")
