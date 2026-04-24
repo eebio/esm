@@ -19,8 +19,8 @@ lag_time
 ```
 
 !!! note "Lagtime"
-    Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of log(OD/OD_0) where OD_0 is the first OD value in the data set. It is calculated as: time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0).
-    For the parameteric and regularization methods, OD_0 is determined from the fitted curve.
+    Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of `log(OD/OD_0)` where `OD_0` is the first OD value in the data set. It is calculated as: `time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0)`.
+    For the parameteric and regularization methods, `OD_0` is determined from the fitted curve.
 
 ## Endpoints
 
