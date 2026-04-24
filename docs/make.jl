@@ -19,9 +19,6 @@ PAGES = [
         "flow_cytometers/auto_gating.md",
         "flow_cytometers/manual_gating.md",
     ],
-    "qPCR" => [
-        "qpcr/index.md",
-    ],
     "Data Format" => "data_format.md",
     "Command Line Interface" => "cli.md",
     "Excel Interface" => "excel.md",

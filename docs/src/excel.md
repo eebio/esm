@@ -26,7 +26,7 @@ The second column controls the well name. For example, if you have flow cytometr
 
 The sample names will be stored as plate\_0\$PLATE NUMBER\$\_\$well name\$. That is unless a name is provided in the third column.
 
-The type defines whether the data is "plate reader", "flow", or "qpcr" and how that file should be imported.
+The type defines whether the data is "plate reader" or "flow" and how that file should be imported.
 
 The data location gives the full filepath to the data.
 
@@ -73,7 +73,7 @@ In the example:
 
 On the transformations sheet, you can define the post-processing you want to apply to your data. This typically involves calibrations and calculating summary statistics.
 
-In the left column, you can name your transformation. In the right column, you can provide the code for the transformation you want to run. This can be arbitrary Julia code, but most commonly is just calling one of the ESM methods for [Plate Reader](@ref plate_reader), [Flow Cytometry](@ref flow_cytometry), and [qPCR](@ref qpcr) data.
+In the left column, you can name your transformation. In the right column, you can provide the code for the transformation you want to run. This can be arbitrary Julia code, but most commonly is just calling one of the ESM methods for [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) data.
 
 In the example below, we calibrate our groups based on the blank group, then calculate growth rates on each of the calibrated transformations. Finally, the data is collected together (the "processed" variable appends the different DataFrames together) and this is normalised by the mean of the controls.
 

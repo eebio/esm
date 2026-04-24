@@ -8,7 +8,7 @@
 
 ESM is a data format and supporting tools to enable accessible and reproducible data processing for engineering biology.
 
-It allows standardised and reproducible processing of plate reader, flow cytometry, and qPCR data.
+It allows standardised and reproducible processing of plate reader and flow cytometry data.
 
 ## How does it work?
 
