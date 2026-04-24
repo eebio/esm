@@ -1,6 +1,6 @@
 # Getting Started with ESM
 
-This tutorial will walk you through the complete workflow of processing experimental data with ESM, from initial data exploration to final visualization. We'll use some sample plate reader data (that you can download to follow along).
+This tutorial will walk you through the complete workflow of processing experimental data with ESM, from initial data exploration to calculating doubling times, with data split into different groups (controls, high fluorescence and low fluorescence). We'll use some sample plate reader data (that you can download to follow along).
 
 ## Prerequisites
 
@@ -132,9 +132,9 @@ We also need to make sure we don't include well B12 in the control group, based 
 
 On the transformations sheet, you can define the post-processing you want to apply to your data. This typically involves calibrations and calculating summary statistics.
 
-In the example below, we calibrate our groups based on the blank group, then calculate growth rates on each of the calibrated transformations.
+In the example below, we calibrate our groups based on the blank group, then calculate doubling times on each of the calibrated transformations.
 
-More details about some of the inbuilt methods in ESM, like `growth_rate()` can be found in the [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) documentation, for now though, we will just use `TimeseriesBlank()` for calibration and `Logistic()` for growth rate calculations.
+More details about some of the inbuilt methods in ESM, like `doubling_time()` can be found in the [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) documentation, for now though, we will just use `TimeseriesBlank()` for calibration and `Logistic()` for growth rate/doubling time calculations.
 
 ![alt text](assets/transformations.png)
 
@@ -142,7 +142,7 @@ More details about some of the inbuilt methods in ESM, like `growth_rate()` can 
 
 Finally, the views describe a subset of transformations, groups, and samples that you actually want to look at, outside of ESM. This is typically used for your final post-processed data, but can also be useful for debugging (viewing inputs and outputs from a transformation to make sure it is working as intended).
 
-In our example, we have a few views named `growth_rate_low`, `growth_rate_high`, and `growth_rate_control`, each of which refers to the growth rate transformations, although views can also refer to samples or groups, not just transformations.
+In our example, we have a few views named `doubling_time_low`, `doubling_time_high`, and `doubling_time_control`, each of which refers to the doubling time transformations, although views can also refer to samples or groups, not just transformations.
 
 ![alt text](assets/views.png)
 
@@ -173,16 +173,16 @@ This will:
 
 ## Step 5: Explore the results with esm views
 
-The final step is to calculate and output our growth rates, which we can do with `esm views`. Again, you may want to have a look at `esm views -h` to see what is required and what options you can provide.
+The final step is to calculate and output our doubling times, which we can do with `esm views`. Again, you may want to have a look at `esm views -h` to see what is required and what options you can provide.
 
 ```@docs; canonical=false
 ESM.views
 ```
 
-We can now look at our calculated growth rates from our data. Lets just have a look at our `growth_rate_control` view for now.
+We can now look at our calculated doubling times from our data. Lets just have a look at our `dt_control` view for now.
 
 ```bash
-esm views data.esm --view growth_rate_control
+esm views data.esm --view dt_control
 ```
 
 !!! tip "Outputting all views"
