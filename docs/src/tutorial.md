@@ -91,7 +91,7 @@ The **Data Location** column gives the full filepath to the data. What you put h
 
 The **Channels** column identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved. Since we are only looking at growth rate here, we will only record the 600nm OD channel (called `OD_600`, as shown with `esm summarise`).
 
-The **Plate Reader Brand** identifies the format the data will be in. Available options are: `spectramax`, `biotek`, `tecan`, and `generic tabular`. Leave it blank for flow cytometry data. This is `tecan` for us.
+The **Plate Reader Brand** identifies the format the data will be in. Available options are: `spectramax`, `biotek`, `bmg`, `tecan`, and `generic`. Leave it blank for flow cytometry data. This is `tecan` for us.
 
 The last few columns control the names of the data variables. Since plate reader data already provides well names we can leave it blank. The plate name will default to **plate_0\$PLATE\$**, where **\$PLATE\$** is the value in the **Plate** column (we will put `1` here). Alternatively, you can provide a plate name in the **Name** column.
 

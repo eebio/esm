@@ -24,7 +24,7 @@ The **Data Location** gives the full filepath to the data. It should include any
 
 **Channels** identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved. This should be a comma-separated list is multiple channels are to be included. Spaces may be optionally included after the commas. The channel names should be formatted as they are printed by `esm summarise`.
 
-The **Plate brand** identifies the format the data will be in and how it should be parsed. Available options are: `spectramax`, `biotek`, and `tecan`. Leave it blank for flow cytometry data.
+The **Plate brand** identifies the format the data will be in and how it should be parsed. Available options are: `spectramax`, `biotek`, `bmg`, `tecan` and `generic`. Leave it blank for flow cytometry data.
 
 The next few columns control the naming scheme for the samples. By default this will look something like `plate_01_a1.OD_600`.
 
