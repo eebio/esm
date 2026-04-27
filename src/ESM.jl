@@ -114,7 +114,7 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 # Options
 
 - `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm",
-    "spectramax", "biotek", "generic", "fcs". If "auto" is selected, the type will be
+    "spectramax", "biotek", "tecan", "bmg", "generic", "fcs". If "auto" is selected, the type will be
     inferred from the file extension (or raise an error if not possible).
 
 # Flags
@@ -149,6 +149,8 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         summary(file, Tecan(); plot = plot, csv = csv)
     elseif lowercase(type) == "generic"
         summary(file, GenericTabular(); plot = plot, csv = csv)
+    elseif lowercase(type) == "bmg"
+        summary(file, BMG(); plot = plot, csv = csv)
     else
         error("Unsupported file type: $type.")
     end

@@ -64,6 +64,8 @@ function read_multipr_file(file, ptype, channels, channel_map)
         ptype = BioTek()
     elseif lowercase(ptype) == "tecan"
         ptype = Tecan()
+    elseif lowercase(ptype) == "bmg"
+        ptype = BMG()
     elseif lowercase(ptype) == "generic"
         ptype = GenericTabular()
     else
