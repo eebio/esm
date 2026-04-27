@@ -119,8 +119,8 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 
 # Flags
 
-- `-p, --plot`: Produce plots of the data. Not available for --type=esm.
-- `-c, --csv`: Save the data as CSV files. Not available for --type=esm.
+- `-p, --plot`: Produce plots of the data. Not available for `--type=esm`.
+- `-c, --csv`: Save the data as CSV files. Not available for `--type=esm`.
 """
 @cast function summarise(file; type = "auto", plot::Bool = false, csv::Bool = false)
     # If type=="auto", attempt to infer from file extension
