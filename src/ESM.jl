@@ -147,10 +147,10 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
         summary(file, BioTek(); plot = plot, csv = csv)
     elseif lowercase(type) == "tecan"
         summary(file, Tecan(); plot = plot, csv = csv)
-    elseif lowercase(type) == "generic"
-        summary(file, GenericTabular(); plot = plot, csv = csv)
     elseif lowercase(type) == "bmg"
         summary(file, BMG(); plot = plot, csv = csv)
+    elseif lowercase(type) == "generic"
+        summary(file, GenericTabular(); plot = plot, csv = csv)
     else
         error("Unsupported file type: $type.")
     end
