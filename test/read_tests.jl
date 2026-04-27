@@ -501,6 +501,15 @@ end
         "inputs/tecan-summarise.xlsx_OD_600.csv",
         "inputs/tecan-summarise.xlsx_OD_700.csv",
         "inputs/tecan-summarise.xlsx_GFP.csv"])
+    summary("inputs/bmg-summarise.csv", BMG(); plot = true, csv = true)
+    @test isfile("inputs/bmg-summarise.csv.pdf")
+    @test isfile("inputs/bmg-summarise.csv_ABS_600_0_nm.csv")
+    @test isfile("inputs/bmg-summarise.csv_ABS_700_0_nm.csv")
+    @test isfile("inputs/bmg-summarise.csv_FI_YFP_pAN1717.csv")
+    rm.(["inputs/bmg-summarise.csv.pdf",
+        "inputs/bmg-summarise.csv_ABS_600_0_nm.csv",
+        "inputs/bmg-summarise.csv_ABS_700_0_nm.csv",
+        "inputs/bmg-summarise.csv_FI_YFP_pAN1717.csv"])
     summary("inputs/pr_folder", GenericTabular(); plot = true, csv = true)
     @test isfile("inputs/pr_folder.pdf")
     @test isfile("inputs/pr_folder_OD.csv")

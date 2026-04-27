@@ -52,6 +52,26 @@ end
         "inputs/tecan-data.xlsx", Tecan(); channels = ["OD_600", "GFP"])), ["OD_600", "GFP"])
 end
 
+@testitem "read bmg labtech" setup=[environment_path] begin
+    println("read bmg labtech")
+    data = read_data("inputs/bmg.xlsx")
+    @test data[:samples]["plate_01_a1"][:values]["abs600"][[1, 2, end - 1, end]] ==
+          [0.182, 0.185, 0.169, 0.169]
+    @test data[:samples]["plate_01_h12"][:values]["abs700"][[1, 2, end - 1, end]] == [
+        0.214, 0.217, 1.123, 1.123]
+    @test data[:samples]["plate_01_a2"][:values]["yfp"][[1, 2, end - 1, end]] == [
+        1635, 1613, 2782, 2830]
+    wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
+    wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
+    @show keys(data[:samples])
+    @test issetequal(keys(data[:samples]), wells)
+
+    @test issetequal(keys(read("inputs/bmg-data.csv", BMG(); channels=["ABS_600_0_nm", "FI_YFP_pAN1717"])), ["ABS_600_0_nm", "FI_YFP_pAN1717"])
+    @test issetequal(
+        keys(read("inputs/bmg-data.csv", BMG(); channels = ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])),
+        ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])
+end
+
 @testitem "read plate reader directories" setup=[environment_path] begin
     println("read plate reader directories")
     using Dates
