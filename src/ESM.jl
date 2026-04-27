@@ -35,7 +35,7 @@ export KDE
 export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
 export AbstractESMDataType, AbstractPlateReader
-export ESMData, FlowCytometryData, BioTek, SpectraMax, Tecan, GenericTabular
+export ESMData, FlowCytometryData, BioTek, SpectraMax, Tecan, GenericTabular, BMG
 export summary
 
 using Statistics: median

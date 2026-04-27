@@ -117,6 +117,8 @@ function runlength(a, i)
 end
 
 function read_standard(file, offset)
+    # file is string for file path to read
+    # offset is the number of lines between the metadata header and the first line containing "Time"
     f = read_into_lines(file)
     containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
     rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
@@ -308,6 +310,55 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
         # Make sure time is in milliseconds
         df[!, "time"] = [Int64(t*1000) for t in df[!, "time"]]
         out[channel] = df
+    end
+    return out
+end
+
+struct BMG <: AbstractPlateReader end
+
+function Base.read(file::AbstractString, ::BMG; channels = nothing)
+    f = read_into_lines(file)
+    containsData = [length(unique(j)) > 1 ? 1 : 0 for j in f]
+    rl = [runlength(containsData, i) for i in eachindex(containsData)]
+    datalocations = findall(x -> x == maximum(rl), rl)
+
+    # Trim the data to only the relevant parts
+    data = []
+    for i in datalocations
+        table = []
+        # Push header onto table (first row before i that contains Time and row above)
+        push!(table, f[i])
+        for j = i+2:length(f)
+            if containsData[j] == 1
+                push!(table, f[j])
+            else
+                break
+            end
+        end
+        push!(data, table)
+    end
+
+    out = Dict()
+    for i in eachindex(data)
+        channel = format_channel(split(data[i][1], ",")[2])
+        if !isnothing(channels) && !(channel in channels)
+            continue
+        end
+        # Transpose data and convert to a single string for CSV reading
+        d = [split(row, ",") for row in data[i][2:end]]
+        d = hcat(d...)
+        d = join([join(row, ",") for row in eachrow(d)], "\n")
+
+        # Read the data into a DataFrame
+        df = CSV.read(IOBuffer(d), DataFrame)
+        time_name = names(df)[1]
+        rename!(df, time_name => "time")
+        # Remove empty columns
+        df = df[:, Not(all.(ismissing, eachcol(df)))]
+        df[!, "temperature"] = fill(missing, nrow(df)) # TODO can you get this PR to record temperature?
+        # Make sure time is in milliseconds
+        df[!, "time"] = [Int64(t * 1000) for t in df[!, "time"]]
+        out[channel] = df[:, ["time", "temperature", names(df)[2:(end - 1)]...]] # reorder to put temperature after time
     end
     return out
 end
