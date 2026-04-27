@@ -353,11 +353,11 @@ function Base.read(file::AbstractString, ::BMG; channels = nothing)
 
         # Read the data into a DataFrame
         df = CSV.read(IOBuffer(d), DataFrame)
+        df[!, "temperature"] = fill(NaN, nrow(df)) # TODO can you get this PR to record temperature?
         time_name = names(df)[1]
         rename!(df, time_name => "time")
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
-        df[!, "temperature"] = fill(missing, nrow(df)) # TODO can you get this PR to record temperature?
         # Make sure time is in milliseconds
         df[!, "time"] = [Int64(t * 1000) for t in df[!, "time"]]
         out[channel] = df[:, ["time", "temperature", names(df)[2:(end - 1)]...]] # reorder to put temperature after time
