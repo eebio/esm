@@ -94,9 +94,9 @@ function calibrate(data, _, ::MinData)
     return data
 end
 
-struct StartZero <: AbstractCalibrationMethod end
+struct StartData <: AbstractCalibrationMethod end
 
-function calibrate(data, _, ::StartZero)
+function calibrate(data, _, ::StartData)
     # Set starting value to zero
     data = deepcopy(data)
     starts = data[1, :]

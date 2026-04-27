@@ -26,7 +26,7 @@ export Regularization
 export fluorescence
 export RatioAtTime, RatioAtMaxGrowth
 export calibrate
-export TimeseriesBlank, SmoothedTimeseriesBlank, MeanBlank, MinBlank, MinData, StartZero
+export TimeseriesBlank, SmoothedTimeseriesBlank, MeanBlank, MinBlank, MinData, StartData
 export gate, event_count, gated_proportion
 export HighLowGate, RectangleGate, QuadrantGate, PolygonGate, EllipseGate
 export and, or, not
