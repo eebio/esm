@@ -536,6 +536,11 @@ end
           DataFrame(A = [0.5 - 0.5, 0.65 - 0.5, 0.79 - 0.5, 0.83 - 0.5, 0.95 - 0.5],
         B = [1.11 - 1.11, 1.05 - 1.11, 1.23 - 1.11, 1.36 - 1.11, 1.44 - 1.11])
     @test data == datacopy
+
+    # offset
+    @test calibrate(data, time_col, StartData(); offset = 0.1) ==
+          DataFrame(A = [0.5 - 0.5 + 0.1, 0.65 - 0.5 + 0.1, 0.79 - 0.5 + 0.1, 0.83 - 0.5 + 0.1, 0.95 - 0.5 + 0.1],
+        B = [1.11 - 1.11 + 0.1, 1.05 - 1.11 + 0.1, 1.23 - 1.11 + 0.1, 1.36 - 1.11 + 0.1, 1.44 - 1.11 + 0.1])
 end
 
 @testitem "fluorescence per cell" setup=[environment_path] begin
