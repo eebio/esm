@@ -46,7 +46,7 @@ The data location gives the full filepath to the data.
 
 Channels identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved.
 
-Finally, we have the plate reader brand. This identifies the format the data will be in. Available options are: "spectramax", "biotek", and "tecan". Leave it blank for other data types.
+Finally, we have the plate reader brand. This identifies the format the data will be in. Available options are: "spectramax", "biotek", "bmg", and "tecan". Leave it blank for other data types.
 
 !!! todo "todo"
     FSC-H is no longer valid syntax. Now it needs to be FSC_H

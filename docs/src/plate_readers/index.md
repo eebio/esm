@@ -7,6 +7,7 @@ ESM currently supports importing data from the following plate readers:
 * SpectraMax
 * BioTek
 * Tecan
+* BMG LABTECH
 * Generic tabular data (format specified in [Compatibility](@ref))
 
 This list is being continualy expanded. If you have a plate reader machine that is not in this list, and are interested in helping us support it within ESM, please [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose), and upload a data file from that machine.
