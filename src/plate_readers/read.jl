@@ -57,7 +57,6 @@ Arguments:
 - `channel_map`: The new names for the channels.
 """
 function read_multipr_file(file, ptype, channels, channel_map)
-    # TODO: Add bmg labtech reading
     if lowercase(ptype) == "spectramax"
         ptype = SpectraMax()
     elseif lowercase(ptype) == "biotek"

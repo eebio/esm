@@ -1,6 +1,6 @@
 # Calibration
 
-There are a few different methods for calibrating plate reader OD and fluorescence data. Each method uses the `calibrate(data, time_col, Method())` function signature. These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
+There are a few different methods for calibrating plate reader OD and fluorescence data. Each method uses the `calibrate(data, time_col, Method())` function signature. These can be used in the transformations in the Excel template.
 
 ```@docs
 calibrate

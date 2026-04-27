@@ -1,6 +1,6 @@
 # Growth Rate
 
-There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, time_col, Method())` function signature (or `doubling_time(data, time_col, Method())`). These can be used either in the Julia ESM package diectly, or in the transformations in the Excel template.
+There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, time_col, Method())` function signature (or `doubling_time(data, time_col, Method())`). These can be used in the transformations in the Excel template.
 
 ```@docs
 ESM.growth_rate
@@ -19,8 +19,8 @@ lag_time
 ```
 
 !!! note "Lagtime"
-    Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of log(OD/OD_0) where OD_0 is the first OD value in the data set. It is calculated as: time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0).
-    For the parameteric and regularization methods, OD_0 is determined from the fitted curve.
+    Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of `log(OD/OD_0)` where `OD_0` is the first OD value in the data set. It is calculated as: `time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0)`.
+    For the parameteric and regularization methods, `OD_0` is determined from the fitted curve.
 
 ## Endpoints
 
@@ -72,29 +72,73 @@ You can also call `doubling_time` with either of the `FiniteDiff` methods.
 - `time_to_max_growth` - return the time at the centre of the finite differencing interval when growth is maximised.
 - `od_at_max_growth` - return the geometric mean of the OD at either end of the finite differencing interval when growth is maximised.
 
-## Logistic
+## Parameteric Models
 
-The `Logistic` method is a parameteric method that fits a logistic curve to the data and returns ``b``.
+You also can fit a range of parametric models to calculate growth rates in ESM. All fits are done on data after a ``{y=ln(OD/OD_0)}`` transformation (with negative `OD` values removed).
 
-```math
-\frac{L}{1 + \exp(-b (t - t_0))}
-```
-
-It can be called using `growth_rate(data, time_col, Logistic())` or `doubling_time(data, time_col, Logistic())`.
-
-- `max_od` - return the upper limit of the logistic growth curve
+- `growth_rate` - return the parameter ``\mu``
+- `lagtime` - return the parameter ``\lambda``
+- `max_od` - return the upper limit ``exp(A)`` of the growth curve (``+OD_0``)
 - `time_to_max_growth` - return the fitted time at maximum growth
 - `od_at_max_growth` - return the fitted OD at maximum growth
 
-!!! todo "todo"
-    add parametric models here too
+### Logistic
+
+The `Logistic` method fits the following curve.
+
+```math
+\frac{A}{1 + \exp(\frac{4\mu}{A} (\lambda - t) + 2)}
+```
+
+This form is derived from Zwietering et al. 1990[^1].
+
+[^1]: Zwietering MH, Jongenburger I, Rombouts FM, van't Riet K. Modeling of the bacterial growth curve. Appl Environ Microbiol. 1990;56(6):1875-81. doi: [10.1128/aem.56.6.1875-1881.1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990).
+
+It can be called using `growth_rate(data, time_col, Logistic())` or `doubling_time(data, time_col, Logistic())`.
+
+### Gompertz
+
+The `Gompertz` method fits the following curve.
+
+```math
+A \exp(-\exp(\frac{\mu e}{A} (\lambda - t) + 1))
+```
+
+This form is derived from Zwietering et al. 1990[^1].
+
+It can be called using `growth_rate(data, time_col, Gompertz())` or `doubling_time(data, time_col, Gompertz())`.
+
+### Modified Gompertz
+
+The `ModifiedGompertz` method fits the following curve.
+
+```math
+A \exp(-\exp(\frac{\mu e}{A} (\lambda - t) + 1)) + A \exp(\nu (t-t_\text{shift}))
+```
+
+This form is derived from Kahm et al. 2010[^2].
+
+[^2]: Kahm M, Hasenbrink G, Lichtenberg-Fraté H, Ludwig J, Kschischo M. grofit: Fitting Biological Growth Curves with R. Journal of Statistical Software. 2010;33(7):1–21. doi: [10.18637/jss.v033.i07](https://doi.org/10.18637/jss.v033.i07).
+
+It can be called using `growth_rate(data, time_col, ModifiedGompertz())` or `doubling_time(data, time_col, ModifiedGompertz())`.
+
+### Richards
+
+The `Richards` method fits the following curve.
+
+```math
+A \left(\left(1 + \exp(\nu) \exp(1 + \exp(\nu)) \exp\left(\frac{\mu}{A} (1 + \exp(\nu))^{1 + \exp(-\nu)} (\lambda - t)\right)\right) ^ {-\exp(-\nu)}\right)
+```
+
+This form is derived from Zwietering et al. 1990[^1]. The original form uses ``\nu\in(0,\inf)``. We have transformed to use ``\exp(\nu)`` instead so that no constraints need to be applied to ``\nu``.
+
+It can be called using `growth_rate(data, time_col, Richards())` or `doubling_time(data, time_col, Richards())`.
 
 ## Regularization
 
-!!! todo "tidi"
-    maths of regularization
+For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
 
-For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The derivative of the cubic spline is then calculated at all timepoints and the maximum derivative is returned.
+This method uses the `RegularizationSmooth()` method of DataInterpolations.jl, see [here](@extref DataInterpolations methods).
 
 It can be called using `growth_rate(data, time_col, Regularization())` or `doubling_time(data, time_col, Regularization())`.
 
@@ -106,10 +150,10 @@ It can be called using `growth_rate(data, time_col, Regularization())` or `doubl
 
 If you want to implement a new growth rate method to be included in ESM, you need to:
 
-* Open a pull request with the following code changes
-* Define a new struct for your method type in `src/methods.jl`
-* The type of that struct is a subtype of `AbstractGrowthRateMethod`
-* Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
-* Document that method in the growth rate documentation (this page)
+- Open a pull request with the following code changes
+- Define a new struct for your method type in `src/methods.jl`
+- The type of that struct is a subtype of `AbstractGrowthRateMethod`
+- Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
+- Document that method in the growth rate documentation (this page)
 
 If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new growth rate method and explaining how the method should work.

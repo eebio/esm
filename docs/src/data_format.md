@@ -8,10 +8,9 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
 
 * a variable called "values" that stores the channel data as key-value pairs (with each channel storing an ordered list),
 * a "type" variable that indicates whether the data is a "timeseries" (like plate reader data) or "population" (like flow cytometry data),
-* and a "meta" variable to store any other associated data in key-value pairs, such as amplifier settings.
+* and a "meta" variable to store any other associated data in key-value pairs, such as amplifier settings for flow cytometers.
 
-!!! todo
-    Rename meta to metadata
+Times are formatted as an integer number of milliseconds. Flow cytometry channel data is converted to RFI.
 
 ```json
 {
@@ -19,12 +18,14 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
         "plate_01_time":{
             "values":{
                 "OD":[
-                    "00:08:38",
-                    "18:38:38"
+                    518000,
+                    ...
+                    67118000
                 ],
                 "flo":[
-                    "00:09:04",
-                    "18:39:04"
+                    544714,
+                    ...
+                    67144719
                 ]
             },
             "type":"timeseries",
@@ -34,6 +35,12 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
             "values":{
                 "OD":[
                 37.0,
+                ...
+                37.0
+            ],
+            "flo": [
+                36.9,
+                ...
                 37.0
             ]
             },
@@ -44,24 +51,29 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
             "values":{
                 "OD":[
                     0.165,
+                    ...
                     0.916
                 ],
                 "flo":[
                     21,
+                    ...
                     371
                 ]
             },
             "type":"timeseries",
             "meta":{}
         },
+        ...
         "plate_01_h12":{
             "values":{
                 "OD":[
                     0.16,
+                    ...
                     0.148
                 ],
                 "flo":[
                     9,
+                    ...
                     7
                 ]
             },
@@ -74,14 +86,17 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
                     9.057978,
                     537.61176,
                     6.152654,
-                    259.45526
+                    259.45526,
+                    ...
                 ],
                 "SSC_H":[
                     280.0,
                     735.0,
                     128.0,
-                    1023.0
-                ]
+                    1023.0,
+                    ...
+                ],
+                ...
             },
             "type":"population",
             "meta":{
@@ -110,7 +125,8 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
                     "name":"SSC-H",
                     "det_type":null,
                     "perc_em":null
-                }
+                },
+                ...
             }
         }
     },
@@ -159,8 +175,9 @@ Under groups, we have key-value pairs (the name of the group is the key) with:
             "type":"physical",
             "sample_IDs":[
                 "plate_01_time",
-                "plate_01_t° read 1:700",
+                "plate_01_temperature",
                 "plate_01_a1",
+                ...
                 "plate_01_h12"
             ],
             "metadata":{
@@ -187,9 +204,6 @@ Under transformations, we have key-value pairs (the name of the transformation i
 ```json
 {
     "transformations":{
-        "flow_cyt":{
-            "equation":"process_fcs(\"plate_02\",[\"FSC_H\",\"SSC_H\"],[\"FL1_H\"])"
-        },
         "flow_sub":{
             "equation":"hcat(first_group.flo,second_group.flo).-mean(third_group.flo)"
         },
@@ -207,11 +221,6 @@ Under views, we have key-value pairs (name of the view is the key) with a variab
 ```json
 {
     "views":{
-        "flow_cy":{
-            "data":[
-            "flow_cyt"
-        ]
-        },
         "group1":{
             "data":[
             "first_group"
