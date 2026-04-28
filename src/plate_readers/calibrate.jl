@@ -18,7 +18,15 @@ Arguments:
 - `data::DataFrame`: DataFrame containing the data to be calibrated.
 - `time_col::Union{DataFrame, Nothing}`: Time column associated with the data.
 - `method::AbstractCalibrationMethod`: Method to use for calibration.
+
+Keywords:
+- `offset::Number`: Value to add to the calibrated data after calibration (default: 0).
 """
+function calibrate(data, time_col, method::AbstractCalibrationMethod; offset)
+    data = calibrate(data, time_col, method)
+    return data .+ offset
+end
+
 function calibrate(data, time_col, method::TimeseriesBlank)
     check_multiple_channels(method.blanks)
     blanks = deepcopy(method.blanks)
