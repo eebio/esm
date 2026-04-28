@@ -186,13 +186,10 @@ function _growth_rate(df, time_col, method::Endpoints)
                   ((end_time) - (start_time))
     time_to_max_growth = (start_time + end_time) / 2
     od_at_max_growth = exp((NaNMath.log(start_od) + NaNMath.log(end_od)) / 2)
-    lag_time = _lagtime(time_to_max_growth, growth_rate,
-        od_at_max_growth, df[1, 1])
     return Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "lag_time" => lag_time,
         "maxOD" => maximum(df[!, 1])
     )
 end
@@ -224,13 +221,10 @@ function _growth_rate(df, time_col, method::MovingWindow)
                                     NaNMath.log(at_time(df, time_col, end_time)[1])) / 2)
         end
     end
-    lag_time = _lagtime(time_to_max_growth, max_rate,
-        od_at_max_growth, df[1, 1])
     return Dict(
         "growth_rate" => max_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "lag_time" => lag_time,
         "maxOD" => maximum(df[!, 1])
     )
 end
@@ -251,7 +245,6 @@ function _growth_rate(df, time_col, method::LinearOnLog)
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "lag_time" => NaN,
             "maxOD" => NaN
         )
     end
@@ -267,7 +260,6 @@ function _growth_rate(df, time_col, method::LinearOnLog)
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "lag_time" => NaN,
             "maxOD" => NaN)
     end
     indexes = indexes[1]:indexes[2]
@@ -279,13 +271,10 @@ function _growth_rate(df, time_col, method::LinearOnLog)
     time_to_max_growth = (start_time + end_time) / 2
     od_at_max_growth = exp((NaNMath.log(at_time(df, time_col, start_time)[1]) +
                             NaNMath.log(at_time(df, time_col, end_time)[1])) / 2)
-    lag_time = _lagtime(time_to_max_growth, growth_rate,
-        od_at_max_growth, df[1, 1])
     return Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "lag_time" => lag_time,
         "maxOD" => maximum(df[!, 1])
     )
 end
@@ -339,7 +328,6 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate)
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "lag_time" => NaN,
             "maxOD" => NaN
         )
     end
@@ -360,7 +348,6 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate)
     sol = NonlinearSolve.solve(prob; verbose = false, maxiters = 200)
     psol = sol.u
     growth_rate = psol[1]
-    lag_time = psol[3]
     t_refined = range(first(t), last(t), length = 100 * n)
     dOD = ForwardDiff.derivative.(ti -> method.func(ti, psol), t_refined)
     time_to_max_growth = t_refined[findmin(abs.(dOD .- growth_rate))[2]]
@@ -370,7 +357,6 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate)
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "lag_time" => lag_time,
         "maxOD" => maxOD
     )
 end
@@ -395,7 +381,6 @@ function _growth_rate(df, time_col, method::FiniteDiff)
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "lag_time" => NaN,
             "maxOD" => NaN
         )
     end
@@ -427,13 +412,10 @@ function _growth_rate(df, time_col, method::FiniteDiff)
         error("Unknown finite difference type: $type")
     end
 
-    lag_time = _lagtime(time_to_max_growth, growth_rate,
-        od_at_max_growth, df[1, 1])
     return Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "lag_time" => lag_time,
         "maxOD" => maximum(df[!, 1])
     )
 end
@@ -459,7 +441,6 @@ function _growth_rate(df, time_col, method::Regularization)
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "lag_time" => NaN,
             "maxOD" => NaN
         )
     end
@@ -470,13 +451,10 @@ function _growth_rate(df, time_col, method::Regularization)
     growth_rate, i = findmax(deriv)
     time_to_max_growth = t_refined[i]
     od_at_max_growth = exp(A(time_to_max_growth))
-    lag_time = _lagtime(time_to_max_growth, growth_rate,
-        od_at_max_growth, exp(A(first(t))))
     return Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "lag_time" => lag_time,
         "maxOD" => maximum([exp(A(ti)) for ti in t_refined])
     )
 end
