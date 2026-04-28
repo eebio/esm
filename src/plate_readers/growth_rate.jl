@@ -23,9 +23,19 @@ function doubling_time(args...; kwargs...)
     return log(2) ./ growth_rate(args...; kwargs...)
 end
 
-@kwdef struct Endpoints <: AbstractGrowthRateMethod
-    start_time::Float64
-    end_time::Float64
+function perform_recalibration(df, time_col, recalibrate, offset)
+    if (recalibrate == :negative && any(df[:, 1] .<= 0)) || recalibrate == true
+        recalibrant = minimum(df[:, 1]) - offset
+        df = calibrate(df, time_col, MinData(); offset = offset)
+    elseif recalibrate == false
+        mask = df[!, 1] .> 0
+        df = df[mask, [1]]
+        time_col = time_col[mask, :]
+        recalibrant = 0.0
+    else
+        recalibrant = 0.0
+    end
+    return df, time_col, recalibrant
 end
 
 """
@@ -37,20 +47,21 @@ Arguments:
 - `df::DataFrame`: DataFrame containing the data.
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`: Method to use for calculating growth rate.
+
+Keywords:
+- `recalibrate`: Whether to recalibrate the data using `calibrate` before calculating growth rate. Default is :negative (only if negative values are present in the well). Available options are `:negative`, true, and false.
+- `offset`: If data is recalibrated, this is the offset applied after calibration. Default is 0.001.
 """
-function growth_rate(df, time_col, method::AbstractGrowthRateMethod)
+function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
     dict_2 = Dict()
     for i in names(df)
-        # Strip non-positive values from df and time_col
-        mask = df[!, i] .> 0
-        filtered_df = df[mask, [i]]
-        filtered_time_col = time_col[mask, :]
-        if nrow(filtered_df) == 0
+        od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        if nrow(od) == 0
             @warn "No positive values found for column $i after filtering. Returning NaN."
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["growth_rate"]
+        dict_2[i] = _growth_rate(od, times, method)["growth_rate"]
     end
     return DataFrame(dict_2)
 end
@@ -66,18 +77,16 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function max_od(df, time_col, method::AbstractGrowthRateMethod)
+function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
     dict_2 = Dict()
     for i in names(df)
-        mask = df[!, i] .> 0
-        filtered_df = df[mask, [i]]
-        filtered_time_col = time_col[mask, :]
-        if nrow(filtered_df) == 0
+        od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        if nrow(od) == 0
             @warn "No positive values found for column $i after filtering. Returning NaN."
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["maxOD"]
+        dict_2[i] = _growth_rate(od, times, method)["maxOD"] + recalibrant
     end
     return DataFrame(dict_2)
 end
@@ -92,18 +101,16 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod)
+function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
     dict_2 = Dict()
     for i in names(df)
-        mask = df[!, i] .> 0
-        filtered_df = df[mask, [i]]
-        filtered_time_col = time_col[mask, :]
-        if nrow(filtered_df) == 0
+        od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        if nrow(od) == 0
             @warn "No positive values found for column $i after filtering. Returning NaN."
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["time_to_max_growth"]
+        dict_2[i] = _growth_rate(od, times, method)["time_to_max_growth"]
     end
     return DataFrame(dict_2)
 end
@@ -118,18 +125,16 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod)
+function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
     dict_2 = Dict()
     for i in names(df)
-        mask = df[!, i] .> 0
-        filtered_df = df[mask, [i]]
-        filtered_time_col = time_col[mask, :]
-        if nrow(filtered_df) == 0
+        od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        if nrow(od) == 0
             @warn "No positive values found for column $i after filtering. Returning NaN."
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["od_at_max_growth"]
+        dict_2[i] = _growth_rate(od, times, method)["od_at_max_growth"] + recalibrant
     end
     return DataFrame(dict_2)
 end
@@ -146,20 +151,30 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function lag_time(df, time_col, method::AbstractGrowthRateMethod)
+function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
     dict_2 = Dict()
     for i in names(df)
-        mask = df[!, i] .> 0
-        filtered_df = df[mask, [i]]
-        filtered_time_col = time_col[mask, :]
-        if nrow(filtered_df) == 0
+        od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        if nrow(od) == 0
             @warn "No positive values found for column $i after filtering. Returning NaN."
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(filtered_df, filtered_time_col, method)["lag_time"]
+        tmp = _growth_rate(od, times, method)
+        dict_2[i] = _lagtime(tmp["time_to_max_growth"], tmp["growth_rate"],
+            tmp["od_at_max_growth"] + recalibrant, od[1, 1] + recalibrant)
     end
     return DataFrame(dict_2)
+end
+
+function _lagtime(time_at_max, growth_rate, od_at_max, od_at_start)
+    lag_time = time_at_max - (1 / growth_rate) * NaNMath.log(od_at_max / od_at_start)
+    return lag_time
+end
+
+@kwdef struct Endpoints <: AbstractGrowthRateMethod
+    start_time::Float64
+    end_time::Float64
 end
 
 function _growth_rate(df, time_col, method::Endpoints)
@@ -180,11 +195,6 @@ function _growth_rate(df, time_col, method::Endpoints)
         "lag_time" => lag_time,
         "maxOD" => maximum(df[!, 1])
     )
-end
-
-function _lagtime(time_at_max, growth_rate, od_at_max, od_at_start)
-    lag_time = time_at_max - (1 / growth_rate) * NaNMath.log(od_at_max / od_at_start)
-    return lag_time
 end
 
 @kwdef struct MovingWindow <: AbstractGrowthRateMethod
