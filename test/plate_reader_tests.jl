@@ -71,7 +71,6 @@ end
         1635, 1613, 2782, 2830]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
-    @show keys(data[:samples])
     @test issetequal(keys(data[:samples]), wells)
 
     @test issetequal(
@@ -176,13 +175,13 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, FiniteDiff())
+    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" growth_rate(
-        od_df_warn, time_col, LinearOnLog(start_time = 1.1, end_time = 1.2))
-    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Regularization())
-    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Logistic())
+        od_df_warn, time_col, LinearOnLog(start_time = 1.1, end_time = 1.2); recalibrate = false)
+    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Regularization(); recalibrate = false)
+    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Logistic(); recalibrate = false)
     @test_warn "No data points found between start_time" growth_rate(
-        od_df, time_col, LinearOnLog(start_time = -2, end_time = -1))
+        od_df, time_col, LinearOnLog(start_time = -2, end_time = -1); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" growth_rate(
@@ -254,8 +253,8 @@ end
     @test 7 <
           time_to_max_growth(od_df, time_col, Endpoints(start_time = 6, end_time = 9))[
               1, "A"] < 10
-    @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff())[1, "A"] < 10
-    @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff(); offset = 0.01)[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Regularization())[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Logistic())[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Gompertz())[1, "A"] < 10
@@ -267,11 +266,11 @@ end
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
     @test_warn "Not enough data points" time_to_max_growth(
-        od_df_warn, time_col_warn, FiniteDiff())
+        od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" time_to_max_growth(
-        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
+        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_warn "Not enough data points" time_to_max_growth(
-        od_df_warn, time_col_warn, Regularization())
+        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" time_to_max_growth(
@@ -319,8 +318,8 @@ end
           lag_time(od_df, time_col, LinearOnLog(start_time = 7, end_time = 10))[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Endpoints(start_time = 7, end_time = 10))[1, "A"] <
           8
-    @test 5 < lag_time(od_df, time_col, FiniteDiff())[1, "A"] < 8
-    @test 5 < lag_time(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, FiniteDiff(); offset = 0.01)[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Regularization())[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Logistic())[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Gompertz())[1, "A"] < 8
@@ -331,11 +330,11 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" lag_time(od_df_warn, time_col_warn, FiniteDiff())
+    @test_warn "Not enough data points" lag_time(od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" lag_time(
-        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
+        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_warn "Not enough data points" lag_time(
-        od_df_warn, time_col_warn, Regularization())
+        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" lag_time(
@@ -388,8 +387,8 @@ end
     @test 0 <
           od_at_max_growth(od_df, time_col, Endpoints(start_time = 7, end_time = 10))[
               1, "A"] < f(10)
-    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff())[1, "A"] < f(10)
-    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] <
+    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(); offset = 0.01)[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] <
           f(10)
     @test 0 < od_at_max_growth(od_df, time_col, Regularization())[1, "A"] < f(10)
     @test 0 < od_at_max_growth(od_df, time_col, Logistic())[1, "A"] < f(10)
@@ -402,11 +401,11 @@ end
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
     @test_warn "Not enough data points" od_at_max_growth(
-        od_df_warn, time_col_warn, FiniteDiff())
+        od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" od_at_max_growth(
-        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
+        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_warn "Not enough data points" od_at_max_growth(
-        od_df_warn, time_col_warn, Regularization())
+        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" od_at_max_growth(
@@ -456,7 +455,7 @@ end
           1.05
     @test 0.95 < max_od(od_df, time_col, FiniteDiff())[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] < 1.05
-    @test 0.95 < max_od(od_df, time_col, Regularization())[1, "A"] < 1.05
+    @test 0.95 < max_od(od_df, time_col, Regularization(); offset = 0.05)[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, Logistic())[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, Gompertz())[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, ModifiedGompertz())[1, "A"] < 1.05
@@ -466,10 +465,10 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" max_od(od_df_warn, time_col_warn, FiniteDiff())
+    @test_warn "Not enough data points" max_od(od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" max_od(
-        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5))
-    @test_warn "Not enough data points" max_od(od_df_warn, time_col_warn, Regularization())
+        od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
+    @test_warn "Not enough data points" max_od(od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" max_od(
