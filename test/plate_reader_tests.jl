@@ -573,8 +573,8 @@ end
     @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4 * 60))[
         1, "plate_01_b6"]) == 102
     @test floor(fluorescence(
-        fl, time_fl, od, time_od, RatioAtMaxGrowth(method = FiniteDiff()))[
-        1, "plate_01_a10"]) == -584
+        fl, time_fl, od, time_od, RatioAtMaxGrowth(method = LinearOnLog(start_time = 220, end_time = 300)))[
+        1, "plate_01_a10"]) == 1411
 end
 
 @testitem "warning for calibrating multiple channels" begin

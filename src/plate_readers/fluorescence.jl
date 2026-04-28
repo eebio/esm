@@ -11,6 +11,8 @@ Calculate fluorescence per cell (normalised by OD).
 - `data_od`: a DataFrame of OD measurements.
 - `time_od`: a DataFrame of times for the OD measurements.
 - `method`: the method to use for calculating fluorescence per cell.
+
+If `method` is `RatioAtMaxGrowth`, any keyword arguments are passed to `growth_rate`.
 """
 function fluorescence end
 
@@ -38,8 +40,8 @@ end
     method::AbstractGrowthRateMethod
 end
 
-function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtMaxGrowth)
-    time = time_to_max_growth(data_od, time_od, method.method)
+function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtMaxGrowth; kwargs...)
+    time = time_to_max_growth(data_od, time_od, method.method; kwargs...)
     out = DataFrame()
     for col in names(data_od)
         out[!, col] = ESM.fluorescence(data_fl, time_fl, data_od, time_od, RatioAtTime(time[1, col]))[:, col]
