@@ -11,14 +11,15 @@ This tutorial will walk you through the complete workflow of processing experime
 
 1. [Download the source code](https://github.com/eebio/esm/archive/refs/heads/main.zip) and unzip it.
 2. [Download Julia](https://julialang.org/) if you don’t already have it installed.
-3. Run `julia —project -e ‘using Pkg; Pkg.build()’` from the root directory of the repository (i.e. /where/you/saved/source/code/esm).
+3. Run `julia —-project -e ‘using Pkg; Pkg.build()’` from the root directory of the repository (i.e. `/where/you/saved/source/code/esm-main`).
 4. You can test if its working by running `esm template -h`, if you see some documentation appear, ESM is successfully installed.
 5. If you instead see an error `command not found: esm`, you may need to add `~/.julia/bin` to your PATH.
 
 !!! tip "Adding ~/.julia/bin to your path"
-    In order for your terminal to find esm, you may need to edit the PATH variable. How exactly you add a directory to your PATH depends on what shell you are using and your operating system. You can find this out by running the command `echo $0`. Common shells include Bash, zsh, and PowerShell. If using Bash, add the line `PATH=$PATH:~/.julia/bin` to `~/.profile` or `~/.bash_profile`. If you are using zsh, add the line `PATH=$PATH:~/.julia/bin` to `~/.zprofile` (or add `~/.julia/bin` to `/etc/paths` on MacOS).
+    In order for your terminal to find esm, you may need to edit the PATH variable. How exactly you add a directory to your PATH depends on what shell you are using and your operating system. You can find this out by running the command `echo $0`. Common shells include Bash, zsh, and PowerShell. If using Bash, add the line `PATH=$PATH:~/.julia/bin` to `~/.profile` or `~/.bash_profile`. If you are using zsh, add the line `PATH=$PATH:~/.julia/bin` to `~/.zprofile` (or add `~/.julia/bin` to `/etc/paths` on MacOS). Depending on your operating system and shell, you may need to expand the `~` to specify your home directory in full (i.e. replace `~/.julia/bin` with `Users/UserName/.julia/bin` for example, or `C:\Users\UserName\.julia\bin` on Windows)
 
-!!! todo "Windows powershell path"
+!!! note "For Windows users"
+    There are a few exceptions for Windows users. If you are using Windows 10, you may face a bug during precompilation involving MKL_jll. This can be fixed by installing [this Visual Studio tool](https://aka.ms/vs/17/release/vc_redist.x64.exe). To change the path variable, see [this guide](https://superuser.com/questions/1861276/how-to-set-a-folder-to-the-path-environment-variable-in-windows-11) - it should be identical on Windows 10 and Windows 11.
 
 ### Downloading the data
 
@@ -72,7 +73,7 @@ This creates an Excel file called `template.xlsx` where we can provide ESM with 
 
 ## Step 3: Fill in the template
 
-While we provide a short example of how to fill in the Excel template here, it may be useful to check out the more detailed description in the [Excel Interface](@ref) page, after you've finished this tutorial.
+We will now go through and fill out the template, step by step.
 
 The template is split up into five sheets of information to fill out.
 
@@ -93,10 +94,10 @@ The **Channels** column identifies the specific channels that you would like to 
 
 The **Plate Reader Brand** identifies the format the data will be in. Available options are: `spectramax`, `biotek`, `bmg`, `tecan`, and `generic`. Leave it blank for flow cytometry data. This is `tecan` for us.
 
-The last few columns control the names of the data variables. Since plate reader data already provides well names we can leave it blank. The plate name will default to **plate_0\$PLATE\$**, where **\$PLATE\$** is the value in the **Plate** column (we will put `1` here). Alternatively, you can provide a plate name in the **Name** column.
+The last few columns control the names of the data variables. Since plate reader data already provides well names we can leave the **Well** column blank. The plate name will default to **plate_0\$PLATE\$**, where **\$PLATE\$** is the value in the **Plate** column (we will put `1` here). Alternatively, you can provide a plate name in the **Name** column.
 
 !!! note "Samples, channels, groups and naming conventions"
-    In ESM, we refer to the data from a specific well as a sample, accessed under the variable syntax `plate_01_a5`. This includes all channels recorded for well A5 in plate 1. If we want data from a specific channel, as we normally do, we can index it like this: `plate_01_a5.od`. We can also do the same with groups: `blanks.od`, returns only the `od` channel data for the `blanks` group of wells.
+    In ESM, we refer to the data from a specific well as a sample, accessed under the variable syntax `plate_01_a5`. This includes all channels recorded for well A5 in plate 1. If we want data from a specific channel, as we normally do, we can index it like this: `plate_01_a5.od`. We can also do the same with groups (introduced in Step 3.3): `blanks.od`, returns only the `od` channel data for the `blanks` group of wells.
 
 ![alt text](assets/samples.png)
 
@@ -108,7 +109,7 @@ Here, you can rename any channels. On the left, provide the channel name, as spe
 
 ### Step 3.3: The Groups sheet
 
-In this sheet, you can group samples together. For example, you may want to group all of your blank well together to make them easier to refer to.
+In this sheet, you can group samples together. For example, you may want to group all of your blank wells together to make them easier to refer to.
 
 There are a few formats for doing this. The simplest is to just write out all the samples in a comma separated list (i.e. `plate_01_a1, plate_01_a2, plate_01_a3`).
 
@@ -120,9 +121,9 @@ More details about the compressed format can be seen at [Excel Interface](@ref).
 
 Here, we use the compressed format so that:
 
-* all wells on the left of a 96 well plate (A through H, column 1) are grouped as "blank",
-* all wells on the right (A through H, column 12) are groups as "control",
-* the remaining wells (A through H, columns 2 through 11) are split into two groups (rows A, B, C and D as `low_flu`, and E, F, G and H as `high_flu`).
+* all wells on the left of a 96 well plate (A through H, column 1) are grouped as `blanks`,
+* all wells on the right (A through H, column 12) are groups as `controls`,
+* the remaining wells (A through H, columns 2 through 11) are split into two groups (rows A, B, C and D as `low_flus`, and E, F, G and H as `high_flus`).
 
 We also need to make sure we don't include well B12 in the control group, based on our preliminany look at the data with `esm summarise`.
 
@@ -132,17 +133,20 @@ We also need to make sure we don't include well B12 in the control group, based 
 
 On the transformations sheet, you can define the post-processing you want to apply to your data. This typically involves calibrations and calculating summary statistics.
 
-In the example below, we calibrate our groups based on the blank group, then calculate doubling times on each of the calibrated transformations.
+In the example below, we calibrate our groups based on the `blanks` group, then calculate doubling times on each of the calibrated transformations.
 
 More details about some of the inbuilt methods in ESM, like `doubling_time()` can be found in the [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) documentation, for now though, we will just use `TimeseriesBlank()` for calibration and `Logistic()` for growth rate/doubling time calculations.
 
 ![alt text](assets/transformations.png)
 
+!!! note "Time data"
+    For plate reader data, time is stored in its own special "well", so it can be accessed using `plate_01_time` (there is also a special well for temperature). It is useful to remember that the recorded times are different for each channel, so we want to use `plate_01_time.od` here. The time data is stored as a number of milliseconds, although ESM functions typically use inputs and outputs in the standard units of minutes. For flow cytometry data, time is stored as its own channel, rather than a well, so it is accessed as `plate_01_a1.time`.
+
 ### Step 3.5: The Views sheet
 
 Finally, the views describe a subset of transformations, groups, and samples that you actually want to look at, outside of ESM. This is typically used for your final post-processed data, but can also be useful for debugging (viewing inputs and outputs from a transformation to make sure it is working as intended).
 
-In our example, we have a few views named `doubling_time_low`, `doubling_time_high`, and `doubling_time_control`, each of which refers to the doubling time transformations, although views can also refer to samples or groups, not just transformations.
+In our example, we have a few views named `dt_low`, `dt_high`, and `dt_control`, each of which refers to the doubling time transformations, although views can also refer to samples or groups, not just transformations.
 
 ![alt text](assets/views.png)
 
@@ -188,6 +192,12 @@ esm views data.esm --view dt_control
 !!! tip "Outputting all views"
     If you don't specify the `--view` option, all views will be outputted. Since we have multiple views here, it would be easier to run `esm views data.esm`, but we don't do that so you can see how you specify a particular view you want.
 
+## Step 6: Analyse the data
+
+You should now have a file called `dt_control.csv` which contains you doubling times for the controls. From here, you can freely generate publication-quality plots of the data in your preferred software, perform statistical tests on the data, and integrate with computational pipelines. Just remember to share your `data.esm` file so that others can reproduce your data (by running `esm views data.esm` on their own machine).
+
+![alt text](assets/final-data.png)
+
 ## Best practices
 
 1. **Summarise Data Early**: Looking at plots of the data can help identify issues like contaminated wells, that may change how you want to analyse the data.
@@ -197,16 +207,9 @@ esm views data.esm --view dt_control
 
 ## Next steps
 
-Now that you've processed your data with ESM, you can:
-
-* Perform statistical analysis using the post-processed data,
-* Create publication-quality plots,
-* Share ESM files with collaborators or as supplementary material,
-* Integrate with computational pipelines.
-
 If you want to learn more about ESM, you can go to:
 
-* [Plate Readers](@ref plate_reader) to learn about the functionality and different methods available for working with plate reader data.
+* [Plate Readers](@ref plate_reader) to learn about the functionality and different methods available for working with plate reader data, like `TimeseriesBlank()` and `Logistic()` used here.
 * [Flow Cytometry](@ref flow_cytometry) to learn about the calibration and gating methods available for working with flow cytometry data.
 * [Command Line Interface](@ref) to learn about all the features of the command line interface (`esm summarise`, `esm translate`, etc.).
 * [Data Format](@ref) to learn about how `.esm` files are structured.
