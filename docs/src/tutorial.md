@@ -11,7 +11,7 @@ This tutorial will walk you through the complete workflow of processing experime
 
 1. [Download the source code](https://github.com/eebio/esm/archive/refs/heads/main.zip) and unzip it.
 2. [Download Julia](https://julialang.org/) if you don’t already have it installed.
-3. Run `julia —-project -e ‘using Pkg; Pkg.build()’` from the root directory of the repository (i.e. `/where/you/saved/source/code/esm-main`).
+3. Run `julia --project -e ‘using Pkg; Pkg.build()’` from the root directory of the repository (i.e. `/where/you/saved/source/code/esm-main`).
 4. You can test if its working by running `esm template -h`, if you see some documentation appear, ESM is successfully installed.
 5. If you instead see an error `command not found: esm`, you may need to add `~/.julia/bin` to your PATH.
 
