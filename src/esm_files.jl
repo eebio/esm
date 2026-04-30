@@ -94,7 +94,7 @@ function read_data(file::AbstractString)
     sample_dict = OrderedDict()
     group_dict = OrderedDict(i.Name => Dict(
                                  "sample_IDs" => expand_groups(i.Samples),
-                                 :type => "experimental",
+                                 "type" => "experimental",
                                  "metadata" => Dict{String, Any}(j => i[j]
                                  for j in names(i) if !(j in ["Name", "Samples"])))
     for i in eachrow(groups)) # Get all the experimental groups.
@@ -147,16 +147,16 @@ function read_data(file::AbstractString)
             error("Unknown instrument type: $(first(ins_type))")
         end
         # Add the physical plate to the group dict
-        group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, :type => "physical",
+        group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, "type" => "physical",
             "metadata" => Dict("autodefined" => "true"))
     end
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => i.Equation for i in eachrow(trans))
     # Add the views
-    views_dict = OrderedDict(i.Name => :data => [strip.(split(i.View, ","))...]
+    views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
     for i in eachrow(views))
-    return OrderedDict(:samples => sample_dict, :groups => group_dict,
-        :transformations => trans_dict, :views => views_dict)
+    return OrderedDict("samples" => sample_dict, "groups" => group_dict,
+        "transformations" => trans_dict, "views" => views_dict)
 end
 
 """

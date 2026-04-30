@@ -34,10 +34,10 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
     pre = keys(sample_dict)
     sample_dict = merge(sample_dict,
         OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(
-                        :type => "timeseries",
-                        :values => Dict(i => data[i][!, k]
+                        "type" => "timeseries",
+                        "values" => Dict(i => data[i][!, k]
                         for i in channels if k in names(data[i])),
-                        :metadata => Dict())
+                        "metadata" => Dict())
         for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
     broad_g = [i for i in keys(sample_dict) if !(i in pre)]
     return sample_dict, broad_g
@@ -243,7 +243,8 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Make sure time is in milliseconds
-        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
+                         millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
     return out
@@ -274,7 +275,8 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Make sure time is in milliseconds
-        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
+                         millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
     return out
@@ -309,7 +311,7 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
         rename!(df, time_name => "time")
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Make sure time is in milliseconds
-        df[!, "time"] = [Int64(t*1000) for t in df[!, "time"]]
+        df[!, "time"] = [Int64(t * 1000) for t in df[!, "time"]]
         out[channel] = df
     end
     return out
@@ -329,7 +331,7 @@ function Base.read(file::AbstractString, ::BMG; channels = nothing)
         table = []
         # Push header onto table (first row before i that contains Time and row above)
         push!(table, f[i])
-        for j = i+2:length(f)
+        for j in (i + 2):length(f)
             if containsData[j] == 1
                 push!(table, f[j])
             else
@@ -374,7 +376,8 @@ function Base.read(file::AbstractString, ::GenericTabular; channels = nothing)
             continue
         end
         df = CSV.read(joinpath(file, j), DataFrame)
-        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
+                         millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
     return out

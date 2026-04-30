@@ -175,7 +175,8 @@ end
     @test issetequal(es.samples.name,
         ["plate_01_a1.FL1_A", "plate_01_a1.SSC_H", "plate_01_a1.FSC_H",
             "plate_01_a2.FL1_A", "plate_01_a2.SSC_H", "plate_01_a2.FSC_H"])
-    @test issetequal(es.samples.channel, ["FL1_A", "SSC_H", "FSC_H", "FL1_A", "SSC_H", "FSC_H"])
+    @test issetequal(
+        es.samples.channel, ["FL1_A", "SSC_H", "FSC_H", "FL1_A", "SSC_H", "FSC_H"])
     @test issetequal(es.samples.type,
         ["population", "population", "population",
             "population", "population", "population"])
@@ -188,12 +189,14 @@ end
             [280.0, 735.0, 128.0, 1023.0],
             [628.0, 1023.0, 373.0, 1023.0]
         ])
-    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FL1_A"][1] == Dict{String, Any}(
+    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FL1_A"][1] ==
+          Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
         "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
-    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FSC_H"][1] == Dict{String, Any}(
+    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FSC_H"][1] ==
+          Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
@@ -319,8 +322,8 @@ end
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
         "SSC_H" => [0.11039991779173976, 0.18187190885323648,
-                0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
-                0.272613196449465, 0.01778279410038923, 0.9955128609158501],
+            0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
+            0.272613196449465, 0.01778279410038923, 0.9955128609158501],
         "FSC_H" => [
             634.0, 965.0, 643.0, 1015.0,
             628.0, 1023.0, 373.0, 1023.0],
@@ -350,14 +353,16 @@ end
         "SSC_H.min" => fill(0.010045073642544625, 4),
         "FSC_H.max" => fill(1024.0, 4),
         "FSC_H.min" => fill(1.0, 4))
-    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) == df[!, sort(names(df))]
+    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) ==
+          df[!, sort(names(df))]
     # Test channels
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0],
         "id" => [1, 2, 3, 4],
         "FL1_A.max" => fill(1024.0, 4),
         "FL1_A.min" => fill(1.0, 4))
-    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) == df[!, sort(names(df))]
+    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) ==
+          df[!, sort(names(df))]
     df = DataFrame(
         "SSC_H" => [
             0.11039991779173976, 0.18187190885323648,
@@ -366,11 +371,14 @@ end
         "id" => [1, 2, 3, 4, 5, 6, 7, 8],
         "SSC_H.max" => fill(1.0, 8),
         "SSC_H.min" => fill(0.010045073642544625, 8))
-    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) == df[!, sort(names(df))]
+    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) ==
+          df[!, sort(names(df))]
     # Test groups
     df = DataFrame("FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
-        "id" => [1, 2, 3, 4, 5, 6, 7, 8], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(1.0, 8))
-    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) == df[!, sort(names(df))]
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(
+            1.0, 8))
+    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) ==
+          df[!, sort(names(df))]
 end
 
 @testitem "produce_views" begin
@@ -426,7 +434,8 @@ end
     # Numbers
     using DataFrames
     es.views["number_view"] = Dict{String, Any}("data" => ["extra_transform"])
-    es.views["numbers_view2"] = Dict{String, Any}("data" => ["extra_transform", "extra_transform2"])
+    es.views["numbers_view2"] = Dict{String, Any}("data" => [
+        "extra_transform", "extra_transform2"])
     es.transformations["extra_transform"] = Dict{String, Any}("equation" => "42")
     es.transformations["extra_transform2"] = Dict{String, Any}("equation" => "7")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
@@ -436,7 +445,8 @@ end
     out = ESM.produce_views(es, trans_meta_map; to_out = ["numbers_view2"])
     @test all(out["numbers_view2"] .== Tables.table([42 7]))
     # Matrices
-    es.views["matrix_view"] = Dict{String, Any}("data" => ["extra_transform3", "extra_transform4"])
+    es.views["matrix_view"] = Dict{String, Any}("data" => [
+        "extra_transform3", "extra_transform4"])
     es.transformations["extra_transform3"] = Dict{String, Any}("equation" => "[1 2 3; 4 5 6]")
     es.transformations["extra_transform4"] = Dict{String, Any}("equation" => "[7 8; 10 11]")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
@@ -455,13 +465,13 @@ end
     es = read_esm("inputs/example.esm")
     out = ESM.to_rfi(es, "plate_02_a1")
     # Linear test with no gain
-    @test out[!,"FSC_H"] == [628.0, 1023.0, 373.0, 1023.0]
-    @test out[!,"FSC_H.max"] == fill(1024.0, 4)
-    @test out[!,"FSC_H.min"] == fill(1.0, 4)
+    @test out[!, "FSC_H"] == [628.0, 1023.0, 373.0, 1023.0]
+    @test out[!, "FSC_H.max"] == fill(1024.0, 4)
+    @test out[!, "FSC_H.min"] == fill(1.0, 4)
     # Scaling factor gain test
-    @test out[!,"FL1_H"] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
+    @test out[!, "FL1_H"] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
     # Log scaling test
-    @test out[!,"SSC_H"] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
+    @test out[!, "SSC_H"] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
 end
 
 @testitem "summary" begin
@@ -521,31 +531,31 @@ end
     @test_throws "Unsupported" summarise("inputs/unknown.txt"; type = "unknown")
 end
 
-@testitem "issue 34" setup = [environment_path] begin
+@testitem "issue 34" setup=[environment_path] begin
     # Importing from excel with single channel reads a Int, not a String
     # which can then fail at regex
     read_data("inputs/issue34.xlsx")
 end
 
-@testitem "empty template rows" setup = [environment_path] begin
+@testitem "empty template rows" setup=[environment_path] begin
     # Test the empty rows in the template don't stop data being imported
     es = read_data("inputs/blank_rows.xlsx")
-    @test "plate_01_time" in keys(es[:samples])
-    @test "plate_02_time" in keys(es[:samples])
-    @test "g1" in keys(es[:groups])
-    @test "g2" in keys(es[:groups])
-    @test "t1" in keys(es[:transformations])
-    @test "t2" in keys(es[:transformations])
-    @test "v1" in keys(es[:views])
-    @test "v2" in keys(es[:views])
+    @test "plate_01_time" in keys(es["samples"])
+    @test "plate_02_time" in keys(es["samples"])
+    @test "g1" in keys(es["groups"])
+    @test "g2" in keys(es["groups"])
+    @test "t1" in keys(es["transformations"])
+    @test "t2" in keys(es["transformations"])
+    @test "v1" in keys(es["views"])
+    @test "v2" in keys(es["views"])
 end
 
-@testitem "invalid channel map" setup = [environment_path] begin
+@testitem "invalid channel map" setup=[environment_path] begin
     # Test that invalid channel map entries are handled gracefully
     @test_throws "Some channels in the channel map are not in a valid format" read_data("inputs/invalid_channel_map.xlsx")
 end
 
-@testitem "requested missing channel" setup = [environment_path] begin
+@testitem "requested missing channel" setup=[environment_path] begin
     # Test that requesting a channel that isn't in the data throws an error
     @test_throws "Requested channel missing_channel_i_want not found in file" read_data("inputs/requested_but_missing_channel.xlsx")
 end
