@@ -559,3 +559,10 @@ end
     # Test that requesting a channel that isn't in the data throws an error
     @test_throws "Requested channel missing_channel_i_want not found in file" read_data("inputs/requested_but_missing_channel.xlsx")
 end
+
+@testitem "group metadata" setup=[environment_path] begin
+    # Test that group metadata is read in correctly
+    es = read_data("inputs/extra-metadata.xlsx")
+    @test es["groups"]["plate1"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => true)
+    @test es["groups"]["otherdata"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => false)
+end
