@@ -145,7 +145,7 @@
     },
     "samples": {
         "plate_01_a1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -379,7 +379,7 @@
             }
         },
         "plate_01_a10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -613,7 +613,7 @@
             }
         },
         "plate_01_a11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -847,7 +847,7 @@
             }
         },
         "plate_01_a12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -1081,7 +1081,7 @@
             }
         },
         "plate_01_a2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -1315,7 +1315,7 @@
             }
         },
         "plate_01_a3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -1549,7 +1549,7 @@
             }
         },
         "plate_01_a4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -1783,7 +1783,7 @@
             }
         },
         "plate_01_a5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -2017,7 +2017,7 @@
             }
         },
         "plate_01_a6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -2251,7 +2251,7 @@
             }
         },
         "plate_01_a7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -2485,7 +2485,7 @@
             }
         },
         "plate_01_a8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -2719,7 +2719,7 @@
             }
         },
         "plate_01_a9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -2953,7 +2953,7 @@
             }
         },
         "plate_01_b1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -3187,7 +3187,7 @@
             }
         },
         "plate_01_b10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -3421,7 +3421,7 @@
             }
         },
         "plate_01_b11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -3655,7 +3655,7 @@
             }
         },
         "plate_01_b12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -3889,7 +3889,7 @@
             }
         },
         "plate_01_b2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -4123,7 +4123,7 @@
             }
         },
         "plate_01_b3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -4357,7 +4357,7 @@
             }
         },
         "plate_01_b4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -4591,7 +4591,7 @@
             }
         },
         "plate_01_b5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -4825,7 +4825,7 @@
             }
         },
         "plate_01_b6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -5059,7 +5059,7 @@
             }
         },
         "plate_01_b7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -5293,7 +5293,7 @@
             }
         },
         "plate_01_b8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -5527,7 +5527,7 @@
             }
         },
         "plate_01_b9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -5761,7 +5761,7 @@
             }
         },
         "plate_01_c1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -5995,7 +5995,7 @@
             }
         },
         "plate_01_c10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -6229,7 +6229,7 @@
             }
         },
         "plate_01_c11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -6463,7 +6463,7 @@
             }
         },
         "plate_01_c12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -6697,7 +6697,7 @@
             }
         },
         "plate_01_c2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -6931,7 +6931,7 @@
             }
         },
         "plate_01_c3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -7165,7 +7165,7 @@
             }
         },
         "plate_01_c4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -7399,7 +7399,7 @@
             }
         },
         "plate_01_c5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -7633,7 +7633,7 @@
             }
         },
         "plate_01_c6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -7867,7 +7867,7 @@
             }
         },
         "plate_01_c7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -8101,7 +8101,7 @@
             }
         },
         "plate_01_c8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -8335,7 +8335,7 @@
             }
         },
         "plate_01_c9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -8569,7 +8569,7 @@
             }
         },
         "plate_01_d1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -8803,7 +8803,7 @@
             }
         },
         "plate_01_d10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -9037,7 +9037,7 @@
             }
         },
         "plate_01_d11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -9271,7 +9271,7 @@
             }
         },
         "plate_01_d12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -9505,7 +9505,7 @@
             }
         },
         "plate_01_d2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -9739,7 +9739,7 @@
             }
         },
         "plate_01_d3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -9973,7 +9973,7 @@
             }
         },
         "plate_01_d4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -10207,7 +10207,7 @@
             }
         },
         "plate_01_d5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -10441,7 +10441,7 @@
             }
         },
         "plate_01_d6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -10675,7 +10675,7 @@
             }
         },
         "plate_01_d7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -10909,7 +10909,7 @@
             }
         },
         "plate_01_d8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -11143,7 +11143,7 @@
             }
         },
         "plate_01_d9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -11377,7 +11377,7 @@
             }
         },
         "plate_01_e1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -11611,7 +11611,7 @@
             }
         },
         "plate_01_e10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -11845,7 +11845,7 @@
             }
         },
         "plate_01_e11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -12079,7 +12079,7 @@
             }
         },
         "plate_01_e12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -12313,7 +12313,7 @@
             }
         },
         "plate_01_e2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -12547,7 +12547,7 @@
             }
         },
         "plate_01_e3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -12781,7 +12781,7 @@
             }
         },
         "plate_01_e4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -13015,7 +13015,7 @@
             }
         },
         "plate_01_e5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -13249,7 +13249,7 @@
             }
         },
         "plate_01_e6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -13483,7 +13483,7 @@
             }
         },
         "plate_01_e7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -13717,7 +13717,7 @@
             }
         },
         "plate_01_e8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -13951,7 +13951,7 @@
             }
         },
         "plate_01_e9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -14185,7 +14185,7 @@
             }
         },
         "plate_01_f1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -14419,7 +14419,7 @@
             }
         },
         "plate_01_f10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -14653,7 +14653,7 @@
             }
         },
         "plate_01_f11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -14887,7 +14887,7 @@
             }
         },
         "plate_01_f12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -15121,7 +15121,7 @@
             }
         },
         "plate_01_f2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -15355,7 +15355,7 @@
             }
         },
         "plate_01_f3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -15589,7 +15589,7 @@
             }
         },
         "plate_01_f4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -15823,7 +15823,7 @@
             }
         },
         "plate_01_f5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -16057,7 +16057,7 @@
             }
         },
         "plate_01_f6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -16291,7 +16291,7 @@
             }
         },
         "plate_01_f7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -16525,7 +16525,7 @@
             }
         },
         "plate_01_f8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -16759,7 +16759,7 @@
             }
         },
         "plate_01_f9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -16993,7 +16993,7 @@
             }
         },
         "plate_01_g1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -17227,7 +17227,7 @@
             }
         },
         "plate_01_g10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -17461,7 +17461,7 @@
             }
         },
         "plate_01_g11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -17695,7 +17695,7 @@
             }
         },
         "plate_01_g12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -17929,7 +17929,7 @@
             }
         },
         "plate_01_g2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -18163,7 +18163,7 @@
             }
         },
         "plate_01_g3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -18397,7 +18397,7 @@
             }
         },
         "plate_01_g4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -18631,7 +18631,7 @@
             }
         },
         "plate_01_g5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -18865,7 +18865,7 @@
             }
         },
         "plate_01_g6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -19099,7 +19099,7 @@
             }
         },
         "plate_01_g7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -19333,7 +19333,7 @@
             }
         },
         "plate_01_g8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -19567,7 +19567,7 @@
             }
         },
         "plate_01_g9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -19801,7 +19801,7 @@
             }
         },
         "plate_01_h1": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -20035,7 +20035,7 @@
             }
         },
         "plate_01_h10": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -20269,7 +20269,7 @@
             }
         },
         "plate_01_h11": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -20503,7 +20503,7 @@
             }
         },
         "plate_01_h12": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -20737,7 +20737,7 @@
             }
         },
         "plate_01_h2": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -20971,7 +20971,7 @@
             }
         },
         "plate_01_h3": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -21205,7 +21205,7 @@
             }
         },
         "plate_01_h4": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -21439,7 +21439,7 @@
             }
         },
         "plate_01_h5": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -21673,7 +21673,7 @@
             }
         },
         "plate_01_h6": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -21907,7 +21907,7 @@
             }
         },
         "plate_01_h7": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -22141,7 +22141,7 @@
             }
         },
         "plate_01_h8": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -22375,7 +22375,7 @@
             }
         },
         "plate_01_h9": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -22609,7 +22609,7 @@
             }
         },
         "plate_01_temperature": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -22843,7 +22843,7 @@
             }
         },
         "plate_01_time": {
-            "meta": {},
+            "metadata": {},
             "type": "timeseries",
             "values": {
                 "OD": [
@@ -23077,7 +23077,7 @@
             }
         },
         "plate_02_a1": {
-            "meta": {
+            "metadata": {
                 "FL1_A": {
                     "amp_gain": null,
                     "amp_type": "0,0",

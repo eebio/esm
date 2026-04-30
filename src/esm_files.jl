@@ -37,15 +37,15 @@ function read_esm(file::AbstractString)
                  j,
                  ef["samples"][i]["type"],
                  replace(ef["samples"][i]["values"][j], nothing => NaN),
-                 if !isempty(keys(ef["samples"][i]["meta"]))
-                     ef["samples"][i]["meta"][j]
+                 if !isempty(keys(ef["samples"][i]["metadata"]))
+                     ef["samples"][i]["metadata"][j]
                  else
-                     ef["samples"][i]["meta"]
+                     ef["samples"][i]["metadata"]
                  end,
                  [i in lowercase.(ef["groups"][k]["sample_IDs"])
                   for k in keys(ef["groups"])]...) for i in keys(ef["samples"])
              for j in keys(ef["samples"][i]["values"])],
-            ["name", "channel", "type", "values", "meta",
+            ["name", "channel", "type", "values", "metadata",
                 [k for k in keys(ef["groups"])]...]),
         groups = DataFrame(
             [(i,

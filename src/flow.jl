@@ -41,7 +41,7 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         temp_data = load(j."Data Location")
         temp[:values] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
         for x in channels)
-        temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, flow_channel("$x"))
+        temp[:metadata] = Dict(channel_map[x] => extract_flow(temp_data, flow_channel("$x"))
         for x in channels)
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
@@ -108,13 +108,13 @@ function to_rfi(es, sample_name)
     for i in chans
         # Load metadata for channel
         amp_type = parse.(
-            Float64, split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
-        range = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
+            Float64, split(sub[sub.name .== "$sample_name.$i", "metadata"][1]["amp_type"], ","))
+        range = parse(Int, sub.metadata[sub.name .== "$sample_name.$i", :][1]["range"])
         if amp_type[1] == 0
-            if isnothing(sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
+            if isnothing(sub.metadata[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
                 amp_gain = 1.0
             else
-                amp_gain = sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
+                amp_gain = sub.metadata[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
                 amp_gain = parse(Int, replace(amp_gain, ".0" => ""))
             end
             data = sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain

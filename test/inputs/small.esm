@@ -12,7 +12,7 @@
     },
     "samples": {
         "plate_01_a1": {
-            "meta": {
+            "metadata": {
                 "FL1_H": {
                     "amp_gain": "4",
                     "amp_type": "0,0",

@@ -232,7 +232,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_t° read 1:700": {
             "values": {
@@ -352,7 +352,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a1": {
             "values": {
@@ -586,7 +586,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a2": {
             "values": {
@@ -820,7 +820,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a3": {
             "values": {
@@ -1054,7 +1054,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a4": {
             "values": {
@@ -1288,7 +1288,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a5": {
             "values": {
@@ -1522,7 +1522,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a6": {
             "values": {
@@ -1756,7 +1756,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a7": {
             "values": {
@@ -1990,7 +1990,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a8": {
             "values": {
@@ -2224,7 +2224,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a9": {
             "values": {
@@ -2458,7 +2458,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a10": {
             "values": {
@@ -2692,7 +2692,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a11": {
             "values": {
@@ -2926,7 +2926,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_01_a12": {
             "values": {
@@ -3160,7 +3160,7 @@
                 ]
             },
             "type": "timeseries",
-            "meta": {}
+            "metadata": {}
         },
         "plate_02_a1": {
             "values": {
@@ -3202,7 +3202,7 @@
                 ]
             },
             "type": "population",
-            "meta": {
+            "metadata": {
                 "FL1_H": {
                     "range": "1024",
                     "ex_pow": null,

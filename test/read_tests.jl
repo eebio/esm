@@ -27,7 +27,7 @@
                 ]
             },
             "type": "population",
-            "meta": {
+            "metadata": {
                 "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
@@ -91,7 +91,7 @@
                 ]
             },
             "type": "population",
-            "meta": {
+            "metadata": {
                 "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
@@ -188,18 +188,18 @@ end
             [280.0, 735.0, 128.0, 1023.0],
             [628.0, 1023.0, 373.0, 1023.0]
         ])
-    @test es.samples.meta[es.samples.name .== "plate_01_a2.FL1_A"][1] == Dict{String, Any}(
+    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FL1_A"][1] == Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
         "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
-    @test es.samples.meta[es.samples.name .== "plate_01_a2.FSC_H"][1] == Dict{String, Any}(
+    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FSC_H"][1] == Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
         "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
     for i in 1:6
-        @test issetequal(keys(es.samples.meta[i]),
+        @test issetequal(keys(es.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
                 "amp_gain", "name_s", "name", "det_type", "perc_em"])
     end

@@ -5,8 +5,8 @@
     @test es[:samples]["plate_02_a1"][:values]["FL4_H"] ≈
           [28.133175, 310.590027, 3.819718, 2414.418213]
     @test es[:samples]["plate_02_a1"][:type] == "population"
-    @test es[:samples]["plate_02_a1"][:meta]["FL1_H"][:range] == "1024"
-    @test es[:samples]["plate_02_a1"][:meta]["FL1_H"][:amp_type] == "0,0"
+    @test es[:samples]["plate_02_a1"][:metadata]["FL1_H"][:range] == "1024"
+    @test es[:samples]["plate_02_a1"][:metadata]["FL1_H"][:amp_type] == "0,0"
     @test es[:groups]["first_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A5", "plate_01_A9"]
     @test es[:groups]["second_group"]["sample_IDs"] == ["plate_01_A3", "plate_01_A8", "plate_01_A7"]
     @test es[:groups]["third_group"]["sample_IDs"] == ["plate_01_A1", "plate_01_A2", "plate_01_A3"]
@@ -38,7 +38,7 @@ end
           es_written.samples.values[findfirst(es_written.samples.name .==
                                               "plate_01_b3.flo")]
     for i in findall(.!occursin.(r"(OD|flo)", es_written.samples.name))
-        @test issetequal(keys(es_written.samples.meta[i]),
+        @test issetequal(keys(es_written.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
                 "amp_gain", "name_s", "name", "det_type", "perc_em"])
     end

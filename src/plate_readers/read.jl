@@ -37,7 +37,7 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
                         :type => "timeseries",
                         :values => Dict(i => data[i][!, k]
                         for i in channels if k in names(data[i])),
-                        :meta => Dict())
+                        :metadata => Dict())
         for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
     broad_g = [i for i in keys(sample_dict) if !(i in pre)]
     return sample_dict, broad_g
