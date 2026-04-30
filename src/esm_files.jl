@@ -95,9 +95,12 @@ function read_data(file::AbstractString)
     group_dict = OrderedDict(i.Name => Dict(
                                  "sample_IDs" => expand_groups(i.Samples),
                                  :type => "experimental",
-                                 "metadata" => Dict(j => i[j, :]
+                                 "metadata" => Dict{String, Any}(j => i[j]
                                  for j in names(i) if !(j in ["Name", "Samples"])))
     for i in eachrow(groups)) # Get all the experimental groups.
+    for i in eachrow(groups)
+        group_dict[i.Name]["metadata"]["autodefined"] = "false"
+    end
     @info "Reading $(length(keys(samples))) plates"
     for i in range(1, length(keys(samples)))
         # Check what instrument was used
@@ -145,7 +148,7 @@ function read_data(file::AbstractString)
         end
         # Add the physical plate to the group dict
         group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, :type => "physical",
-            "metadata" => :autodefined => "true")
+            "metadata" => Dict("autodefined" => "true"))
     end
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => i.Equation for i in eachrow(trans))

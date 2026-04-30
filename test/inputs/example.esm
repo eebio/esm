@@ -1,7 +1,9 @@
 {
     "groups": {
         "first_group": {
-            "metadata": {},
+            "metadata": {
+                "autodefined": "false"
+            },
             "sample_IDs": [
                 "plate_01_A1",
                 "plate_01_A5",
@@ -125,7 +127,9 @@
             "type": "physical"
         },
         "second_group": {
-            "metadata": {},
+            "metadata": {
+                "autodefined": "false"
+            },
             "sample_IDs": [
                 "plate_01_A3",
                 "plate_01_A8",
@@ -134,7 +138,9 @@
             "type": "experimental"
         },
         "third_group": {
-            "metadata": {},
+            "metadata": {
+                "autodefined": "false"
+            },
             "sample_IDs": [
                 "plate_01_A1",
                 "plate_01_A2",

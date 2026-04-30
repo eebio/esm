@@ -44,7 +44,7 @@ end
     run(`$(shell) esm translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.esm"))`)
     @test isfile(joinpath(dir, "tmp.esm"))
     f = JSON.parsefile(joinpath(dir, "tmp.esm"))
-    @test bytes2hex(stable_hash(f; version=4)) == "9f282b06a31237b850dd408c9365a01218e74624ff360908c3b417b75040058d"
+    @test bytes2hex(stable_hash(f; version=4)) == "09f7126b16687fd2802e6cd40b581d011e1fff23d2e335f1851e2dcd868302ff"
 end
 
 @testitem "Views integration" setup=[environment_path, build, getshell] begin
