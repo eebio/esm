@@ -37,10 +37,10 @@ function read_esm(file::AbstractString)
                  j,
                  ef["samples"][i]["type"],
                  replace(ef["samples"][i]["values"][j], nothing => NaN),
-                 if !isempty(keys(ef["samples"][i]["metadata"]))
-                     ef["samples"][i]["metadata"][j]
+                 if length(keys(ef["samples"][i]["metadata"])) > 1
+                     merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"]["raw_metadata"]))
                  else
-                     ef["samples"][i]["metadata"]
+                     merge(ef["samples"][i]["metadata"], Dict("raw_metadata" => ef["samples"][i]["metadata"]["raw_metadata"]))
                  end,
                  [i in lowercase.(ef["groups"][k]["sample_IDs"])
                   for k in keys(ef["groups"])]...) for i in keys(ef["samples"])

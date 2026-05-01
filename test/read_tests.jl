@@ -39,7 +39,8 @@
                     "name_s": null,
                     "name": "FL1-A",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "SSC_H": {
                     "range": "1024",
@@ -52,7 +53,8 @@
                     "name_s": "SSC-H",
                     "name": "SSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "FSC_H": {
                     "range": "1024",
@@ -65,7 +67,8 @@
                     "name_s": "FSC-H",
                     "name": "FSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 }
             }
         },
@@ -103,7 +106,8 @@
                     "name_s": null,
                     "name": "FL1-A",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "SSC_H": {
                     "range": "1024",
@@ -116,7 +120,8 @@
                     "name_s": "SSC-H",
                     "name": "SSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "FSC_H": {
                     "range": "1024",
@@ -129,7 +134,8 @@
                     "name_s": "FSC-H",
                     "name": "FSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 }
             }
         }
@@ -194,17 +200,17 @@ end
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict())
     @test es.samples.metadata[es.samples.name .== "plate_01_a2.FSC_H"][1] ==
           Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict())
     for i in 1:6
         @test issetequal(keys(es.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em"])
+                "amp_gain", "name_s", "name", "det_type", "perc_em", "raw_metadata"])
     end
     @test issetequal(es.groups.group, ["plate_01"])
     @test issetequal(es.groups.sample_IDs, [["plate_01_a1", "plate_01_a2"]])
@@ -472,6 +478,15 @@ end
     @test out[!, "FL1_H"] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
     # Log scaling test
     @test out[!, "SSC_H"] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
+end
+
+@testitem "raw metadata" begin
+    println("raw metadata")
+    es = read_esm("inputs/example.esm")
+    metadata = es.samples.metadata[es.samples.name .== "plate_02_a1.FL1_A"][1]
+    @test haskey(metadata, "raw_metadata")
+    @test metadata["raw_metadata"]["CREATOR"] == "CELLQuest<aa> 3.3"
+    @test metadata["raw_metadata"]["FCSVERSION"] == "3"
 end
 
 @testitem "summary" begin

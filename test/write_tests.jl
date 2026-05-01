@@ -45,7 +45,7 @@ end
     for i in findall(.!occursin.(r"(OD|flo)", es_written.samples.name))
         @test issetequal(keys(es_written.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em"])
+                "amp_gain", "name_s", "name", "det_type", "perc_em", "raw_metadata"])
     end
     @test issetequal(es_written.groups.group,
         ["plate_01", "plate_02", "first_group", "second_group", "third_group"])
