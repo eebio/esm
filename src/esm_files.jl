@@ -19,7 +19,7 @@ Parse an esm file found at `file` into an esm_zones object.
 function read_esm(file::AbstractString)
     @info "Reading ESM file at: $file"
     # Read in the file in a JSON format
-    ef = JSON.parsefile(file)
+    ef = JSON.parsefile(file; allownan = true)
     max_len = 0
     # Loop over the samples to look for maximum length of array
     for i in keys(ef["samples"])
@@ -69,9 +69,7 @@ end
 Write the esm data to the path `file`.
 """
 function write_esm(data, file::AbstractString)
-    open(file, "w") do file
-        JSON.print(file, data, 4)
-    end
+    JSON.json(file, data; allownan = true, pretty = true)
     @info "ESM written to $file"
 end
 
