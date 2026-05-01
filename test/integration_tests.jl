@@ -154,6 +154,7 @@ end
     translate(joinpath("inputs", "example.xlsx"), joinpath(dir, "tmp.esm"))
     views(joinpath(dir, "tmp.esm"); output_dir = dir)
     views(joinpath(dir, "tmp.esm"); view = "mega", output_dir = dir)
+    translate(joinpath("inputs", "summarise.xlsx"), joinpath("inputs", "summarise.esm"))
     cp(joinpath("inputs", "summarise.esm"), joinpath(dir, "summarise.esm"))
     summarise(joinpath(dir, "summarise.esm"); plot = true)
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
