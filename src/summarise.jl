@@ -90,7 +90,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
     end
     println("")
     @info "Summary of $(typeof(ptype)) file: $file"
-    out = read(file, ptype)
+    out, _ = read(file, ptype)
     println("")
     # Summarise channels
     @info "Summarising channels"

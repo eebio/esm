@@ -12,11 +12,11 @@
     @test issetequal(keys(data["samples"]), wells)
 
     @test issetequal(
-        keys(read("inputs/spectramax-data.txt", SpectraMax(); channels = ["600", "700"])),
+        keys(read("inputs/spectramax-data.txt", SpectraMax(); channels = ["600", "700"])[1]),
         ["600", "700"])
     @test issetequal(
         keys(read("inputs/spectramax-data2.txt", SpectraMax();
-            channels = ["530_485_1", "530_485_2", "530_485_3"])),
+            channels = ["530_485_1", "530_485_2", "530_485_3"])[1]),
         ["530_485_1", "530_485_2", "530_485_3"])
 end
 
@@ -35,7 +35,7 @@ end
 
     @test issetequal(
         keys(read(
-            "inputs/biotek-data.csv", BioTek(); channels = ["OD_600"])), ["OD_600"])
+            "inputs/biotek-data.csv", BioTek(); channels = ["OD_600"])[1]), ["OD_600"])
 end
 
 @testitem "read tecan" setup=[environment_path] begin
@@ -56,7 +56,7 @@ end
 
     @test issetequal(
         keys(read(
-            "inputs/tecan-data.xlsx", Tecan(); channels = ["OD_600", "GFP"])),
+            "inputs/tecan-data.xlsx", Tecan(); channels = ["OD_600", "GFP"])[1]),
         ["OD_600", "GFP"])
 end
 
@@ -75,11 +75,11 @@ end
 
     @test issetequal(
         keys(read(
-            "inputs/bmg-data.csv", BMG(); channels = ["ABS_600_0_nm", "FI_YFP_pAN1717"])),
+            "inputs/bmg-data.csv", BMG(); channels = ["ABS_600_0_nm", "FI_YFP_pAN1717"])[1]),
         ["ABS_600_0_nm", "FI_YFP_pAN1717"])
     @test issetequal(
         keys(read("inputs/bmg-data.csv", BMG();
-            channels = ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])),
+            channels = ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])[1]),
         ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])
 end
 
@@ -101,7 +101,7 @@ end
 
     @test issetequal(
         keys(read(
-            "inputs/pr_folder", GenericTabular(); channels = ["OD"])), ["OD"])
+            "inputs/pr_folder", GenericTabular(); channels = ["OD"])[1]), ["OD"])
 end
 
 @testitem "read pr errors" begin

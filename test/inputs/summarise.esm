@@ -37,7 +37,7 @@
   "samples": {
     "plate_01_a1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -87,7 +87,7 @@
     },
     "plate_01_a10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -137,7 +137,7 @@
     },
     "plate_01_a11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -187,7 +187,7 @@
     },
     "plate_01_a12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -237,7 +237,7 @@
     },
     "plate_01_a2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -287,7 +287,7 @@
     },
     "plate_01_a3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -337,7 +337,7 @@
     },
     "plate_01_a4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -387,7 +387,7 @@
     },
     "plate_01_a5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -437,7 +437,7 @@
     },
     "plate_01_a6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -487,7 +487,7 @@
     },
     "plate_01_a7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -537,7 +537,7 @@
     },
     "plate_01_a8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -587,7 +587,7 @@
     },
     "plate_01_a9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -637,7 +637,7 @@
     },
     "plate_01_column15": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -687,7 +687,7 @@
     },
     "plate_01_column16": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -737,7 +737,7 @@
     },
     "plate_01_temperature": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
@@ -787,7 +787,7 @@
     },
     "plate_01_time": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
       },
       "type": "timeseries",
       "values": {
