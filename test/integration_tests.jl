@@ -67,25 +67,22 @@ end
 
     # Specifying a specific view
     using SHA
+    using StableHashTraits
 
     dir = Base.Filesystem.mktempdir()
     run(`$(shell) esm translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.esm"))`)
     run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) --view mega --output-dir $dir`)
     @test isfile(joinpath(dir, "mega.csv"))
-    esm_hash = open(joinpath(dir, "mega.csv")) do f
-        sha256(f)
-    end
-    @test_skip bytes2hex(esm_hash) ==
-          "8dc3e2b2a2d60b1d2c2ad0bbcf5564e31aa93961792eb2a88640bbfe59cde9a4"
+    esm_hash = stable_hash(read(joinpath(dir, "mega.csv"), String); version=4)
+    @test bytes2hex(esm_hash) ==
+          "939f93444dd7b96521ccef8c7c8e78990a0d95c93c8f8d0477ba6ae1d19d0eb7"
 
     dir2 = Base.Filesystem.mktempdir()
     run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) -v mega -o $dir2`)
     @test isfile(joinpath(dir2, "mega.csv"))
-    esm_hash2 = open(joinpath(dir2, "mega.csv")) do f #Keep as esm_hash2 until test is working
-        sha256(f)
-    end
-    @test_skip bytes2hex(esm_hash2) ==
-          "8dc3e2b2a2d60b1d2c2ad0bbcf5564e31aa93961792eb2a88640bbfe59cde9a4"
+    esm_hash2 = stable_hash(read(joinpath(dir2, "mega.csv"), String); version=4)
+    @test bytes2hex(esm_hash2) ==
+          "939f93444dd7b96521ccef8c7c8e78990a0d95c93c8f8d0477ba6ae1d19d0eb7"
 end
 
 @testitem "Summarise integration" setup=[environment_path, build, getshell] begin
