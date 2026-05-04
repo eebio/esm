@@ -9,6 +9,7 @@ using DataStructures
     groups::Any
     transformations::Any
     views::Any
+    metadata::Any
 end
 
 """
@@ -59,7 +60,8 @@ function read_esm(file::AbstractString)
                      samples, view = true))) for i in keys(ef["groups"])],
             ["group", "sample_IDs", "metadata", "meta_select"]),
         transformations = ef["transformations"],
-        views = ef["views"]
+        views = ef["views"],
+        metadata = ef["metadata"]
     )
     # Add channels to sample names
     es.samples.name = string.(es.samples.name, ".", es.samples.channel)
@@ -157,8 +159,34 @@ function read_data(file::AbstractString)
     # Add the views
     views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
     for i in eachrow(views))
+    metadata = get_metadata()
     return OrderedDict("samples" => sample_dict, "groups" => group_dict,
-        "transformations" => trans_dict, "views" => views_dict)
+        "transformations" => trans_dict, "views" => views_dict, "metadata" => metadata)
+end
+
+"""
+    get_metadata()
+
+Generate the metadata for a new ESM file, such as the version of ESM used to create it.
+"""
+function get_metadata()
+    io = IOBuffer()
+    Pkg.status(; io = io)
+    project_toml = String(take!(io))
+    Pkg.status(; mode = PKGMODE_MANIFEST, io = io)
+    manifest_toml = String(take!(io))
+    versioninfo(io)
+    version_info = String(take!(io))
+    return Dict(
+        "description" => "",
+        "esm_version" => pkgversion(ESM),
+        "schema_version" => "0.1.0",
+        "date_created" => string(Dates.now()),
+        "date_modified" => string(Dates.now()),
+        "Project.toml" => project_toml,
+        "Manifest.toml" => manifest_toml,
+        "versioninfo" => version_info
+    )
 end
 
 """

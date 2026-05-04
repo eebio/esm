@@ -163,6 +163,16 @@
                 "flow_cyt"
             ]
         }
+    },
+    "metadata": {
+"date_created": "2026-05-04T15:12:08.285",
+"date_modified": "2026-05-04T15:12:08.285",
+"Project.toml": "Project ESM v0.1.0\\nStatus `~/.julia/dev/esm/Project.toml`\\n  [336ed68f] CSV v0.10.16\\n  [861a8166] Combinatorics v1.1.0\\n  [863f3e99] Comonicon v1.0.8\\n  ...\\n  [ade2ca70] Dates v1.11.0\\n  [b77e0a4c] InteractiveUtils v1.11.0\\n  [44cfe95a] Pkg v1.12.1\\n  [de0858da] Printf v1.11.0\\nInfo Packages marked with ⌃ and ⌅ have new versions available. Those with ⌃ may be upgradable, but those with ⌅ are restricted by compatibility constraints from upgrading. To see why use `status --outdated`\\n",
+"esm_version": "0.1.0",
+"versioninfo": "Julia Version 1.12.3\\nCommit 966d0af0fdf (2025-12-15 11:20 UTC)\\nBuild Info:\\n  Official https://julialang.org release\\nPlatform Info:\\n  OS: macOS (arm64-apple-darwin24.0.0)\\n  CPU: 14 × Apple M4 Pro\\n  WORD_SIZE: 64\\n  LLVM: libLLVM-18.1.7 (ORCJIT, apple-m4)\\n  GC: Built with stock GC\\nThreads: 1 default, 1 interactive, 1 GC (on 10 virtual cores)\\nEnvironment:\\n  JULIA_EDITOR = code\\n  JULIA_VSCODE_REPL = 1\\n",
+"Manifest.toml": "Project ESM v0.1.0\\nStatus `~/.julia/dev/esm/Manifest.toml`\\n⌃ [47edcb42] ADTypes v1.21.0\\n  [621f4979] AbstractFFTs v1.5.0\\n  [1520ce14] AbstractTrees v0.4.5\\n  [7d9f7c33] Accessors v0.1.44\\n...\\n  [8e850ede] nghttp2_jll v1.64.0+1\\n  [3f19e933] p7zip_jll v17.7.0+0\\nInfo Packages marked with ⌃ and ⌅ have new versions available. Those with ⌃ may be upgradable, but those with ⌅ are restricted by compatibility constraints from upgrading. To see why use `status --outdated -m`\\n",
+"schema_version": "0.1.0",
+"description": ""
     }
 }
 
