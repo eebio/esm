@@ -120,29 +120,29 @@ function read_data(file::AbstractString)
             Instrument types used here are: $(Set(samples[i].Type))")
         # Process channels
         channels = []
-        for j in samples[i].Channels
-            # Convert to string if not already
-            str_j = string(j)
-            # Add the remaining channels to the list
-            for k in split(str_j, ",")
-                push!(channels, strip(k))
-            end
+        # Convert to string if not already
+        str_j = string(samples[i].Channels[1])
+        # Add the remaining channels to the list
+        for k in split(str_j, ",")
+            push!(channels, strip(k))
         end
         channels = [c for c in channels if !isempty(c)]
         # Remove duplicates (for example, specifying the same channels for every well in a flow cytometry plate)
         channels = unique(channels)
-        # Create the channel map
+        # Add channels that are not in the channel map to the channel map
         channel_map = Dict(i => if i in keys(channel_map)
                                channel_map[i]
                            else
                                i
-                           end for i in channels)
+                           end for i in union(channels, keys(channel_map)) if i!="missing")
         tmp = join([string(j) * ", " for j in channels])[1:(end - 2)]
-        @info "Channels $tmp being used to process plate $i"
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
         @info "Channel map: \n$(prb...)\n"
         broad_g = []
+        if channels == ["missing"]
+            channels = []
+        end
         if "plate reader" in lowercase.(ins_type)
             sample_dict, broad_g = read_pr(
                 samples[i], sample_dict, channels, broad_g, channel_map)
