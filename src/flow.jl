@@ -39,6 +39,11 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         temp = Dict()
         temp[:type] = "population"
         temp_data = load(j."Data Location")
+        if isempty(channels)
+            channels = format_channel.(keys(temp_data))
+            channels = [c == "Time" ? "time" : c for c in channels]
+            channel_map = merge(Dict(c => c for c in channels), channel_map)
+        end
         temp[:values] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
         for x in channels)
         temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, flow_channel("$x"))
