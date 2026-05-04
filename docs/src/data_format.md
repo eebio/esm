@@ -8,7 +8,7 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
 
 * a variable called "values" that stores the channel data as key-value pairs (with each channel storing an ordered list),
 * a "type" variable that indicates whether the data is a "timeseries" (like plate reader data) or "population" (like flow cytometry data),
-* and a "meta" variable to store any other associated data in key-value pairs, such as amplifier settings for flow cytometers.
+* and a "metadata" variable to store any other associated data in key-value pairs, such as amplifier settings for flow cytometers.
 
 Times are formatted as an integer number of milliseconds. Flow cytometry channel data is converted to RFI.
 
@@ -29,7 +29,7 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "meta":{}
+            "metadata":{}
         },
         "plate_01_temperature":{
             "values":{
@@ -45,7 +45,7 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
             ]
             },
             "type":"timeseries",
-            "meta":{}
+            "metadata":{}
         },
         "plate_01_a1":{
             "values":{
@@ -61,7 +61,7 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "meta":{}
+            "metadata":{}
         },
         ...
         "plate_01_h12":{
@@ -78,7 +78,7 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "meta":{}
+            "metadata":{}
         },
         "plate_02_a1":{
             "values":{
@@ -99,7 +99,7 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ...
             },
             "type":"population",
-            "meta":{
+            "metadata":{
                 "FL1_H":{
                     "range":"1024",
                     "ex_pow":null,

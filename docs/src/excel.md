@@ -59,6 +59,8 @@ To make this a bit shorter, you may choose to use the compressed format. In this
 
 All these formats can be mixed together in any combination, so `plate_0[1,2]_[a:c]1, plate_04_a2` is treated the same as `plate_01_a1, plate_01_b1, plate_01_c1, plate_02_a1, plate_02_b1, plate_02_c1, plate_04_a2`.
 
+Additional metadata can be added to each group by adding more columns. Each column name indicates the metadata name with the value in each row providing the value for that group.
+
 ![alt text](assets/groups.png)
 
 ## Transformations

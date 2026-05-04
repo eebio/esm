@@ -31,17 +31,15 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
     # Summarise groups
     @info "Summarising groups"
     @info "Number of groups: $(nrow(es.groups))"
-    count = sum("autodefined" .∉ keys.(es.groups[!, "metadata"]))
+    count = sum([i["autodefined"]!="true" for i in es.groups[!, "metadata"]])
     @info "Number of manually defined groups: $count"
-    count = (sum(["autodefined" ∈ keys(es.groups[i, "metadata"]) &&
-                  es.groups[i, "metadata"]["autodefined"] == "true"
-                  for i in eachindex(es.groups[!, "metadata"])]))
+    count = (sum([i["autodefined"] == "true"
+                  for i in es.groups[!, "metadata"]]))
     @info "Number of autodefined groups (such as for plates): $count"
     group_sizes = Dict(i["group"] => length(i["sample_IDs"]) for i in eachrow(es.groups))
     for (key, value) in group_sizes
-        isautodefined = "autodefined" ∈
-                        keys(first(es.groups[es.groups[!, "group"] .== key, "metadata"]))
-        @info "Group $key has size $value and is$(isautodefined ? " not" : "") autodefined."
+        isautodefined = first(es.groups[es.groups[!, "group"] .== key, "metadata"])["autodefined"] == "true"
+        @info "Group $key has size $value and is$(isautodefined ? "" : " not") autodefined."
     end
 
     println("")
@@ -90,7 +88,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
     end
     println("")
     @info "Summary of $(typeof(ptype)) file: $file"
-    out = read(file, ptype)
+    out, _ = read(file, ptype)
     println("")
     # Summarise channels
     @info "Summarising channels"

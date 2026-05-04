@@ -99,7 +99,7 @@ end
 
 function get_sample(es, sample)
     # Is the sample a flow sample?
-    sample_types = es.samples[sample .== get_sample_id.(es.samples.name), :type]
+    sample_types = es.samples[sample .== get_sample_id.(es.samples.name), "type"]
     if all(sample_types .== "population")
         return ESM.to_rfi(es, sample)
     end
