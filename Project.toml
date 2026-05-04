@@ -1,7 +1,7 @@
 name = "ESM"
 uuid = "31170fb7-9259-406e-89cb-fc418a8fef2f"
-authors = ["Micha <micha_claydon@yahoo.co.uk>"]
 version = "0.1.0"
+authors = ["Micha <micha_claydon@yahoo.co.uk>", "mjowen <matt.owen@bristol.ac.uk>"]
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
