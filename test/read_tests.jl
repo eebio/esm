@@ -549,3 +549,12 @@ end
     # Test that requesting a channel that isn't in the data throws an error
     @test_throws "Requested channel missing_channel_i_want not found in file" read_data("inputs/requested_but_missing_channel.xlsx")
 end
+
+@testitem "no specified channels" setup = [environment_path] begin
+    # Test that if no channels are specified, all channels are read in
+    es = read_data("inputs/no-specified-channels.xlsx")
+    @test "abs600" in keys(es[:samples]["plate_01_a1"][:values])
+    @test "abs700" in keys(es[:samples]["plate_01_a1"][:values])
+    @test "535_485" in keys(es[:samples]["plate_01_a1"][:values])
+    @test "FL1_A" in keys(es[:samples]["plate_02_a1"][:values])
+end
