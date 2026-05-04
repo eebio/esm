@@ -606,3 +606,10 @@ end
             data, time_col, method)
     end
 end
+
+@testitem "floating point time error" begin
+    println("floating point time error")
+    # This checks if a floating point time that, after being multipled by 1000, does not fall on an integer, still reads correctly
+    data = read(joinpath("inputs/bmg-time-error.csv"), BMG())
+    @test 33047800 in data["ABS_700_0_nm"][!, "time"]
+end
