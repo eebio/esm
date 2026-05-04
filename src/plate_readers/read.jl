@@ -337,7 +337,10 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
         rename!(df, time_name => "time")
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Make sure time is in milliseconds
-        df[!, "time"] = [Int64(t * 1000) for t in df[!, "time"]]
+        time_float = df[!, "time"] .* 1000
+        time_int = round.(Int64, time_float)
+        @assert all(time_float .≈ time_int)
+        df[!, "time"] = time_int
         out[channel] = df
     end
     return out, raw_metadata
@@ -386,7 +389,10 @@ function Base.read(file::AbstractString, ::BMG; channels = nothing)
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Make sure time is in milliseconds
-        df[!, "time"] = [Int64(t * 1000) for t in df[!, "time"]]
+        time_float = df[!, "time"] .* 1000
+        time_int = round.(Int64, time_float)
+        @assert all(time_float .≈ time_int)
+        df[!, "time"] = time_int
         out[channel] = df[:, ["time", "temperature", names(df)[2:(end - 1)]...]] # reorder to put temperature after time
     end
     return out, raw_metadata
