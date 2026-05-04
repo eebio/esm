@@ -28,16 +28,16 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
     length(ptype) == 1 ||
         error("Only one plate type can be used per plate. \
         $(Set(samples[!,"Plate brand"])...) given.")
-    data = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
+    data, raw_metadata = read_multipr_file("$(loc...)", ptype[1], channels, channel_map)
     channels = keys(data)
     # Just so that the broader physical group can be defined using the set difference
     pre = keys(sample_dict)
     sample_dict = merge(sample_dict,
         OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(
-                        :type => "timeseries",
-                        :values => Dict(i => data[i][!, k]
+                        "type" => "timeseries",
+                        "values" => Dict(i => data[i][!, k]
                         for i in channels if k in names(data[i])),
-                        :meta => Dict())
+                        "metadata" => Dict("raw_metadata" => raw_metadata))
         for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
     broad_g = [i for i in keys(sample_dict) if !(i in pre)]
     return sample_dict, broad_g
@@ -73,7 +73,7 @@ function read_multipr_file(file, ptype, channels, channel_map)
     if isempty(channels)
         channels = nothing
     end
-    o_dict = read(file, ptype; channels = channels)
+    o_dict, raw_metadata = read(file, ptype; channels = channels)
     # Check that no channels are requested but missing
     if !isnothing(channels)
         for k in channels
@@ -87,7 +87,7 @@ function read_multipr_file(file, ptype, channels, channel_map)
     for i in keys(o_dict)
         o_dict[i] = o_dict[i][!, Not(all.(ismissing, eachcol(o_dict[i])))]
     end
-    return o_dict
+    return o_dict, raw_metadata
 end
 
 function read_into_lines(file)
@@ -129,6 +129,7 @@ function read_standard(file, offset)
     containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
     rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
     datalocations = findall(x -> x == maximum(rl), rl)
+    raw_metadata = join(f[1:(datalocations[1] - 2)], "\n")
     # Trim the data to only the relevant parts
     data = []
     for i in datalocations
@@ -151,7 +152,7 @@ function read_standard(file, offset)
         end
         push!(data, table)
     end
-    return data
+    return data, raw_metadata
 end
 
 function correct_data_length(data, delim)
@@ -183,16 +184,23 @@ Arguments:
 - `::AbstractPlateReader`: Plate reader type.
 - `channels`: Vector of channels (as strings) to be read in. Defaults to nothing (all
     channels).
+
+Returns:
+- `Dict{String, DataFrame}`: A dictionary with keys being the channel names and values
+    being the dataframes containing the data for each channel.
+- `String`: The plate reader raw metadata.
 """
 function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
-    data = read_standard(file, 1)
+    data, _ = read_standard(file, 1) # Raw metadata is incorrect here, no file level metadata
     data = correct_data_length(data, "\t")
     # Create the dataframes
     out = Dict()
+    raw_metadata = "" # No file level metadata
 
     # Process channel metadata
     all_channels = []
     for i in eachindex(data)
+        raw_metadata *= data[i][1] * "\n" # Channel specific metadata lines
         tmp = split(data[i][1], "\t")
         tmp = [strip(t) for t in tmp if !isempty(strip(t))]
         type = tmp[6]
@@ -248,16 +256,29 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Make sure time is in milliseconds
-        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
+                         millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
-    return out
+    return out, raw_metadata
 end
 
 struct BioTek <: AbstractPlateReader end
 
 function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
-    data = read_standard(filen, 2)
+    data, raw_metadata = read_standard(filen, 2)
+
+    # Add possible extra metadata from the end of the file
+    f = read_into_lines(filen)
+    results_found = false
+    for i in eachindex(f)
+        if occursin(r"Results", f[i])
+            results_found = true
+        end
+        if results_found
+            raw_metadata *= "\n" * f[i]
+        end
+    end
     # Create the dataframes
     out = Dict()
     for i in eachindex(data)
@@ -279,10 +300,11 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
         # Make sure time is in milliseconds
-        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
+                         millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
-    return out
+    return out, raw_metadata
 end
 
 struct Tecan <: AbstractPlateReader end
@@ -293,6 +315,12 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
     isdata = .!ismissing.(sh[:, 1])
     rl = [runlength(isdata, i) for i in eachindex(isdata)]
     datalocations = findall(isequal("Cycle Nr."), vec(sh[:, 1])) .- 1
+    raw_metadata = ""
+    for i in 1:(datalocations[1] - 1)
+        raw_metadata *= join(sh[i, :], ",") * "\n"
+    end
+    raw_metadata *= join(sh[end, :], ",")
+    raw_metadata = replace(raw_metadata, "missing" => "")
     data = []
     for i in datalocations
         # Find and push the data onto table
@@ -320,7 +348,7 @@ function Base.read(file::AbstractString, ::Tecan; channels = nothing)
         df[!, "time"] = time_int
         out[channel] = df
     end
-    return out
+    return out, raw_metadata
 end
 
 struct BMG <: AbstractPlateReader end
@@ -330,14 +358,14 @@ function Base.read(file::AbstractString, ::BMG; channels = nothing)
     containsData = [length(unique(j)) > 1 ? 1 : 0 for j in f]
     rl = [runlength(containsData, i) for i in eachindex(containsData)]
     datalocations = findall(x -> x == maximum(rl), rl)
-
+    raw_metadata = join(f[1:(datalocations[1] - 1)], "\n")
     # Trim the data to only the relevant parts
     data = []
     for i in datalocations
         table = []
         # Push header onto table (first row before i that contains Time and row above)
         push!(table, f[i])
-        for j = i+2:length(f)
+        for j in (i + 2):length(f)
             if containsData[j] == 1
                 push!(table, f[j])
             else
@@ -372,7 +400,7 @@ function Base.read(file::AbstractString, ::BMG; channels = nothing)
         df[!, "time"] = time_int
         out[channel] = df[:, ["time", "temperature", names(df)[2:(end - 1)]...]] # reorder to put temperature after time
     end
-    return out
+    return out, raw_metadata
 end
 
 struct GenericTabular <: AbstractPlateReader end
@@ -385,8 +413,9 @@ function Base.read(file::AbstractString, ::GenericTabular; channels = nothing)
             continue
         end
         df = CSV.read(joinpath(file, j), DataFrame)
-        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t)*1000 + millisecond(t) for t in df[!, "time"]]
+        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
+                         millisecond(t) for t in df[!, "time"]]
         out[channel] = df
     end
-    return out
+    return out, ""
 end
