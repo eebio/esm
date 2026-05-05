@@ -269,9 +269,9 @@ function _growth_rate(df, time_col, method::LinearOnLog)
     lm_model = lm(@formula(log_od~time), lm_df)
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
-    od_at_max_growth = exp((NaNMath.log(at_time(df, time_col, start_time)[1]) +
-                            NaNMath.log(at_time(df, time_col, end_time)[1])) / 2)
-    return Dict(
+    od_at_max_growth = geomean(between_times(df, time_col; mint = start_time, maxt = end_time)[:,1])
+
+    summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
