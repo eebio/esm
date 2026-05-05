@@ -3,8 +3,10 @@ using RegularizationTools
 using DataInterpolations
 using GLM
 using Statistics
+using StatsBase
 using ForwardDiff
 using NaNMath
+using Plots
 
 abstract type AbstractGrowthRateMethod <: AbstractPlateReaderMethod end
 
@@ -51,8 +53,13 @@ Arguments:
 Keywords:
 - `recalibrate`: Whether to recalibrate the data using `calibrate` before calculating growth rate. Default is :negative (only if negative values are present in the well). Available options are `:negative`, true, and false.
 - `offset`: If data is recalibrated, this is the offset applied after calibration. Default is 0.001.
+- `plot_directory`: If provided, this is the directory to save plots of the growth curves with the fitted growth rate. Default is nothing (no plots saved). If :temp, plots will be saved to a temporary directory.
 """
-function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
+function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
+    if plot_directory == :temp
+        plot_directory = mktempdir()
+        @info "Saving growth curve plots to temporary directory: $plot_directory"
+    end
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -61,7 +68,7 @@ function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method)["growth_rate"]
+        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["growth_rate"]
     end
     return DataFrame(dict_2)
 end
@@ -77,7 +84,11 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
+function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
+    if plot_directory == :temp
+        plot_directory = mktempdir()
+        @info "Saving growth curve plots to temporary directory: $plot_directory"
+    end
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -86,7 +97,7 @@ function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :n
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method)["maxOD"] + recalibrant
+        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["maxOD"] + recalibrant
     end
     return DataFrame(dict_2)
 end
@@ -101,7 +112,11 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
+function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
+    if plot_directory == :temp
+        plot_directory = mktempdir()
+        @info "Saving growth curve plots to temporary directory: $plot_directory"
+    end
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -110,7 +125,7 @@ function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; reca
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method)["time_to_max_growth"]
+        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["time_to_max_growth"]
     end
     return DataFrame(dict_2)
 end
@@ -125,7 +140,11 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
+function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
+    if plot_directory == :temp
+        plot_directory = mktempdir()
+        @info "Saving growth curve plots to temporary directory: $plot_directory"
+    end
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -134,7 +153,7 @@ function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recali
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method)["od_at_max_growth"] + recalibrant
+        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["od_at_max_growth"] + recalibrant
     end
     return DataFrame(dict_2)
 end
@@ -151,7 +170,11 @@ Arguments:
 - `time_col::DataFrame`: DataFrame containing the times.
 - `method::AbstractGrowthRateMethod`.
 """
-function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001)
+function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
+    if plot_directory == :temp
+        plot_directory = mktempdir()
+        @info "Saving growth curve plots to temporary directory: $plot_directory"
+    end
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -160,7 +183,7 @@ function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = 
             dict_2[i] = NaN
             continue
         end
-        tmp = _growth_rate(od, times, method)
+        tmp = _growth_rate(od, times, method; plot_directory = plot_directory)
         dict_2[i] = _lagtime(tmp["time_to_max_growth"], tmp["growth_rate"],
             tmp["od_at_max_growth"] + recalibrant, od[1, 1] + recalibrant)
     end
@@ -177,7 +200,7 @@ end
     end_time::Float64
 end
 
-function _growth_rate(df, time_col, method::Endpoints)
+function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing)
     start_od = at_time(df, time_col, method.start_time)[1]
     end_od = at_time(df, time_col, method.end_time)[1]
     start_time = at_time(time_col, time_col, method.start_time)[1] / 60000
@@ -186,12 +209,18 @@ function _growth_rate(df, time_col, method::Endpoints)
                   ((end_time) - (start_time))
     time_to_max_growth = (start_time + end_time) / 2
     od_at_max_growth = exp((NaNMath.log(start_od) + NaNMath.log(end_od)) / 2)
-    return Dict(
+    summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
         "maxOD" => maximum(df[!, 1])
     )
+    if !isnothing(plot_directory)
+        p = growth_plot(df, time_col ./ 60000, summaries)
+        vline!(p, [start_time, end_time], label = "Fitting Window", color = :blue, linestyle = :dot)
+        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+    end
+    return summaries
 end
 
 @kwdef struct MovingWindow <: AbstractGrowthRateMethod
@@ -199,11 +228,12 @@ end
     method::Symbol = :Endpoints
 end
 
-function _growth_rate(df, time_col, method::MovingWindow)
+function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothing)
     window_size = method.window_size
     max_rate = -Inf
     time_to_max_growth = NaN
     od_at_max_growth = NaN
+    best_window = nothing
     for j in 1:(nrow(df) - window_size)
         start_time = time_col[j, 1] / 60000
         end_time = time_col[j + window_size - 1, 1] / 60000
@@ -214,19 +244,28 @@ function _growth_rate(df, time_col, method::MovingWindow)
         else
             error("Unknown moving window method: $(method.method).")
         end
-        if rate[1, 1] > max_rate && !isinf(rate[1, 1])
-            max_rate = rate[1, 1]
+        if rate["growth_rate"] > max_rate && !isinf(rate["growth_rate"])
+            best_window = [start_time, end_time]
+            max_rate = rate["growth_rate"]
             time_to_max_growth = (start_time + end_time) / 2
             od_at_max_growth = exp((NaNMath.log(at_time(df, time_col, start_time)[1]) +
                                     NaNMath.log(at_time(df, time_col, end_time)[1])) / 2)
         end
     end
-    return Dict(
+    summaries = Dict(
         "growth_rate" => max_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
         "maxOD" => maximum(df[!, 1])
     )
+    if !isnothing(plot_directory)
+        p = growth_plot(df, time_col ./ 60000, summaries)
+        if !isnothing(best_window)
+            vline!(p, best_window, label = "Fitting Window", color = :blue, linestyle = :dot)
+        end
+        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+    end
+    return summaries
 end
 
 @kwdef struct LinearOnLog <: AbstractGrowthRateMethod
@@ -234,7 +273,7 @@ end
     end_time::Float64
 end
 
-function _growth_rate(df, time_col, method::LinearOnLog)
+function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothing)
     start_time = method.start_time
     end_time = method.end_time
 
@@ -277,6 +316,12 @@ function _growth_rate(df, time_col, method::LinearOnLog)
         "od_at_max_growth" => od_at_max_growth,
         "maxOD" => maximum(df[!, 1])
     )
+    if !isnothing(plot_directory)
+        p = growth_plot(df, time_col ./ 60000, summaries)
+        vline!(p, [start_time, end_time], label = "Fitting Window", color = :blue, linestyle = :dot)
+        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+    end
+    return summaries
 end
 
 struct ParametricGrowthRate <: AbstractGrowthRateMethod
@@ -312,7 +357,7 @@ function Richards()
         [1.0, 4.0, 5.0, 0.0]) # Shape parameter is log transformed to ensure it's positive
 end
 
-function _growth_rate(df, time_col, method::ParametricGrowthRate)
+function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory = nothing)
     time_col = time_col ./ 60000
     t = time_col[!, 1]
     y = df[!, 1]
@@ -353,19 +398,25 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate)
     time_to_max_growth = t_refined[findmin(abs.(dOD .- growth_rate))[2]]
     od_at_max_growth = exp(method.func(time_to_max_growth, psol)) * first(y)
     maxOD = exp(psol[2]) * first(y)
-    return Dict(
+    summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
         "maxOD" => maxOD
     )
+    if !isnothing(plot_directory)
+        p = growth_plot(df, time_col, summaries)
+        plot!(p, t_refined, ti -> method.func(ti, psol), label = "Parametric Fit", color = :blue, linestyle = :dot)
+        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+    end
+    return summaries
 end
 
 @kwdef struct FiniteDiff <: AbstractGrowthRateMethod
     type = :central
 end
 
-function _growth_rate(df, time_col, method::FiniteDiff)
+function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing)
     type = method.type
     time_col = time_col ./ 60000
     t = time_col[!, 1]
@@ -412,19 +463,24 @@ function _growth_rate(df, time_col, method::FiniteDiff)
         error("Unknown finite difference type: $type")
     end
 
-    return Dict(
+    summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
         "maxOD" => maximum(df[!, 1])
     )
+    if !isnothing(plot_directory)
+        p = growth_plot(df, time_col, summaries)
+        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+    end
+    return summaries
 end
 
 @kwdef struct Regularization <: AbstractGrowthRateMethod
     order::Int = 4
 end
 
-function _growth_rate(df, time_col, method::Regularization)
+function _growth_rate(df, time_col, method::Regularization; plot_directory = nothing)
     d = method.order
     time_col = time_col ./ 60000
     t = time_col[!, 1]
@@ -450,11 +506,33 @@ function _growth_rate(df, time_col, method::Regularization)
     # maximum derivative (growth rate)
     growth_rate, i = findmax(deriv)
     time_to_max_growth = t_refined[i]
-    return Dict(
     od_at_max_growth = exp(A(time_to_max_growth)) * first(y)
+    summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maximum([exp(A(ti)) for ti in t_refined])
+        "maxOD" => maximum([exp(A(ti)) * first(y) for ti in t_refined])
     )
+    if !isnothing(plot_directory)
+        p = growth_plot(df, time_col, summaries)
+        plot!(p, t_refined, A.(t_refined), label = "Regularized Fit", color = :blue, linestyle = :dot)
+        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+    end
+    return summaries
+end
+
+function growth_plot(df, times, datapoints)
+    p = plot(times[!, 1], log.(df[!, 1] ./ first(df[!, 1])), label = "Data", xlabel = "Time (min)", ylabel = "log(OD/OD₀)", title = "Growth curve: $(names(df)[1])", color = :black)
+    lagtime = _lagtime(datapoints["time_to_max_growth"], datapoints["growth_rate"], datapoints["od_at_max_growth"], first(df[!, 1]))
+    dydx = log(datapoints["od_at_max_growth"] ./ first(df[!, 1])) / (datapoints["time_to_max_growth"] - lagtime)
+    x_low = lagtime
+    x_high = log(datapoints["maxOD"] ./ first(df[!, 1]))/dydx + lagtime
+    y_low = 0.0
+    y_high = log(datapoints["maxOD"] ./ first(df[!, 1]))
+    plot!(p, [x_low, x_high], [y_low, y_high], label = "Max Growth Rate", color = :mediumorchid)
+    hline!(p, [log(datapoints["maxOD"] ./ first(df[!, 1]))], label = "Max OD", color = :red, linestyle = :dash)
+    vline!(p, [lagtime], label = "Lag Time", color = :green, linestyle = :dash)
+    scatter!(p, [datapoints["time_to_max_growth"]], [log(datapoints["od_at_max_growth"] ./ first(df[!, 1]))], label = "Max Growth Point", color = :red, marker = :x)
+    plot!(p, legend = :best)
+    return p
 end
