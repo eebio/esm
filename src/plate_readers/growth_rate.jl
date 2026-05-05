@@ -208,9 +208,9 @@ function _growth_rate(df, time_col, method::MovingWindow)
         start_time = time_col[j, 1] / 60000
         end_time = time_col[j + window_size - 1, 1] / 60000
         if method.method == :Endpoints
-            rate = growth_rate(df, time_col, Endpoints(start_time, end_time))
+            rate = _growth_rate(df, time_col, Endpoints(start_time, end_time))
         elseif method.method == :LinearOnLog
-            rate = growth_rate(df, time_col, LinearOnLog(start_time, end_time))
+            rate = _growth_rate(df, time_col, LinearOnLog(start_time, end_time))
         else
             error("Unknown moving window method: $(method.method).")
         end
