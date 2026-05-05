@@ -265,7 +265,7 @@ function _growth_rate(df, time_col, method::LinearOnLog)
     indexes = indexes[1]:indexes[2]
 
     lm_df = DataFrame(
-        time = time_col[indexes, 1] ./ 60000, log_od = NaNMath.log.(df[indexes, 1]))
+        time = time_col[indexes, 1] ./ 60000, log_od = NaNMath.log.(df[indexes, 1] ./ first(df[:, 1])))
     lm_model = lm(@formula(log_od~time), lm_df)
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
@@ -372,7 +372,7 @@ function _growth_rate(df, time_col, method::FiniteDiff)
     y = df[!, 1]
     t = t[y .> 0]
     y = y[y .> 0]
-    ly = log.(y)
+    ly = log.(y ./ first(y))
 
     n = length(t)
     if n < 2
@@ -405,7 +405,7 @@ function _growth_rate(df, time_col, method::FiniteDiff)
             if deriv > growth_rate
                 growth_rate = deriv
                 time_to_max_growth = (t[k] + t[k + 1]) / 2
-                od_at_max_growth = exp((ly[k] + ly[k + 1]) / 2)
+                od_at_max_growth = exp((ly[k] + ly[k + 1]) / 2) * first(y)
             end
         end
     else
@@ -432,7 +432,7 @@ function _growth_rate(df, time_col, method::Regularization)
 
     t = t[y .> 0]
     y = y[y .> 0]
-    ly = log.(y)
+    ly = log.(y ./ first(y))
 
     n = length(t)
     if n < 2
@@ -450,8 +450,8 @@ function _growth_rate(df, time_col, method::Regularization)
     # maximum derivative (growth rate)
     growth_rate, i = findmax(deriv)
     time_to_max_growth = t_refined[i]
-    od_at_max_growth = exp(A(time_to_max_growth))
     return Dict(
+    od_at_max_growth = exp(A(time_to_max_growth)) * first(y)
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
