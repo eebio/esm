@@ -30,7 +30,7 @@ jobs:
                 version: '1'
                 arch: ${{ matrix.julia-arch }}
             - name: cache
-              uses: julia-actions/cache@v2
+              uses: julia-actions/cache@v3
             - name: build package to install deps
               uses: julia-actions/julia-buildpkg@v1
             - name: Build CLI

@@ -35,7 +35,7 @@ jobs:
         with:
           version: '1'
           arch: ${{ matrix.julia-arch }}
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - uses: julia-actions/julia-buildpkg@v1
       - name: Add Julia bin to GITHUB_PATH
         run: |
