@@ -486,6 +486,79 @@ end
         od_df, time_col, FiniteDiff(type = :unknown))
 end
 
+@testitem "growth curve plots" begin
+    println("growth curve plots")
+    using DataFrames
+    function f(t)
+        if t < 5
+            return 0
+        elseif t < 15
+            return 1 / (1 + exp(-2 * (t - 10)))
+        else
+            return 1
+        end
+    end
+    t = 0:0.5:20
+    r = [
+        0.5847079560316877, 0.45840079479217205, -1.2615416418439265, -0.19302484376033796,
+        -0.4244814803886498, -0.18088313464643485, -0.5045323424725897,
+        -0.5141211372683038, 1.1616201463480844, 1.3296851114162132, -0.43120471016998424,
+        1.2613828599505037, -0.4646636774845288, -0.908398391727798, 0.9282112244792343,
+        0.15692696269233736, -0.0401373009174321, -0.312658487708534, -0.8446115669549681,
+        -0.15644528491336934, 0.22969924085412563, -1.7463816740617624,
+        -0.9362537306327118, 1.0494677762330453, -2.21499715347752, 1.0574000162409678,
+        -0.2865517812478418, 1.5192666194062108, -0.2152836487775379, -0.621802452401734,
+        -1.3307105978023612, 0.29757022692826623, 1.2294126967973198, -0.7646230207734392,
+        -0.11071786613263836, -0.022308315590345632, -2.023482208299797,
+        -1.433631515044935, -0.1421872400744148, -1.4318637059194546, -0.4371826293473729]
+    od = f.(t) + 0.01 * r
+    od_df = DataFrame(A = od)
+    using Dates
+    time_col = DataFrame(Time = t * 60000)
+
+    # Add second column of data
+    od_df[!, "B"] = od_df[!, "A"] .+ 0.1
+
+    using Logging
+    io = IOBuffer()
+    logger = SimpleLogger(io)
+
+    # Call growth_rate with all methods and check that plots are produced
+    for method in (MovingWindow(window_size = 5), LinearOnLog(start_time = 7, end_time = 10), Endpoints(start_time = 7, end_time = 10), FiniteDiff(), Regularization(), Logistic(), Gompertz(), ModifiedGompertz(), Richards())
+        with_logger(logger) do
+            growth_rate(od_df, time_col, method; plot_directory = :temp)
+        end
+        str = String(take!(io))
+        str = replace(str, "┌ Info: Saving growth curve plots to temporary directory: " => "")
+        str = split(str, "\n")[1]
+        @test isdir(str)
+        @test isfile(joinpath(str, "growth_curve_$(typeof(method))_A.png"))
+        @test isfile(joinpath(str, "growth_curve_$(typeof(method))_B.png"))
+    end
+
+    for func in (time_to_max_growth, lag_time, od_at_max_growth, max_od)
+        # Run the function and log the temporary directory
+        with_logger(logger) do
+            func(od_df, time_col, FiniteDiff(); plot_directory = :temp)
+        end
+        @show str = String(take!(io))
+        str = replace(str, "┌ Info: Saving growth curve plots to temporary directory: " => "")
+        str = split(str, "\n")[1]
+        @show str
+        @test isdir(str)
+        @show readdir(str)
+        @test isfile(joinpath(str, "growth_curve_ESM.FiniteDiff_A.png"))
+        @test isfile(joinpath(str, "growth_curve_ESM.FiniteDiff_B.png"))
+    end
+
+    # Check user-specified directory
+    custom_dir = mktempdir()
+    growth_rate(od_df, time_col, FiniteDiff(); plot_directory = custom_dir)
+    @test isdir(custom_dir)
+    @test isfile(joinpath(custom_dir, "growth_curve_ESM.FiniteDiff_A.png"))
+    @test isfile(joinpath(custom_dir, "growth_curve_ESM.FiniteDiff_B.png"))
+end
+
 @testitem "calibrate" begin
     println("calibrate")
     using DataFrames
