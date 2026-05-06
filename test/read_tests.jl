@@ -27,7 +27,7 @@
                 ]
             },
             "type": "population",
-            "meta": {
+            "metadata": {
                 "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
@@ -39,7 +39,8 @@
                     "name_s": null,
                     "name": "FL1-A",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "SSC_H": {
                     "range": "1024",
@@ -52,7 +53,8 @@
                     "name_s": "SSC-H",
                     "name": "SSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "FSC_H": {
                     "range": "1024",
@@ -65,7 +67,8 @@
                     "name_s": "FSC-H",
                     "name": "FSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 }
             }
         },
@@ -91,7 +94,7 @@
                 ]
             },
             "type": "population",
-            "meta": {
+            "metadata": {
                 "FL1_A": {
                     "range": "1024",
                     "ex_pow": null,
@@ -103,7 +106,8 @@
                     "name_s": null,
                     "name": "FL1-A",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "SSC_H": {
                     "range": "1024",
@@ -116,7 +120,8 @@
                     "name_s": "SSC-H",
                     "name": "SSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 },
                 "FSC_H": {
                     "range": "1024",
@@ -129,7 +134,8 @@
                     "name_s": "FSC-H",
                     "name": "FSC-H",
                     "det_type": null,
-                    "perc_em": null
+                    "perc_em": null,
+                    "raw_metadata": {}
                 }
             }
         }
@@ -157,6 +163,16 @@
                 "flow_cyt"
             ]
         }
+    },
+    "metadata": {
+"date_created": "2026-05-04T15:12:08.285",
+"date_modified": "2026-05-04T15:12:08.285",
+"Project.toml": "Project ESM v0.1.0\\nStatus `~/.julia/dev/esm/Project.toml`\\n  [336ed68f] CSV v0.10.16\\n  [861a8166] Combinatorics v1.1.0\\n  [863f3e99] Comonicon v1.0.8\\n  ...\\n  [ade2ca70] Dates v1.11.0\\n  [b77e0a4c] InteractiveUtils v1.11.0\\n  [44cfe95a] Pkg v1.12.1\\n  [de0858da] Printf v1.11.0\\nInfo Packages marked with ⌃ and ⌅ have new versions available. Those with ⌃ may be upgradable, but those with ⌅ are restricted by compatibility constraints from upgrading. To see why use `status --outdated`\\n",
+"esm_version": "0.1.0",
+"versioninfo": "Julia Version 1.12.3\\nCommit 966d0af0fdf (2025-12-15 11:20 UTC)\\nBuild Info:\\n  Official https://julialang.org release\\nPlatform Info:\\n  OS: macOS (arm64-apple-darwin24.0.0)\\n  CPU: 14 × Apple M4 Pro\\n  WORD_SIZE: 64\\n  LLVM: libLLVM-18.1.7 (ORCJIT, apple-m4)\\n  GC: Built with stock GC\\nThreads: 1 default, 1 interactive, 1 GC (on 10 virtual cores)\\nEnvironment:\\n  JULIA_EDITOR = code\\n  JULIA_VSCODE_REPL = 1\\n",
+"Manifest.toml": "Project ESM v0.1.0\\nStatus `~/.julia/dev/esm/Manifest.toml`\\n⌃ [47edcb42] ADTypes v1.21.0\\n  [621f4979] AbstractFFTs v1.5.0\\n  [1520ce14] AbstractTrees v0.4.5\\n  [7d9f7c33] Accessors v0.1.44\\n...\\n  [8e850ede] nghttp2_jll v1.64.0+1\\n  [3f19e933] p7zip_jll v17.7.0+0\\nInfo Packages marked with ⌃ and ⌅ have new versions available. Those with ⌃ may be upgradable, but those with ⌅ are restricted by compatibility constraints from upgrading. To see why use `status --outdated -m`\\n",
+"schema_version": "0.1.0",
+"description": ""
     }
 }
 
@@ -175,7 +191,8 @@ end
     @test issetequal(es.samples.name,
         ["plate_01_a1.FL1_A", "plate_01_a1.SSC_H", "plate_01_a1.FSC_H",
             "plate_01_a2.FL1_A", "plate_01_a2.SSC_H", "plate_01_a2.FSC_H"])
-    @test issetequal(es.samples.channel, ["FL1_A", "SSC_H", "FSC_H", "FL1_A", "SSC_H", "FSC_H"])
+    @test issetequal(
+        es.samples.channel, ["FL1_A", "SSC_H", "FSC_H", "FL1_A", "SSC_H", "FSC_H"])
     @test issetequal(es.samples.type,
         ["population", "population", "population",
             "population", "population", "population"])
@@ -188,20 +205,22 @@ end
             [280.0, 735.0, 128.0, 1023.0],
             [628.0, 1023.0, 373.0, 1023.0]
         ])
-    @test es.samples.meta[es.samples.name .== "plate_01_a2.FL1_A"][1] == Dict{String, Any}(
+    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FL1_A"][1] ==
+          Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
-    @test es.samples.meta[es.samples.name .== "plate_01_a2.FSC_H"][1] == Dict{String, Any}(
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict())
+    @test es.samples.metadata[es.samples.name .== "plate_01_a2.FSC_H"][1] ==
+          Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing)
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict())
     for i in 1:6
-        @test issetequal(keys(es.samples.meta[i]),
+        @test issetequal(keys(es.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em"])
+                "amp_gain", "name_s", "name", "det_type", "perc_em", "raw_metadata"])
     end
     @test issetequal(es.groups.group, ["plate_01"])
     @test issetequal(es.groups.sample_IDs, [["plate_01_a1", "plate_01_a2"]])
@@ -319,8 +338,8 @@ end
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
         "SSC_H" => [0.11039991779173976, 0.18187190885323648,
-                0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
-                0.272613196449465, 0.01778279410038923, 0.9955128609158501],
+            0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
+            0.272613196449465, 0.01778279410038923, 0.9955128609158501],
         "FSC_H" => [
             634.0, 965.0, 643.0, 1015.0,
             628.0, 1023.0, 373.0, 1023.0],
@@ -350,14 +369,16 @@ end
         "SSC_H.min" => fill(0.010045073642544625, 4),
         "FSC_H.max" => fill(1024.0, 4),
         "FSC_H.min" => fill(1.0, 4))
-    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) == df[!, sort(names(df))]
+    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) ==
+          df[!, sort(names(df))]
     # Test channels
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0],
         "id" => [1, 2, 3, 4],
         "FL1_A.max" => fill(1024.0, 4),
         "FL1_A.min" => fill(1.0, 4))
-    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) == df[!, sort(names(df))]
+    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) ==
+          df[!, sort(names(df))]
     df = DataFrame(
         "SSC_H" => [
             0.11039991779173976, 0.18187190885323648,
@@ -366,11 +387,14 @@ end
         "id" => [1, 2, 3, 4, 5, 6, 7, 8],
         "SSC_H.max" => fill(1.0, 8),
         "SSC_H.min" => fill(0.010045073642544625, 8))
-    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) == df[!, sort(names(df))]
+    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) ==
+          df[!, sort(names(df))]
     # Test groups
     df = DataFrame("FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
-        "id" => [1, 2, 3, 4, 5, 6, 7, 8], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(1.0, 8))
-    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) == df[!, sort(names(df))]
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(
+            1.0, 8))
+    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) ==
+          df[!, sort(names(df))]
 end
 
 @testitem "produce_views" begin
@@ -426,7 +450,8 @@ end
     # Numbers
     using DataFrames
     es.views["number_view"] = Dict{String, Any}("data" => ["extra_transform"])
-    es.views["numbers_view2"] = Dict{String, Any}("data" => ["extra_transform", "extra_transform2"])
+    es.views["numbers_view2"] = Dict{String, Any}("data" => [
+        "extra_transform", "extra_transform2"])
     es.transformations["extra_transform"] = Dict{String, Any}("equation" => "42")
     es.transformations["extra_transform2"] = Dict{String, Any}("equation" => "7")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
@@ -436,7 +461,8 @@ end
     out = ESM.produce_views(es, trans_meta_map; to_out = ["numbers_view2"])
     @test all(out["numbers_view2"] .== Tables.table([42 7]))
     # Matrices
-    es.views["matrix_view"] = Dict{String, Any}("data" => ["extra_transform3", "extra_transform4"])
+    es.views["matrix_view"] = Dict{String, Any}("data" => [
+        "extra_transform3", "extra_transform4"])
     es.transformations["extra_transform3"] = Dict{String, Any}("equation" => "[1 2 3; 4 5 6]")
     es.transformations["extra_transform4"] = Dict{String, Any}("equation" => "[7 8; 10 11]")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
@@ -455,13 +481,22 @@ end
     es = read_esm("inputs/example.esm")
     out = ESM.to_rfi(es, "plate_02_a1")
     # Linear test with no gain
-    @test out[!,"FSC_H"] == [628.0, 1023.0, 373.0, 1023.0]
-    @test out[!,"FSC_H.max"] == fill(1024.0, 4)
-    @test out[!,"FSC_H.min"] == fill(1.0, 4)
+    @test out[!, "FSC_H"] == [628.0, 1023.0, 373.0, 1023.0]
+    @test out[!, "FSC_H.max"] == fill(1024.0, 4)
+    @test out[!, "FSC_H.min"] == fill(1.0, 4)
     # Scaling factor gain test
-    @test out[!,"FL1_H"] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
+    @test out[!, "FL1_H"] ≈ [2.26449442, 134.40293884, 1.53816354, 64.86381531]
     # Log scaling test
-    @test out[!,"SSC_H"] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
+    @test out[!, "SSC_H"] ≈ [0.03522695, 0.2726132, 0.01778279, 0.99551286]
+end
+
+@testitem "raw metadata" begin
+    println("raw metadata")
+    es = read_esm("inputs/example.esm")
+    metadata = es.samples.metadata[es.samples.name .== "plate_02_a1.FL1_A"][1]
+    @test haskey(metadata, "raw_metadata")
+    @test metadata["raw_metadata"]["CREATOR"] == "CELLQuest<aa> 3.3"
+    @test metadata["raw_metadata"]["FCSVERSION"] == "3"
 end
 
 @testitem "summary" begin
@@ -521,31 +556,47 @@ end
     @test_throws "Unsupported" summarise("inputs/unknown.txt"; type = "unknown")
 end
 
-@testitem "issue 34" setup = [environment_path] begin
+@testitem "issue 34" setup=[environment_path] begin
     # Importing from excel with single channel reads a Int, not a String
     # which can then fail at regex
     read_data("inputs/issue34.xlsx")
 end
 
-@testitem "empty template rows" setup = [environment_path] begin
+@testitem "empty template rows" setup=[environment_path] begin
     # Test the empty rows in the template don't stop data being imported
     es = read_data("inputs/blank_rows.xlsx")
-    @test "plate_01_time" in keys(es[:samples])
-    @test "plate_02_time" in keys(es[:samples])
-    @test "g1" in keys(es[:groups])
-    @test "g2" in keys(es[:groups])
-    @test "t1" in keys(es[:transformations])
-    @test "t2" in keys(es[:transformations])
-    @test "v1" in keys(es[:views])
-    @test "v2" in keys(es[:views])
+    @test "plate_01_time" in keys(es["samples"])
+    @test "plate_02_time" in keys(es["samples"])
+    @test "g1" in keys(es["groups"])
+    @test "g2" in keys(es["groups"])
+    @test "t1" in keys(es["transformations"])
+    @test "t2" in keys(es["transformations"])
+    @test "v1" in keys(es["views"])
+    @test "v2" in keys(es["views"])
 end
 
-@testitem "invalid channel map" setup = [environment_path] begin
+@testitem "invalid channel map" setup=[environment_path] begin
     # Test that invalid channel map entries are handled gracefully
     @test_throws "Some channels in the channel map are not in a valid format" read_data("inputs/invalid_channel_map.xlsx")
 end
 
-@testitem "requested missing channel" setup = [environment_path] begin
+@testitem "requested missing channel" setup=[environment_path] begin
     # Test that requesting a channel that isn't in the data throws an error
     @test_throws "Requested channel missing_channel_i_want not found in file" read_data("inputs/requested_but_missing_channel.xlsx")
+end
+
+@testitem "no specified channels" setup = [environment_path] begin
+    # Test that if no channels are specified, all channels are read in
+    es = read_data("inputs/no-specified-channels.xlsx")
+    @test "abs600" in keys(es["samples"]["plate_01_a1"]["values"])
+    @test "abs700" in keys(es["samples"]["plate_01_a1"]["values"])
+    @test "535_485" in keys(es["samples"]["plate_01_a1"]["values"])
+    @test "FL1_A" in keys(es["samples"]["plate_02_a1"]["values"])
+end
+
+@testitem "group metadata" setup=[environment_path] begin
+    # Test that group metadata is read in correctly
+    es = read_data("inputs/extra-metadata.xlsx")
+    @test es["groups"]["plate1"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => true)
+    @test es["groups"]["otherdata"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => false)
 end

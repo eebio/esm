@@ -1,3 +1,5 @@
+using Pkg
+using InteractiveUtils
 using Parameters
 using DataFrames
 using XLSX
@@ -9,6 +11,7 @@ using DataStructures
     groups::Any
     transformations::Any
     views::Any
+    metadata::Any
 end
 
 """
@@ -19,7 +22,7 @@ Parse an esm file found at `file` into an esm_zones object.
 function read_esm(file::AbstractString)
     @info "Reading ESM file at: $file"
     # Read in the file in a JSON format
-    ef = JSON.parsefile(file)
+    ef = JSON.parsefile(file; allownan = true)
     max_len = 0
     # Loop over the samples to look for maximum length of array
     for i in keys(ef["samples"])
@@ -37,15 +40,19 @@ function read_esm(file::AbstractString)
                  j,
                  ef["samples"][i]["type"],
                  replace(ef["samples"][i]["values"][j], nothing => NaN),
-                 if !isempty(keys(ef["samples"][i]["meta"]))
-                     ef["samples"][i]["meta"][j]
+                 if length(keys(ef["samples"][i]["metadata"])) > 1
+                    if "raw_metadata" in keys(ef["samples"][i]["metadata"][j])
+                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"][j]["raw_metadata"]))
+                     else
+                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"]["raw_metadata"]))
+                     end
                  else
-                     ef["samples"][i]["meta"]
+                     ef["samples"][i]["metadata"]
                  end,
                  [i in lowercase.(ef["groups"][k]["sample_IDs"])
                   for k in keys(ef["groups"])]...) for i in keys(ef["samples"])
              for j in keys(ef["samples"][i]["values"])],
-            ["name", "channel", "type", "values", "meta",
+            ["name", "channel", "type", "values", "metadata",
                 [k for k in keys(ef["groups"])]...]),
         groups = DataFrame(
             [(i,
@@ -55,7 +62,8 @@ function read_esm(file::AbstractString)
                      samples, view = true))) for i in keys(ef["groups"])],
             ["group", "sample_IDs", "metadata", "meta_select"]),
         transformations = ef["transformations"],
-        views = ef["views"]
+        views = ef["views"],
+        metadata = ef["metadata"]
     )
     # Add channels to sample names
     es.samples.name = string.(es.samples.name, ".", es.samples.channel)
@@ -69,9 +77,7 @@ end
 Write the esm data to the path `file`.
 """
 function write_esm(data, file::AbstractString)
-    open(file, "w") do file
-        JSON.print(file, data, 4)
-    end
+    JSON.json(file, data; allownan = true, pretty = true)
     @info "ESM written to $file"
 end
 
@@ -94,10 +100,13 @@ function read_data(file::AbstractString)
     sample_dict = OrderedDict()
     group_dict = OrderedDict(i.Name => Dict(
                                  "sample_IDs" => expand_groups(i.Samples),
-                                 :type => "experimental",
-                                 "metadata" => Dict(j => i[j, :]
+                                 "type" => "experimental",
+                                 "metadata" => Dict{String, Any}(j => i[j]
                                  for j in names(i) if !(j in ["Name", "Samples"])))
     for i in eachrow(groups)) # Get all the experimental groups.
+    for i in eachrow(groups)
+        group_dict[i.Name]["metadata"]["autodefined"] = "false"
+    end
     @info "Reading $(length(keys(samples))) plates"
     for i in range(1, length(keys(samples)))
         # Check what instrument was used
@@ -111,29 +120,29 @@ function read_data(file::AbstractString)
             Instrument types used here are: $(Set(samples[i].Type))")
         # Process channels
         channels = []
-        for j in samples[i].Channels
-            # Convert to string if not already
-            str_j = string(j)
-            # Add the remaining channels to the list
-            for k in split(str_j, ",")
-                push!(channels, strip(k))
-            end
+        # Convert to string if not already
+        str_j = string(samples[i].Channels[1])
+        # Add the remaining channels to the list
+        for k in split(str_j, ",")
+            push!(channels, strip(k))
         end
         channels = [c for c in channels if !isempty(c)]
         # Remove duplicates (for example, specifying the same channels for every well in a flow cytometry plate)
         channels = unique(channels)
-        # Create the channel map
+        # Add channels that are not in the channel map to the channel map
         channel_map = Dict(i => if i in keys(channel_map)
                                channel_map[i]
                            else
                                i
-                           end for i in channels)
+                           end for i in union(channels, keys(channel_map)) if i!="missing")
         tmp = join([string(j) * ", " for j in channels])[1:(end - 2)]
-        @info "Channels $tmp being used to process plate $i"
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
         @info "Channel map: \n$(prb...)\n"
         broad_g = []
+        if channels == ["missing"]
+            channels = []
+        end
         if "plate reader" in lowercase.(ins_type)
             sample_dict, broad_g = read_pr(
                 samples[i], sample_dict, channels, broad_g, channel_map)
@@ -144,16 +153,42 @@ function read_data(file::AbstractString)
             error("Unknown instrument type: $(first(ins_type))")
         end
         # Add the physical plate to the group dict
-        group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, :type => "physical",
-            "metadata" => :autodefined => "true")
+        group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, "type" => "physical",
+            "metadata" => Dict("autodefined" => "true"))
     end
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => i.Equation for i in eachrow(trans))
     # Add the views
-    views_dict = OrderedDict(i.Name => :data => [strip.(split(i.View, ","))...]
+    views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
     for i in eachrow(views))
-    return OrderedDict(:samples => sample_dict, :groups => group_dict,
-        :transformations => trans_dict, :views => views_dict)
+    metadata = get_metadata()
+    return OrderedDict("samples" => sample_dict, "groups" => group_dict,
+        "transformations" => trans_dict, "views" => views_dict, "metadata" => metadata)
+end
+
+"""
+    get_metadata()
+
+Generate the metadata for a new ESM file, such as the version of ESM used to create it.
+"""
+function get_metadata()
+    io = IOBuffer()
+    Pkg.status(; io = io)
+    project_toml = String(take!(io))
+    Pkg.status(; mode = PKGMODE_MANIFEST, io = io)
+    manifest_toml = String(take!(io))
+    versioninfo(io)
+    version_info = String(take!(io))
+    return Dict(
+        "description" => "",
+        "esm_version" => pkgversion(ESM),
+        "schema_version" => "0.1.0",
+        "date_created" => string(Dates.now()),
+        "date_modified" => string(Dates.now()),
+        "Project.toml" => project_toml,
+        "Manifest.toml" => manifest_toml,
+        "versioninfo" => version_info
+    )
 end
 
 """

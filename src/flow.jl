@@ -37,12 +37,19 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             name = j.Name
         end
         temp = Dict()
-        temp[:type] = "population"
+        temp["type"] = "population"
         temp_data = load(j."Data Location")
-        temp[:values] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
+        if isempty(channels)
+            channels = format_channel.(keys(temp_data))
+            channels = [c == "Time" ? "time" : c for c in channels]
+            channel_map = merge(Dict(c => c for c in channels), channel_map)
+        end
+        temp["values"] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
         for x in channels)
-        temp[:meta] = Dict(channel_map[x] => extract_flow(temp_data, flow_channel("$x"))
+        temp["metadata"] = Dict(channel_map[x] => extract_flow(
+                                    temp_data, flow_channel("$x"))
         for x in channels)
+        temp["metadata"]["raw_metadata"] = temp_data.params
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
     end
@@ -75,17 +82,17 @@ function extract_flow(fcs, chan)
         end
     end
     return Dict(
-        :name => mapper('n'),
-        :amp_type => mapper('e'),
-        :range => mapper('r'),
-        :filter => mapper('f'),
-        :amp_gain => mapper('g'),
-        :ex_wav => mapper('l'),
-        :ex_pow => mapper('o'),
-        :perc_em => mapper('p'),
-        :name_s => mapper('s'),
-        :det_type => mapper('t'),
-        :det_volt => mapper('v')
+        "name" => mapper('n'),
+        "amp_type" => mapper('e'),
+        "range" => mapper('r'),
+        "filter" => mapper('f'),
+        "amp_gain" => mapper('g'),
+        "ex_wav" => mapper('l'),
+        "ex_pow" => mapper('o'),
+        "perc_em" => mapper('p'),
+        "name_s" => mapper('s'),
+        "det_type" => mapper('t'),
+        "det_volt" => mapper('v')
     )
 end
 
@@ -108,13 +115,14 @@ function to_rfi(es, sample_name)
     for i in chans
         # Load metadata for channel
         amp_type = parse.(
-            Float64, split(sub[sub.name .== "$sample_name.$i", "meta"][1]["amp_type"], ","))
-        range = parse(Int, sub.meta[sub.name .== "$sample_name.$i", :][1]["range"])
+            Float64, split(
+                sub[sub.name .== "$sample_name.$i", "metadata"][1]["amp_type"], ","))
+        range = parse(Int, sub.metadata[sub.name .== "$sample_name.$i", :][1]["range"])
         if amp_type[1] == 0
-            if isnothing(sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
+            if isnothing(sub.metadata[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
                 amp_gain = 1.0
             else
-                amp_gain = sub.meta[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
+                amp_gain = sub.metadata[sub.name .== "$sample_name.$i", :][1]["amp_gain"]
                 amp_gain = parse(Int, replace(amp_gain, ".0" => ""))
             end
             data = sub.values[sub.name .== "$sample_name.$i", :][1] ./ amp_gain

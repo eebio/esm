@@ -1,85 +1,85 @@
 @testitem "read spectramax" setup=[environment_path] begin
     println("read spectramax")
     data = read_data("inputs/spectramax.xlsx")
-    @test data[:samples]["plate_01_a1"][:values]["abs700"][[1, 2, end - 1, end]] ==
+    @test data["samples"]["plate_01_a1"]["values"]["abs700"][[1, 2, end - 1, end]] ==
           [0.1493, 0.1623, 0.3297, 0.3629]
-    @test data[:samples]["plate_01_e12"][:values]["abs600"][[1, 2, end - 1, end]] == [
+    @test data["samples"]["plate_01_e12"]["values"]["abs600"][[1, 2, end - 1, end]] == [
         0.0764, 0.1030, 0.4580, 0.5212]
     wells1 = [string("plate_01_", row, col) for row in 'a':'e', col in 1:12] # Only A-E have data
     wells2 = [string("plate_02_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells1..., wells2..., "plate_01_time", "plate_01_temperature",
         "plate_02_time", "plate_02_temperature"]  # Flatten to a 1D vector
-    @test issetequal(keys(data[:samples]), wells)
+    @test issetequal(keys(data["samples"]), wells)
 
     @test issetequal(
-        keys(read("inputs/spectramax-data.txt", SpectraMax(); channels = ["600", "700"])),
+        keys(read("inputs/spectramax-data.txt", SpectraMax(); channels = ["600", "700"])[1]),
         ["600", "700"])
     @test issetequal(
         keys(read("inputs/spectramax-data2.txt", SpectraMax();
-            channels = ["530_485_1", "530_485_2", "530_485_3"])),
+            channels = ["530_485_1", "530_485_2", "530_485_3"])[1]),
         ["530_485_1", "530_485_2", "530_485_3"])
 end
 
 @testitem "read biotek" setup=[environment_path] begin
     println("read biotek")
     data = read_data("inputs/biotek.xlsx")
-    @test data[:samples]["plate_01_a1"][:values]["od1"][[1, 2, end - 1, end]] ==
+    @test data["samples"]["plate_01_a1"]["values"]["od1"][[1, 2, end - 1, end]] ==
           [0.134, 0.133, 0.131, 0.131]
-    @test data[:samples]["plate_01_h12"][:values]["od2"][[1, 2, end - 1, end]] == [
+    @test data["samples"]["plate_01_h12"]["values"]["od2"][[1, 2, end - 1, end]] == [
         0.114, 0.113, 0.577, 0.578]
-    @test data[:samples]["plate_01_a2"][:values]["flu2"][[1, 2, end - 1, end]] == [
+    @test data["samples"]["plate_01_a2"]["values"]["flu2"][[1, 2, end - 1, end]] == [
         166, 162, 1030, 1024]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_temperature", "plate_01_time"]  # Flatten to a 1D vector
-    @test issetequal(wells, keys(data[:samples]))
+    @test issetequal(wells, keys(data["samples"]))
 
     @test issetequal(
         keys(read(
-            "inputs/biotek-data.csv", BioTek(); channels = ["OD_600"])), ["OD_600"])
+            "inputs/biotek-data.csv", BioTek(); channels = ["OD_600"])[1]), ["OD_600"])
 end
 
 @testitem "read tecan" setup=[environment_path] begin
     println("read tecan")
     data = read_data("inputs/tecan.xlsx")
     @test issetequal(
-        keys(data[:samples]["plate_01_a1"][:values]), ["OD_600", "OD_700", "GFP"])
-    @test data[:samples]["plate_01_a1"][:values]["OD_600"][[1, 2, end - 1, end]] ==
+        keys(data["samples"]["plate_01_a1"]["values"]), ["OD_600", "OD_700", "GFP"])
+    @test data["samples"]["plate_01_a1"]["values"]["OD_600"][[1, 2, end - 1, end]] ==
           convert.(Float32, [0.1378, 0.1437, 0.1451, 0.1453])
-    @test data[:samples]["plate_01_h12"][:values]["GFP"][[1, 2, end - 1, end]] == [
+    @test data["samples"]["plate_01_h12"]["values"]["GFP"][[1, 2, end - 1, end]] == [
         68, 70, 84, 84]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_temperature", "plate_01_time"]
-    @test issetequal(keys(data[:samples]), wells)
+    @test issetequal(keys(data["samples"]), wells)
 
-    @test data[:samples]["plate_01_time"][:values]["OD_600"][[1, 2, end - 1, end]] ==
+    @test data["samples"]["plate_01_time"]["values"]["OD_600"][[1, 2, end - 1, end]] ==
           [0, 765900, 56622900, 57388100]
 
     @test issetequal(
         keys(read(
-            "inputs/tecan-data.xlsx", Tecan(); channels = ["OD_600", "GFP"])),
+            "inputs/tecan-data.xlsx", Tecan(); channels = ["OD_600", "GFP"])[1]),
         ["OD_600", "GFP"])
 end
 
 @testitem "read bmg labtech" setup=[environment_path] begin
     println("read bmg labtech")
     data = read_data("inputs/bmg.xlsx")
-    @test data[:samples]["plate_01_a1"][:values]["abs600"][[1, 2, end - 1, end]] ==
+    @test data["samples"]["plate_01_a1"]["values"]["abs600"][[1, 2, end - 1, end]] ==
           [0.182, 0.185, 0.169, 0.169]
-    @test data[:samples]["plate_01_h12"][:values]["abs700"][[1, 2, end - 1, end]] == [
+    @test data["samples"]["plate_01_h12"]["values"]["abs700"][[1, 2, end - 1, end]] == [
         0.214, 0.217, 1.123, 1.123]
-    @test data[:samples]["plate_01_a2"][:values]["yfp"][[1, 2, end - 1, end]] == [
+    @test data["samples"]["plate_01_a2"]["values"]["yfp"][[1, 2, end - 1, end]] == [
         1635, 1613, 2782, 2830]
     wells = [string("plate_01_", row, col) for row in 'a':'h', col in 1:12]
     wells = [wells..., "plate_01_time", "plate_01_temperature"]  # Flatten to a 1D vector
-    @test issetequal(keys(data[:samples]), wells)
+    @test issetequal(keys(data["samples"]), wells)
 
     @test issetequal(
         keys(read(
-            "inputs/bmg-data.csv", BMG(); channels = ["ABS_600_0_nm", "FI_YFP_pAN1717"])),
+            "inputs/bmg-data.csv", BMG(); channels = ["ABS_600_0_nm", "FI_YFP_pAN1717"])[1]),
         ["ABS_600_0_nm", "FI_YFP_pAN1717"])
     @test issetequal(
         keys(read("inputs/bmg-data.csv", BMG();
-            channels = ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])),
+            channels = ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])[1]),
         ["ABS_600_0_nm", "ABS_700_0_nm", "FI_YFP_pAN1717"])
 end
 
@@ -88,20 +88,20 @@ end
     using Dates
 
     data = read_data("inputs/example.xlsx")
-    @test data[:samples]["plate_01_time"][:values]["OD"][1:2] ==
+    @test data["samples"]["plate_01_time"]["values"]["OD"][1:2] ==
           [518000, 1118000]
-    @test data[:samples]["plate_01_time"][:values]["OD"][end] == 67118000
-    @test data[:samples]["plate_01_a1"][:values]["OD"][1:3] == [0.165, 0.167, 0.169]
-    @test data[:samples]["plate_01_h12"][:values]["OD"][end] == 0.148
+    @test data["samples"]["plate_01_time"]["values"]["OD"][end] == 67118000
+    @test data["samples"]["plate_01_a1"]["values"]["OD"][1:3] == [0.165, 0.167, 0.169]
+    @test data["samples"]["plate_01_h12"]["values"]["OD"][end] == 0.148
 
-    @test data[:samples]["plate_01_time"][:values]["flo"][1:2] == [544714, 1144314]
-    @test data[:samples]["plate_01_time"][:values]["flo"][end] == 67144719
-    @test data[:samples]["plate_01_a1"][:values]["flo"][1:3] == [21, 22, 20]
-    @test data[:samples]["plate_01_h12"][:values]["flo"][end] == 7
+    @test data["samples"]["plate_01_time"]["values"]["flo"][1:2] == [544714, 1144314]
+    @test data["samples"]["plate_01_time"]["values"]["flo"][end] == 67144719
+    @test data["samples"]["plate_01_a1"]["values"]["flo"][1:3] == [21, 22, 20]
+    @test data["samples"]["plate_01_h12"]["values"]["flo"][end] == 7
 
     @test issetequal(
         keys(read(
-            "inputs/pr_folder", GenericTabular(); channels = ["OD"])), ["OD"])
+            "inputs/pr_folder", GenericTabular(); channels = ["OD"])[1]), ["OD"])
 end
 
 @testitem "read pr errors" begin
@@ -175,11 +175,14 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, FiniteDiff(); recalibrate = false)
+    @test_warn "Not enough data points" growth_rate(
+        od_df_warn, time_col, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" growth_rate(
         od_df_warn, time_col, LinearOnLog(start_time = 1.1, end_time = 1.2); recalibrate = false)
-    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Regularization(); recalibrate = false)
-    @test_warn "Not enough data points" growth_rate(od_df_warn, time_col, Logistic(); recalibrate = false)
+    @test_warn "Not enough data points" growth_rate(
+        od_df_warn, time_col, Regularization(); recalibrate = false)
+    @test_warn "Not enough data points" growth_rate(
+        od_df_warn, time_col, Logistic(); recalibrate = false)
     @test_warn "No data points found between start_time" growth_rate(
         od_df, time_col, LinearOnLog(start_time = -2, end_time = -1); recalibrate = false)
 
@@ -254,7 +257,9 @@ end
           time_to_max_growth(od_df, time_col, Endpoints(start_time = 6, end_time = 9))[
               1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff(); offset = 0.01)[1, "A"] < 10
-    @test 7 < time_to_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] < 10
+    @test 7 <
+          time_to_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[
+              1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Regularization())[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Logistic())[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Gompertz())[1, "A"] < 10
@@ -319,7 +324,8 @@ end
     @test 5 < lag_time(od_df, time_col, Endpoints(start_time = 7, end_time = 10))[1, "A"] <
           8
     @test 5 < lag_time(od_df, time_col, FiniteDiff(); offset = 0.01)[1, "A"] < 8
-    @test 5 < lag_time(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] < 8
+    @test 5 <
+          lag_time(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Regularization())[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Logistic())[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Gompertz())[1, "A"] < 8
@@ -330,7 +336,8 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" lag_time(od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
+    @test_warn "Not enough data points" lag_time(
+        od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" lag_time(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_warn "Not enough data points" lag_time(
@@ -388,7 +395,9 @@ end
           od_at_max_growth(od_df, time_col, Endpoints(start_time = 7, end_time = 10))[
               1, "A"] < f(10)
     @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(); offset = 0.01)[1, "A"] < f(10)
-    @test 0 < od_at_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] <
+    @test 0 <
+          od_at_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[
+              1, "A"] <
           f(10)
     @test 0 < od_at_max_growth(od_df, time_col, Regularization())[1, "A"] < f(10)
     @test 0 < od_at_max_growth(od_df, time_col, Logistic())[1, "A"] < f(10)
@@ -465,10 +474,12 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" max_od(od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
+    @test_warn "Not enough data points" max_od(
+        od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
     @test_warn "Not enough data points" max_od(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
-    @test_warn "Not enough data points" max_od(od_df_warn, time_col_warn, Regularization(); recalibrate = false)
+    @test_warn "Not enough data points" max_od(
+        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" max_od(
@@ -611,8 +622,11 @@ end
 
     # offset
     @test calibrate(data, time_col, StartData(); offset = 0.1) ==
-          DataFrame(A = [0.5 - 0.5 + 0.1, 0.65 - 0.5 + 0.1, 0.79 - 0.5 + 0.1, 0.83 - 0.5 + 0.1, 0.95 - 0.5 + 0.1],
-        B = [1.11 - 1.11 + 0.1, 1.05 - 1.11 + 0.1, 1.23 - 1.11 + 0.1, 1.36 - 1.11 + 0.1, 1.44 - 1.11 + 0.1])
+          DataFrame(
+        A = [0.5 - 0.5 + 0.1, 0.65 - 0.5 + 0.1, 0.79 - 0.5 + 0.1,
+            0.83 - 0.5 + 0.1, 0.95 - 0.5 + 0.1],
+        B = [1.11 - 1.11 + 0.1, 1.05 - 1.11 + 0.1, 1.23 - 1.11 + 0.1,
+            1.36 - 1.11 + 0.1, 1.44 - 1.11 + 0.1])
 end
 
 @testitem "fluorescence per cell" setup=[environment_path] begin
@@ -646,7 +660,8 @@ end
     @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4 * 60))[
         1, "plate_01_b6"]) == 102
     @test floor(fluorescence(
-        fl, time_fl, od, time_od, RatioAtMaxGrowth(method = LinearOnLog(start_time = 220, end_time = 300)))[
+        fl, time_fl, od, time_od,
+        RatioAtMaxGrowth(method = LinearOnLog(start_time = 220, end_time = 300)))[
         1, "plate_01_a10"]) == 1411
 end
 
@@ -668,6 +683,6 @@ end
 @testitem "floating point time error" begin
     println("floating point time error")
     # This checks if a floating point time that, after being multipled by 1000, does not fall on an integer, still reads correctly
-    data = read(joinpath("inputs/bmg-time-error.csv"), BMG())
+    data = read("inputs/bmg-time-error.csv", BMG())[1]
     @test 33047800 in data["ABS_700_0_nm"][!, "time"]
 end

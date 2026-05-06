@@ -23,21 +23,21 @@ jobs:
                       julia-arch: aarch64
         steps:
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
             - name: Set up Julia
-              uses: julia-actions/setup-julia@v2
+              uses: julia-actions/setup-julia@v3
               with:
                 version: '1'
                 arch: ${{ matrix.julia-arch }}
             - name: cache
-              uses: julia-actions/cache@v2
+              uses: julia-actions/cache@v3
             - name: build package to install deps
               uses: julia-actions/julia-buildpkg@v1
             - name: Build CLI
               run: |
                 julia --project deps/build.jl app
             - name: upload
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7
               with:
                 name: esm-${{ matrix.os }}
                 path: build/esm
