@@ -274,7 +274,7 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         if !isnothing(best_window)
             vline!(p, best_window, label = "Fitting Window", color = :blue, linestyle = :dot)
         end
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))__$(method.method)_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.method)_$(names(df)[1]).png"))
     end
     return summaries
 end
