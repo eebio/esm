@@ -489,7 +489,7 @@ function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing
 end
 
 @kwdef struct Regularization <: AbstractGrowthRateMethod
-    order::Int = 4
+    order::Int = 2
     alg::Symbol = :gcv_svd
     lambda::Float64 = 1
 end
