@@ -7,6 +7,7 @@ using StatsBase
 using ForwardDiff
 using NaNMath
 using Plots
+using ESM
 
 abstract type AbstractGrowthRateMethod <: AbstractPlateReaderMethod end
 

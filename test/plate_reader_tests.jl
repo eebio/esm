@@ -544,7 +544,6 @@ end
             extra = ""
         end
         if extra != ""
-            @show readdir(str)
             @test isfile(joinpath(str, "growth_curve_$(typeof(method))_$(extra)_A.png"))
             @test isfile(joinpath(str, "growth_curve_$(typeof(method))_$(extra)_B.png"))
         else
@@ -558,19 +557,19 @@ end
         with_logger(logger) do
             func(od_df, time_col, FiniteDiff(); plot_directory = :temp)
         end
-        @show str = String(take!(io))
+        str = String(take!(io))
         str = replace(str, "┌ Info: Saving growth curve plots to temporary directory: " => "")
         str = split(str, "\n")[1]
-        @test isfile(joinpath(str, "growth_curve_ESM.FiniteDiff_central_A.png"))
-        @test isfile(joinpath(str, "growth_curve_ESM.FiniteDiff_central_B.png"))
+        @test isfile(joinpath(str, "growth_curve_FiniteDiff_central_A.png"))
+        @test isfile(joinpath(str, "growth_curve_FiniteDiff_central_B.png"))
     end
 
     # Check user-specified directory
     custom_dir = mktempdir()
     growth_rate(od_df, time_col, FiniteDiff(); plot_directory = custom_dir)
     @test isdir(custom_dir)
-    @test isfile(joinpath(custom_dir, "growth_curve_ESM.FiniteDiff_central_A.png"))
-    @test isfile(joinpath(custom_dir, "growth_curve_ESM.FiniteDiff_central_B.png"))
+    @test isfile(joinpath(custom_dir, "growth_curve_FiniteDiff_central_A.png"))
+    @test isfile(joinpath(custom_dir, "growth_curve_FiniteDiff_central_B.png"))
 end
 
 @testitem "calibrate" begin

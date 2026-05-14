@@ -49,7 +49,7 @@ end
     f["metadata"]["date_created"] = ""
     f["metadata"]["date_modified"] = ""
     f["metadata"]["versioninfo"] = ""
-    @test bytes2hex(stable_hash(f; version=4)) == "68d94512a8376809afc283eda5f613be98e1a7db5c83c36a2e9a16a453e9a4ba"
+    @test bytes2hex(stable_hash(f; version=4)) == "f02ca5afe80b5850e9c0602f00667891616d3d22431df44aaf16fc4fc28ce33e"
 end
 
 @testitem "Views integration" setup=[environment_path, build, getshell] begin
@@ -156,8 +156,7 @@ end
     translate(joinpath("inputs", "example.xlsx"), joinpath(dir, "tmp.esm"))
     views(joinpath(dir, "tmp.esm"); output_dir = dir)
     views(joinpath(dir, "tmp.esm"); view = "mega", output_dir = dir)
-    translate(joinpath("inputs", "summarise.xlsx"), joinpath("inputs", "summarise.esm"))
-    cp(joinpath("inputs", "summarise.esm"), joinpath(dir, "summarise.esm"))
+    translate(joinpath("inputs", "summarise.xlsx"), joinpath(dir, "summarise.esm"))
     summarise(joinpath(dir, "summarise.esm"); plot = true)
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
     cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))

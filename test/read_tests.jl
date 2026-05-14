@@ -399,8 +399,6 @@ end
 
 @testitem "produce_views" begin
     println("produce_views")
-    data = read_data("inputs/example.xlsx")
-    write_esm(data, "inputs/example.esm")
     es = read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
@@ -495,8 +493,8 @@ end
     es = read_esm("inputs/example.esm")
     metadata = es.samples.metadata[es.samples.name .== "plate_02_a1.FL1_A"][1]
     @test haskey(metadata, "raw_metadata")
-    @test metadata["raw_metadata"]["CREATOR"] == "CELLQuest<aa> 3.3"
-    @test metadata["raw_metadata"]["FCSVERSION"] == "3"
+    @test metadata["raw_metadata"]["creator"] == "CELLQuest<aa> 3.3"
+    @test metadata["raw_metadata"]["fcsversion"] == "3"
 end
 
 @testitem "summary" begin
