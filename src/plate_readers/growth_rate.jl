@@ -274,7 +274,7 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         if !isnothing(best_window)
             vline!(p, best_window, label = "Fitting Window", color = :blue, linestyle = :dot)
         end
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))__$(method.method)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -338,25 +338,26 @@ end
 struct ParametricGrowthRate <: AbstractGrowthRateMethod
     func::Function
     initial_params::Vector{Float64}
+    name::String
 end
 
 function Logistic()
     return ParametricGrowthRate(
         (t, p) -> p[2] ./ (1 .+ exp.(4 * p[1] / p[2] .* (p[3] .- t) .+ 2)),
-        [1.0, 4.0, 5.0])
+        [1.0, 4.0, 5.0], "Logistic")
 end
 
 function Gompertz()
     return ParametricGrowthRate(
         (t, p) -> p[2] .* exp.(-exp.(p[1] .* exp(1) ./ p[2] .* (p[3] .- t) .+ 1)),
-        [1.0, 4.0, 5.0])
+        [1.0, 4.0, 5.0], "Gompertz")
 end
 
 function ModifiedGompertz()
     return ParametricGrowthRate(
         (t, p) -> p[2] .* exp.(-exp.((p[1] .* exp(1) ./ p[2]) .* (p[3] .- t) .+ 1)) .+
                   p[2] .* exp.(p[4] * (t .- p[5])),
-        [1.0, 4.0, 5.0, 1.0, 4.0])
+        [1.0, 4.0, 5.0, 0.001, 4.0], "Modified_Gompertz")
 end
 
 function Richards()
@@ -365,7 +366,7 @@ function Richards()
                     exp(p[4]) .* exp(1 + exp(p[4])) .*
                     exp.(p[1] / p[2] .* (1 + exp(p[4]))^(1 + 1 / exp(p[4])) .*
                          (p[3] .- t))) .^ (1 ./ exp(p[4]))),
-        [1.0, 4.0, 5.0, 0.0]) # Shape parameter is log transformed to ensure it's positive
+        [1.0, 4.0, 5.0, 0.0], "Richards")
 end
 
 function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory = nothing)
@@ -418,7 +419,7 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
         plot!(p, t_refined, ti -> method.func(ti, psol), label = "Parametric Fit", color = :blue, linestyle = :dot)
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.name)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -482,7 +483,7 @@ function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
-        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.type)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -529,7 +530,7 @@ function _growth_rate(df, time_col, method::Regularization; plot_directory = not
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
         plot!(p, t_refined, A.(t_refined), label = "Regularized Fit", color = :blue, linestyle = :dot)
-        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.alg)_$(names(df)[1]).png"))
     end
     return summaries
 end
