@@ -491,7 +491,7 @@ end
 @kwdef struct Regularization <: AbstractGrowthRateMethod
     order::Int = 4
     alg::Symbol = :gcv_svd
-    lambda::Float64 = 1e3
+    lambda::Float64 = 1
 end
 
 function _growth_rate(df, time_col, method::Regularization; plot_directory = nothing)
