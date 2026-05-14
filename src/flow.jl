@@ -46,9 +46,9 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         end
         temp["values"] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
         for x in channels)
-        temp["metadata"] = Dict(channel_map[x] => extract_flow(
+        temp["metadata"] = convert(Dict{String, Any}, Dict(channel_map[x] => extract_flow(
                                     temp_data, flow_channel("$x"))
-        for x in channels)
+        for x in channels))
         temp["metadata"]["raw_metadata"] = Dict(k => getproperty(temp_data, k) for k in propertynames(temp_data))
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
