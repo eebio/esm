@@ -71,7 +71,7 @@ The `FiniteDiff` method log-transforms the data (removing any points ≤ 0) and 
 \frac{\ln (od(t_{i+1})) - \ln (od(t_{i-1}))}{t_{i+1} - t_{i-1}} \quad \text{central}
 ```
 
-It can be called using `growth_rate(data, time_col, FiniteDiff())` (defaults to central) or any of `growth_rate(data, time_col, FiniteDiff(method=:onesided))`, or `growth_rate(data, time_col, FiniteDiff(method=:central))`.
+It can be called using `growth_rate(data, time_col, FiniteDiff())` (defaults to central) or any of `growth_rate(data, time_col, FiniteDiff(type=:onesided))`, or `growth_rate(data, time_col, FiniteDiff(type=:central))`.
 You can also call `doubling_time` with either of the `FiniteDiff` methods.
 
 - `max_od` - return the maximum OD in the data
