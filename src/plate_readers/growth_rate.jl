@@ -201,8 +201,19 @@ end
 end
 
 function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing)
-    start_od = at_time(df, time_col, method.start_time)[1]
-    end_od = at_time(df, time_col, method.end_time)[1]
+    start_od = at_time(df, time_col, method.start_time)
+    end_od = at_time(df, time_col, method.end_time)
+    if isempty(start_od) || isempty(end_od)
+        @warn "When processing column $(names(df)[1]), no data points found before start_time=$(method.start_time). First timepoint is at $(first(time_col[:, 1]) / 60000) minutes. Returning NaN."
+        return Dict(
+            "growth_rate" => NaN,
+            "time_to_max_growth" => NaN,
+            "od_at_max_growth" => NaN,
+            "maxOD" => NaN
+        )
+    end
+    start_od = start_od[1]
+    end_od = end_od[1]
     start_time = at_time(time_col, time_col, method.start_time)[1] / 60000
     end_time = at_time(time_col, time_col, method.end_time)[1] / 60000
     growth_rate = (NaNMath.log(end_od) - NaNMath.log(start_od)) /
