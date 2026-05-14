@@ -62,7 +62,7 @@ function calibrate(data, time_col, method::SmoothedTimeseriesBlank)
     averaged_blanks = colmean(blanks)
     df = DataFrame(od = averaged_blanks, Time = blank_time_col[!, 1])
     model = lm(@formula(od~Time), df)
-    smoothed_blanks = predict(model, time_col)
+    smoothed_blanks = predict(model, DataFrame(Time = time_col[!, 1]))
     return data .- smoothed_blanks
 end
 
