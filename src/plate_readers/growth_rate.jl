@@ -489,6 +489,8 @@ end
 
 @kwdef struct Regularization <: AbstractGrowthRateMethod
     order::Int = 4
+    alg::Symbol = :gcv_svd
+    lambda::Float64 = 1e3
 end
 
 function _growth_rate(df, time_col, method::Regularization; plot_directory = nothing)
@@ -512,7 +514,7 @@ function _growth_rate(df, time_col, method::Regularization; plot_directory = not
         )
     end
     t_refined = range(first(t), last(t), length = 100 * n)
-    A = RegularizationSmooth(ly, t, d; alg = :gcv_svd)
+    A = RegularizationSmooth(ly, t, d; alg = method.alg, λ = method.lambda)
     deriv = [DataInterpolations.derivative(A, ti) for ti in t_refined]
     # maximum derivative (growth rate)
     growth_rate, i = findmax(deriv)

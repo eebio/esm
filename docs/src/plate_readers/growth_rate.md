@@ -146,6 +146,9 @@ It can be called using `growth_rate(data, time_col, Regularization())` or `doubl
 - `time_to_max_growth` - return the time where the derivative of the regularization is maximised
 - `od_at_max_growth` - return the regularized OD at `time_to_max_growth`
 
+!!! tip "Help! My growth curve is wrong"
+    The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This only happens if the regularization curve is overfitting the data (following the noise rather than just the general trends). This can fixed by changing the smoothing parameter `lambda` (this varies on a log scale, try `10^6`) and changing the `alg` to `:fixed`.
+
 ## Implementation Details
 
 If you want to implement a new growth rate method to be included in ESM, you need to:
