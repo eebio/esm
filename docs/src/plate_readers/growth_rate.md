@@ -7,6 +7,9 @@ ESM.growth_rate
 ESM.doubling_time
 ```
 
+!!! tip "Validation of growth curves"
+    Make sure you try the `plot_directory` option to ensure your summary statistics are appropriate for your growth curve data. Some methods have adjustments you can make to improve the fit.
+
 ## Other functions
 
 Not only are methods available for calculating `growth_rate` and `doubling_time`, but there are also methods for calculating related summary statistics of time and OD at maximum growth, lagtime, and maximum OD. All these use the same function signature and their definitions depend on the specific growth rate method that is being used.
@@ -56,6 +59,9 @@ It can be called using `growth_rate(data, time_col, MovingWindow(window_size, me
 
 The other functions (`max_od`, `time_to_max_growth`, `od_at_max_growth`) are defined based on the choice of `method` and evaluated across the window which gives the maximum growth rate.
 
+!!! tip "Help! My growth curve is wrong"
+    The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This noise is caused by a calibration that brings the data *too* close to 0 (so the noise then varies over multiple orders of magnitude). This can be reduced by adding a small offset to the data during calibration, or by using an OD threshold to remove data below some small OD.
+
 ## FiniteDiff
 
 The `FiniteDiff` method log-transforms the data (removing any points ≤ 0) and then calculates the local gradients. It does this by traveling along the timepoints one-by-one, either calculating the central or one-sided finite difference. It then returns the maximum gradient.
@@ -71,6 +77,9 @@ You can also call `doubling_time` with either of the `FiniteDiff` methods.
 - `max_od` - return the maximum OD in the data
 - `time_to_max_growth` - return the time at the centre of the finite differencing interval when growth is maximised.
 - `od_at_max_growth` - return the geometric mean of the OD at either end of the finite differencing interval when growth is maximised.
+
+!!! tip "Help! My growth curve is wrong"
+    The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This noise is caused by a calibration that brings the data *too* close to 0 (so the noise then varies over multiple orders of magnitude). This can be reduced by adding a small offset to the data during calibration, or by using an OD threshold to remove data below some small OD.
 
 ## Parameteric Models
 
@@ -133,6 +142,11 @@ A \left(\left(1 + \exp(\nu) \exp(1 + \exp(\nu)) \exp\left(\frac{\mu}{A} (1 + \ex
 This form is derived from Zwietering et al. 1990[^1]. The original form uses ``\nu\in(0,\inf)``. We have transformed to use ``\exp(\nu)`` instead so that no constraints need to be applied to ``\nu``.
 
 It can be called using `growth_rate(data, time_col, Richards())` or `doubling_time(data, time_col, Richards())`.
+
+!!! tip "Help! My growth curve is wrong"
+    The most common problem to appear for the growth curve in this method is to have a curve fit which is wildly different to the underlying data (the fitting failed). You can try a different parametric curve, or adjust the fitting parameters such as the initial condition for the parameters, the fitting algorithm or the maximum number of iterations.
+
+!!! todo "add more options here"
 
 ## Regularization
 
