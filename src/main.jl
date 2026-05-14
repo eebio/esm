@@ -169,7 +169,7 @@ Arguments:
 - `time_point::Float64`: Time point in mins at which to report the measurement.
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
-    tvals = index_between_vals(time_col; minv = 0, maxv = time_point * 60000)
+    tvals = index_between_vals(time_col; minv = 0, maxv = round(time_point * 60000))
     tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."
