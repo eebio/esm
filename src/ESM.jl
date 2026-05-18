@@ -11,9 +11,9 @@ struct ESMData <: AbstractESMDataType end
 
 include("FitEllipse.jl")
 include("esm_files.jl")
-include("flow.jl")
 include("main.jl")
 include("plate_readers/main.jl")
+include("flow/main.jl")
 include("summarise.jl")
 include("views.jl")
 
