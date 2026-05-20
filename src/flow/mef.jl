@@ -1,0 +1,190 @@
+using GaussianMixtures
+using NonlinearSolve
+using StatsBase
+using Plots
+using NaNMath
+using Random
+
+function cluster(data, method; plot_directory = nothing)
+    n = length(method.mef)
+
+    # Perform clustering
+    maxll = -Inf
+    local best_gmm
+    for _ in 1:method.nRepeats
+        gmm = GMM(n, data; nInit = method.nInit, nIter=0)
+        em!(gmm, data; nIter = method.nIter, varfloor = 1e-8)
+        ll = avll(gmm, data)
+        if ll > maxll
+            best_gmm = gmm
+            maxll = ll
+        end
+    end
+    gmm = best_gmm
+
+    # Plot data
+    if !isnothing(plot_directory)
+        p = histogram(data; bins = range(minimum(data), stop = maximum(data), length = 500),
+            linecolor=nothing, label=nothing, xlabel = "log₁₀('$(method.channel)'+1) (RFI)",
+            ylabel = "Count", title = "MEF Calibration: Fluorescence Data",
+        )
+        savefig(p, joinpath(plot_directory, "mef_calibration_fluorescence_data.png"))
+    end
+
+    # Collect into clusters
+    prob_pos = gmmposterior(gmm, data)[1]
+    ass = [findmax(prob_pos[i, :])[2] for i in 1:size(data, 1)] # Vector of cluster indexes
+    clusters = [data[ass .== i, 1] for i in 1:n]
+
+    # Sort clusters by median
+    summaries = [method.summary(c) for c in clusters]
+    sorted_idx = sortperm(summaries)
+    sorted_clusters = clusters[sorted_idx]
+    sorted_summaries = summaries[sorted_idx]
+
+    if !isnothing(plot_directory)
+        # Plot data split by clusters
+        p = histogram(xlabel = "log₁₀('$(method.channel)'+1) (RFI)",
+            ylabel = "Count", title = "MEF Calibration: Clusters")
+        for i in eachindex(sorted_clusters)
+            c = sorted_clusters[i]
+            if length(c) == 0
+                continue
+            end
+            histogram!(p, c;
+                bins = range(minimum(data), stop = maximum(data), length = 500),
+                linecolour = nothing, colour = i, label = "Cluster $i") # If any data includes 0, it'll break here
+            vline!(p, [method.summary(c)]; linecolour = i, linestyle = :dash, label=nothing)
+        end
+        savefig(p, joinpath(plot_directory, "mef_calibration_clusters.png"))
+    end
+
+    return sorted_clusters, sorted_summaries
+end
+
+@kwdef struct MEF
+    beads::DataFrame
+    mef::Vector{Float64}
+    channel::String
+    summary::Function = median
+    seed::Int = 0
+    nInit::Int = 100
+    nIter::Int = 100
+    nRepeats::Int = 10
+end
+
+function calibrate(df, method::MEF; plot_directory = nothing)
+    if plot_directory == :temp
+        plot_directory = mktempdir()
+        @info "Plot directory for MEF calibration set to temporary directory: $plot_directory"
+    end
+    if !isnothing(plot_directory) && !isdir(plot_directory)
+        # Is directory/path doesn't exist, create it
+        mkpath(plot_directory)
+    end
+
+    df = deepcopy(df)
+    mef = method.mef
+
+    # Transform the data and collect into a vector
+    data = log10.(1 .+ abs.(collect(df[df[:, method.channel] .> 0, 1])))
+    data = reshape(data, :, 1)
+    data = convert(Matrix{Float64}, data)
+
+    # Cluster data
+    # GaussianMixtures doesn't support an rng argument, so we have to set the global seed
+    Random.seed!(method.seed)
+    clusters, summaries = cluster(data, method; plot_directory)
+    # Untransform summaries to original scale for later use in curve fitting
+    summaries = 10 .^ summaries .- 1
+
+    # Are any populations too close to max or min
+    keep_population = fill(true, length(clusters))
+    min_channel = method.channel * ".min"
+    max_channel = method.channel * ".max"
+    for i in eachindex(clusters)
+        cluster = clusters[i]
+        if length(cluster) == 0
+            continue
+        end
+        μ = mean(cluster)
+        σ = std(cluster)
+        lb = log10(1 + max(0, df[1, min_channel]))
+        ub = log10(1 + max(0, df[1, max_channel]))
+        if μ - 2.5 * σ < lb || μ + 2.5 * σ > ub
+            keep_population[i] = false
+        end
+        if isnothing(mef[i])
+            keep_population[i] = false
+        end
+    end
+    if sum(keep_population) == 0
+        error("No populations could be used to calibrate. All populations with valid MEF values had a summary statistic too close the saturation.")
+    end
+    if any(keep_population .== false)
+        @info "Removing population(s) $(findall(keep_population .== false)) from MEF calibration."
+    end
+    mef = mef[keep_population]
+    clusters = clusters[keep_population]
+    summaries = summaries[keep_population]
+
+    return calibrate(df, summaries, mef, method; plot_directory)
+end
+
+function calibrate(df::DataFrame, summaries::Vector, mef::Vector, method::MEF; plot_directory = nothing)
+    to_mef = fit_standard_curve(summaries, mef, method, plot_directory)
+
+    # Apply standard curve to data
+    df[!, method.channel] = to_mef.(df[!, method.channel])
+    df[!, "$(method.channel).min"] = to_mef.(df[!, "$(method.channel).min"])
+    df[!, "$(method.channel).max"] = to_mef.(df[!, "$(method.channel).max"])
+    return df
+end
+
+function fit_standard_curve(summaries, mef, method, plot_directory)
+    # Setup
+    # u = [m, b, log(bead_auto_fluorescence)]
+    residuals! = function (res, u, _)
+        for mefi in eachindex(mef)
+            res[mefi] = NaNMath.log(mef[mefi] + exp(u[3])) -
+                        u[1] * NaNMath.log(summaries[mefi]) - u[2]
+        end
+        return nothing
+    end
+
+    # Initial guesses:
+    # - m estimated from final two points,
+    # - b estimated from final point and initial m,
+    # - auto_flu estimated from first point
+    m = (NaNMath.log(mef[end]) - NaNMath.log(mef[end - 1])) /
+        (NaNMath.log(summaries[end]) - NaNMath.log(summaries[end - 1]))
+    b = NaNMath.log(mef[end]) - m * NaNMath.log(summaries[end])
+    log_auto_flu = log(mef[1])
+
+    # Solve for MLE parameters
+    u0 = [m, b, log_auto_flu]
+    nonlinfun = NonlinearFunction(residuals!, resid_prototype = zeros(length(mef)))
+    prob = NonlinearLeastSquaresProblem(nonlinfun, u0)
+    sol = NonlinearSolve.solve(prob; verbose = false, maxiters = 200)
+
+    # Standard curve function
+    function to_mef(x)
+        return sign.(x) .* exp(sol.u[2]) .* (abs.(x) .^ sol.u[1])
+    end
+
+    # Plot standard curve
+    if !isnothing(plot_directory)
+        p = scatter(summaries, mef; label = "Beads: $(method.summary)",
+            xlabel = "$(method.channel) (RFI)", ylabel = "$(method.channel) (MEF)",
+            xscale = :log10, yscale = :log10, legend = :bottomright,
+            title = "MEF Calibration: Standard Curve")
+        plot!(p, logrange(summaries[1]/100, summaries[end]*10, length = 100), to_mef;
+            label = "Standard curve", xscale = :log10, yscale = :log10)
+        plot!(p, logrange(summaries[1]/100, summaries[end]*10, length = 100),
+            x -> (to_mef(x) - exp(sol.u[3]) > 0 ? to_mef(x) - exp(sol.u[3]) : NaN);
+            label = "Beads model", xscale = :log10, yscale = :log10)
+        savefig(p, joinpath(plot_directory, "mef_calibration_standard_curve.png"))
+    end
+
+    return to_mef
+end
