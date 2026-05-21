@@ -62,7 +62,7 @@ function cluster(data, method; plot_directory = nothing)
     return sorted_clusters, sorted_summaries
 end
 
-@kwdef struct MEF
+@kwdef mutable struct MEF
     beads::DataFrame
     mef::Vector
     channel::String
@@ -127,11 +127,14 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     clusters = clusters[keep_population]
     summaries = summaries[keep_population]
 
-    return calibrate(df, summaries, mef, method; plot_directory)
+    method.mef = mef
+
+    return calibrate(df, summaries, method; plot_directory)
 end
 
-function calibrate(df::DataFrame, summaries::Vector, mef::Vector, method::MEF; plot_directory = nothing)
-    to_mef = fit_standard_curve(summaries, mef, method, plot_directory)
+function calibrate(df::DataFrame, summaries::Vector, method::MEF; plot_directory = nothing)
+    to_mef = fit_standard_curve(summaries, method.mef, method, plot_directory)
+
     df = deepcopy(df)
 
     # Apply standard curve to data
