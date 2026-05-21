@@ -117,11 +117,11 @@ function calibrate(df, method::MEF; plot_directory = nothing)
             keep_population[i] = false
         end
     end
-    if sum(keep_population) == 0
-        error("No populations could be used to calibrate. All populations with valid MEF values had a summary statistic too close the saturation.")
-    end
     if any(keep_population .== false)
         @info "Removing population(s) $(findall(keep_population .== false)) from MEF calibration."
+    end
+    if sum(keep_population) < 3
+        error("Not enough populations to calibrate. Populations too close to max or min are removed. Need at least 3 populations to fit but only $(length(clusters)) remain.")
     end
     mef = mef[keep_population]
     clusters = clusters[keep_population]
