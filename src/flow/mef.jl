@@ -64,7 +64,7 @@ end
 
 @kwdef struct MEF
     beads::DataFrame
-    mef::Vector{Float64}
+    mef::Vector
     channel::String
     summary::Function = median
     seed::Int = 0
