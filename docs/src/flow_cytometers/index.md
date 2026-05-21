@@ -13,3 +13,5 @@ ESM provides a variety of methods for gating flow cytometry data. These are spli
 [Automatic Gating](@ref) has a collection of methods that will automatically gate the data, requiring at most specifying the channels to gate on.
 
 [Manual Gating](@ref) is designed to allow you to perform gating in separate software, and then include those gates in ESM.
+
+[MEF Calibration](@ref) allows you to calibrate flow cytometry fluorescence data to convert from units of RFI to MEF.
