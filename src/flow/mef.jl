@@ -83,7 +83,6 @@ function calibrate(df, method::MEF; plot_directory = nothing)
         mkpath(plot_directory)
     end
 
-    df = deepcopy(df)
     mef = method.mef
 
     # Transform the data and collect into a vector
@@ -133,6 +132,7 @@ end
 
 function calibrate(df::DataFrame, summaries::Vector, mef::Vector, method::MEF; plot_directory = nothing)
     to_mef = fit_standard_curve(summaries, mef, method, plot_directory)
+    df = deepcopy(df)
 
     # Apply standard curve to data
     df[!, method.channel] = to_mef.(df[!, method.channel])
