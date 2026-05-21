@@ -28,6 +28,7 @@ function gate end
 end
 
 function gate(data, method::KDE)
+    data = deepcopy(data)
     channels = method.channels
     gate_frac = method.gate_frac
     nbins = method.nbins
