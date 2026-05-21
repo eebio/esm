@@ -25,15 +25,20 @@ function gate end
     channels::Vector{String}
     gate_frac::Float64 = 0.65
     nbins::Int64 = 1024
+    transform_x::Function = x -> x
+    transform_y::Function = y -> y
 end
 
 function gate(data, method::KDE)
+    data = deepcopy(data)
     channels = method.channels
     gate_frac = method.gate_frac
     nbins = method.nbins
     length(channels) == 2 || error("2 channels must be specified for density gating.")
     x = data[!, channels[1]]
     y = data[!, channels[2]]
+    x = method.transform_x(x)
+    y = method.transform_y(y)
     N = length(x)
 
     hist_counts = fit(Histogram, (x, y); nbins = nbins)
@@ -55,7 +60,7 @@ function gate(data, method::KDE)
     # Threshold based on the least dense point from the sorted density vector above
     threshold = density_values[top_indice]
     # Only keep the values denser than the threshold
-    inside_indices = density_values .> threshold
+    inside_indices = density_values .>= threshold
     return data[inside_indices, :]
 end
 

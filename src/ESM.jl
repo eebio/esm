@@ -32,6 +32,7 @@ export HighLowGate, RectangleGate, QuadrantGate, PolygonGate, EllipseGate
 export and, or, not
 export AndGate, OrGate, NotGate
 export KDE
+export MEF
 export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
 export AbstractESMDataType, AbstractPlateReader

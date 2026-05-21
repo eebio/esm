@@ -71,7 +71,7 @@ end
     println("autogating")
     datacopy = deepcopy(MockFlow.data)
     @test gate(MockFlow.data, KDE(channels = ["FSC_A", "SSC_A"])) ==
-    gate(MockFlow.data, HighLowGate(channel="FSC_A", min=1.5, max=4.5))
+    gate(MockFlow.data, HighLowGate(channel="FSC_A", min=1.5, max=5.5))
     @test MockFlow.data == datacopy  # ensure original data is not modified
 end
 
@@ -86,4 +86,88 @@ end
     @test gate(MockFlow.data, not(HighLowGate(channel="FL1_A", min=525.0))).id == [1, 2]
     @test gate(MockFlow.data, KDE(channels = ["FSC_A", "SSC_A"]) & HighLowGate(channel="FSC_A", max=3.5)).FL1_A == [520.0, 530.0]
     @test MockFlow.data == datacopy  # ensure original data is not modified
+end
+
+@testitem "MEF calibration" begin
+    println("MEF calibration")
+    using FCSFiles, FileIO, DataFrames
+    data = load("inputs/beads.fcs")
+    df = DataFrame("BL1-H" => data["BL1-H"], "BL1-A" => data["BL1-A"], "FSC-A" => data["FSC-A"], "SSC-A" => data["SSC-A"])
+    df[!, "BL1-H.min"] .= 0.0
+    df[!, "BL1-H.max"] .= 1e6
+    df[!, "BL1-A.min"] .= 0.0
+    df[!, "BL1-A.max"] .= 1e6
+    df[!, "FSC-A.min"] .= 0.0
+    df[!, "FSC-A.max"] .= 1e6
+    df[!, "SSC-A.min"] .= 0.0
+    df[!, "SSC-A.max"] .= 1e6
+    df[!, "id"] .= 1:nrow(df)
+
+    copy = deepcopy(df)
+
+    # Density gate
+    f = x -> log10.(1 .+ max.(0.0, x))
+    gated = gate(df, KDE(channels = ["FSC-A", "SSC-A"], gate_frac = 0.4, transform_x = f, transform_y = f))
+    gated = gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = f, transform_y = f))
+
+    # MEF calibration
+    method = MEF(beads = gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1)
+    dir = mktempdir()
+    calibrated_df = calibrate(df, method; plot_directory = dir)
+    @test all(calibrated_df[!, "BL1-H.min"] .== 0.0)
+    @test all(calibrated_df[!, "BL1-H.max"] .> 0.0)
+    @test all(calibrated_df[!, "BL1-H"] .>= 0.0)
+
+    # Check plots are created
+    @test isfile(joinpath(dir, "mef_calibration_fluorescence_data.png"))
+    @test isfile(joinpath(dir, "mef_calibration_clusters.png"))
+    @test isfile(joinpath(dir, "mef_calibration_standard_curve.png"))
+
+    # Test that original data is not modified
+    @test df == copy
+
+    # Test that other columns are not modified
+    @test df[!, "FSC-A"] == copy[!, "FSC-A"]
+    @test df[!, "SSC-A"] == copy[!, "SSC-A"]
+    @test df[!, "id"] == copy[!, "id"]
+    @test df[!, "FSC-A.min"] == copy[!, "FSC-A.min"]
+    @test df[!, "SSC-A.min"] == copy[!, "SSC-A.min"]
+    @test df[!, "FSC-A.max"] == copy[!, "FSC-A.max"]
+    @test df[!, "SSC-A.max"] == copy[!, "SSC-A.max"]
+
+    # Test with temporary plot directory
+    using Logging
+    io = IOBuffer()
+    logger = SimpleLogger(io)
+    with_logger(logger) do
+        calibrate(df, method; plot_directory = :temp)
+    end
+    str = String(take!(io))
+    str = replace(str, "┌ Info: Plot directory for MEF calibration set to temporary directory: " => "")
+    str = split(str, "\n")[1]
+    @test isdir(str)
+    @test isfile(joinpath(str, "mef_calibration_fluorescence_data.png"))
+    @test isfile(joinpath(str, "mef_calibration_clusters.png"))
+    @test isfile(joinpath(str, "mef_calibration_standard_curve.png"))
+
+    # Check the calibration makes sense in the linear case - and skipping populations
+    beads = DataFrame("BL1-H" => [8.0, 9.0, 10.0, 11.0, 12.0, 100.0, 105.0, 110.0, 115.0, 120.0, 1000.0, 1050.0, 1100.0, 1125.0, 1250.0, 100000.0, 100100.0, 100200.0, 100500.0])
+    beads[!, "BL1-H.min"] .= 0.0
+    beads[!, "BL1-H.max"] .= 1e6
+    beads[!, "id"] .= 1:nrow(beads)
+
+    method = MEF(beads = beads, channel="BL1-H", mef=[10.0, 110.0, 1100.0, nothing], nRepeats=1)
+    calibrated_beads = calibrate(beads, method)
+    @test calibrated_beads[!, "BL1-H"] ≈ beads[!, "BL1-H"] atol=0.1
+    @test all(calibrated_beads[!, "BL1-H"] .>= 0.0)
+    @test all(calibrated_beads[!, "BL1-H.min"] .== 0.0)
+    @test all(calibrated_beads[!, "BL1-H.max"] .> 0.0)
+
+    # Check calibration without clustering
+    method = MEF(beads = beads, channel="BL1-H", mef=[10.0, 110.0, 1100.0], nInit=1, nIter=1, nRepeats=1)
+    calibrated_beads = calibrate(beads, [10.0, 110.0, 1100.0], method)
+    @test calibrated_beads[!, "BL1-H"] ≈ beads[!, "BL1-H"] atol=0.1
+    @test all(calibrated_beads[!, "BL1-H"] .>= 0.0)
+    @test all(calibrated_beads[!, "BL1-H.min"] .== 0.0)
+    @test all(calibrated_beads[!, "BL1-H.max"] .> 0.0)
 end
