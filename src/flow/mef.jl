@@ -87,7 +87,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     mef = method.mef
 
     # Transform the data and collect into a vector
-    data = log10.(1 .+ abs.(collect(df[df[:, method.channel] .> 0, 1])))
+    data = log10.(1 .+ abs.(collect(method.beads[method.beads[:, method.channel] .> 0, 1])))
     data = reshape(data, :, 1)
     data = convert(Matrix{Float64}, data)
 
@@ -109,8 +109,8 @@ function calibrate(df, method::MEF; plot_directory = nothing)
         end
         μ = mean(cluster)
         σ = std(cluster)
-        lb = log10(1 + max(0, df[1, min_channel]))
-        ub = log10(1 + max(0, df[1, max_channel]))
+        lb = log10(1 + max(0, method.beads[1, min_channel]))
+        ub = log10(1 + max(0, method.beads[1, max_channel]))
         if μ - 2.5 * σ < lb || μ + 2.5 * σ > ub
             keep_population[i] = false
         end
