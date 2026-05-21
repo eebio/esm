@@ -60,7 +60,7 @@ function gate(data, method::KDE)
     # Threshold based on the least dense point from the sorted density vector above
     threshold = density_values[top_indice]
     # Only keep the values denser than the threshold
-    inside_indices = density_values .> threshold
+    inside_indices = density_values .>= threshold
     return data[inside_indices, :]
 end
 

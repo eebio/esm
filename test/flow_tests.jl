@@ -71,7 +71,7 @@ end
     println("autogating")
     datacopy = deepcopy(MockFlow.data)
     @test gate(MockFlow.data, KDE(channels = ["FSC_A", "SSC_A"])) ==
-    gate(MockFlow.data, HighLowGate(channel="FSC_A", min=1.5, max=4.5))
+    gate(MockFlow.data, HighLowGate(channel="FSC_A", min=1.5, max=5.5))
     @test MockFlow.data == datacopy  # ensure original data is not modified
 end
 
