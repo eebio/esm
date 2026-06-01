@@ -85,9 +85,6 @@ function read_multipr_file(file, ptype, channels, channel_map)
     end
     # Apply channel map
     o_dict = Dict(get(channel_map, k, k) => v for (k, v) in o_dict)
-    for i in keys(o_dict)
-        o_dict[i] = o_dict[i][!, Not(all.(ismissing, eachcol(o_dict[i])))]
-    end
     return o_dict, raw_metadata
 end
 
@@ -173,6 +170,41 @@ function correct_data_length(data, delim)
     return data
 end
 
+function coerce_numeric_string_columns!(df)
+    for name in names(df)
+        col = df[!, name]
+        parsed = Vector{Union{Missing, Float64}}(undef, length(col))
+        ok = true
+        for idx in eachindex(col)
+            x = col[idx]
+            if ismissing(x)
+                parsed[idx] = missing
+            elseif x isa Number
+                parsed[idx] = Float64(x)
+            elseif x isa AbstractString
+                s = strip(x)
+                if isempty(s)
+                    parsed[idx] = missing
+                else
+                    y = tryparse(Float64, s)
+                    if isnothing(y)
+                        ok = false
+                        break
+                    end
+                    parsed[idx] = y
+                end
+            else
+                ok = false
+                break
+            end
+        end
+        if ok
+            df[!, name] = parsed
+        end
+    end
+    return df
+end
+
 struct SpectraMax <: AbstractPlateReader end
 
 """
@@ -245,20 +277,25 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         if !isnothing(channels) && !(channel in channels)
             continue
         end
-        for j in 3:length(data[i])
-            data[i][j] = replace(data[i][j], "#SAT" => "NaN")
-        end
         # Get the data
         df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame, delim = "\t")
         temp_name = names(df)[2]
         rename!(df, temp_name => "temperature")
         time_name = names(df)[1]
         rename!(df, time_name => "time")
-        # Remove empty columns
+        # Remove empty columns (could be extra alignment columns at the end of the data)
         df = df[:, Not(all.(ismissing, eachcol(df)))]
+        # Replace saturated data with missing
+        allowmissing!(df)
+        for col in eachcol(df)
+            if any(col .== "#SAT")
+                col .= map(x -> ismissing(x) || x == "#SAT" ? missing : x, col)
+            end
+        end
         # Make sure time is in milliseconds
         df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
                          millisecond(t) for t in df[!, "time"]]
+        coerce_numeric_string_columns!(df)
         out[channel] = df
     end
     return out, raw_metadata
@@ -289,9 +326,6 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
         end
         # Remove channel name from the first row
         data[i][2] = replace(data[i][2], " $(data[i][1])" => "")
-        for j in 3:length(data[i])
-            data[i][j] = replace(data[i][j], "OVRFLW" => "")
-        end
         # Read the data into a DataFrame
         df = CSV.read(IOBuffer(join(data[i][2:end], "\n")), DataFrame)
         temp_name = names(df)[2]
@@ -300,9 +334,17 @@ function Base.read(filen::AbstractString, ::BioTek; channels = nothing)
         rename!(df, time_name => "time")
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
+        # Replace overflow data with missing
+        allowmissing!(df)
+        for col in eachcol(df)
+            if any(col .== "OVRFLW")
+                col .= map(x -> x == "OVRFLW" ? missing : x, col)
+            end
+        end
         # Make sure time is in milliseconds
         df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
                          millisecond(t) for t in df[!, "time"]]
+        coerce_numeric_string_columns!(df)
         out[channel] = df
     end
     return out, raw_metadata
@@ -389,11 +431,13 @@ function Base.read(file::AbstractString, ::BMG; channels = nothing)
 
         # Read the data into a DataFrame
         df = CSV.read(IOBuffer(d), DataFrame)
-        df[!, "temperature"] = fill(NaN, nrow(df)) # TODO can you get this PR to record temperature?
         time_name = names(df)[1]
         rename!(df, time_name => "time")
         # Remove empty columns
         df = df[:, Not(all.(ismissing, eachcol(df)))]
+        # Add temparature column with missing values
+        allowmissing!(df)
+        df[!, "temperature"] = fill(missing, nrow(df)) # TODO can you get this PR to record temperature?
         # Make sure time is in milliseconds
         time_float = df[!, "time"] .* 1000
         time_int = round.(Int64, time_float)
