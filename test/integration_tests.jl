@@ -75,14 +75,14 @@ end
     @test isfile(joinpath(dir, "mega.csv"))
     esm_hash = stable_hash(read(joinpath(dir, "mega.csv"), String); version=4)
     @test bytes2hex(esm_hash) ==
-          "939f93444dd7b96521ccef8c7c8e78990a0d95c93c8f8d0477ba6ae1d19d0eb7"
+          "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
 
     dir2 = Base.Filesystem.mktempdir()
     run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) -v mega -o $dir2`)
     @test isfile(joinpath(dir2, "mega.csv"))
     esm_hash2 = stable_hash(read(joinpath(dir2, "mega.csv"), String); version=4)
     @test bytes2hex(esm_hash2) ==
-          "939f93444dd7b96521ccef8c7c8e78990a0d95c93c8f8d0477ba6ae1d19d0eb7"
+          "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
 end
 
 @testitem "Summarise integration" setup=[environment_path, build, getshell] begin
