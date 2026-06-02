@@ -131,13 +131,14 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
                     end
                     show_xticklabels = row == nrows
                     show_yticklabels = col == 1
+                    ylim_missing = isnothing(min_data) || isnothing(max_data) || ismissing(min_data) || ismissing(max_data)
                     plot!(plt, time, data[!, idx], subplot = idx,
                         title = names(data)[idx], label = nothing,
                         xformatter = show_xticklabels ? :auto : (x->""),
                         yformatter = show_yticklabels ? :auto : (y->""),
                         xrotation = 60,
                         xlabel = show_xticklabels ? "Time (min)" : nothing,
-                        ylims = (min_data, max_data),
+                        ylims = ylim_missing ? :auto : (min_data, max_data),
                         bottom_margin = show_xticklabels ? 7mm : :match,
                         linewidth = 2.0, colour = :black, yscale = scale)
                 end
