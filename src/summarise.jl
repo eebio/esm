@@ -162,6 +162,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
         @info "Saving plate reader data as CSV files"
         for (key, value) in out
             @info "Saving channel $key as CSV file"
+            value[!, :time] = value[!, :time] ./ 60000
             CSV.write(string(file) * "_" * string(key) * ".csv", value)
         end
     end
