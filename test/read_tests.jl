@@ -397,7 +397,7 @@ end
           df[!, sort(names(df))]
 end
 
-@testitem "produce_views" begin
+@testitem "produce_views" setup=[environment_path] begin
     println("produce_views")
     es = read_esm("inputs/example.esm")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
@@ -428,8 +428,8 @@ end
     @test a["mega"][2:4, "plate_01_a8.OD"] == Any[0.152, 0.154, 0.157]
     @test a["mega"][(end - 2):end, "plate_01_a3.flo"] == Any[211, 201, 209]
     # Test sample
-    @test names(a["sample"]) == ["plate_01_time.flo"]
-    @test a["sample"][[1, 2, end - 1, end], "plate_01_time.flo"] ==
+    @test names(a["sample"]) == ["plate_01_time"]
+    @test a["sample"][[1, 2, end - 1, end], "plate_01_time"] ==
           [544714, 1144314, 66544764, 67144719]
     # Test expressions
     @test issetequal(names(a["flowsub"]),
@@ -470,8 +470,24 @@ end
 
     # Test errors
     es.views["bad_view"] = Dict{String, Any}("data" => ["nonexistent_group"])
-    msg = "View bad_view = nonexistent_group is not a sample, group or transformation"
+    msg = "UndefVarError: `nonexistent_group` not defined in `ESM`"
     @test_throws msg ESM.produce_views(es, trans_meta_map; to_out = ["bad_view"])
+
+    # More complex views
+    dir = mktempdir()
+    x = read_data("inputs/views.xlsx")
+    write_esm(x, joinpath(dir, "views.esm"))
+    es = read_esm(joinpath(dir, "views.esm"))
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    out = ESM.produce_views(es, trans_meta_map)
+
+    @test issetequal(names(out["v1"]), ["plate_01_a1.700", "plate_01_a1.od"])
+    @test issetequal(names(out["v2"]), ["plate_01_a1"])
+    @test issetequal(names(out["v3"]), ESM.expand_groups("plate_01_[a,b][1:4].[700,od]"))
+    @test issetequal(names(out["v4"]), ESM.expand_groups("plate_01_[a,b][1:4].[700,od]"))
+    @test issetequal(names(out["v5"]), ESM.expand_groups("plate_01_[a,b][1:4].[700,od], plate_01_e[5:7].[700,od]"))
+    @test issetequal(names(out["v6"]), ESM.expand_groups("plate_01_[a,b][1:4].[od,700,od_1,700_1], plate_01_e[5:7].[od,700,od_1,700_1],plate_01_time,plate_01_a1.[od_2,700_2],plate_01_[a,b][1:4],plate_01_a6.[od,700],plate_01_a7"))
 end
 
 @testitem "to_rfi" begin

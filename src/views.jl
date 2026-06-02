@@ -24,21 +24,8 @@ function produce_views(es, trans_meta_map; to_out = [])
         result = []
         # Loop over the views list
         for j in es.views[i]["data"]
-            # Check if this is a transformation to initiate the processing
-            if Symbol(j) in keys(trans_meta_map)
-                # Put the result in the results array
-                push!(result,
-                    eval(sexp_to_nested_list(
-                        trans_meta_map[Symbol(j)], es, trans_meta_map)))
-            elseif j in es.groups.group
-                # If its a group, put the basal data in the results array
-                push!(result, form_df(filter_row(es, Symbol(j))))
-            elseif j in es.samples.name
-                # If its a sample, create the df and push it
-                push!(result, form_df(es.samples[es.samples.name .== j, :]))
-            else
-                error("View $i = $j is not a sample, group or transformation")
-            end
+            exp = sexp_to_nested_list(Meta.parse(j), es, trans_meta_map)
+            push!(result, eval(exp))
         end
         # Put it all in the same frame and not a vector
         if any(isa.(result, AbstractVecOrMat)) || any(isa.(result, Number))
