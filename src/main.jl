@@ -25,9 +25,13 @@ function filter_row(es, group)
     return es.samples[es.samples[!, group] .== true, :]
 end
 
-function filter_channel(df, channel)
+function filter_channel(df::DataFrame, channel)
     channel = string(channel)
     return remove_subcols(df[:, filter(colname -> channel in split(colname, ".")  || colname == "id", names(df))], channel)
+end
+
+function filter_channel(df::Expr, channel)
+    return filter_channel(eval(df), channel)
 end
 
 """
@@ -40,9 +44,13 @@ Arguments:
 - `df::DataFrame`: DataFrame to filter.
 - `reg_l::Vector{String}`: Vector of strings to filter by.
 """
-function filter_col(df, reg_l)
+function filter_col(df::DataFrame, reg_l)
     reg_l = Regex(join(string.(reg_l), "|"))
     return df[:, filter(colname -> occursin(reg_l, string(colname)), names(df))]
+end
+
+function filter_col(df::Expr, reg_l)
+    return filter_col(eval(df), reg_l)
 end
 
 """
@@ -54,10 +62,14 @@ This is to turn the es.samples.values arrays into dfs.
 Arguments:
 - `df::DataFrame`: A dataframe of es.samples to parse.
 """
-function form_df(df)
+function form_df(df::DataFrame)
     max_dat = maximum(length.(df.values))
     return hcat([DataFrame(j.name => [j.values; fill(missing, max_dat - length(j.values))])
                  for j in eachrow(df)]...)
+end
+
+function form_df(df::Expr)
+    return form_df(eval(df))
 end
 
 """
