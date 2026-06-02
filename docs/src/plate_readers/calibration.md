@@ -12,6 +12,9 @@ The `TimeseriesBlank` method averages across the blank wells, to get a single bl
 
 It can be called using `calibrate(data, time_col, TimeseriesBlank(blanks, blank_time_col))`.
 
+!!! tip "blank_time_col"
+    The `blank_time_col` will almost always be the same as `time_col`, specified as `plate_01_time.od`, for example. It is kept in as an option if you `blanks` data is recorded on a different set of times, or some processing has happened that means the times are different between blanks and data (for example, some datapoints being removed from `blanks`).
+
 ## SmoothedTimeseriesBlank
 
 The `SmoothedTimeseriesBlank` method averages across the blank wells, and then fits a straight line through the blank data (equivalent to fitting through all the blank wells without averaging). It then subtracts this line of best fit from each well in the data.
