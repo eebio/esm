@@ -41,6 +41,18 @@ function perform_recalibration(df, time_col, recalibrate, offset)
     return df, time_col, recalibrant
 end
 
+function process_plot_directory(plot_directory)
+    if plot_directory == :temp
+        plot_directory = mktempdir()
+        @info "Saving growth curve plots to temporary directory: $plot_directory"
+    end
+    if !isnothing(plot_directory) && !isdir(plot_directory)
+        # Is directory/path doesn't exist, create it
+        mkpath(plot_directory)
+    end
+    return plot_directory
+end
+
 """
     growth_rate(df, time_col, method::AbstractGrowthRateMethod)
 
@@ -57,10 +69,8 @@ Keywords:
 - `plot_directory`: If provided, this is the directory to save plots of the growth curves with the fitted growth rate. Default is nothing (no plots saved). If :temp, plots will be saved to a temporary directory.
 """
 function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
-    if plot_directory == :temp
-        plot_directory = mktempdir()
-        @info "Saving growth curve plots to temporary directory: $plot_directory"
-    end
+    plot_directory = process_plot_directory(plot_directory)
+
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -86,10 +96,8 @@ Arguments:
 - `method::AbstractGrowthRateMethod`.
 """
 function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
-    if plot_directory == :temp
-        plot_directory = mktempdir()
-        @info "Saving growth curve plots to temporary directory: $plot_directory"
-    end
+    plot_directory = process_plot_directory(plot_directory)
+
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -114,10 +122,8 @@ Arguments:
 - `method::AbstractGrowthRateMethod`.
 """
 function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
-    if plot_directory == :temp
-        plot_directory = mktempdir()
-        @info "Saving growth curve plots to temporary directory: $plot_directory"
-    end
+    plot_directory = process_plot_directory(plot_directory)
+
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -142,10 +148,8 @@ Arguments:
 - `method::AbstractGrowthRateMethod`.
 """
 function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
-    if plot_directory == :temp
-        plot_directory = mktempdir()
-        @info "Saving growth curve plots to temporary directory: $plot_directory"
-    end
+    plot_directory = process_plot_directory(plot_directory)
+
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
@@ -172,10 +176,8 @@ Arguments:
 - `method::AbstractGrowthRateMethod`.
 """
 function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
-    if plot_directory == :temp
-        plot_directory = mktempdir()
-        @info "Saving growth curve plots to temporary directory: $plot_directory"
-    end
+    plot_directory = process_plot_directory(plot_directory)
+
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
