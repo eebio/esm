@@ -36,7 +36,12 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             Dict(channel_map[x] => extract_flow(
                      temp_data, flow_channel("$x"))
             for x in channels))
-        temp["metadata"]["raw_metadata"] = Dict(k => getproperty(temp_data, k)
+        temp["metadata"]["raw_metadata"] = Dict(k =>
+            try
+                getproperty(temp_data, k)
+            catch
+                "Error: Property could not be read"
+            end
         for k in propertynames(temp_data))
 
         # Handle time channel units
