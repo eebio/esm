@@ -29,8 +29,9 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             channels = [c == "Time" ? "time" : c for c in channels]
             channel_map = merge(Dict(c => c for c in channels), channel_map)
         end
-        temp["values"] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
-        for x in channels)
+        temp["values"] = Dict{String, Any}(channel_map[x] => temp_data[flow_channel(
+            lowercase(x) == "time" && "Time" ∉ keys(temp_data) && "TIME" ∈ keys(temp_data) ? "TIME" : "$x"
+            )] for x in channels)
         temp["metadata"] = convert(Dict{String, Any},
             Dict(channel_map[x] => extract_flow(
                      temp_data, flow_channel("$x"))
