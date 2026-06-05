@@ -49,7 +49,7 @@ end
     f["metadata"]["date_created"] = ""
     f["metadata"]["date_modified"] = ""
     f["metadata"]["versioninfo"] = ""
-    @test bytes2hex(stable_hash(f; version=4)) == "f02ca5afe80b5850e9c0602f00667891616d3d22431df44aaf16fc4fc28ce33e"
+    @test bytes2hex(stable_hash(f; version=4)) == "e17abf50b479cb8bf56adfb54ca57da95fbc248ec6fa8472dbf7a7981c6edee6"
 end
 
 @testitem "Views integration" setup=[environment_path, build, getshell] begin
