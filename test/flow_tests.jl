@@ -171,3 +171,25 @@ end
     @test all(calibrated_beads[!, "BL1-H.min"] .== 0.0)
     @test all(calibrated_beads[!, "BL1-H.max"] .> 0.0)
 end
+
+@testitem "extra fcs" setup=[environment_path] begin
+    using Dates
+    data = read_data("inputs/extrafcs.xlsx")
+    for sample in ["plate_01_a1", "plate_01_a2", "plate_01_a3", "plate_01_a4"]
+        times = data["samples"][sample]["values"]["time"]
+        start_time = strip(data["samples"][sample]["metadata"]["raw_metadata"][:btim])
+        end_time = strip(data["samples"][sample]["metadata"]["raw_metadata"][:etim])
+        if count(==(':'), start_time) > 2
+            start_time = Time(start_time, dateformat"HH:MM:SS:ss")
+        else
+            start_time = Time(start_time)
+        end
+        if count(==(':'), end_time) > 2
+            end_time = Time(end_time, dateformat"HH:MM:SS:ss")
+        else
+            end_time = Time(end_time)
+        end
+        experiment_time = maximum(times) - minimum(times)
+        @test end_time - Second(1) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(1)
+    end
+end

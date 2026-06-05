@@ -111,9 +111,11 @@ function read_data(file::AbstractString)
     for i in range(1, length(keys(samples)))
         # Check what instrument was used
         ins_type = Set(samples[i].Type)
-        if contains(samples[i]."Data Location"[1], "\$GITHUB_WORKSPACE")
-            samples[i]."Data Location"[1] = replace.(samples[i]."Data Location"[1],
-                "\$GITHUB_WORKSPACE" => ENV["GITHUB_WORKSPACE"])
+        for j in 1:length(samples[i]."Data Location")
+            if contains(samples[i]."Data Location"[j], "\$GITHUB_WORKSPACE")
+                samples[i]."Data Location"[j] = replace.(samples[i]."Data Location"[j],
+                    "\$GITHUB_WORKSPACE" => ENV["GITHUB_WORKSPACE"])
+            end
         end
         length(ins_type) == 1 ||
             error("All experiments on one plate must be from the same instrument types. \

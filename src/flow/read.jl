@@ -29,14 +29,64 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             channels = [c == "Time" ? "time" : c for c in channels]
             channel_map = merge(Dict(c => c for c in channels), channel_map)
         end
-        temp["values"] = Dict(channel_map[x] => temp_data[flow_channel("$(x)")]
-        for x in channels)
+        temp["values"] = Dict{String, Any}(channel_map[x] => temp_data[flow_channel(
+            lowercase(x) == "time" && "Time" ∉ keys(temp_data) && "TIME" ∈ keys(temp_data) ? "TIME" : "$x"
+            )] for x in channels)
         temp["metadata"] = convert(Dict{String, Any},
             Dict(channel_map[x] => extract_flow(
                      temp_data, flow_channel("$x"))
             for x in channels))
-        temp["metadata"]["raw_metadata"] = Dict(k => getproperty(temp_data, k)
+        temp["metadata"]["raw_metadata"] = Dict(k =>
+            try
+                getproperty(temp_data, k)
+            catch
+                "Error: Property could not be read"
+            end
         for k in propertynames(temp_data))
+
+        # Handle time channel units
+        if haskey(channel_map, "time") && haskey(temp["values"], channel_map["time"])
+            times = collect(temp["values"][channel_map["time"]])
+            if hasproperty(temp_data, :timestep)
+                if eltype(times) <: Integer
+                    # Times are stored as integer multiples of timestep (as they should be)
+                    timestep = parse(Float64, temp_data.timestep) # in seconds
+                    temp["values"][channel_map["time"]] = times .* timestep .* 1000 # store time in milliseconds
+                else
+                    # Has a timestep but is stored as floats
+                    # Has time been stored in seconds or milliseconds?
+                    start_time = Time(strip(temp["metadata"]["raw_metadata"][:btim]))
+                    end_time = Time(strip(temp["metadata"]["raw_metadata"][:etim]))
+                    experiment_time = maximum(times) - minimum(times)
+                    if end_time - Second(2) <= start_time + Millisecond(round(experiment_time .* 1000)) <= end_time + Second(2)
+                        # Already in seconds, convert to ms
+                        temp["values"][channel_map["time"]] = times .* 1000
+                    elseif end_time - Second(1) <= start_time + Millisecond(experiment_time) <= end_time + Second(1)
+                        # Already in ms, do nothing
+                    else
+                        # Assume the time is meant to be an integer multiple of the timestep but was stored as floats
+                        timestep = parse(Float64, temp_data.timestep) # in seconds
+                        temp["values"][channel_map["time"]] = times .* timestep .* 1000 # convert to ms
+                    end
+                end
+            end
+            # Check time was handled correctly by comparing machine start and end times with the time channel data
+            start_time = strip(temp["metadata"]["raw_metadata"][:btim])
+            if count(==(':'), start_time) > 2
+                start_time = Time(start_time, dateformat"HH:MM:SS:ss")
+            else
+                start_time = Time(start_time)
+            end
+            end_time = strip(temp["metadata"]["raw_metadata"][:etim])
+            if count(==(':'), end_time) > 2
+                end_time = Time(end_time, dateformat"HH:MM:SS:ss")
+            else
+                end_time = Time(end_time)
+            end
+            times = collect(temp["values"][channel_map["time"]])
+            experiment_time = maximum(times) - minimum(times)
+            @assert end_time - Second(1) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(1) "Data from time channel does not match start and end times in the metadata. Please report this issue to the ESM developers with the FCS file that caused this error so we can fix it."
+        end
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
     end
