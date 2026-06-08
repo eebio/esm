@@ -35,13 +35,13 @@ function calibrate(data, time_col, method::TimeseriesBlank)
     else
         blank_time_col = time_col
     end
-    averaged_blanks = colmean(blanks)
+    averaged_blanks = mean(eachcol(blanks)) # here
     # Interpolate blanks to data time points if necessary
     if !isequal(blank_time_col, time_col)
         li = LinearInterpolation(averaged_blanks,
             blank_time_col[!, 1];
             extrapolation = ExtrapolationType.Constant)
-        averaged_blanks = li.(time_col[!, 1])
+        averaged_blanks = li.(skipmissing(time_col[!, 1]))
     end
     return data .- averaged_blanks
 end
@@ -59,10 +59,10 @@ function calibrate(data, time_col, method::SmoothedTimeseriesBlank)
     else
         blank_time_col = time_col
     end
-    averaged_blanks = colmean(blanks)
-    df = DataFrame(od = averaged_blanks, Time = blank_time_col[!, 1])
+    averaged_blanks = mean(eachcol(blanks))
+    df = DataFrame(od = averaged_blanks, Time = blank_time_col[!, 1]) # here
     model = lm(@formula(od~Time), df)
-    smoothed_blanks = predict(model, DataFrame(Time = time_col[!, 1]))
+    smoothed_blanks = predict(model, DataFrame(Time = collect(skipmissing(time_col[!, 1]))))
     return data .- smoothed_blanks
 end
 
@@ -74,7 +74,7 @@ function calibrate(data, _, method::MeanBlank)
     check_multiple_channels(method.blanks)
     blanks = method.blanks
     # Average blanks over time
-    means = mean(colmean(blanks))
+    means = mean(skipmissing(mean(eachcol(blanks))))
     return data .- means
 end
 
@@ -86,7 +86,7 @@ function calibrate(data, _, method::MinBlank)
     check_multiple_channels(method.blanks)
     blanks = method.blanks
     # Minimum blank over time
-    mins = minimum(minimum(eachcol(blanks)))
+    mins = minimum(skipmissing(minimum(skipmissing(eachcol(blanks)))))
     return data .- mins
 end
 
@@ -95,7 +95,7 @@ struct MinData <: AbstractCalibrationMethod end
 function calibrate(data, _, ::MinData)
     data = deepcopy(data)
     # Minimum data over time
-    mins = [minimum(i) for i in eachcol(data)]
+    mins = [minimum(skipmissing(i)) for i in eachcol(data)]
     for i in 1:ncol(data)
         data[!, i] .-= mins[i]
     end
@@ -107,7 +107,7 @@ struct StartData <: AbstractCalibrationMethod end
 function calibrate(data, _, ::StartData)
     # Set starting value to zero
     data = deepcopy(data)
-    starts = data[1, :]
+    starts = [first(skipmissing(i)) for i in eachcol(data)]
     for i in 1:ncol(data)
         data[!, i] .-= starts[i]
     end

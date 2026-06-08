@@ -55,7 +55,7 @@ end
           [Dict("autodefined" => "true")]
     @test issetequal(keys(es_written.transformations), ["flow_sub", "od_sub"])
     @test es_written.transformations["flow_sub"] ==
-          Dict{String, Any}("equation" => "hcat(first_group.flo,second_group.flo).-colmean(third_group.flo)")
+          Dict{String, Any}("equation" => "hcat(first_group.flo,second_group.flo).-mean(eachcol(third_group.flo))")
     @test issetequal(keys(es_written.views),
         ["flowsub", "mega", "group2", "sample", "odsub", "group1", "group3"])
     @test es_written.views["mega"] ==

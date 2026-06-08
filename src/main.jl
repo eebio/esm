@@ -123,8 +123,6 @@ function get_sample_id(sample)
     return first(splitext(sample))
 end
 
-colmean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
-
 function index_between_vals(df; minv = -Inf, maxv = Inf)
     if all(ismissing.(df[:, 1])) || count(x -> minv <= x <= maxv, skipmissing(df[:, 1])) == 0
         return nothing, nothing
