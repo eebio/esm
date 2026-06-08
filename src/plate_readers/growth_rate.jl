@@ -304,7 +304,7 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
 
     # Get the indexes for the time range
     indexes = index_between_vals(
-        time_col; minv = start_time * 60000, maxv = end_time * 60000)[names(time_col)[1]]
+        time_col; minv = start_time * 60000, maxv = end_time * 60000)
 
     if isnothing(indexes[1]) || isnothing(indexes[2])
         @warn "No data points found between start_time=$(start_time) and \
@@ -322,7 +322,8 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
     lm_model = lm(@formula(log_od~time), lm_df)
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
-    od_at_max_growth = geomean(between_times(df, time_col; mint = start_time, maxt = end_time)[:,1])
+
+    od_at_max_growth = geomean(skipmissing(between_times(df, time_col; mint = start_time, maxt = end_time)[:,1]))
 
     summaries = Dict(
         "growth_rate" => growth_rate,
