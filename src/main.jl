@@ -130,9 +130,11 @@ function index_between_vals(df; minv = -Inf, maxv = Inf)
 end
 
 """
-    between_times(df,time_col;mint=-Inf,maxt=Inf)
+    between_times(df, time_col; mint=-Inf, maxt=Inf)
 
 Returns the DataFrame between two timepoints.
+
+All other data is set to `missing`.
 
 Arguments:
 - `df::DataFrame`: DataFrame to work on.
@@ -146,13 +148,16 @@ function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = I
 end
 
 """
-    between(df, range_col; min_value=-Inf, max_value=Inf)
+    between(df, range_df; min_value=-Inf, max_value=Inf)
     between(df; min_value=-Inf, max_value=Inf)
 
 Replace out of range values with `missing`.
 
-Out of range values are determined by `min_value` .<= range_col .<= `max_value`.
+Out of range values are determined by `min_value` .<= `range_col` .<= `max_value`.
 If `range_col` is not provided, by `min_value` .<= df .<= `max_value`.
+
+If `range_col` has one column, the associate row indexes with `min_value` .<= `range_col` .<= `max_value` are broadcast along all columns of `df`.
+If `range_col` has multiple columns, the column names should match those of `df`.
 
 Arguments:
 - `df::DataFrame`: DataFrame to subset.
@@ -212,7 +217,7 @@ end
 
 Returns values at a specific time point.
 If no value at specific timepoint, return the last recording before the timepoint.
-If time_point < minimum(time_col), return `nothing`.
+If `time_point < minimum(time_col)`, return `nothing`.
 
 Arguments:
 - `df::DataFrame`: DataFrame on which to work.
@@ -230,19 +235,19 @@ function at_time(df::DataFrame, time_col::DataFrame, time_point)
 end
 
 """
-    at(df,range_col,target_value)
+    at(df, range_df, target_value)
 
-A function to return a set of values from a different dataframe based on another.
-In theory this can be used for many types of data, but this adds the functionality
-to target a specific OD and return the values from another dataframe at that index.
+Return the values of `df` at the index of `range_df` where `range_df` is equal to `target_value`.
 
-The specific index used is the last index in `range_col` where the value is less than or equal to `target_value`.
-If no such index exists, `missing` will be used for that column of `df`.
+If no value in `range_df` is equal to `target_value`, return the last recording before the `target_value`.
+
+If `range_df` has one column, the same index will be applied to all columns of `df`.
+If `range_df` has multiple columns, the column names should match those of `df` and a new index will be computed for each column.
 
 Arguments:
 
 - `df::DataFrame`: The DataFrame you are getting the indexes from.
-- `range_df`: The column by which to filter.
+- `range_df`: The data frame by which to filter.
 - `target_value::Number`: Defines the threshold value for filtering.
 """
 function at(df::DataFrame, range_df, target_value)
