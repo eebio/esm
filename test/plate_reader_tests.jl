@@ -756,7 +756,7 @@ end
 
     # If no data points are above the threshold, lag time should return NaN
     od_df_low = between(od_df; min_value=100.0, max_value=100.0)
-    @test ismissing(lag_time(od_df_low, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"])
+    @test isnan(lag_time(od_df_low, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"])
 end
 
 @testitem "od thresholds - calibrate" begin
