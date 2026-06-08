@@ -724,11 +724,14 @@ end
     using Dates
     time_col = DataFrame(:Time => 0:10000:600000)
     # Requires full curve, not just a bit of exponential growth
-    f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0)))) - 1
+    f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0))))
     od_df = f.(time_col ./ 60000)
     rename!(od_df, :Time => :A)
 
-    od_df = between(od_df; min_value=0.1, max_value=0.9)
+    od_df = between(od_df; min_value=1.0005, max_value=2.013)
+    # Check for missing values
+    @test any(ismissing, od_df[!, "A"])
+
     # Check that the actual growth rate is around 0.35
     @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"]≈0.35 atol=1e-2
 
