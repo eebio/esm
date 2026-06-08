@@ -700,8 +700,8 @@ end
     @test 33047800 in data["ABS_700_0_nm"][!, "time"]
 end
 
-@testitem "od thresholds" begin
-    println("od thresholds")
+@testitem "od thresholds - growth rate" begin
+    println("od thresholds - growth rate")
     using DataFrames
     od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6, 51.2])
     od_df = between(od_df; min_value=0.2, max_value=10)
