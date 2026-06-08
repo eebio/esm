@@ -544,11 +544,11 @@ end
             extra = ""
         end
         if extra != ""
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_$(extra)_A.png"))
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_$(extra)_B.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_$(extra)_A.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_$(extra)_B.png"))
         else
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_A.png"))
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_B.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_A.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_B.png"))
         end
     end
 

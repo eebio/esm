@@ -232,7 +232,7 @@ function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing)
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
         vline!(p, [start_time, end_time], label = "Fitting Window", color = :blue, linestyle = :dot)
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -277,7 +277,7 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         if !isnothing(best_window)
             vline!(p, best_window, label = "Fitting Window", color = :blue, linestyle = :dot)
         end
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.method)_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.method)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -334,7 +334,7 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
         vline!(p, [start_time, end_time], label = "Fitting Window", color = :blue, linestyle = :dot)
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -423,7 +423,7 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
         plot!(p, t_refined, ti -> method.func(ti, psol), label = "Parametric Fit", color = :blue, linestyle = :dot)
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.name)_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.name)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -487,7 +487,7 @@ function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
-        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.type)_$(names(df)[1]).png"))
+        savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.type)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -534,7 +534,7 @@ function _growth_rate(df, time_col, method::Regularization; plot_directory = not
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
         plot!(p, t_refined, A.(t_refined), label = "Regularized Fit", color = :blue, linestyle = :dot)
-        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.alg)_$(names(df)[1]).png"))
+        savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.alg)_$(names(df)[1]).png"))
     end
     return summaries
 end
