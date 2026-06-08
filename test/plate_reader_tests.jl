@@ -699,3 +699,59 @@ end
     data = read("inputs/bmg-time-error.csv", BMG())[1]
     @test 33047800 in data["ABS_700_0_nm"][!, "time"]
 end
+
+@testitem "od thresholds" begin
+    println("od thresholds")
+    using DataFrames
+    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6, 51.2])
+    od_df = between(od_df; min_value=0.2, max_value=10)
+    time_col = DataFrame(Time = 0:60000:600000)
+
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, LinearOnLog(start_time = 3, end_time = 6))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, Endpoints(start_time = 3, end_time = 6))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, Regularization())[1, "A"] ≈ log(2)
+
+    # Parametric tests
+    using Dates
+    time_col = DataFrame(:Time => 0:10000:600000)
+    # Requires full curve, not just a bit of exponential growth
+    f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0)))) - 1
+    od_df = f.(time_col ./ 60000)
+    rename!(od_df, :Time => :A)
+
+    od_df = between(od_df; min_value=0.1, max_value=0.9)
+    # Check that the actual growth rate is around 0.35
+    @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"]≈0.35 atol=1e-2
+
+    # Test the parametric methods
+    @test growth_rate(od_df, time_col, Logistic())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Richards())[1, "A"]≈0.35 atol=1e-2
+
+    # Test lagtime doesn't return missing for any method
+    @test !ismissing(lag_time(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, LinearOnLog(start_time = 3, end_time = 6))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Endpoints(start_time = 3, end_time = 6))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, FiniteDiff())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Regularization())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Logistic())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Gompertz())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, ModifiedGompertz())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Richards())[1, "A"])
+
+    # If no data points are above the threshold, lag time should return NaN
+    od_df_low = between(od_df; min_value=100.0, max_value=100.0)
+    @test ismissing(lag_time(od_df_low, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"])
+end
