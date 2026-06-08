@@ -27,8 +27,8 @@ function doubling_time(args...; kwargs...)
 end
 
 function perform_recalibration(df, time_col, recalibrate, offset)
-    if (recalibrate == :negative && any(df[:, 1] .<= 0)) || recalibrate == true
-        recalibrant = minimum(df[:, 1]) - offset
+    if (recalibrate == :negative && any(skipmissing(df[:, 1]) .<= 0)) || recalibrate == true
+        recalibrant = minimum(skipmissing(df[:, 1])) - offset
         df = calibrate(df, time_col, MinData(); offset = offset)
     elseif recalibrate == false
         mask = df[!, 1] .> 0
@@ -53,6 +53,14 @@ function process_plot_directory(plot_directory)
     return plot_directory
 end
 
+function stripmissing(missing_data, other_col)
+    tmp = hcat(missing_data, other_col)
+    tmp = dropmissing(tmp)
+    missing_data = tmp[:, Not(names(other_col)[1])]
+    other_col = tmp[:, [names(other_col)[1]]]
+    return missing_data, other_col
+end
+
 """
     growth_rate(df, time_col, method::AbstractGrowthRateMethod)
 
@@ -74,8 +82,9 @@ function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -101,8 +110,9 @@ function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :n
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -127,8 +137,9 @@ function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; reca
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -153,8 +164,9 @@ function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recali
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -181,8 +193,9 @@ function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = 
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end

@@ -126,7 +126,10 @@ end
 colmean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
 
 function index_between_vals(df; minv = -Inf, maxv = Inf)
-    return findfirst(x -> minv <= x <= maxv, df[:, 1]), findlast(x -> minv <= x <= maxv, df[:, 1])
+    if all(ismissing.(df[:, 1])) || count(x -> minv <= x <= maxv, skipmissing(df[:, 1])) == 0
+        return nothing, nothing
+    end
+    return findfirst(x -> minv <= x <= maxv, skipmissing(df[:, 1])), findlast(x -> minv <= x <= maxv, collect(skipmissing(df[:, 1])))
 end
 
 """
@@ -254,21 +257,21 @@ function at(df::DataFrame, range_df, target_value)
     dict_2 = Dict()
     if range_df isa AbstractVector || ncol(range_df) == 1
         for i in names(df)
-            if target_value < minimum(range_df[:, 1])
+            if all(ismissing.(range_df[:, 1])) || target_value < minimum(skipmissing(range_df[:, 1]))
                 @warn "No values found at or before $target_value."
                 dict_2[i] = missing
             else
-                dict_2[i] = df[findlast(x -> x <= target_value, range_df[:, 1]), i]
+                dict_2[i] = df[findlast(x -> x <= target_value, collect(skipmissing(range_df[:, 1]))), i]
             end
         end
     else
         @assert issetequal(names(df), names(range_df)) "DataFrame columns must match for `at` filtering."
         for i in names(df)
-            if target_value < minimum(range_df[!, i])
+            if all(ismissing.(range_df[!, i])) || target_value < minimum(skipmissing(range_df[!, i]))
                 @warn "No values found at or before $target_value for column $i."
                 dict_2[i] = missing
             else
-                dict_2[i] = df[findlast(x -> x <= target_value, range_df[!, i]), i]
+                dict_2[i] = df[findlast(x -> x <= target_value, collect(skipmissing(range_df[!, i]))), i]
             end
         end
     end
