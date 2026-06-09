@@ -29,12 +29,12 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             channels = [c == "Time" ? "time" : c for c in channels]
             channel_map = merge(Dict(c => c for c in channels), channel_map)
         end
-        temp["values"] = Dict{String, Any}(channel_map[x] => temp_data[flow_channel(
-            lowercase(x) == "time" && "Time" ∉ keys(temp_data) && "TIME" ∈ keys(temp_data) ? "TIME" : "$x"
-            )] for x in channels)
+        temp["values"] = Dict{String, Any}(channel_map[x] => temp_data[flow_channel(x, temp_data)]
+        for x in channels)
+        @show j."Data Location"
         temp["metadata"] = convert(Dict{String, Any},
             Dict(channel_map[x] => extract_flow(
-                     temp_data, flow_channel("$x"))
+                     temp_data, flow_channel(x, temp_data))
             for x in channels))
         temp["metadata"]["raw_metadata"] = Dict(k =>
             try
@@ -93,11 +93,18 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
     return sample_dict, broad_g
 end
 
-function flow_channel(channel)
-    if channel == "time"
-        return "Time"
+function flow_channel(esmchannel, data)
+    all_channels = keys(data)
+    for c in all_channels
+        if format_channel(c) == esmchannel
+            return c
+        end
     end
-    return replace(channel, "_" => "-")
+    for c in all_channels
+        if lowercase(format_channel(c)) == lowercase(esmchannel)
+            return c
+        end
+    end
 end
 
 """
