@@ -192,19 +192,19 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
         dir = mktempdir()
         channels = [c for c in keys(f) if c != "Time"]
         for c in channels
-            p = histogram(f[ESM.flow_channel(c)],
-                xlabel = "$c", ylabel = "Count")
+            p = histogram(f[c],
+                xlabel = format_channel(c), ylabel = "Count")
             savefig(p, joinpath(dir, string(c) * ".pdf"))
-            p = scatter(f["Time"], f[ESM.flow_channel(c)],
-                xlabel = "Time", ylabel = "$c", marker = :auto)
+            p = scatter(f["Time"], f[c],
+                xlabel = "Time", ylabel = format_channel(c), marker = :auto)
             savefig(p, joinpath(dir, string(c) * "_time.pdf"))
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
         merge_pdfs(filepaths, string(file) * ".pdf")
         dir = mktempdir()
         for (c1, c2) in combinations(channels, 2)
-            p = histogram2d(f[ESM.flow_channel(c1)], f[ESM.flow_channel(c2)],
-                xlabel = "$c1", ylabel = "$c2")
+            p = histogram2d(f[c1], f[c2],
+                xlabel = format_channel(c1), ylabel = format_channel(c2))
             savefig(p, joinpath(dir, string(c1) * string(c2) * ".pdf"))
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
