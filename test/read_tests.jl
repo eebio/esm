@@ -238,25 +238,23 @@ end
     # Sample data for testing
     df = DataFrame(A = 1:10, B = 11:20)
 
-    result = ESM.index_between_vals(df; minv = 3, maxv = 8)
-    @test result["A"] == (3, 8)
-    @test result["B"] == (nothing, nothing)
+    result = ESM.index_between_vals(df[!, :A]; minv = 3, maxv = 8)
+    @test result == (3, 8)
 
-    result = ESM.index_between_vals(df; minv = 5, maxv = 10)
-    @test result["A"] == (5, 10)
-    @test result["B"] == (nothing, nothing)
+    result = ESM.index_between_vals(df[!, :A]; minv = 5, maxv = 10)
+    @test result == (5, 10)
 
-    result = ESM.index_between_vals(df; minv = 0, maxv = 15)
-    @test result["A"] == (1, 10)
-    @test result["B"] == (1, 5)
+    result = ESM.index_between_vals(df[!, :B]; minv = 0, maxv = 15)
+    @test result == (1, 5)
 
-    result = ESM.index_between_vals(df; minv = 2.5, maxv = 13.5)
-    @test result["A"] == (3, 10)
-    @test result["B"] == (1, 3)
+    result = ESM.index_between_vals(df[!, :A]; minv = 2.5, maxv = 13.5)
+    @test result == (3, 10)
 
-    result = ESM.index_between_vals(df)
-    @test result["A"] == (1, 10)
-    @test result["B"] == (1, 10)
+    result = ESM.index_between_vals(df[!, :B]; minv = 2.5, maxv = 13.5)
+    @test result == (1, 3)
+
+    result = ESM.index_between_vals(df[!, :A])
+    @test result == (1, 10)
 end
 
 # Test between_times
@@ -270,19 +268,63 @@ end
         3518000, 4118000, 4718000, 5318000, 5400000])
 
     result = ESM.between_times(df, time_col; mint = 0, maxt = 0)
-    @test result == DataFrame(A = [], B = [])
+    @test isequal(result, DataFrame(A = fill(missing, 10), B = fill(missing, 10)))
 
     result = ESM.between_times(df, time_col; mint = 1e-11, maxt = 3e-11)
-    @test result == DataFrame(A = [], B = [])
+    @test isequal(result, DataFrame(A = fill(missing, 10), B = fill(missing, 10)))
 
     result = ESM.between_times(df, time_col; mint = 9, maxt = 15)
-    @test result == DataFrame(A = [], B = [])
+    @test isequal(result, DataFrame(A = fill(missing, 10), B = fill(missing, 10)))
 
     result = ESM.between_times(df, time_col; mint = 0, maxt = 50)
-    @test result == DataFrame(A = 1:5, B = 11:15)
+    @test isequal(result, DataFrame(A = [1:5..., fill(missing, 5)...], B = [11:15..., fill(missing, 5)...]))
 
     result = ESM.between_times(df, time_col; mint = 90, maxt = 90)
-    @test result == DataFrame(A = 10, B = 20)
+    @test isequal(result, DataFrame(A = [fill(missing, 9)..., 10], B = [fill(missing, 9)..., 20]))
+end
+
+# Test between
+@testitem "between" begin
+    println("between")
+    using DataFrames
+
+    # Sample data for testing
+    df = DataFrame(A = 1:10, B = 11:20)
+
+    # between(df; min_value, max_value)
+    result = ESM.between(df; min_value = 7, max_value = 15)
+    @test isequal(result, DataFrame(A = [fill(missing, 6)..., 7:10...], B = [11:15..., fill(missing, 5)...]))
+    result = ESM.between(df; min_value = 0, max_value = 0.5)
+    @test isequal(result, DataFrame(A = fill(missing, 10), B = fill(missing, 10)))
+    result = ESM.between(df; min_value = 10, max_value = 20)
+    @test isequal(result, DataFrame(A = [fill(missing, 9)..., 10], B = 11:20))
+    result = ESM.between(df; min_value = 0, max_value = 50)
+    @test isequal(result, DataFrame(A = 1:10, B = 11:20))
+
+    # between(df, range_col, min_value, max_value)
+    result = ESM.between(df, df[:, :A]; min_value = 7, max_value = 15)
+    @test isequal(result, DataFrame(A = [fill(missing, 6)..., 7:10...], B = [
+        fill(missing, 6)..., 17:20...]))
+    result = ESM.between(df, df[:, [:A]]; min_value = 0, max_value = 0.5)
+    @test isequal(result, DataFrame(A = fill(missing, 10), B = fill(missing, 10)))
+    result = ESM.between(df, df[:, :B]; min_value = 10, max_value = 20)
+    @test isequal(result, DataFrame(A = 1:10, B = 11:20))
+    result = ESM.between(df, df[:, [:B]]; min_value = 0, max_value = 50)
+    @test isequal(result, DataFrame(A = 1:10, B = 11:20))
+    result = ESM.between(df, df[:, :B]; min_value = 0, max_value = 5)
+    @test isequal(result, DataFrame(A = fill(missing, 10), B = fill(missing, 10)))
+
+    # Sample data for testing
+    df = DataFrame(A = 1:10, B = 11:20)
+    range_df = DataFrame(A = 5:14, B = 9:18)
+    result = ESM.between(df, range_df; min_value = 7, max_value = 15)
+    @test isequal(result, DataFrame(A = [fill(missing, 2)..., 3:10...], B = [
+        11:17..., fill(missing, 3)...]))
+    result = ESM.between(df, range_df; min_value = 3, max_value = 4)
+    @test isequal(result, DataFrame(A = fill(missing, 10), B = fill(missing, 10)))
+    result = ESM.between(df, range_df; min_value = 15, max_value = 50)
+    @test isequal(result, DataFrame(A = fill(missing, 10), B =
+        [fill(missing, 6)..., 17:20...]))
 end
 
 # Test at_time
@@ -304,16 +346,26 @@ end
 end
 
 # Test at_od
-@testitem "at_od" begin
-    println("at_od")
+@testitem "at" begin
+    println("at")
     using DataFrames
-    # Sample data for at_od
+    # Sample data for at
     od_df = DataFrame(A = [0.1, 0.2, 0.3, 0.4, 0.5], B = [0.2, 0.3, 0.4, 0.5, 0.6])
-    target_df = DataFrame(A = [10, 20, 30, 40, 50], B = [20, 30, 40, 50, 60])
+    range_col = DataFrame(D = [10, 20, 30, 40, 50])
 
-    @test ESM.at_od(od_df, target_df, 0.3) == DataFrame(A = 30, B = 30)
-    @test ESM.at_od(od_df, target_df, 0.1) == DataFrame(A = 10, B = nothing)
-    @test ESM.at_od(od_df, target_df, 0.5) == DataFrame(A = 50, B = 50)
+    @test ESM.at(od_df, range_col, 30) == DataFrame(A = 0.3, B = 0.4)
+    @test ESM.at(od_df, range_col, 10) == DataFrame(A = 0.1, B = 0.2)
+    @test isequal(ESM.at(od_df, range_col, 5), DataFrame(A = missing, B = missing))
+
+
+    od_df = DataFrame(A = [0.1, 0.2, 0.3, 0.4, 0.5], B = [0.2, 0.3, 0.4, 0.5, 0.6])
+    range_col = DataFrame(A = [10, 20, 30, 40, 50], B = [30, 40, 50, 55, 35])
+
+    @test ESM.at(od_df, range_col, 30) == DataFrame(A = 0.3, B = 0.2)
+    @test isequal(ESM.at(od_df, range_col, 10), DataFrame(A = 0.1, B = missing))
+    @test ESM.at(od_df, range_col, 37) == DataFrame(A = 0.3, B = 0.6)
+    @test isequal(ESM.at(od_df, range_col, 5), DataFrame(A = missing, B = missing))
+    @test ESM.at(od_df, range_col, 100) == DataFrame(A = 0.5, B = 0.6)
 end
 
 @testitem "expression" setup=[MockESM] begin

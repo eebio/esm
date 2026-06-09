@@ -14,6 +14,7 @@ PAGES = [
         "plate_readers/growth_rate.md",
         "plate_readers/fluorescence.md",
         "plate_readers/compatibility.md",
+        "plate_readers/other_functions.md",
     ],
     "Flow Cytometry" => [
         "flow_cytometers/index.md",

@@ -27,8 +27,8 @@ function doubling_time(args...; kwargs...)
 end
 
 function perform_recalibration(df, time_col, recalibrate, offset)
-    if (recalibrate == :negative && any(df[:, 1] .<= 0)) || recalibrate == true
-        recalibrant = minimum(df[:, 1]) - offset
+    if (recalibrate == :negative && any(skipmissing(df[:, 1]) .<= 0)) || recalibrate == true
+        recalibrant = minimum(skipmissing(df[:, 1])) - offset
         df = calibrate(df, time_col, MinData(); offset = offset)
     elseif recalibrate == false
         mask = df[!, 1] .> 0
@@ -53,6 +53,14 @@ function process_plot_directory(plot_directory)
     return plot_directory
 end
 
+function stripmissing(missing_data, other_col)
+    tmp = hcat(missing_data, other_col)
+    tmp = dropmissing(tmp)
+    missing_data = tmp[:, Not(names(other_col)[1])]
+    other_col = tmp[:, [names(other_col)[1]]]
+    return missing_data, other_col
+end
+
 """
     growth_rate(df, time_col, method::AbstractGrowthRateMethod)
 
@@ -74,8 +82,9 @@ function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -101,8 +110,9 @@ function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :n
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -127,8 +137,9 @@ function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; reca
     dict_2 = Dict()
     for i in names(df)
         od, times, _ = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -153,8 +164,9 @@ function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recali
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -181,8 +193,9 @@ function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = 
     dict_2 = Dict()
     for i in names(df)
         od, times, recalibrant = perform_recalibration(df[:, [i]], time_col, recalibrate, offset)
+        od, times = stripmissing(od, times)
         if nrow(od) == 0
-            @warn "No positive values found for column $i after filtering. Returning NaN."
+            @warn "No positive values found for column $i after filtering and removing missing values. Returning NaN."
             dict_2[i] = NaN
             continue
         end
@@ -232,7 +245,7 @@ function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing)
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
         vline!(p, [start_time, end_time], label = "Fitting Window", color = :blue, linestyle = :dot)
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -277,7 +290,7 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         if !isnothing(best_window)
             vline!(p, best_window, label = "Fitting Window", color = :blue, linestyle = :dot)
         end
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.method)_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.method)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -304,7 +317,7 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
 
     # Get the indexes for the time range
     indexes = index_between_vals(
-        time_col; minv = start_time * 60000, maxv = end_time * 60000)[names(time_col)[1]]
+        time_col; minv = start_time * 60000, maxv = end_time * 60000)
 
     if isnothing(indexes[1]) || isnothing(indexes[2])
         @warn "No data points found between start_time=$(start_time) and \
@@ -322,7 +335,8 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
     lm_model = lm(@formula(log_od~time), lm_df)
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
-    od_at_max_growth = geomean(between_times(df, time_col; mint = start_time, maxt = end_time)[:,1])
+
+    od_at_max_growth = geomean(skipmissing(between_times(df, time_col; mint = start_time, maxt = end_time)[:,1]))
 
     summaries = Dict(
         "growth_rate" => growth_rate,
@@ -333,7 +347,7 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
         vline!(p, [start_time, end_time], label = "Fitting Window", color = :blue, linestyle = :dot)
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -422,7 +436,7 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
         plot!(p, t_refined, ti -> method.func(ti, psol), label = "Parametric Fit", color = :blue, linestyle = :dot)
-        savefig(p,joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.name)_$(names(df)[1]).png"))
+        savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.name)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -486,7 +500,7 @@ function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
-        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.type)_$(names(df)[1]).png"))
+        savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.type)_$(names(df)[1]).png"))
     end
     return summaries
 end
@@ -533,7 +547,7 @@ function _growth_rate(df, time_col, method::Regularization; plot_directory = not
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
         plot!(p, t_refined, A.(t_refined), label = "Regularized Fit", color = :blue, linestyle = :dot)
-        savefig(p, joinpath(plot_directory, "growth_curve_$(typeof(method))_$(method.alg)_$(names(df)[1]).png"))
+        savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.alg)_$(names(df)[1]).png"))
     end
     return summaries
 end

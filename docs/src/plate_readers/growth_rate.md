@@ -163,6 +163,14 @@ It can be called using `growth_rate(data, time_col, Regularization())` or `doubl
 !!! tip "Help! My growth curve is wrong"
     The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This only happens if the regularization curve is overfitting the data (following the noise rather than just the general trends). This can fixed by changing the smoothing parameter `lambda` (this varies on a log scale, try `10^6`) and changing the `alg` to `:fixed`.
 
+## OD Thresholds
+
+In some cases, you may want to remove some OD data from the growth rate calculation, for example low OD values where the data is very noisy. You can do this with the `between` function.
+
+For example, `between(od; min_value=0.1)` sets all OD values in `od` that are below 0.1 to `missing`.
+
+For more details on the `between` function, check out the [Other Useful Functions](@ref) page.
+
 ## Implementation Details
 
 If you want to implement a new growth rate method to be included in ESM, you need to:

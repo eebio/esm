@@ -123,32 +123,19 @@ function get_sample_id(sample)
     return first(splitext(sample))
 end
 
-colmean(df::DataFrame) = return reduce(+, eachcol(df)) ./ ncol(df)
-
-"""
-    index_between_vals(df; minv=-Inf, maxv=Inf)
-
-Returns the indexes between two points so that these can be later isolated.
-This is in dict form to allow for individual points to be separated out.
-Both ends are inclusive.
-
-If minv is larger than all values in the column, or maxv smaller, will return
-    `(nothing,nothing)`.
-
-Arguments:
-- `df::DataFrame`: DataFrame to work on.
-- `minv::Float64=-Inf`: Minimum value.
-- `maxv::Float64=Inf`: Maximum value.
-"""
-function index_between_vals(df::DataFrame; minv = -Inf, maxv = Inf)
-    return Dict(col => (findfirst(x -> minv <= x <= maxv, df[:, col]),
-                    findlast(x -> minv <= x <= maxv, df[:, col])) for col in names(df))
+function index_between_vals(df; minv = -Inf, maxv = Inf)
+    if all(ismissing.(df[:, 1])) || count(x -> minv <= x <= maxv, skipmissing(df[:, 1])) == 0
+        return nothing, nothing
+    end
+    return findfirst(x -> minv <= x <= maxv, skipmissing(df[:, 1])), findlast(x -> minv <= x <= maxv, collect(skipmissing(df[:, 1])))
 end
 
 """
-    between_times(df,time_col;mint=-Inf,maxt=Inf)
+    between_times(df, time_col; mint=-Inf, maxt=Inf)
 
 Returns the DataFrame between two timepoints.
+
+All other data is set to `missing`.
 
 Arguments:
 - `df::DataFrame`: DataFrame to work on.
@@ -158,14 +145,72 @@ Arguments:
 """
 function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
     # Do time calculations in seconds to avoid floating point math
-    tvals = index_between_vals(time_col; minv = mint * 60000, maxv = maxt * 60000)
-    tvals = tvals[names(time_col)[1]]
-    if isnothing(tvals[1]) || isnothing(tvals[2])
-        @warn "No values found between $mint and $maxt."
-        # Return empty dataframe of the same type
-        return df[1:0, :]
+    return between(df, time_col; min_value = mint * 60000, max_value = maxt * 60000)
+end
+
+"""
+    between(df, range_df; min_value=-Inf, max_value=Inf)
+    between(df; min_value=-Inf, max_value=Inf)
+
+Replace out of range values with `missing`.
+
+Out of range values are determined by `min_value` .<= `range_col` .<= `max_value`.
+If `range_col` is not provided, by `min_value` .<= df .<= `max_value`.
+
+If `range_col` has one column, the associate row indexes with `min_value` .<= `range_col` .<= `max_value` are broadcast along all columns of `df`.
+If `range_col` has multiple columns, the column names should match those of `df`.
+
+Arguments:
+- `df::DataFrame`: DataFrame to subset.
+- `range_df::DataFrame`: DataFrame of values to filter by.
+- `min_value=-Inf`: Minimum value.
+- `max_value=Inf`: Maximum value.
+"""
+function between(df::DataFrame, range_df; min_value = -Inf, max_value = Inf)
+    df = deepcopy(df)
+    allowmissing!(df)
+    if range_df isa AbstractVector || ncol(range_df) == 1
+        # Find indicies in range_df and replace out of range values with missing
+        indicies = index_between_vals(range_df; minv = min_value, maxv = max_value)
+        for col in names(df)
+            for i in 1:nrow(df)
+                if isnothing(indicies[1]) || isnothing(indicies[2])
+                    df[i, col] = missing
+                else
+                    df[i, col] = ifelse(i < indicies[1] || i > indicies[2], missing, df[i, col])
+                end
+            end
+        end
+    else
+        @assert issetequal(names(df), names(range_df)) "DataFrame columns must match for range filtering."
+        for col in names(df)
+            indicies = index_between_vals(range_df[!, col]; minv = min_value, maxv = max_value)
+            for i in 1:nrow(df)
+                if isnothing(indicies[1]) || isnothing(indicies[2])
+                    df[i, col] = missing
+                else
+                    df[i, col] = ifelse(i < indicies[1] || i > indicies[2], missing, df[i, col])
+                end
+            end
+        end
     end
-    return df[tvals[1]:tvals[2], :]
+    return df
+end
+
+function between(df::DataFrame; min_value = -Inf, max_value = Inf)
+    df = deepcopy(df)
+    allowmissing!(df)
+    for col in names(df)
+        indicies = index_between_vals(df[!, [col]]; minv = min_value, maxv = max_value)
+        for i in 1:nrow(df)
+            if isnothing(indicies[1]) || isnothing(indicies[2])
+                df[i, col] = missing
+            else
+                df[i, col] = ifelse(i < indicies[1] || i > indicies[2], missing, df[i, col])
+            end
+        end
+    end
+    return df
 end
 
 """
@@ -173,7 +218,7 @@ end
 
 Returns values at a specific time point.
 If no value at specific timepoint, return the last recording before the timepoint.
-If time_point < minimum(time_col), return `nothing`.
+If `time_point < minimum(time_col)`, return `nothing`.
 
 Arguments:
 - `df::DataFrame`: DataFrame on which to work.
@@ -182,7 +227,6 @@ Arguments:
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
     tvals = index_between_vals(time_col; minv = 0, maxv = round(time_point * 60000))
-    tvals = tvals[names(time_col)[1]]
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."
         # Return empty dataframe of the same type
@@ -192,37 +236,40 @@ function at_time(df::DataFrame, time_col::DataFrame, time_point)
 end
 
 """
-    at_od(od_df,target_df,target_od)
+    at(df, range_df, target_value)
 
-A function to return a set of values from a different dataframe based on another.
-In theory this can be used for many types of data, but this adds the functionality
-to target a specific OD and return the values from another dataframe at that index.
+Return the values of `df` at the index of `range_df` where `range_df` is equal to `target_value`.
+
+If no value in `range_df` is equal to `target_value`, return the last recording before the `target_value`.
+
+If `range_df` has one column, the same index will be applied to all columns of `df`.
+If `range_df` has multiple columns, the column names should match those of `df` and a new index will be computed for each column.
 
 Arguments:
 
-- `od_df::DataFrame`: The DataFrame you are getting the indexes from.
-- `target_df::DataFrame`: The DataFrame you want to get the values from.
-- `target_od::Number`: The value at which you are limiting the data to
+- `df::DataFrame`: The DataFrame you are getting the indexes from.
+- `range_df`: The data frame by which to filter.
+- `target_value::Number`: Defines the threshold value for filtering.
 """
-function at_od(od_df, target_df, target_od)
+function at(df::DataFrame, range_df, target_value)
     dict_2 = Dict()
-    for i in names(od_df)
-        # Filter out the non-data cols
-        if all(isa.(od_df[:, i], String))
-            @warn "Skipping $i as it contains only `string`."
-        else
-            # Note that NaNs are mapped to 0 to ignore them
-            if target_od > maximum(replace(od_df[:, i], NaN => 0.0))
-                @warn "Skipping $i as the target OD ($target_od) is higher than the \
-                    maximum OD ($(maximum(replace(od_df[:,i],NaN=>0.0))))."
+    if range_df isa AbstractVector || ncol(range_df) == 1
+        for i in names(df)
+            if all(ismissing.(range_df[:, 1])) || target_value < minimum(skipmissing(range_df[:, 1]))
+                @warn "No values found at or before $target_value."
+                dict_2[i] = missing
             else
-                dic = index_between_vals(
-                    filter_col(od_df, [i]); minv = target_od, maxv = target_od)[i]
-                if isnothing(dic[1])
-                    dict_2[i] = nothing
-                else
-                    dict_2[i] = target_df[dic[1], i]
-                end
+                dict_2[i] = df[findlast(x -> x <= target_value, collect(skipmissing(range_df[:, 1]))), i]
+            end
+        end
+    else
+        @assert issetequal(names(df), names(range_df)) "DataFrame columns must match for `at` filtering."
+        for i in names(df)
+            if all(ismissing.(range_df[!, i])) || target_value < minimum(skipmissing(range_df[!, i]))
+                @warn "No values found at or before $target_value for column $i."
+                dict_2[i] = missing
+            else
+                dict_2[i] = df[findlast(x -> x <= target_value, collect(skipmissing(range_df[!, i]))), i]
             end
         end
     end

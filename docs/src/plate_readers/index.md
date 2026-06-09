@@ -21,3 +21,4 @@ ESM provides a variety of methods for handling some common summary statistics. T
 * [Growth Rate](@ref) (or doubling time)
 * [Per Cell Fluorescence](@ref Fluorescence)
 * [Calibration](@ref)
+* [Other Useful Functions](@ref)

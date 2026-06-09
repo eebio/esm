@@ -544,11 +544,11 @@ end
             extra = ""
         end
         if extra != ""
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_$(extra)_A.png"))
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_$(extra)_B.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_$(extra)_A.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_$(extra)_B.png"))
         else
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_A.png"))
-            @test isfile(joinpath(str, "growth_curve_$(typeof(method))_B.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_A.png"))
+            @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_B.png"))
         end
     end
 
@@ -698,4 +698,120 @@ end
     # This checks if a floating point time that, after being multipled by 1000, does not fall on an integer, still reads correctly
     data = read("inputs/bmg-time-error.csv", BMG())[1]
     @test 33047800 in data["ABS_700_0_nm"][!, "time"]
+end
+
+@testitem "od thresholds - growth rate" begin
+    println("od thresholds - growth rate")
+    using DataFrames
+    od_df = DataFrame(A = [0.05, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4, 12.8, 25.6, 51.2])
+    od_df = between(od_df; min_value=0.2, max_value=10)
+    time_col = DataFrame(Time = 0:60000:600000)
+
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, LinearOnLog(start_time = 3, end_time = 6))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, Endpoints(start_time = 3, end_time = 6))[
+        1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, Regularization())[1, "A"] ≈ log(2)
+
+    # Parametric tests
+    using Dates
+    time_col = DataFrame(:Time => 0:10000:600000)
+    # Requires full curve, not just a bit of exponential growth
+    f(t) = exp(0.7 / (1 + exp(-2.0 * (t - 5.0))))
+    od_df = f.(time_col ./ 60000)
+    rename!(od_df, :Time => :A)
+
+    od_df = between(od_df; min_value=1.0005, max_value=2.013)
+    # Check for missing values
+    @test any(ismissing, od_df[!, "A"])
+
+    # Check that the actual growth rate is around 0.35
+    @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"]≈0.35 atol=1e-2
+
+    # Test the parametric methods
+    @test growth_rate(od_df, time_col, Logistic())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Richards())[1, "A"]≈0.35 atol=1e-2
+
+    # Test lagtime doesn't return missing for any method
+    @test !ismissing(lag_time(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, LinearOnLog(start_time = 3, end_time = 6))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Endpoints(start_time = 3, end_time = 6))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, FiniteDiff())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Regularization())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Logistic())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Gompertz())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, ModifiedGompertz())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, Richards())[1, "A"])
+
+    # If no data points are above the threshold, lag time should return NaN
+    od_df_low = between(od_df; min_value=100.0, max_value=100.0)
+    @test isnan(lag_time(od_df_low, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"])
+end
+
+@testitem "od thresholds - calibrate" begin
+    println("od thresholds - calibrate")
+    using DataFrames
+
+    data = DataFrame(A = [0.5, 0.65, 0.79, 0.83, 0.95], B = [1.11, 1.05, 1.23, 1.36, 1.44])
+    time_col = DataFrame(Time = 0:600000:2400000)
+    blanks = DataFrame(C = [0.1, 0.15, 0.2, 0.17, 0.08], D = [0.21, 0.26, 0.22, 0.23, 0.2])
+    data = between_times(data, time_col; mint=15, maxt=35)
+    blanks = between_times(blanks, time_col; mint=15, maxt=35)
+    datacopy = deepcopy(data)
+
+    @test dropmissing(calibrate(data, time_col, TimeseriesBlank(blanks = blanks))) ≈
+        DataFrame(A = [0.79 - 0.21, 0.83 - 0.2],
+        B = [1.23 - 0.21, 1.36 - 0.2])
+    @test isequal(data, datacopy) # Check mutation free
+    new_blanks = DataFrame(C = [0.12, 0.14, 0.19], D = [0.22, 0.25, 0.21])
+    new_blanks_copy = deepcopy(new_blanks)
+    blank_time_col = DataFrame(Time = [
+        300000, 1500000, 2100000])
+    @test dropmissing(calibrate(data, time_col,
+        TimeseriesBlank(blanks = new_blanks, time_col = blank_time_col))) ≈
+        DataFrame(
+        A = [0.79 - (0.25 * 0.17 + 0.75 * 0.195),
+            0.83 - (0.5 * 0.195 + 0.5 * 0.20)],
+        B = [1.23 - (0.25 * 0.17 + 0.75 * 0.195),
+            1.36 - (0.5 * 0.195 + 0.5 * 0.20)])
+    @test isequal(data, datacopy)
+    @test isequal(new_blanks, new_blanks_copy)
+
+    tmp = calibrate(data, time_col, SmoothedTimeseriesBlank(blanks = blanks))
+    @test 0 < nrow(dropmissing(tmp)) < nrow(data) == nrow(tmp)
+
+    @test dropmissing(calibrate(data, time_col, MeanBlank(blanks = blanks))) ≈
+        DataFrame(
+        A = [0.79 - 0.205, 0.83 - 0.205],
+        B = [1.23 - 0.205, 1.36 - 0.205])
+    @test isequal(data, datacopy)
+    @test dropmissing(calibrate(data, time_col, MinBlank(blanks = blanks))) ==
+        DataFrame(A = [0.79 - 0.17, 0.83 - 0.17],
+        B = [1.23 - 0.17, 1.36 - 0.17])
+    @test isequal(data, datacopy)
+    @test dropmissing(calibrate(data, time_col, MinData())) ==
+        DataFrame(A = [0.79 - 0.79, 0.83 - 0.79],
+        B = [1.23 - 1.23, 1.36 - 1.23])
+    @test isequal(data, datacopy)
+    @test dropmissing(calibrate(data, time_col, StartData())) ==
+        DataFrame(A = [0.79 - 0.79, 0.83 - 0.79],
+        B = [1.23 - 1.23, 1.36 - 1.23])
+    @test isequal(data, datacopy)
+
+    # offset
+    @test dropmissing(calibrate(data, time_col, StartData(); offset = 0.1)) ==
+        DataFrame(
+        A = [0.79 - 0.79 + 0.1, 0.83 - 0.79 + 0.1],
+        B = [1.23 - 1.23 + 0.1, 1.36 - 1.23 + 0.1])
 end
