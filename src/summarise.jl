@@ -177,7 +177,7 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
     @info "Summarising channels"
     @info "Number of channels: $(length(keys(f)) - 1)" # Exclude the "Time" key
     for key in keys(f)
-        if key == "Time"
+        if lowercase(key) == "time"
             continue
         end
         esm_channel = replace(key, "-" => "_")
