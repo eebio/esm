@@ -31,7 +31,6 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         end
         temp["values"] = Dict{String, Any}(channel_map[x] => temp_data[flow_channel(x, temp_data)]
         for x in channels)
-        @show j."Data Location"
         temp["metadata"] = convert(Dict{String, Any},
             Dict(channel_map[x] => extract_flow(
                      temp_data, flow_channel(x, temp_data))
