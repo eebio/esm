@@ -57,11 +57,13 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                     # Has time been stored in seconds or milliseconds?
                     start_time = Time(strip(temp["metadata"]["raw_metadata"][:btim]))
                     end_time = Time(strip(temp["metadata"]["raw_metadata"][:etim]))
-                    experiment_time = maximum(times) - minimum(times)
+                    experiment_time = maximum(times)
                     if end_time - Second(2) <= start_time + Millisecond(round(experiment_time .* 1000)) <= end_time + Second(2)
                         # Already in seconds, convert to ms
                         temp["values"][channel_map["time"]] = times .* 1000
-                    elseif end_time - Second(1) <= start_time + Millisecond(experiment_time) <= end_time + Second(1)
+                    elseif end_time - Second(2) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(2) &&
+                        end_time - start_time - Millisecond(round(experiment_time)) <= Millisecond(round(experiment_time))
+                        # Also needed to check that start_time+experiment_time is closer to end_time than start_time
                         # Already in ms, do nothing
                     else
                         # Assume the time is meant to be an integer multiple of the timestep but was stored as floats
@@ -84,8 +86,8 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                 end_time = Time(end_time)
             end
             times = collect(temp["values"][channel_map["time"]])
-            experiment_time = maximum(times) - minimum(times)
-            @assert end_time - Second(1) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(1) "Data from time channel does not match start and end times in the metadata. Please report this issue to the ESM developers with the FCS file that caused this error so we can fix it."
+            experiment_time = maximum(times)
+            @assert end_time - Second(2) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(2) "Data from time channel does not match start and end times in the metadata. Please report this issue to the ESM developers with the FCS file that caused this error so we can fix it."
         end
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
