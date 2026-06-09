@@ -5,6 +5,9 @@ using DataFrames
 using XLSX
 using JSON
 using DataStructures
+using FileIO
+using FCSFiles
+using StyledStrings
 
 @with_kw struct esm_zones
     samples::DataFrame
@@ -87,11 +90,17 @@ end
 Read the data from path `file` into the correct structure.
 """
 function read_data(file::AbstractString)
-    samples = groupby(DataFrame(XLSX.readtable(file, "Samples"; stop_in_empty_row = false)), :Plate)
+    # Check for flow directories
+    samples = DataFrame(XLSX.readtable(file, "Samples"; stop_in_empty_row = false))
+    samples = expand_flow_directories(samples)
+
+    # Extract data
+    samples = groupby(samples, :Plate)
     groups = DataFrame(XLSX.readtable(file, "Groups"; stop_in_empty_row = false))
     trans = DataFrame(XLSX.readtable(file, "Transformations"; stop_in_empty_row = false))
     views = DataFrame(XLSX.readtable(file, "Views"; stop_in_empty_row = false))
     channel_map = DataFrame(XLSX.readtable(file, "Channel Map"; stop_in_empty_row = false))
+
     # Create the dict to show what channels need to be changed
     channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
     if any(val != format_channel(val) for val in values(channel_map))
@@ -266,4 +275,79 @@ function expand_groups(groups::AbstractString)
         end
     end
     return expanded
+end
+
+function expand_flow_directories(samples)
+    rows_to_delete = Int[]
+    for (idx, row) in enumerate(eachrow(copy(samples)))
+        if lowercase(row.Type) == "flow"
+            loc = row."Data Location"
+            if occursin("\$GITHUB_WORKSPACE", loc)
+                loc = replace(loc, "\$GITHUB_WORKSPACE" => ENV["GITHUB_WORKSPACE"])
+            end
+            if isdir(loc)
+                filenames, wells, confirmations = expand_flow_directory(loc)
+                for (file, well) in zip(filenames, wells)
+                    new_row = merge(copy(row), (Symbol("Data Location") => joinpath(loc, file), :Well => well))
+                    push!(samples, new_row)
+                end
+                push!(rows_to_delete, idx)
+                # Print the well mapping to the user
+                @info "Expanded flow directory $(row."Data Location") into the following files and wells:"
+                # TODO sort the mapping
+                function colour_confirmation(c, confirmation)
+                    confirmation == "?" ? styled"{yellow:$(c)}" :
+                    confirmation == "✗" ? styled"{red:$(c)}" :
+                    confirmation == "✓" ? styled"{green:$(c)}" :
+                    styled"{blue:$(c)}"
+                end
+                str = ""
+                for (confirmation, well, filename) in zip(confirmations, wells, filenames)
+                    str *= colour_confirmation("$confirmation $well -> $filename\n", confirmation)
+                end
+                @info "Well map: \n" * str
+            end
+        end
+    end
+    # Delete rows marked for deletion
+    deleteat!(samples, rows_to_delete)
+    return samples
+end
+
+function expand_flow_directory(dir)
+    filenames = []
+    wells = []
+    confirmations = []
+    for entry in readdir(dir)
+        if endswith(lowercase(entry), ".fcs")
+            push!(filenames, entry)
+            # Match on letter (case insensitive) + some number of digits (not starting with 0), surrounded by non-alphanumeric characters or start/end of string
+            m = match(r"(?i)(?<![a-z0-9])([a-z][1-9]\d*)(?![a-z0-9])", entry)
+            if isnothing(m)
+                # Try matching by allowing a leading 0 in the well number (e.g. A01 instead of A1)
+                m = match(r"(?i)(?<![a-z0-9])([a-z]\d+)(?![a-z0-9])", entry)
+                if isnothing(m)
+                    error("Could not extract well from filename: $entry")
+                end
+            end
+            well = lowercase(m.captures[1])
+            well = replace(well, r"([a-z])0+(\d+)" => s"\1\2") # Remove leading zeros from well number
+            push!(wells, well)
+            # Read the file to confirm that the well in the filename matches the well in the file metadata (if it exists)
+            try
+                fcs = load(joinpath(dir, entry))
+                wellid = lowercase(fcs.wellid)
+                wellid = replace(wellid, r"([a-z])0+(\d+)" => s"\1\2") # Remove leading zeros from well number
+                if wellid != well
+                    push!(confirmations, "✗")
+                else
+                    push!(confirmations, "✓")
+                end
+            catch
+                push!(confirmations, "?")
+            end
+        end
+    end
+    # Check for uniqueness of wells
+    return filenames, wells, confirmations
 end
