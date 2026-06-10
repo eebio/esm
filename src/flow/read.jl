@@ -45,29 +45,38 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
 
         # Handle time channel units
         if haskey(channel_map, "time") && haskey(temp["values"], channel_map["time"])
+            function check_times(experiment_time, buffer, start_time, end_time)
+                # Checks that predicted end time is within buffer seconds of actual end time, and that the predicted end time is closer to the actual end time than the start time
+                return (end_time - Second(buffer) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(buffer)
+                        && end_time - start_time - Millisecond(round(experiment_time)) <= Millisecond(round(experiment_time)))
+            end
             times = collect(temp["values"][channel_map["time"]])
+            assumption = "ERROR"
             if hasproperty(temp_data, :timestep)
                 if eltype(times) <: Integer
                     # Times are stored as integer multiples of timestep (as they should be)
                     timestep = parse(Float64, temp_data.timestep) # in seconds
                     temp["values"][channel_map["time"]] = times .* timestep .* 1000 # store time in milliseconds
+                    assumption = "Data was stored as integer multiples of the timestep, which is in seconds."
                 else
                     # Has a timestep but is stored as floats
                     # Has time been stored in seconds or milliseconds?
                     start_time = Time(strip(temp["metadata"]["raw_metadata"][:btim]))
                     end_time = Time(strip(temp["metadata"]["raw_metadata"][:etim]))
-                    experiment_time = maximum(times)
-                    if end_time - Second(2) <= start_time + Millisecond(round(experiment_time .* 1000)) <= end_time + Second(2)
+                    experiment_times = [maximum(times), maximum(times) - minimum(times)]
+                    if check_times(experiment_times[1] * 1000, 2, start_time, end_time) || check_times(experiment_times[2] * 1000, 2, start_time, end_time)
                         # Already in seconds, convert to ms
                         temp["values"][channel_map["time"]] = times .* 1000
-                    elseif end_time - Second(2) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(2) &&
-                        end_time - start_time - Millisecond(round(experiment_time)) <= Millisecond(round(experiment_time))
+                        assumption = "Data appears to have been stored in seconds as floats, and matches start and end times when converted to milliseconds."
+                    elseif check_times(experiment_times[1], 1, start_time, end_time) || check_times(experiment_times[2], 1, start_time, end_time)
+                        assumption = "Data appears to have been stored in milliseconds as floats, and matches start and end times when treated as milliseconds."
                         # Also needed to check that start_time+experiment_time is closer to end_time than start_time
                         # Already in ms, do nothing
                     else
                         # Assume the time is meant to be an integer multiple of the timestep but was stored as floats
                         timestep = parse(Float64, temp_data.timestep) # in seconds
                         temp["values"][channel_map["time"]] = times .* timestep .* 1000 # convert to ms
+                        assumption = "Data appears to have been stored as floats, but reading as seconds or milliseconds does not match the start and end times. We have assumed the time is multiples of the timestep, which is in seconds, but stored as floats rather than integers."
                     end
                 end
             end
@@ -84,9 +93,23 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             else
                 end_time = Time(end_time)
             end
-            times = collect(temp["values"][channel_map["time"]])
-            experiment_time = maximum(times)
-            @assert end_time - Second(2) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(2) "Data from time channel does not match start and end times in the metadata. Please report this issue to the ESM developers with the FCS file that caused this error so we can fix it."
+            t = collect(temp["values"][channel_map["time"]])
+            experiment_times = [maximum(t), maximum(t) - minimum(t)]
+            if !(check_times(experiment_times[1], 2, start_time, end_time) || check_times(experiment_times[2], 2, start_time, end_time))
+                str = "Data from the time channel does not match start and end times in the metadata.\n"
+                str *= "Filename: $(j."Data Location")\n"
+                str *= "Start time: $start_time\n"
+                str *= "End time: $end_time\n"
+                str *= "Converted experiment time (from transformed time channel): $(experiment_times[1]) milliseconds (or possibly $(experiment_times[2]) milliseconds)\n"
+                str *= "Minimum value of raw time channel: $(minimum(times))\n"
+                str *= "Maximum value of raw time channel: $(maximum(times))\n"
+                if hasproperty(temp_data, :timestep)
+                    str *= "Timestep from metadata: $(temp_data.timestep) seconds\n"
+                end
+                str *= "Expected end time based on start time and experiment time: $(start_time + Millisecond(round(experiment_times[1]))) (or possibly $(start_time + Millisecond(round(experiment_times[2]))))\n"
+                str *= "Assumption made about time channel for conversion: $assumption\n"
+                @warn str
+            end
         end
         sample_dict[name] = temp
         broad_g = [broad_g; [name]]
