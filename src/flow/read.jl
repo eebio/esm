@@ -52,6 +52,9 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             end
             times = collect(temp["values"][channel_map["time"]])
             assumption = "ERROR"
+            start_time = Time(strip(temp["metadata"]["raw_metadata"][:btim]))
+            end_time = Time(strip(temp["metadata"]["raw_metadata"][:etim]))
+            experiment_times = [maximum(times), maximum(times) - minimum(times)]
             if hasproperty(temp_data, :timestep)
                 if eltype(times) <: Integer
                     # Times are stored as integer multiples of timestep (as they should be)
@@ -61,9 +64,6 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                 else
                     # Has a timestep but is stored as floats
                     # Has time been stored in seconds or milliseconds?
-                    start_time = Time(strip(temp["metadata"]["raw_metadata"][:btim]))
-                    end_time = Time(strip(temp["metadata"]["raw_metadata"][:etim]))
-                    experiment_times = [maximum(times), maximum(times) - minimum(times)]
                     if check_times(experiment_times[1] * 1000, 2, start_time, end_time) || check_times(experiment_times[2] * 1000, 2, start_time, end_time)
                         # Already in seconds, convert to ms
                         temp["values"][channel_map["time"]] = times .* 1000
