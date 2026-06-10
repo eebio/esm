@@ -79,6 +79,19 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                         assumption = "Data appears to have been stored as floats, but reading as seconds or milliseconds does not match the start and end times. We have assumed the time is multiples of the timestep, which is in seconds, but stored as floats rather than integers."
                     end
                 end
+            else
+                if check_times(experiment_times[1] * 1000, 2, start_time, end_time) || check_times(experiment_times[2] * 1000, 2, start_time, end_time)
+                        # Already in seconds, convert to ms
+                        temp["values"][channel_map["time"]] = times .* 1000
+                        assumption = "Data appears to have been stored in seconds as floats, and matches start and end times when converted to milliseconds."
+                elseif check_times(experiment_times[1], 1, start_time, end_time) || check_times(experiment_times[2], 1, start_time, end_time)
+                        assumption = "Data appears to have been stored in milliseconds as floats, and matches start and end times when treated as milliseconds."
+                        # Also needed to check that start_time+experiment_time is closer to end_time than start_time
+                        # Already in ms, do nothing
+                else
+                    # Time data is messed up
+                    assumption = "Data does not store the timestep and does not appear to be stored in seconds or milliseconds. We have assumed the time is stored in milliseconds but the units on this time data should NOT be trusted."
+                end
             end
             # Check time was handled correctly by comparing machine start and end times with the time channel data
             start_time = strip(temp["metadata"]["raw_metadata"][:btim])
@@ -105,6 +118,8 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                 str *= "Maximum value of raw time channel: $(maximum(times))\n"
                 if hasproperty(temp_data, :timestep)
                     str *= "Timestep from metadata: $(temp_data.timestep) seconds\n"
+                else
+                    str *= "No timestep stored in metadata\n"
                 end
                 str *= "Expected end time based on start time and experiment time: $(start_time + Millisecond(round(experiment_times[1]))) (or possibly $(start_time + Millisecond(round(experiment_times[2]))))\n"
                 str *= "Assumption made about time channel for conversion: $assumption\n"
