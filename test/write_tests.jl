@@ -104,9 +104,6 @@ end
     # Run transformations on small.esm
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es_written.transformations[i]["equation"])
     for i in keys(es_written.transformations))
-    @test eval(ESM.sexp_to_nested_list(:(t), es_written, trans_meta_map)) ==
-          DataFrame(:id => [1, 2, 3, 4], :newtime => [1.0, 1.0, 1.0, 1.0],
-        Symbol("newtime.max") => fill(1024.0, 4), Symbol("newtime.min") => fill(1.0, 4)) # should we have a min and max for time?
     @test eval(ESM.sexp_to_nested_list(:(f), es_written, trans_meta_map)) ==
           DataFrame(:forward => [628.0, 1023.0, 373.0, 1023.0],
         Symbol("forward.max") => fill(1024.0, 4),

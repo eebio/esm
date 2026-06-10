@@ -52,8 +52,16 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             end
             times = collect(temp["values"][channel_map["time"]])
             assumption = "ERROR"
-            start_time = Time(strip(temp["metadata"]["raw_metadata"][:btim]))
-            end_time = Time(strip(temp["metadata"]["raw_metadata"][:etim]))
+            function parse_time(time)
+                time = strip(time)
+                if count(==(':'), time) > 2
+                    return Time(time, dateformat"HH:MM:SS:ss")
+                else
+                    return Time(time)
+                end
+            end
+            start_time = parse_time(temp["metadata"]["raw_metadata"][:btim])
+            end_time = parse_time(temp["metadata"]["raw_metadata"][:etim])
             experiment_times = [maximum(times), maximum(times) - minimum(times)]
             if hasproperty(temp_data, :timestep)
                 if eltype(times) <: Integer
@@ -92,19 +100,6 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                     # Time data is messed up
                     assumption = "Data does not store the timestep and does not appear to be stored in seconds or milliseconds. We have assumed the time is stored in milliseconds but the units on this time data should NOT be trusted."
                 end
-            end
-            # Check time was handled correctly by comparing machine start and end times with the time channel data
-            start_time = strip(temp["metadata"]["raw_metadata"][:btim])
-            if count(==(':'), start_time) > 2
-                start_time = Time(start_time, dateformat"HH:MM:SS:ss")
-            else
-                start_time = Time(start_time)
-            end
-            end_time = strip(temp["metadata"]["raw_metadata"][:etim])
-            if count(==(':'), end_time) > 2
-                end_time = Time(end_time, dateformat"HH:MM:SS:ss")
-            else
-                end_time = Time(end_time)
             end
             t = collect(temp["values"][channel_map["time"]])
             experiment_times = [maximum(t), maximum(t) - minimum(t)]
