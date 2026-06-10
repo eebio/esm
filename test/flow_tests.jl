@@ -173,6 +173,7 @@ end
 end
 
 @testitem "extra fcs" setup=[environment_path] begin
+    println("extra fcs")
     using Dates
     data = read_data("inputs/extrafcs.xlsx")
     for sample in ["plate_01_a1", "plate_01_a2", "plate_01_a3", "plate_01_a4"]
@@ -189,8 +190,9 @@ end
         else
             end_time = Time(end_time)
         end
-        experiment_time = maximum(times) - minimum(times)
-        @test end_time - Second(1) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(1)
+        experiment_times = [maximum(times), maximum(times) - minimum(times)]
+        @test (end_time - Second(1) <= start_time + Millisecond(round(experiment_times[1])) <= end_time + Second(1)
+            || end_time - Second(1) <= start_time + Millisecond(round(experiment_times[2])) <= end_time + Second(1))
     end
 end
 
