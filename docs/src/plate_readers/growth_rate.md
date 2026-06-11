@@ -171,6 +171,110 @@ For example, `between(od; min_value=0.1)` sets all OD values in `od` that are be
 
 For more details on the `between` function, check out the [Other Useful Functions](@ref) page.
 
+## Weighted Least Squares
+
+One of the assumptions in least squares fitting is called homoscedasticity - the noise in the data should have constant variance. However, it is easy to see that after log transforming, the variance in the noise is dependent on OD (low OD has higher variance).
+
+```@setup wls
+using Random
+Random.seed!(123)
+```
+
+```@example wls
+using GLM
+using Plots
+using DataFrames
+
+t = 0:0.01:5
+od = exp.(t .- 5)
+r = randn(length(t))
+y = od .+ 0.01*r
+
+# Remove data that drop OD below 0 before log scaling
+t = t[y .> 0]
+od = od[y .> 0]
+y = y[y .> 0]
+
+p = plot(t, od, label="True OD")
+plot!(p, t, y, label="Measured OD")
+title!(p, "OD after calibration")
+```
+
+Above, we have perfect exponential data with a growth rate of 1, with some normally distribution noise. This is going to represent our data after calibration. Some values drop below zero and are removed so that we can log scale the data and fit a line of best fit.
+
+```@example wls
+ly = log.(y)
+
+# Fit lm
+df = DataFrame(t=t, ly=ly)
+model = lm(@formula(ly ~ t), df)
+
+plot(t, ly, label="log(Measured OD)")
+plot!(t, predict(model), label="Fitted Line")
+```
+
+This line looks like a good fit, but we can clearly see the change in the variance of the residuals over time.
+
+If we plot just residuals, you can see the variance is highest at early times, when OD is low and reduces significantly as the OD increases.
+
+```@example wls
+plot(t, ly .- predict(model), label="Residuals")
+```
+
+We can also look at our fit after transforming back from log(OD) to OD. 
+
+The fitted line slightly underestimates the values at higher OD, because it weights the larger residuals at lower OD to be more important.
+
+```@example wls
+plot(t, exp.(predict(model)), label="Fitted OD")
+plot!(t, y, label="Noisy OD")
+```
+
+We can repeat this whole process but instead using weighted least squares to account for how this changes the variance of the residuals.
+
+```@example wls
+weights = y # Weight residuals by OD
+weights = weights ./ sum(weights) .* length(weights) # Normalize weights into frequency weights
+model = lm(@formula(ly ~ t), df, weights=weights)
+
+p1 = plot(t, ly, label="log(Measured OD)")
+plot!(p1, t, predict(model), label="Fitted Line")
+
+p2 = plot(t, ly .- predict(model), label="Residuals")
+plot!(p2, t, weights .* (ly .- predict(model)), label="Weighted Residuals")
+
+p3 = plot(t, exp.(predict(model)), label="Fitted OD")
+plot!(p3, t, y, label="Noisy OD")
+
+plot(p1, p2, p3)
+```
+
+### How to determine the weights
+
+We start off with a hypothetical model of $OD=A\exp(\mu t) + \varepsilon$, where $\varepsilon \sim N(0,\sigma^2)$.
+
+To map this to linear regression, we take the log of both sides.
+
+```math
+\log{(OD)}=\log{(A\exp(\mu t) + \varepsilon)} \\
+\log{(OD)}=\log{\left( A\exp(\mu t) \times \left(1 + \frac{\varepsilon}{A\exp(\mu t)} \right) \right)} \\
+\log{(OD)}=\log{(A\exp(\mu t))} + \log{\left( 1 + \frac{\varepsilon}{A\exp(\mu t)} \right) }
+```
+
+Then we can use the Taylor expansion of $\log(1+x) = x - \frac{x^2}{2} + \dots$, taking only the first order term.
+
+```math
+\log{(OD)} \approx \log{(A\exp(\mu t))} + \frac{\varepsilon}{A\exp(\mu t)} \\
+\log{(OD)} \approx \log{(A)} + \mu t + \frac{\varepsilon}{A\exp(\mu t)} \\
+\log{(OD)} \approx \mu t + c + {\varepsilon^\prime}
+```
+
+This is the form we fit our linear model in, and where $\varepsilon^\prime = \frac{\varepsilon}{A\exp(\mu t)}$ but ${A\exp(\mu t)}$ is just our fitted OD, $\widehat{OD}$.
+
+This means that $var(\varepsilon^\prime)=\frac{\sigma^2}{\widehat{OD}^2}$. Since we don't have access to the fitted $\widehat{OD}$, we instead use the noisy data $OD$. This is why we used weights of $y$ in the example above (then adjusted into frequency weights to ensure the correct effective sample size).
+
+We apply this weighting to all least squares calculations for growth rates. The weight is always $\frac{OD}{OD_0}$, since that is the value we log-transform. This applies for the parametric methods, LinearOnLog (and MovingWindow of LinearOnLog), and the least squares component of regularization.
+
 ## Implementation Details
 
 If you want to implement a new growth rate method to be included in ESM, you need to:
