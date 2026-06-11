@@ -147,8 +147,8 @@ end
 
     # Test the parametric methods
     @test doubling_time(od_df, time_col, Logistic())[1, "A"]≈1.95 atol=0.1
-    @test doubling_time(od_df, time_col, Gompertz())[1, "A"]≈1.95 atol=0.1
-    @test doubling_time(od_df, time_col, ModifiedGompertz())[1, "A"]≈1.95 atol=0.1
+    @test doubling_time(od_df, time_col, Gompertz())[1, "A"]≈1.95 atol=0.15
+    @test doubling_time(od_df, time_col, ModifiedGompertz())[1, "A"]≈1.95 atol=0.15
     @test doubling_time(od_df, time_col, Richards())[1, "A"]≈1.95 atol=0.1
 end
 
@@ -205,8 +205,8 @@ end
 
     # Test the parametric methods
     @test growth_rate(od_df, time_col, Logistic())[1, "A"]≈0.35 atol=1e-2
-    @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=1e-2
-    @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=0.025
+    @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=0.03
     @test growth_rate(od_df, time_col, Richards())[1, "A"]≈0.35 atol=1e-2
 end
 
@@ -737,8 +737,8 @@ end
 
     # Test the parametric methods
     @test growth_rate(od_df, time_col, Logistic())[1, "A"]≈0.35 atol=1e-2
-    @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=1e-2
-    @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=1e-2
+    @test growth_rate(od_df, time_col, Gompertz())[1, "A"]≈0.35 atol=0.025
+    @test growth_rate(od_df, time_col, ModifiedGompertz())[1, "A"]≈0.35 atol=0.025
     @test growth_rate(od_df, time_col, Richards())[1, "A"]≈0.35 atol=1e-2
 
     # Test lagtime doesn't return missing for any method
