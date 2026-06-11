@@ -207,8 +207,10 @@ end
     end
     str = String(take!(io))
 
-    comparison = "┌ Info: Expanded flow directory \$GITHUB_WORKSPACE/test/inputs/flowdir into the following files and wells:\n└ @ ESM /Users/qr24461/.julia/dev/esm/src/esm_files.jl:296\n┌ Info: Well map: \n│ ? a1 -> Blank_A1_A01_001.fcs\n│ ? b1 -> Blank_B1_B01_002.fcs\n│ ? e1 -> Calibration_E1_E01_093.fcs\n│ ? f1 -> Calibration_F1_F01_094.fcs\n│ ? a2 -> EE01_A2_A02_005.fcs\n│ ? a3 -> EE01_A3_A03_006.fcs\n│ ? b11 -> EE01_B11_B11_024.fcs\n│ ? c2 -> EE02_C2_C02_025.fcs\n│ ? a12 -> NegControl-DH10beta_A12_A12_085.fcs\n│ ? b12 -> NegControl-DH10beta_B12_B12_086.fcs\n│ ? c12 -> NegControl-DH10beta_C12_C12_087.fcs\n│ ? d12 -> NegControl-DH10beta_D12_D12_088.fcs\n│ ? e12 -> NegControl-DH10beta_E12_E12_089.fcs"
-    @test contains(str, comparison)
+    comparison = ["Info: Expanded flow directory \$GITHUB_WORKSPACE/test/inputs/flowdir into the following files and wells:",
+    "┌ Info: Well map: \n│ ? a1 -> Blank_A1_A01_001.fcs\n│ ? b1 -> Blank_B1_B01_002.fcs\n│ ? e1 -> Calibration_E1_E01_093.fcs\n│ ? f1 -> Calibration_F1_F01_094.fcs\n│ ? a2 -> EE01_A2_A02_005.fcs\n│ ? a3 -> EE01_A3_A03_006.fcs\n│ ? b11 -> EE01_B11_B11_024.fcs\n│ ? c2 -> EE02_C2_C02_025.fcs\n│ ? a12 -> NegControl-DH10beta_A12_A12_085.fcs\n│ ? b12 -> NegControl-DH10beta_B12_B12_086.fcs\n│ ? c12 -> NegControl-DH10beta_C12_C12_087.fcs\n│ ? d12 -> NegControl-DH10beta_D12_D12_088.fcs\n│ ? e12 -> NegControl-DH10beta_E12_E12_089.fcs"]
+    @test contains(str, comparison[1])
+    @test contains(str, comparison[2])
 
     data = read_data("inputs/flowdir.xlsx")
     names = ESM.expand_groups("plate_01_[a1,b1,e1,f1,a2,a3,b11,c2,a12,b12,c12,d12,e12]")
