@@ -62,6 +62,18 @@ The other functions (`max_od`, `time_to_max_growth`, `od_at_max_growth`) are def
 !!! tip "Help! My growth curve is wrong"
     The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This noise is caused by a calibration that brings the data *too* close to 0 (so the noise then varies over multiple orders of magnitude). This can be reduced by adding a small offset to the data during calibration, or by using an OD threshold to remove data below some small OD.
 
+## ExpandingWindow
+
+The `ExpandingWindow` method is a `LinearOnLog` type method, but using as much data as possible.
+
+First, a `MovingWindow` with `LinearOnLog` is used to find the maximum growth rate. We then find all the neighboring windows than have a similar growth rate (above 95% of the maximum by default). These windows expand the window that found the maximum growth rate. Finally, `LinearOnLog` is called on this expanded window.
+
+By default, the `window_size` is 5 data points and the `growth_threshold` is 0.95.
+
+It can be called using `growth_rate(data, time_col, ExpandingWindow(window_size, growth_threshold))` or `doubling_time(data, time_col, ExpandingWindow(window_size, growth_threshold))`.
+
+The other functions (`max_od`, `time_to_max_growth`, `od_at_max_growth`) are all the same as calling `LinearOnLog` with the larger window defining the `start_time` and `end_time`.
+
 ## FiniteDiff
 
 The `FiniteDiff` method log-transforms the data (removing any points ≤ 0) and then calculates the local gradients. It does this by traveling along the timepoints one-by-one, either calculating the central or one-sided finite difference. It then returns the maximum gradient.
