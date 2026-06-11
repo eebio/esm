@@ -125,6 +125,8 @@ end
     @test doubling_time(
         od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog)) ≈
           DataFrame(A = 1.0)
+    @test doubling_time(od_df, time_col, ExpandingWindow(window_size = 3)) ≈
+          DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5)) ≈
           DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, Endpoints(start_time = 1, end_time = 5)) ≈
@@ -164,6 +166,7 @@ end
         1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[
         1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, ExpandingWindow(window_size = 3))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, LinearOnLog(start_time = 1, end_time = 5))[
         1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, Endpoints(start_time = 1, end_time = 5))[
@@ -251,6 +254,10 @@ end
               od_df, time_col, MovingWindow(window_size = 5, method = :LinearOnLog))[
               1, "A"] < 10
     @test 7 <
+          time_to_max_growth(
+              od_df, time_col, ExpandingWindow(window_size = 5))[
+              1, "A"] < 10
+    @test 7 <
           time_to_max_growth(od_df, time_col, LinearOnLog(start_time = 6, end_time = 9))[
               1, "A"] < 10
     @test 7 <
@@ -319,6 +326,7 @@ end
     @test 5 <
           lag_time(od_df, time_col, MovingWindow(window_size = 5, method = :LinearOnLog))[
               1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, ExpandingWindow(window_size = 5))[1, "A"] < 8
     @test 5 <
           lag_time(od_df, time_col, LinearOnLog(start_time = 7, end_time = 10))[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Endpoints(start_time = 7, end_time = 10))[1, "A"] <
@@ -388,6 +396,8 @@ end
           od_at_max_growth(
               od_df, time_col, MovingWindow(window_size = 5, method = :LinearOnLog))[
               1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, ExpandingWindow(window_size = 5))[1, "A"] <
+          f(10)
     @test 0 <
           od_at_max_growth(od_df, time_col, LinearOnLog(start_time = 7, end_time = 10))[
               1, "A"] < f(10)
@@ -458,6 +468,7 @@ end
     @test 0.95 <
           max_od(od_df, time_col, MovingWindow(window_size = 5, method = :LinearOnLog))[
               1, "A"] < 1.05
+    @test 0.95 < max_od(od_df, time_col, ExpandingWindow(window_size = 5))[1, "A"] < 1.05
     @test 0.95 <
           max_od(od_df, time_col, LinearOnLog(start_time = 7, end_time = 10))[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, Endpoints(start_time = 7, end_time = 10))[1, "A"] <
@@ -524,7 +535,7 @@ end
     logger = SimpleLogger(io)
 
     # Call growth_rate with all methods and check that plots are produced
-    for method in (MovingWindow(window_size = 5), LinearOnLog(start_time = 7, end_time = 10), Endpoints(start_time = 7, end_time = 10), FiniteDiff(), Regularization(), Logistic(), Gompertz(), ModifiedGompertz(), Richards())
+    for method in (MovingWindow(window_size = 5), ExpandingWindow(), LinearOnLog(start_time = 7, end_time = 10), Endpoints(start_time = 7, end_time = 10), FiniteDiff(), Regularization(), Logistic(), Gompertz(), ModifiedGompertz(), Richards())
         with_logger(logger) do
             growth_rate(od_df, time_col, method; plot_directory = :temp)
         end
@@ -547,6 +558,7 @@ end
             @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_$(extra)_A.png"))
             @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_$(extra)_B.png"))
         else
+            @show readdir(str)
             @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_A.png"))
             @test isfile(joinpath(str, "growth_curve_$(nameof(typeof(method)))_B.png"))
         end
@@ -744,6 +756,7 @@ end
     # Test lagtime doesn't return missing for any method
     @test !ismissing(lag_time(od_df, time_col, MovingWindow(window_size = 3, method = :Endpoints))[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, MovingWindow(window_size = 3, method = :LinearOnLog))[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, ExpandingWindow(window_size = 3))[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, LinearOnLog(start_time = 3, end_time = 6))[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, Endpoints(start_time = 3, end_time = 6))[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, FiniteDiff())[1, "A"])

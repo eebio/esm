@@ -261,7 +261,7 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
     time_to_max_growth = NaN
     od_at_max_growth = NaN
     best_window = nothing
-    for j in 1:(nrow(df) - window_size)
+    for j in 1:(nrow(df) - window_size + 1)
         start_time = time_col[j, 1] / 60000
         end_time = time_col[j + window_size - 1, 1] / 60000
         if method.method == :Endpoints
@@ -348,6 +348,80 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
         p = growth_plot(df, time_col ./ 60000, summaries)
         vline!(p, [start_time, end_time], label = "Fitting Window", color = :blue, linestyle = :dot)
         savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
+    end
+    return summaries
+end
+
+@kwdef struct ExpandingWindow <: AbstractGrowthRateMethod
+    window_size::Int = 5
+    growth_threshold::Float64 = 0.95
+end
+
+function _growth_rate(df, time_col, method::ExpandingWindow; plot_directory = nothing)
+    window_size = method.window_size
+    growth_threshold = method.growth_threshold
+
+    n = length(time_col[!, 1])
+    if n < 2
+        @warn "Not enough data points ($n) after log scaling and removing ≤ 0 values."
+        return Dict(
+            "growth_rate" => NaN,
+            "time_to_max_growth" => NaN,
+            "od_at_max_growth" => NaN,
+            "maxOD" => NaN
+        )
+    end
+
+    gr = Dict{Tuple{Int, Int}, Float64}()
+    for j in 1:(nrow(df) - window_size + 1)
+        start_time = time_col[j, 1] / 60000
+        end_time = time_col[j + window_size - 1, 1] / 60000
+        rate = _growth_rate(df, time_col, LinearOnLog(start_time, end_time))
+        gr[(j, j + window_size - 1)] = rate["growth_rate"]
+    end
+
+    # Find the maximum growth rate and corresponding window
+    growth_rate, max_window = findmax(gr)
+    # Threshold for including windows in the linear fit (e.g. 90% of max growth rate)
+    threshold = growth_threshold * growth_rate
+    # Get windows that are above the threshold
+    included_windows = [window for (window, rate) in gr if rate >= threshold]
+    included_windows = sort(included_windows, by = x -> x[1])
+
+    # Remove windows that are not contiguous with the max window
+    new_included_windows = [included_windows[1]]
+    if included_windows[1] == max_window
+        seen_max_window = true
+    else
+        seen_max_window = false
+    end
+    for i in 2:length(included_windows)
+        if included_windows[i] == max_window
+            seen_max_window = true
+        end
+        last_window = included_windows[i - 1]
+        next_window = included_windows[i]
+        if next_window[1] == last_window[1] + 1
+            push!(new_included_windows, next_window)
+        else
+            if seen_max_window
+                break
+            else
+                new_included_windows = [included_windows[i]]
+            end
+        end
+    end
+    full_window = (new_included_windows[1][1], new_included_windows[end][2])
+
+    start_time = time_col[full_window[1], 1] / 60000
+    end_time = time_col[full_window[2], 1] / 60000
+
+    summaries = _growth_rate(df, time_col, LinearOnLog(start_time, end_time))
+    if !isnothing(plot_directory)
+        p = growth_plot(df, time_col ./ 60000, summaries)
+        vline!(p, [start_time, end_time], label = "Fitting Window",
+            color = :blue, linestyle = :dot)
+        savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
     end
     return summaries
 end
