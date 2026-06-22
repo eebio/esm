@@ -10,7 +10,7 @@ Smooth that data using the specified method.
 - `time_col`: The column of time data corresponding to the measurements in `data`.
 - `method`: The method to use for smoothing.
 """
-function smoothing end
+function smooth end
 
 struct MovingAverage <: AbstractSmoothingMethod
     window_ahead::Int
