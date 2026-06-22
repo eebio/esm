@@ -213,9 +213,10 @@ end
     @test contains(str, comparison[2])
 
     data = read_data("inputs/flowdir.xlsx")
-    names = ESM.expand_groups("plate_01_[a1,b1,e1,f1,a2,a3,b11,c2,a12,b12,c12,d12,e12]")
+    names = ESM.expand_groups("plate_01_[a1,b1,e1,f1,a2,a3,b11,c2,a12,b12,c12,d12,e12], plate_04_a[1:3,10:12], plate_04_b[5,6,10:12]")
     @test all([data["samples"][s]["type"] == "population" for s in names])
-    @test issetequal(data["groups"]["plate_01"]["sample_IDs"], names)
+    @test issetequal(union(data["groups"]["plate_01"]["sample_IDs"], data["groups"]["plate_04"]["sample_IDs"]), names)
 
     @test data["samples"]["plate_02_a5"]["type"] == "population"
+    @test data["samples"]["plate_03_a1"]["type"] == "timeseries"
 end
