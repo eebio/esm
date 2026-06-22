@@ -849,6 +849,7 @@ end
     @test MovingAverage(window_size = 3) == MovingAverage(1, 1)
     @test MovingAverage(window_size = 4) == MovingAverage(1, 2)
     @test MovingAverage(window_size = 5) == MovingAverage(2, 2)
+    @test MovingAverage(window_size = 5) == MovingAverage(5)
 
     # MovingTimeAverage
     @test smooth(data, time_col, MovingTimeAverage(window_size = 30)) ≈
@@ -864,6 +865,7 @@ end
     @test MovingTimeAverage(window_size = 3) == MovingTimeAverage(1.5, 1.5)
     @test MovingTimeAverage(window_size = 4) == MovingTimeAverage(2, 2)
     @test MovingTimeAverage(window_size = 5) == MovingTimeAverage(2.5, 2.5)
+    @test MovingTimeAverage(window_size = 5) == MovingTimeAverage(5)
 
     time_col = DataFrame(Time = [0, 60000, 60001, 60002, 240000])
     @test smooth(data, time_col, MovingTimeAverage(window_size = 2)) ≈
