@@ -828,3 +828,44 @@ end
         A = [0.79 - 0.79 + 0.1, 0.83 - 0.79 + 0.1],
         B = [1.23 - 1.23 + 0.1, 1.36 - 1.23 + 0.1])
 end
+
+@testitem "smoothing" begin
+    println("smoothing")
+    using DataFrames
+    data = DataFrame(A = [0.5, 0.65, 0.79, 0.83, 0.95], B = [1.11, 1.05, 1.23, 1.36, 1.44])
+    time_col = DataFrame(Time = 0:600000:2400000)
+
+    # MovingAverage
+    @test smooth(data, time_col, MovingAverage(window_size = 3)) ≈
+        DataFrame(A = [0.575, 0.64666, 0.75666, 0.85666, 0.89], B = [1.08, 1.13, 1.21333, 1.34333, 1.40]) atol = 1e-4
+
+    @test smooth(data, time_col, MovingAverage(window_size = 2)) ≈
+        DataFrame(A = [0.5, 0.575, 0.72, 0.81, 0.89], B = [1.11, 1.08, 1.14, 1.295, 1.40]) atol = 1e-4
+
+    @test smooth(data, time_col, MovingAverage(window_size = 1)) ≈ data
+
+    @test MovingAverage(window_size = 1) == MovingAverage(0, 0)
+    @test MovingAverage(window_size = 2) == MovingAverage(0, 1)
+    @test MovingAverage(window_size = 3) == MovingAverage(1, 1)
+    @test MovingAverage(window_size = 4) == MovingAverage(1, 2)
+    @test MovingAverage(window_size = 5) == MovingAverage(2, 2)
+
+    # MovingTimeAverage
+    @test smooth(data, time_col, MovingTimeAverage(window_size = 30)) ≈
+        DataFrame(A = [0.575, 0.64666, 0.75666, 0.85666, 0.89], B = [1.08, 1.13, 1.21333, 1.34333, 1.40]) atol = 1e-4
+
+    @test smooth(data, time_col, MovingTimeAverage(window_size = 20)) ≈
+        DataFrame(A = [0.575, 0.64666, 0.75666, 0.85666, 0.89], B = [1.08, 1.13, 1.21333, 1.34333, 1.40]) atol = 1e-4
+
+    @test smooth(data, time_col, MovingTimeAverage(window_size = 10)) ≈ data
+
+    @test MovingTimeAverage(window_size = 1) == MovingTimeAverage(0.5, 0.5)
+    @test MovingTimeAverage(window_size = 2) == MovingTimeAverage(1, 1)
+    @test MovingTimeAverage(window_size = 3) == MovingTimeAverage(1.5, 1.5)
+    @test MovingTimeAverage(window_size = 4) == MovingTimeAverage(2, 2)
+    @test MovingTimeAverage(window_size = 5) == MovingTimeAverage(2.5, 2.5)
+
+    time_col = DataFrame(Time = [0, 60000, 60001, 60002, 240000])
+    @test smooth(data, time_col, MovingTimeAverage(window_size = 2)) ≈
+        DataFrame(A = [0.575, 0.6925, 0.75666, 0.75666, 0.95], B = [1.08, 1.1875, 1.21333, 1.21333, 1.44]) atol = 1e-4
+end
