@@ -13,6 +13,7 @@ PAGES = [
         "plate_readers/calibration.md",
         "plate_readers/growth_rate.md",
         "plate_readers/fluorescence.md",
+        "plate_readers/smoothing.md",
         "plate_readers/compatibility.md",
         "plate_readers/other_functions.md",
     ],

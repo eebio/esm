@@ -25,6 +25,8 @@ export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
 export Regularization
 export fluorescence
 export RatioAtTime, RatioAtMaxGrowth
+export smooth
+export MovingAverage, MovingTimeAverage
 export calibrate
 export at_time, at, between_times, between
 export TimeseriesBlank, SmoothedTimeseriesBlank, MeanBlank, MinBlank, MinData, StartData
