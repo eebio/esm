@@ -371,7 +371,7 @@ function Logicle(a, b, c, d, f, xTaylor, taylor, x1)
         return inverse
     end
 
-    return Transform(inverse, numerically_invert)
+    return Transform(numerically_invert, inverse)
 end
 
 function solve_RTSAFE(b, w)
