@@ -173,6 +173,7 @@ end
 end
 
 @testitem "extra fcs" setup=[environment_path] begin
+    println("extra fcs")
     using Dates
     data = read_data("inputs/extrafcs.xlsx")
     for sample in ["plate_01_a1", "plate_01_a2", "plate_01_a3", "plate_01_a4"]
@@ -189,8 +190,9 @@ end
         else
             end_time = Time(end_time)
         end
-        experiment_time = maximum(times) - minimum(times)
-        @test end_time - Second(1) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(1)
+        experiment_times = [maximum(times), maximum(times) - minimum(times)]
+        @test (end_time - Second(1) <= start_time + Millisecond(round(experiment_times[1])) <= end_time + Second(1)
+            || end_time - Second(1) <= start_time + Millisecond(round(experiment_times[2])) <= end_time + Second(1))
     end
 end
 
@@ -265,4 +267,29 @@ end
     tmp = transform(data, Logicle(T=1000, W=1, M=4, A=0))
     @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
     @test untransform(tmp, Logicle(T=1000, W=1, M=4, A=0)) ≈ data atol=1e-4
+end
+
+@testitem "flowdir" setup=[environment_path] begin
+    println("flowdir")
+    using Logging
+    io = IOBuffer()
+    logger = SimpleLogger(io)
+
+    with_logger(logger) do
+        data = read_data("inputs/flowdir.xlsx")
+    end
+    str = String(take!(io))
+
+    comparison = ["Info: Expanded flow directory \$GITHUB_WORKSPACE/test/inputs/flowdir into the following files and wells:",
+    "┌ Info: Well map: \n│ ? a1 -> Blank_A1_A01_001.fcs\n│ ? b1 -> Blank_B1_B01_002.fcs\n│ ? e1 -> Calibration_E1_E01_093.fcs\n│ ? f1 -> Calibration_F1_F01_094.fcs\n│ ? a2 -> EE01_A2_A02_005.fcs\n│ ? a3 -> EE01_A3_A03_006.fcs\n│ ? b11 -> EE01_B11_B11_024.fcs\n│ ? c2 -> EE02_C2_C02_025.fcs\n│ ? a12 -> NegControl-DH10beta_A12_A12_085.fcs\n│ ? b12 -> NegControl-DH10beta_B12_B12_086.fcs\n│ ? c12 -> NegControl-DH10beta_C12_C12_087.fcs\n│ ? d12 -> NegControl-DH10beta_D12_D12_088.fcs\n│ ? e12 -> NegControl-DH10beta_E12_E12_089.fcs"]
+    @test contains(str, comparison[1])
+    @test contains(str, comparison[2])
+
+    data = read_data("inputs/flowdir.xlsx")
+    names = ESM.expand_groups("plate_01_[a1,b1,e1,f1,a2,a3,b11,c2,a12,b12,c12,d12,e12], plate_04_a[1:3,10:12], plate_04_b[5,6,10:12]")
+    @test all([data["samples"][s]["type"] == "population" for s in names])
+    @test issetequal(union(data["groups"]["plate_01"]["sample_IDs"], data["groups"]["plate_04"]["sample_IDs"]), names)
+
+    @test data["samples"]["plate_02_a5"]["type"] == "population"
+    @test data["samples"]["plate_03_a1"]["type"] == "timeseries"
 end
