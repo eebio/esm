@@ -22,6 +22,7 @@ PAGES = [
         "flow_cytometers/auto_gating.md",
         "flow_cytometers/manual_gating.md",
         "flow_cytometers/mef_calibration.md",
+        "flow_cytometers/transform.md",
     ],
     "Data Format" => "data_format.md",
     "Command Line Interface" => "cli.md",
