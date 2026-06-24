@@ -193,3 +193,76 @@ end
         @test end_time - Second(1) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(1)
     end
 end
+
+@testitem "transforms" begin
+    println("transforms")
+    using DataFrames
+    data = DataFrame("FSC-A" => [-10, -5, -1, 0, 0.3, 1, 3, 10, 100, 1000],
+        "ints" => [-10, -5, -1, 0, 1, 2, 3, 10, 100, 1000])
+
+    tmp = transform(data, Log())
+    @test tmp ≈ DataFrame(
+        "FSC-A" => [NaN, NaN, NaN, -Inf, log(0.3), log(1), log(3), log(10), log(100), log(1000)],
+        "ints" => [NaN, NaN, NaN, -Inf, log(1), log(2), log(3), log(10), log(100), log(1000)]) atol=1e-4 nans = true
+    @test untransform(tmp, Log()) ≈ DataFrame("FSC-A" => [NaN, NaN, NaN, 0, 0.3, 1, 3, 10, 100, 1000],
+        "ints" => [NaN, NaN, NaN, 0, 1, 2, 3, 10, 100, 1000]) atol=1e-4 nans = true
+
+    tmp = transform(data, Log10())
+    @test tmp ≈ DataFrame(
+        "FSC-A" => [NaN, NaN, NaN, -Inf, log10(0.3), log10(1), log10(3), log10(10), log10(100), log10(1000)],
+        "ints" => [NaN, NaN, NaN, -Inf, log10(1), log10(2), log10(3), log10(10), log10(100), log10(1000)]) atol=1e-4 nans = true
+    @test untransform(tmp, Log10()) ≈ DataFrame("FSC-A" => [NaN, NaN, NaN, 0, 0.3, 1, 3, 10, 100, 1000],
+        "ints" => [NaN, NaN, NaN, 0, 1, 2, 3, 10, 100, 1000]) atol=1e-4 nans = true
+
+    tmp = transform(data, Log2())
+    @test tmp ≈ DataFrame(
+        "FSC-A" => [NaN, NaN, NaN, -Inf, log2(0.3), log2(1), log2(3), log2(10), log2(100), log2(1000)],
+        "ints" => [NaN, NaN, NaN, -Inf, log2(1), log2(2), log2(3), log2(10), log2(100), log2(1000)]) atol=1e-4 nans = true
+    @test untransform(tmp, Log2()) ≈ DataFrame("FSC-A" => [NaN, NaN, NaN, 0, 0.3, 1, 3, 10, 100, 1000],
+        "ints" => [NaN, NaN, NaN, 0, 1, 2, 3, 10, 100, 1000]) atol=1e-4 nans = true
+
+    tmp = transform(data, Log1p())
+    @test tmp ≈ DataFrame(
+        "FSC-A" => [NaN, NaN, -Inf, log1p(0), log1p(0.3), log1p(1), log1p(3), log1p(10), log1p(100), log1p(1000)],
+        "ints" => [NaN, NaN, -Inf, log1p(0), log1p(1), log1p(2), log1p(3), log1p(10), log1p(100), log1p(1000)]) atol=1e-4 nans = true
+    @test untransform(tmp, Log1p()) ≈ DataFrame("FSC-A" => [NaN, NaN, -1, 0, 0.3, 1, 3, 10, 100, 1000],
+        "ints" => [NaN, NaN, -1, 0, 1, 2, 3, 10, 100, 1000]) atol=1e-4 nans = true
+
+    tmp = transform(data, Arcsinh())
+    @test tmp ≈ DataFrame(
+        "FSC-A" => [asinh(-10), asinh(-5), asinh(-1), asinh(0), asinh(0.3), asinh(1), asinh(3), asinh(10), asinh(100), asinh(1000)],
+        "ints" => [asinh(-10), asinh(-5), asinh(-1), asinh(0), asinh(1), asinh(2), asinh(3), asinh(10), asinh(100), asinh(1000)]) atol=1e-4
+    @test untransform(tmp, Arcsinh()) ≈ data atol=1e-4
+
+    tmp = transform(data, Linear(A = 10, T = 1000))
+    @test all(0.0 .<= tmp[!, "FSC-A"] .<= 1.0)
+    @test maximum(tmp[!, "FSC-A"]) == 1.0
+    @test minimum(tmp[!, "FSC-A"]) == 0.0
+    @test all(0.0 .<= tmp[!, "ints"] .<= 1.0)
+    @test maximum(tmp[!, "ints"]) == 1.0
+    @test minimum(tmp[!, "ints"]) == 0.0
+    @test untransform(tmp, Linear(A = 10, T = 1000)) ≈ data atol=1e-4
+
+    tmp = transform(data, Bound(min=0.0, max=100.0))
+    @test all(0.0 .<= tmp[!, "FSC-A"] .<= 100.0)
+    @test maximum(tmp[!, "FSC-A"]) == 100.0
+    @test minimum(tmp[!, "FSC-A"]) == 0.0
+    @test all(0.0 .<= tmp[!, "ints"] .<= 100.0)
+    @test maximum(tmp[!, "ints"]) == 100.0
+    @test minimum(tmp[!, "ints"]) == 0.0
+    @test untransform(tmp, Bound(min=0.0, max=100.0)) ≈
+    DataFrame("FSC-A" => [-Inf, -Inf, -Inf, -Inf, 0.3, 1, 3, 10, Inf, Inf],
+        "ints" => [-Inf, -Inf, -Inf, -Inf, 1, 2, 3, 10, Inf, Inf]) atol=1e-4
+
+    tmp = transform(data, Bound())
+    @test tmp ≈ data
+    @test untransform(tmp, Bound()) ≈ data atol=1e-4
+
+    tmp = transform(data, Hyperlog(T=1000, W=1, M=4, A=0))
+    @test tmp[!, "FSC-A"] ≈ [0.083554, 0.155868, 0.229477, 0.25, 0.256239, 0.270523, 0.309091, 0.416446, 0.731875, 1] atol=1e-4
+    @test untransform(tmp, Hyperlog(T=1000, W=1, M=4, A=0)) ≈ data atol=1e-4
+
+    tmp = transform(data, Logicle(T=1000, W=1, M=4, A=0))
+    @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
+    @test untransform(tmp, Logicle(T=1000, W=1, M=4, A=0)) ≈ data atol=1e-4
+end
