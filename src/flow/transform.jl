@@ -158,21 +158,87 @@ function Hyperlog(; W=1.0, T=262144, M=4.5, A=0)
     a = T / (exp(b) + cbya - fbya)
     c = cbya * a
     f = fbya * a
-    return _Hyperlog(a, b, c, f)
+
+    xTaylor = x1 + w / 4
+    taylor = zeros(16, 1)
+    coef = a * exp(b * x1)
+    for p in 1:16
+        coef *= b/p
+        taylor[p] = coef
+    end
+    taylor[1] += c
+
+    # Figure out boundary between linear and log for initial guess
+    negative = x0 < x1
+    if negative
+        tmp_x0 = 2 * x1 - x0
+    else
+        tmp_x0 = x0
+    end
+    if tmp_x0 < xTaylor
+        inv = taylorSeries(taylor, x1, tmp_x0)
+    else
+        inv = a * exp(b * tmp_x0) + c * tmp_x0 - f
+    end
+    if negative
+        inv = -inv
+    end
+    return Hyperlog(a, b, c, f, xTaylor, taylor, x1, inv, w)
 end
 
-function _Hyperlog(a,b,c,f)
-    EH(x) = a * exp(b * x) + c * x - f
-    root(x, _) = EH(x) - x
-    prob = NonlinearProblem(root, 0.0)
+function taylorSeries(taylor, x1, x)
+    x = x - x1
+    sum = taylor[16] * x
+    for i in 15:-1:1
+        sum = (sum + taylor[i]) * x
+    end
+    return sum
+end
+
+function Hyperlog(a,b,c,f,xTaylor,taylor,x1,inv,w)
+    function EH(x)
+        negative = x < x1
+        if negative
+            x = 2 * x1 - x
+        end
+
+        if x < xTaylor
+            inverse = taylorSeries(taylor, x1, x)
+        else
+            inverse = a * exp(b * x) + c * x - f
+        end
+
+        if negative
+            inverse = -inverse
+        end
+        return inverse
+    end
+
     function inverse(x)
-        prob = remake(prob; u0 = x)
+        root(y, _) = EH(y) - x
+        if x == 0
+            return x1
+        end
+        negative = x < 0
+        if negative
+            x = -x
+        end
+
+        if x > inv
+            x0 = log(x/a)/b
+        else
+            x0 = x1 + x * w / inv
+        end
+        prob = NonlinearProblem(root, x0)
         sol = NonlinearSolve.solve(prob, NonlinearSolve.NewtonRaphson(), verbose = false)
         if SciMLBase.successful_retcode(sol)
-            return sol.u[1]
-        else
-            return NaN
+            if negative
+                return 2 * x1 - sol.u[1]
+            else
+                return sol.u[1]
+            end
         end
+        return NaN
     end
     return Transform(inverse, EH)
 end
