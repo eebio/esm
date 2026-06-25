@@ -19,23 +19,33 @@ include("views.jl")
 
 export read_esm, esm_zones, read_data, write_esm
 export template, translate, views, summarise
+
 export growth_rate, doubling_time, lag_time, max_od, time_to_max_growth, od_at_max_growth
 export MovingWindow, FiniteDiff, Endpoints, LinearOnLog, ExpandingWindow
 export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
 export Regularization
+
 export fluorescence
 export RatioAtTime, RatioAtMaxGrowth
+
 export smooth
 export MovingAverage, MovingTimeAverage
+
 export calibrate
 export at_time, at, between_times, between
 export TimeseriesBlank, SmoothedTimeseriesBlank, MeanBlank, MinBlank, MinData, StartData
+
 export gate, event_count, gated_proportion
 export HighLowGate, RectangleGate, QuadrantGate, PolygonGate, EllipseGate
 export and, or, not
 export AndGate, OrGate, NotGate
 export KDE
+
 export MEF
+
+export transform, untransform
+export Log, Log10, Log2, Log1p, Arcsinh, Linear, Logicle, Hyperlog, Bound
+
 export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
 export AbstractESMDataType, AbstractPlateReader
