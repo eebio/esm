@@ -96,7 +96,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     mef = method.mef
 
     # Transform the data and collect into a vector
-    data = log10.(1 .+ abs.(collect(method.beads[method.beads[:, method.channel] .> 0, 1])))
+    data = log10.(1 .+ abs.(collect(method.beads[method.beads[:, method.channel] .> 0, method.channel])))
     data = reshape(data, :, 1)
     data = convert(Matrix{Float64}, data)
 
