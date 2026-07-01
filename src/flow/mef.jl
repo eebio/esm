@@ -37,7 +37,13 @@ function cluster(data, method; plot_directory = nothing)
     clusters = [data[ass .== i, 1] for i in 1:n]
 
     # Sort clusters by median
-    summaries = [method.summary(c) for c in clusters]
+    summaries = [isempty(c) ? NaN : method.summary(c) for c in clusters]
+    if any(isnan.(summaries))
+        err = true
+        summaries = summaries[.!isnan.(summaries)]
+    else
+        err = false
+    end
     sorted_idx = sortperm(summaries)
     sorted_clusters = clusters[sorted_idx]
     sorted_summaries = summaries[sorted_idx]
@@ -57,6 +63,10 @@ function cluster(data, method; plot_directory = nothing)
             vline!(p, [method.summary(c)]; linecolour = i, linestyle = :dash, label=nothing)
         end
         savefig(p, joinpath(plot_directory, "mef_calibration_clusters.png"))
+    end
+
+    if err
+        error("MEF clustering failed. One or more clusters were empty. Try adjusting the gating, seed, or nRepeats. Alternatively, you can manually specify the calibration points with calibrate(df::DataFrame, summaries::Vector, method::MEF; plot_directory = nothing).")
     end
 
     return sorted_clusters, sorted_summaries
@@ -86,7 +96,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     mef = method.mef
 
     # Transform the data and collect into a vector
-    data = log10.(1 .+ abs.(collect(method.beads[method.beads[:, method.channel] .> 0, 1])))
+    data = log10.(1 .+ abs.(collect(method.beads[method.beads[:, method.channel] .> 0, method.channel])))
     data = reshape(data, :, 1)
     data = convert(Matrix{Float64}, data)
 

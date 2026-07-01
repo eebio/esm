@@ -64,7 +64,6 @@ Translates the completed .xlsx template file to a .esm file.
 
 - `input`: The completed .xlsx template file to be read.
 - `output`: The filepath/destination for the .esm file.
-
 """
 @cast function translate(input::String, output::String)
     x = read_data(input)
@@ -81,10 +80,9 @@ Produce and save the views from a .esm file.
 - `esm_file`: The .esm file to be read.
 
 # Options
-- `-v, --view=<String>`: The view to be produced. All views if not specified.
+- `-v, --view=<String>`: The view to be produced (or comma-separated list of views). All views if not specified.
 - `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the
     current directory.
-
 """
 @cast function views(esm_file::String; view = nothing, output_dir::String = ".")
     es = read_esm(esm_file)
@@ -93,6 +91,8 @@ Produce and save the views from a .esm file.
     @info "Producing views."
     if isnothing(view)
         views = []
+    elseif contains(view, ",")
+        views = split(view, ",")
     else
         views = [view]
     end
@@ -108,7 +108,6 @@ Produce a template excel file for data entry into the ESM.
 
 - `-o, --output-path=<String>`: The path to create the template in. Defaults to ESM.xlsx in
     the current directory.
-
 """
 @cast function template(; output_path::String = "ESM.xlsx")
     e = pathof(ESM)

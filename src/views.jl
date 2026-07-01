@@ -30,9 +30,11 @@ function produce_views(es, trans_meta_map; to_out = [])
         # Put it all in the same frame and not a vector
         if any(isa.(result, AbstractVecOrMat)) || any(isa.(result, Number))
             v_out[i] = Tables.table(hcat(result...))
-        else
+        elseif any(isa.(result, AbstractDataFrame))
             # TODO If transforms are a comma separated list (internally a tuple), then a view of that transform will be [(results...)], which when splatted is still a tuple of results
             v_out[i] = hcat(result..., makeunique = true)
+        else
+            v_out[i] = result
         end
     end
     @info "Views produced."
@@ -55,8 +57,17 @@ function view_to_csv(es, trans_meta_map; outdir = "", to_out = [])
     vs = produce_views(es, trans_meta_map; to_out = to_out)
     # Write the views to file
     for i in keys(vs)
-        @info "Writing view: $i to $(joinpath(outdir,i*".csv"))"
-        CSV.write("$(joinpath(outdir,i*".csv"))", vs[i])
+        if Tables.istable(vs[i])
+            @info "Writing view: $i to $(joinpath(outdir,i*".csv"))"
+            CSV.write("$(joinpath(outdir,i*".csv"))", vs[i])
+        else
+            @info "View $i is not a table and cannot be written to CSV."
+            if length(vs[i]) == 1
+                @info "$i = $(vs[i][1])"
+            else
+                @info "$i = $(Tuple(vs[i]))"
+            end
+        end
     end
     @info "Views written successfully."
 end
@@ -91,6 +102,10 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
         # Check if the symbol is an expression as this could mean further processing
         for i in eachindex(sexp.args)
             # Recursively process each argument of the expression
+            if sexp.head == :kw && i == 1
+                # If this is a keyword argument, don't process the first argument as it is the keyword name
+                continue
+            end
             sexp.args[i] = sexp_to_nested_list(sexp.args[i], es, trans_meta_map)
         end
         if sexp.head == :.
