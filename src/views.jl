@@ -102,6 +102,10 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
         # Check if the symbol is an expression as this could mean further processing
         for i in eachindex(sexp.args)
             # Recursively process each argument of the expression
+            if sexp.head == :kw && i == 1
+                # If this is a keyword argument, don't process the first argument as it is the keyword name
+                continue
+            end
             sexp.args[i] = sexp_to_nested_list(sexp.args[i], es, trans_meta_map)
         end
         if sexp.head == :.
