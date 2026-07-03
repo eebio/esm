@@ -40,7 +40,7 @@ function smooth(data, _, method::MovingAverage)
     return data
 end
 
-@kwdef struct MovingTimeAverage <: AbstractSmoothingMethod
+struct MovingTimeAverage <: AbstractSmoothingMethod
     window_ahead::Float64
     window_behind::Float64
 end

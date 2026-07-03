@@ -168,7 +168,7 @@ function read_data(file::AbstractString)
             "metadata" => Dict("autodefined" => "true"))
     end
     # Add the transformations
-    trans_dict = OrderedDict(i.Name => "equation" => i.Equation for i in eachrow(trans))
+    trans_dict = OrderedDict(i.Name => "equation" => string(i.Equation) for i in eachrow(trans))
     # Add the views
     views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
     for i in eachrow(views))

@@ -542,6 +542,37 @@ end
     @test issetequal(names(out["v6"]), ESM.expand_groups("plate_01_[a,b][1:4].[od,700,od_1,700_1], plate_01_e[5:7].[od,700,od_1,700_1],plate_01_time,plate_01_a1.[od_2,700_2],plate_01_[a,b][1:4],plate_01_a6.[od,700],plate_01_a7"))
 end
 
+@testitem "kw name collision" setup=[environment_path] begin
+    println("kw name collision")
+    es = read_data("inputs/kw_name_collision.xlsx")
+    write_esm(es, "inputs/kw_name_collision.esm")
+    es = read_esm("inputs/kw_name_collision.esm")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+    out = ESM.produce_views(es, trans_meta_map)
+    @test !isempty(out)
+end
+
+@testitem "non-table views" setup=[environment_path] begin
+    println("non-table views")
+    es = read_data("inputs/non_table_views.xlsx")
+    write_esm(es, "inputs/non_table_views.esm")
+    es = read_esm("inputs/non_table_views.esm")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+
+    using Logging
+    io = IOBuffer()
+    logger = SimpleLogger(io)
+
+    with_logger(logger) do
+        ESM.view_to_csv(es, trans_meta_map)
+    end
+    str = String(take!(io))
+    @test contains(str, "Info: method = ESM.Endpoints(10.0, 20.0)") ||
+          contains(str, "Info: method = Endpoints(10.0, 20.0)")
+end
+
 @testitem "to_rfi" begin
     println("to_rfi")
     es = read_esm("inputs/example.esm")

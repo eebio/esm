@@ -19,6 +19,7 @@ PAGES = [
     ],
     "Flow Cytometry" => [
         "flow_cytometers/index.md",
+        "flow_cytometers/flow_tutorial.md",
         "flow_cytometers/auto_gating.md",
         "flow_cytometers/manual_gating.md",
         "flow_cytometers/mef_calibration.md",
