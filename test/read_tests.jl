@@ -553,6 +553,25 @@ end
     @test !isempty(out)
 end
 
+@testitem "non-table views" setup=[environment_path] begin
+    println("non-table views")
+    es = read_data("inputs/non_table_views.xlsx")
+    write_esm(es, "inputs/non_table_views.esm")
+    es = read_esm("inputs/non_table_views.esm")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+
+    using Logging
+    io = IOBuffer()
+    logger = SimpleLogger(io)
+
+    with_logger(logger) do
+        ESM.view_to_csv(es, trans_meta_map)
+    end
+    str = String(take!(io))
+    @test contains(str, "Info: method = ESM.Endpoints(10.0, 20.0)")
+end
+
 @testitem "to_rfi" begin
     println("to_rfi")
     es = read_esm("inputs/example.esm")
