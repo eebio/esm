@@ -569,7 +569,8 @@ end
         ESM.view_to_csv(es, trans_meta_map)
     end
     str = String(take!(io))
-    @test contains(str, "Info: method = ESM.Endpoints(10.0, 20.0)")
+    @test contains(str, "Info: method = ESM.Endpoints(10.0, 20.0)") ||
+          contains(str, "Info: method = Endpoints(10.0, 20.0)")
 end
 
 @testitem "to_rfi" begin
