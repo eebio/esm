@@ -14,10 +14,19 @@ Apply the specified transformation to `data`.
 Arguments:
 - `data::DataFrame`: A DataFrame of Flow cytometry data.
 - `method::AbstractTransformMethod`: The method and settings to use for transformation.
+
+Keywords:
+- `cols`: The columns to transform. Defaults to all (`id` is always ignored). Note that the
+    `.max` and `.min` columns won't be transformed if only a channel name is specified in
+    `cols` (e.g., `:FSC-A`), but will be transformed if the full column name is specified
+    (e.g., `:FSC-A.max`).
 """
-function transform(data::DataFrame, method::AbstractTransformMethod)
+function transform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
     data = deepcopy(data)
-    for name in names(data)
+    for name in cols
+        if string(name) == "id"
+            continue
+        end
         data[!, name] = method.forward.(data[!, name])
     end
     return data
@@ -31,10 +40,19 @@ Reverse a previously applied transformation on `data`.
 Arguments:
 - `data::DataFrame`: A DataFrame of Flow cytometry data.
 - `method::AbstractTransformMethod`: The method and settings to use for transformation.
+
+Keywords:
+- `cols`: The columns to untransform. Defaults to all (`id` is always ignored). Note that
+    the `.max` and `.min` columns won't be untransformed if only a channel name is specified
+    in `cols` (e.g., `:FSC-A`), but will be untransformed if the full column name is
+    specified (e.g., `:FSC-A.max`).
 """
-function untransform(data::DataFrame, method::AbstractTransformMethod)
+function untransform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
     data = deepcopy(data)
-    for name in names(data)
+    for name in cols
+        if string(name) == "id"
+            continue
+        end
         data[!, name] = method.backward.(data[!, name])
     end
     return data
