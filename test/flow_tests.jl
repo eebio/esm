@@ -267,6 +267,21 @@ end
     tmp = transform(data, Logicle(T=1000, W=1, M=4, A=0))
     @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
     @test untransform(tmp, Logicle(T=1000, W=1, M=4, A=0)) ≈ data atol=1e-4
+
+    # Transform specific columns
+    tmp = transform(data, Logicle(T = 1000, W = 1, M = 4, A = 0); cols = ["FSC-A"])
+    @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
+    @test tmp[!, "ints"] == data[!, "ints"]
+    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0); cols = ["FSC-A"]) ≈ data atol=1e-4
+
+    # ID shouldn't be transformed
+    data = DataFrame("FSC-A" => [-10, -5, -1, 0, 0.3, 1, 3, 10, 100, 1000],
+        "ints" => [-10, -5, -1, 0, 1, 2, 3, 10, 100, 1000],
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    tmp = transform(data, Logicle(T = 1000, W = 1, M = 4, A = 0))
+    @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
+    @test tmp[!, "id"] == data[!, "id"]
+    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0)) ≈ data atol=1e-4
 end
 
 @testitem "flowdir" setup=[environment_path] begin
