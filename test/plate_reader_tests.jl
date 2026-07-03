@@ -178,15 +178,15 @@ end
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
-    @test_warn "Not enough data points" growth_rate(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any growth_rate(
         od_df_warn, time_col, FiniteDiff(); recalibrate = false)
-    @test_warn "Not enough data points" growth_rate(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any growth_rate(
         od_df_warn, time_col, LinearOnLog(start_time = 1.1, end_time = 1.2); recalibrate = false)
-    @test_warn "Not enough data points" growth_rate(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any growth_rate(
         od_df_warn, time_col, Regularization(); recalibrate = false)
-    @test_warn "Not enough data points" growth_rate(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any growth_rate(
         od_df_warn, time_col, Logistic(); recalibrate = false)
-    @test_warn "No data points found between start_time" growth_rate(
+    @test_logs (:warn, r"No data points found between start_time") match_mode=:any growth_rate(
         od_df, time_col, LinearOnLog(start_time = -2, end_time = -1); recalibrate = false)
 
     # Tests for errors
@@ -277,11 +277,11 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" time_to_max_growth(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any time_to_max_growth(
         od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
-    @test_warn "Not enough data points" time_to_max_growth(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any time_to_max_growth(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
-    @test_warn "Not enough data points" time_to_max_growth(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any time_to_max_growth(
         od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
@@ -344,11 +344,11 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" lag_time(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any lag_time(
         od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
-    @test_warn "Not enough data points" lag_time(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any lag_time(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
-    @test_warn "Not enough data points" lag_time(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any lag_time(
         od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
@@ -419,11 +419,11 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" od_at_max_growth(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any od_at_max_growth(
         od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
-    @test_warn "Not enough data points" od_at_max_growth(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any od_at_max_growth(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
-    @test_warn "Not enough data points" od_at_max_growth(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any od_at_max_growth(
         od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
@@ -485,11 +485,11 @@ end
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
     time_col_warn = DataFrame(:Time => 0:60000:600000)
-    @test_warn "Not enough data points" max_od(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any max_od(
         od_df_warn, time_col_warn, FiniteDiff(); recalibrate = false)
-    @test_warn "Not enough data points" max_od(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any max_od(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
-    @test_warn "Not enough data points" max_od(
+    @test_logs (:warn, r"Not enough data points") match_mode=:any max_od(
         od_df_warn, time_col_warn, Regularization(); recalibrate = false)
 
     # Tests for errors
