@@ -83,6 +83,14 @@ end
     esm_hash2 = stable_hash(read(joinpath(dir2, "mega.csv"), String); version=4)
     @test bytes2hex(esm_hash2) ==
           "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
+
+    # Specifying multiple views
+    dir3 = Base.Filesystem.mktempdir()
+    run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) -v flowsub,mega -o $dir3`)
+    @test isfile(joinpath(dir3, "mega.csv"))
+    @test isfile(joinpath(dir3, "flowsub.csv"))
+    # Other views should not be present
+    @test !isfile(joinpath(dir3, "group1.csv"))
 end
 
 @testitem "Summarise integration" setup=[environment_path, build, getshell] begin
@@ -156,6 +164,7 @@ end
     translate(joinpath("inputs", "example.xlsx"), joinpath(dir, "tmp.esm"))
     views(joinpath(dir, "tmp.esm"); output_dir = dir)
     views(joinpath(dir, "tmp.esm"); view = "mega", output_dir = dir)
+    views(joinpath(dir, "tmp.esm"); view = "flowsub,mega", output_dir = dir)
     translate(joinpath("inputs", "summarise.xlsx"), joinpath(dir, "summarise.esm"))
     summarise(joinpath(dir, "summarise.esm"); plot = true)
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
