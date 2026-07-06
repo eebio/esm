@@ -97,7 +97,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     mef = method.mef
 
     # Transform the data and collect into a vector
-    data = transform(method.beads, method.transform)
+    data = transform(method.beads, method.transform)[:, method.channel]
     data = reshape(data, :, 1)
     data = convert(Matrix{Float64}, data)
 
