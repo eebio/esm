@@ -108,10 +108,11 @@ end
     # Density gate
     f = x -> log10.(1 .+ max.(0.0, x))
     gated = gate(df, KDE(channels = ["FSC-A", "SSC-A"], gate_frac = 0.4, transform_x = f, transform_y = f))
+    t = Transform(f, x -> 10 .^ x .- 1)
     gated = gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = f, transform_y = f))
 
     # MEF calibration
-    method = MEF(beads = gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1)
+    method = MEF(beads = gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1, transform=t)
     dir = mktempdir()
     calibrated_df = calibrate(df, method; plot_directory = dir)
     @test all(calibrated_df[!, "BL1-H.min"] .== 0.0)
