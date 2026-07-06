@@ -25,7 +25,7 @@ function cluster(data, method; plot_directory = nothing)
     # Plot data
     if !isnothing(plot_directory)
         p = histogram(data; bins = range(minimum(data), stop = maximum(data), length = 500),
-            linecolor=nothing, label=nothing, xlabel = "log₁₀('$(method.channel)'+1) (RFI)",
+            linecolor=nothing, label=nothing, xlabel = "Transform('$(method.channel)') (RFI)",
             ylabel = "Count", title = "MEF Calibration: Fluorescence Data",
         )
         savefig(p, joinpath(plot_directory, "mef_calibration_fluorescence_data.png"))
@@ -50,7 +50,7 @@ function cluster(data, method; plot_directory = nothing)
 
     if !isnothing(plot_directory)
         # Plot data split by clusters
-        p = histogram(xlabel = "log₁₀('$(method.channel)'+1) (RFI)",
+        p = histogram(xlabel = "Transform('$(method.channel)') (RFI)",
             ylabel = "Count", title = "MEF Calibration: Clusters")
         for i in eachindex(sorted_clusters)
             c = sorted_clusters[i]
