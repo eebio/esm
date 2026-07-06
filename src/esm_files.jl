@@ -149,7 +149,10 @@ function read_data(file::AbstractString)
         tmp = join([string(j) * ", " for j in channels])[1:(end - 2)]
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
-        @info "Channel map: \n$(prb...)\n"
+        if isempty(prb)
+            prb = "Empty - no channels or channel map specified"
+        end
+        @info "Channel map: \n$(prb...)"
         broad_g = []
         if channels == ["missing"]
             channels = []
