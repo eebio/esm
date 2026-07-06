@@ -72,7 +72,7 @@ function cluster(data, method; plot_directory = nothing)
     return sorted_clusters, sorted_summaries
 end
 
-@kwdef mutable struct MEF
+@kwdef struct MEF
     beads::DataFrame
     mef::Vector
     channel::String
@@ -94,7 +94,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
         mkpath(plot_directory)
     end
 
-    mef = method.mef
+    mef = deepcopy(method.mef)
 
     # Transform the data and collect into a vector
     data = transform(method.beads, method.transform)[:, method.channel]
@@ -138,7 +138,10 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     clusters = clusters[keep_population]
     summaries = summaries[keep_population]
 
-    method.mef = mef
+    method = MEF(method.beads,
+        mef, # Keep only the MEF values for the populations that are kept
+        method.channel, method.summary, method.seed, method.nInit,
+        method.nIter, method.nRepeats, method.transform)
 
     return calibrate(df, summaries, method; plot_directory)
 end
