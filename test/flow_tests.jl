@@ -128,13 +128,13 @@ end
     @test df == copy
 
     # Test that other columns are not modified
-    @test df[!, "FSC-A"] == copy[!, "FSC-A"]
-    @test df[!, "SSC-A"] == copy[!, "SSC-A"]
-    @test df[!, "id"] == copy[!, "id"]
-    @test df[!, "FSC-A.min"] == copy[!, "FSC-A.min"]
-    @test df[!, "SSC-A.min"] == copy[!, "SSC-A.min"]
-    @test df[!, "FSC-A.max"] == copy[!, "FSC-A.max"]
-    @test df[!, "SSC-A.max"] == copy[!, "SSC-A.max"]
+    @test calibrated_df[!, "FSC-A"] == copy[!, "FSC-A"]
+    @test calibrated_df[!, "SSC-A"] == copy[!, "SSC-A"]
+    @test calibrated_df[!, "id"] == copy[!, "id"]
+    @test calibrated_df[!, "FSC-A.min"] == copy[!, "FSC-A.min"]
+    @test calibrated_df[!, "SSC-A.min"] == copy[!, "SSC-A.min"]
+    @test calibrated_df[!, "FSC-A.max"] == copy[!, "FSC-A.max"]
+    @test calibrated_df[!, "SSC-A.max"] == copy[!, "SSC-A.max"]
 
     # Test with temporary plot directory
     using Logging
