@@ -15,6 +15,8 @@ The `KDE` method (Kernal Density Estimation) is an automatic gating method based
 
 It can be called using `gate(data, KDE(channels=["FSC_A", "SSC_A"], gate_frac=0.65, nbins=1024))` where `gate_frac` and `nbins` are optional.
 
+You can also supply `transform_x` and `transform_y` to apply a transformation to each channel before gating. This is often useful for spreading the data more evenly across the gating region — for example, `gate(data, KDE(channels=["FSC_A", "SSC_A"], transform_x=Logicle(), transform_y=Logicle()))`. Any transform from the [Transforms](@ref) page can be used here or an arbitrary Julia function which takes a single input.
+
 ## Implementation Details
 
 If you want to implement a new automatic gating method to be included in ESM, you need to:

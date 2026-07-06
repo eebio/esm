@@ -121,10 +121,7 @@ Now, we can calibrate the `BL1_H` fluorescence data for each of our groups based
 esm translate ESM.xlsx ESM.esm; esm views ESM.esm -v v_weak,v_medium,v_strong,v_v_strong
 ```
 
-In the first step, the bead data is extracted and transformed.
-
-!!! todo "Bead transform"
-    In future, the transform for the bead data will be customisable.
+In the first step, the bead data is extracted. By default, the bead data is not transformed before clustering — if the peaks aren't well separated on a linear scale, you can pass a `transform` argument to `MEF` (e.g. `MEF(..., transform=Logicle())`). See the [MEF Calibration](@ref) documentation for details.
 
 It is then clustered using a mix of k-means and Gaussian mixture models. Data corresponding to clusters where `MEF=nothing` are removed. In this case, we had previously set the 7th cluster to be removed.
 

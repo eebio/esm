@@ -8,7 +8,7 @@ Samples stores key-value pairs, with keys as the sample names. Each samples stor
 
 * a variable called "values" that stores the channel data as key-value pairs (with each channel storing an ordered list),
 * a "type" variable that indicates whether the data is a "timeseries" (like plate reader data) or "population" (like flow cytometry data),
-* and a "metadata" variable to store any other associated data in key-value pairs, such as amplifier settings for flow cytometers.
+* and a "metadata" variable to store any other associated data in key-value pairs, such as amplifier settings for flow cytometers. For flow cytometry data, this includes per-channel instrument parameters. For both flow cytometry and plate reader data, `"metadata"` also contains a `"raw_metadata"` key with the complete raw metadata from the original file (all FCS parameters for flow data, or the file header for plate reader data).
 
 Times are formatted as an integer number of milliseconds. Flow cytometry channel data is converted to RFI.
 

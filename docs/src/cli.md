@@ -33,3 +33,6 @@ To create the views from a `.esm` file, you can use the `esm views ...` function
 ```@docs; canonical=false
 ESM.views
 ```
+
+!!! note "Comma-separated views"
+    When passing a list of views with `-v`, do not include spaces after the commas — use `-v view1,view2,view3`, not `-v view1, view2, view3`.

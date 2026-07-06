@@ -23,6 +23,16 @@ Hyperlog
 Logicle
 ```
 
+## Selecting Columns
+
+By default, `transform` and `untransform` are applied to all columns in the data. You can restrict this with the `cols` keyword argument, which accepts a list of column names:
+
+```julia
+transform(data, Logicle(), cols=["BL1_H", "BL2_H"])
+```
+
+The `id` column is always left untouched, regardless of what you pass to `cols`.
+
 ## Implementation Details
 
 If you want to implement a new transform method to be included in ESM, you need to:
