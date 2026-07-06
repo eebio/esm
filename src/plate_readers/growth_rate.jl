@@ -336,7 +336,7 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
     # Weight residuals due to log scale warping noise
     weights = df[indexes, 1] ./ first(df[:, 1])
     weights = weights ./ sum(weights) * length(weights) # Normalize weights
-    lm_model = lm(@formula(log_od~time), lm_df; weights = weights)
+    lm_model = lm(@formula(log_od~time), lm_df; weights = FrequencyWeights(weights))
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
 
