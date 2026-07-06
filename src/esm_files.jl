@@ -196,7 +196,7 @@ function get_metadata()
     return Dict(
         "description" => "",
         "esm_version" => pkgversion(ESM),
-        "schema_version" => "0.1.0",
+        "schema_version" => "0.2.0",
         "date_created" => string(Dates.now()),
         "date_modified" => string(Dates.now()),
         "Project.toml" => project_toml,
