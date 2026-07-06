@@ -108,10 +108,11 @@ end
     # Density gate
     f = x -> log10.(1 .+ max.(0.0, x))
     gated = gate(df, KDE(channels = ["FSC-A", "SSC-A"], gate_frac = 0.4, transform_x = f, transform_y = f))
-    gated = gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = f, transform_y = f))
+    t = Transform(f, x -> 10 .^ x .- 1)
+    gated = gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = t, transform_y = t))
 
     # MEF calibration
-    method = MEF(beads = gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1)
+    method = MEF(beads = gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1, transform=t)
     dir = mktempdir()
     calibrated_df = calibrate(df, method; plot_directory = dir)
     @test all(calibrated_df[!, "BL1-H.min"] .== 0.0)
@@ -127,13 +128,13 @@ end
     @test df == copy
 
     # Test that other columns are not modified
-    @test df[!, "FSC-A"] == copy[!, "FSC-A"]
-    @test df[!, "SSC-A"] == copy[!, "SSC-A"]
-    @test df[!, "id"] == copy[!, "id"]
-    @test df[!, "FSC-A.min"] == copy[!, "FSC-A.min"]
-    @test df[!, "SSC-A.min"] == copy[!, "SSC-A.min"]
-    @test df[!, "FSC-A.max"] == copy[!, "FSC-A.max"]
-    @test df[!, "SSC-A.max"] == copy[!, "SSC-A.max"]
+    @test calibrated_df[!, "FSC-A"] == copy[!, "FSC-A"]
+    @test calibrated_df[!, "SSC-A"] == copy[!, "SSC-A"]
+    @test calibrated_df[!, "id"] == copy[!, "id"]
+    @test calibrated_df[!, "FSC-A.min"] == copy[!, "FSC-A.min"]
+    @test calibrated_df[!, "SSC-A.min"] == copy[!, "SSC-A.min"]
+    @test calibrated_df[!, "FSC-A.max"] == copy[!, "FSC-A.max"]
+    @test calibrated_df[!, "SSC-A.max"] == copy[!, "SSC-A.max"]
 
     # Test with temporary plot directory
     using Logging

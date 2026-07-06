@@ -544,9 +544,11 @@ end
 
 @testitem "kw name collision" setup=[environment_path] begin
     println("kw name collision")
-    es = read_data("inputs/kw_name_collision.xlsx")
-    write_esm(es, "inputs/kw_name_collision.esm")
-    es = read_esm("inputs/kw_name_collision.esm")
+    dir = mktempdir()
+    cp("inputs/kw_name_collision.xlsx", joinpath(dir, "kw_name_collision.xlsx"))
+    es = read_data(joinpath(dir, "kw_name_collision.xlsx"))
+    write_esm(es, joinpath(dir, "kw_name_collision.esm"))
+    es = read_esm(joinpath(dir, "kw_name_collision.esm"))
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
     out = ESM.produce_views(es, trans_meta_map)
@@ -555,9 +557,11 @@ end
 
 @testitem "non-table views" setup=[environment_path] begin
     println("non-table views")
-    es = read_data("inputs/non_table_views.xlsx")
-    write_esm(es, "inputs/non_table_views.esm")
-    es = read_esm("inputs/non_table_views.esm")
+    dir = mktempdir()
+    cp("inputs/non_table_views.xlsx", joinpath(dir, "non_table_views.xlsx"))
+    es = read_data(joinpath(dir, "non_table_views.xlsx"))
+    write_esm(es, joinpath(dir, "non_table_views.esm"))
+    es = read_esm(joinpath(dir, "non_table_views.esm"))
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
     for i in keys(es.transformations))
 

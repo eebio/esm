@@ -25,7 +25,7 @@ function cluster(data, method; plot_directory = nothing)
     # Plot data
     if !isnothing(plot_directory)
         p = histogram(data; bins = range(minimum(data), stop = maximum(data), length = 500),
-            linecolor=nothing, label=nothing, xlabel = "log₁₀('$(method.channel)'+1) (RFI)",
+            linecolor=nothing, label=nothing, xlabel = "Transform('$(method.channel)') (RFI)",
             ylabel = "Count", title = "MEF Calibration: Fluorescence Data",
         )
         savefig(p, joinpath(plot_directory, "mef_calibration_fluorescence_data.png"))
@@ -50,7 +50,7 @@ function cluster(data, method; plot_directory = nothing)
 
     if !isnothing(plot_directory)
         # Plot data split by clusters
-        p = histogram(xlabel = "log₁₀('$(method.channel)'+1) (RFI)",
+        p = histogram(xlabel = "Transform('$(method.channel)') (RFI)",
             ylabel = "Count", title = "MEF Calibration: Clusters")
         for i in eachindex(sorted_clusters)
             c = sorted_clusters[i]
@@ -72,7 +72,7 @@ function cluster(data, method; plot_directory = nothing)
     return sorted_clusters, sorted_summaries
 end
 
-@kwdef mutable struct MEF
+@kwdef struct MEF
     beads::DataFrame
     mef::Vector
     channel::String
@@ -81,6 +81,7 @@ end
     nInit::Int = 100
     nIter::Int = 100
     nRepeats::Int = 10
+    transform::Transform = Identity()
 end
 
 function calibrate(df, method::MEF; plot_directory = nothing)
@@ -93,10 +94,10 @@ function calibrate(df, method::MEF; plot_directory = nothing)
         mkpath(plot_directory)
     end
 
-    mef = method.mef
+    mef = deepcopy(method.mef)
 
     # Transform the data and collect into a vector
-    data = log10.(1 .+ abs.(collect(method.beads[method.beads[:, method.channel] .> 0, method.channel])))
+    data = transform(method.beads, method.transform)[:, method.channel]
     data = reshape(data, :, 1)
     data = convert(Matrix{Float64}, data)
 
@@ -105,7 +106,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     Random.seed!(method.seed)
     clusters, summaries = cluster(data, method; plot_directory)
     # Untransform summaries to original scale for later use in curve fitting
-    summaries = 10 .^ summaries .- 1
+    summaries = method.transform.backward.(summaries)
 
     # Are any populations too close to max or min
     keep_population = fill(true, length(clusters))
@@ -118,8 +119,8 @@ function calibrate(df, method::MEF; plot_directory = nothing)
         end
         μ = mean(cluster)
         σ = std(cluster)
-        lb = log10(1 + max(0, method.beads[1, min_channel]))
-        ub = log10(1 + max(0, method.beads[1, max_channel]))
+        lb = method.transform.forward(method.beads[1, min_channel])
+        ub = method.transform.forward(method.beads[1, max_channel])
         if μ - 2.5 * σ < lb || μ + 2.5 * σ > ub
             keep_population[i] = false
         end
@@ -137,7 +138,10 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     clusters = clusters[keep_population]
     summaries = summaries[keep_population]
 
-    method.mef = mef
+    method = MEF(method.beads,
+        mef, # Keep only the MEF values for the populations that are kept
+        method.channel, method.summary, method.seed, method.nInit,
+        method.nIter, method.nRepeats, method.transform)
 
     return calibrate(df, summaries, method; plot_directory)
 end

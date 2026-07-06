@@ -120,6 +120,15 @@ function Linear(; A = 0, T = 262144)
 end
 
 """
+    Identity()
+
+    Does not apply a transform to the data.
+"""
+function Identity()
+    return Transform(x -> x, x -> x)
+end
+
+"""
     Bound(; min = -Inf, max = Inf)
 
     Clamps data outside of the interval [min, max].
