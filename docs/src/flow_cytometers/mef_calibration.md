@@ -1,6 +1,6 @@
 # MEF Calibration
 
-For calibrating flow cytometer fluorescence, we provide a method similar to that of [FlowCal](). This method involves generating a standard curve from flow cytometer beads, to convert fluorescence channels from units of RFI to MEF. The method uses the function signature of `calibrate(df, MEF(beads = ..., channel = ..., mef = ...))`.
+For calibrating flow cytometer fluorescence, we provide a method similar to that of [FlowCal](https://flowcal.readthedocs.io/en/latest/). This method involves generating a standard curve from flow cytometer beads, to convert fluorescence channels from units of RFI to MEF. The method uses the function signature of `calibrate(df, MEF(beads = ..., channel = ..., mef = ...))`.
 
 - `beads` is a `DataFrame` of flow cytometry data of rainbow beads used for calibration.
 - `channel` is the fluorescence channel that will be used for calibration - the same channel name should be used in both `df` and `beads`.
