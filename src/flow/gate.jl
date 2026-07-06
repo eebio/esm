@@ -25,8 +25,8 @@ function gate end
     channels::Vector{String}
     gate_frac::Float64 = 0.65
     nbins::Int64 = 1024
-    transform_x::Function = x -> x
-    transform_y::Function = y -> y
+    transform_x::Union{Function, Transform} = x -> x
+    transform_y::Union{Function, Transform} = y -> y
 end
 
 function gate(data, method::KDE)
@@ -37,8 +37,16 @@ function gate(data, method::KDE)
     length(channels) == 2 || error("2 channels must be specified for density gating.")
     x = data[!, channels[1]]
     y = data[!, channels[2]]
-    x = method.transform_x(x)
-    y = method.transform_y(y)
+    trans_x = method.transform_x
+    trans_y = method.transform_y
+    if method.transform_x isa Transform
+        trans_x = method.transform_x.forward
+    end
+    if method.transform_y isa Transform
+        trans_y = method.transform_y.forward
+    end
+    x = trans_x(x)
+    y = trans_y(y)
     N = length(x)
 
     hist_counts = fit(Histogram, (x, y); nbins = nbins)

@@ -81,6 +81,7 @@ end
     nInit::Int = 100
     nIter::Int = 100
     nRepeats::Int = 10
+    transform::Transform = Identity()
 end
 
 function calibrate(df, method::MEF; plot_directory = nothing)
@@ -96,7 +97,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     mef = method.mef
 
     # Transform the data and collect into a vector
-    data = log10.(1 .+ abs.(collect(method.beads[method.beads[:, method.channel] .> 0, method.channel])))
+    data = transform(method.beads, method.transform)
     data = reshape(data, :, 1)
     data = convert(Matrix{Float64}, data)
 
@@ -105,7 +106,7 @@ function calibrate(df, method::MEF; plot_directory = nothing)
     Random.seed!(method.seed)
     clusters, summaries = cluster(data, method; plot_directory)
     # Untransform summaries to original scale for later use in curve fitting
-    summaries = 10 .^ summaries .- 1
+    summaries = method.transform.backward.(summaries)
 
     # Are any populations too close to max or min
     keep_population = fill(true, length(clusters))
@@ -118,8 +119,8 @@ function calibrate(df, method::MEF; plot_directory = nothing)
         end
         μ = mean(cluster)
         σ = std(cluster)
-        lb = log10(1 + max(0, method.beads[1, min_channel]))
-        ub = log10(1 + max(0, method.beads[1, max_channel]))
+        lb = method.transform.forward(method.beads[1, min_channel])
+        ub = method.transform.forward(method.beads[1, max_channel])
         if μ - 2.5 * σ < lb || μ + 2.5 * σ > ub
             keep_population[i] = false
         end

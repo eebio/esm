@@ -43,8 +43,8 @@ export KDE
 
 export MEF
 
-export transform, untransform
-export Log, Log10, Log2, Log1p, Arcsinh, Linear, Logicle, Hyperlog, Bound
+export transform, untransform, Transform
+export Log, Log10, Log2, Log1p, Arcsinh, Linear, Logicle, Hyperlog, Bound, Identity
 
 export AbstractESMMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
