@@ -21,7 +21,7 @@ Keywords:
     `cols` (e.g., `:FSC-A`), but will be transformed if the full column name is specified
     (e.g., `:FSC-A.max`).
 """
-function transform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
+function transform(data::AbstractDataFrame, method::AbstractTransformMethod; cols = names(data))
     data = deepcopy(data)
     for name in cols
         if string(name) == "id"
