@@ -35,26 +35,28 @@ function gate(data, method::KDE)
     gate_frac = method.gate_frac
     nbins = method.nbins
     length(channels) == 2 || error("2 channels must be specified for density gating.")
-    x = data[!, channels[1]]
-    y = data[!, channels[2]]
+    x = data[!, [channels[1]]]
+    y = data[!, [channels[2]]]
     trans_x = method.transform_x
     trans_y = method.transform_y
-    if method.transform_x isa Transform
-        trans_x = method.transform_x.forward
+    if trans_x isa Function
+        trans_x = Transform(method.transform_x, identity)
     end
-    if method.transform_y isa Transform
-        trans_y = method.transform_y.forward
+    if trans_y isa Function
+        trans_y = Transform(method.transform_y, identity)
     end
-    x = trans_x(x)
-    y = trans_y(y)
+    x = transform(x, trans_x)[!, channels[1]]
+    y = transform(y, trans_y)[!, channels[2]]
     N = length(x)
 
-    kd = kde((x, y))
+    train_x = x[.!isnan.(x) .& .!isnan.(y) .& .!isinf.(x) .& .!isinf.(y)]
+    train_y = y[.!isnan.(x) .& .!isnan.(y) .& .!isinf.(x) .& .!isinf.(y)]
+    kd = kde((train_x, train_y))
 
     ik = InterpKDE(kd)
 
-    x_bins = range(minimum(x), stop = maximum(x), length = nbins + 1)
-    y_bins = range(minimum(y), stop = maximum(y), length = nbins + 1)
+    x_bins = range(minimum(train_x), stop = maximum(train_x), length = nbins + 1)
+    y_bins = range(minimum(train_y), stop = maximum(train_y), length = nbins + 1)
 
     x_mids = (x_bins[1:(end - 1)] .+ x_bins[2:end]) ./ 2
     y_mids = (y_bins[1:(end - 1)] .+ y_bins[2:end]) ./ 2
