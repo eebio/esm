@@ -7,7 +7,7 @@ import DataFrames: transform
 abstract type AbstractTransformMethod <: AbstractESMMethod end
 
 """
-    transform(data::DataFrame, method::AbstractTransformMethod)
+    transform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
 
 Apply the specified transformation to `data`.
 
@@ -33,7 +33,7 @@ function transform(data::DataFrame, method::AbstractTransformMethod; cols = name
 end
 
 """
-    untransform(data::DataFrame, method::AbstractTransformMethod)
+    untransform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
 
 Reverse a previously applied transformation on `data`.
 
