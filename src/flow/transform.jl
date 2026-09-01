@@ -58,6 +58,14 @@ function untransform(data::DataFrame, method::AbstractTransformMethod; cols = na
     return data
 end
 
+function transform(data, method::AbstractTransformMethod)
+    return method.forward.(data)
+end
+
+function untransform(data, method::AbstractTransformMethod)
+    return method.backward.(data)
+end
+
 struct Transform <: AbstractTransformMethod
     forward::Function
     backward::Function
