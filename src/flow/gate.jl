@@ -49,27 +49,46 @@ function gate(data, method::KDE)
     y = trans_y(y)
     N = length(x)
 
-    hist_counts = fit(Histogram, (x, y); nbins = nbins)
-
-    x_bins = hist_counts.edges[1]
-    y_bins = hist_counts.edges[2]
-
-    # Make the kde
     kd = kde((x, y))
 
-    # Apply kde to values
-    density_values = [pdf(kd, xi, yi) for (xi, yi) in zip(x, y)]
+    ik = InterpKDE(kd)
+
+    x_bins = range(minimum(x), stop = maximum(x), length = nbins + 1)
+    y_bins = range(minimum(y), stop = maximum(y), length = nbins + 1)
+
+    x_mids = (x_bins[1:(end - 1)] .+ x_bins[2:end]) ./ 2
+    y_mids = (y_bins[1:(end - 1)] .+ y_bins[2:end]) ./ 2
+
+    density_values = [pdf(ik, xi, yi) for xi in x_mids for yi in y_mids]
+
+    # Compute the bin index for each point in the data
+    bin_indices = Int[]
+    for j in 1:N
+        x_j = x[j]
+        y_j = y[j]
+        x_bin_idx = argmin(abs.(x_mids .- x_j))
+        y_bin_idx = argmin(abs.(y_mids .- y_j))
+        combined_index = (x_bin_idx - 1) * length(y_mids) + y_bin_idx
+        push!(bin_indices, combined_index)
+    end
 
     fraction_to_keep = gate_frac
     sorted_indices = sortperm(density_values, rev = true)
-    # Keep only the top density values of the sorted kde within the fraction to keep
-    top_indice = sorted_indices[ceil(Int, fraction_to_keep * N)]
 
-    # Threshold based on the least dense point from the sorted density vector above
-    threshold = density_values[top_indice]
-    # Only keep the values denser than the threshold
-    inside_indices = density_values .>= threshold
-    return data[inside_indices, :]
+    # Group point indices by bin so each bin's points can be looked up in O(1)
+    points_in_bin = Dict{Int, Vector{Int}}()
+    for j in 1:N
+        push!(get!(points_in_bin, bin_indices[j], Int[]), j)
+    end
+
+    indicies_to_keep = Int[]
+    while length(indicies_to_keep) < ceil(Int, fraction_to_keep * N) &&
+        !isempty(sorted_indices)
+        i = popfirst!(sorted_indices)
+        append!(indicies_to_keep, get(points_in_bin, i, Int[]))
+    end
+
+    return data[sort(indicies_to_keep), :]
 end
 
 @kwdef struct HighLowGate <: AbstractManualGate
