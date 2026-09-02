@@ -27,7 +27,7 @@ end
 
 function filter_channel(df::DataFrame, channel)
     channel = string(channel)
-    return remove_subcols(df[:, filter(colname -> channel in split(colname, ".")  || colname == "id", names(df))], channel)
+    return remove_subcols(df[:, filter(colname -> channel in split(colname, ".")  || colname == "id" || colname == "esm_well", names(df))], channel)
 end
 
 function filter_channel(df::Expr, channel)
