@@ -110,6 +110,7 @@ end
     gated = gate(df, KDE(channels = ["FSC-A", "SSC-A"], gate_frac = 0.4, transform_x = f, transform_y = f))
     t = Transform(f, x -> 10 .^ x .- 1)
     gated = gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = t, transform_y = t))
+    gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = Hyperlog(), transform_y = Logicle()))
 
     # MEF calibration
     method = MEF(beads = gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1, transform=t)

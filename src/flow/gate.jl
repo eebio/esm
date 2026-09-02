@@ -16,7 +16,7 @@ abstract type AbstractLogicalGate <: AbstractGatingMethod end
 Filter `data` to only include events within the gate defined by `method`.
 
 Arguments:
-- `data::Dict`: Dict returned by [to_rfi](@ref).
+- `data::DataFrame`: ESM population data.
 - `method::AbstractGatingMethod`: The method and settings to use for gating.
 """
 function gate end
@@ -35,41 +35,62 @@ function gate(data, method::KDE)
     gate_frac = method.gate_frac
     nbins = method.nbins
     length(channels) == 2 || error("2 channels must be specified for density gating.")
-    x = data[!, channels[1]]
-    y = data[!, channels[2]]
+    x = data[!, [channels[1]]]
+    y = data[!, [channels[2]]]
     trans_x = method.transform_x
     trans_y = method.transform_y
-    if method.transform_x isa Transform
-        trans_x = method.transform_x.forward
+    if trans_x isa Function
+        trans_x = Transform(method.transform_x, identity)
     end
-    if method.transform_y isa Transform
-        trans_y = method.transform_y.forward
+    if trans_y isa Function
+        trans_y = Transform(method.transform_y, identity)
     end
-    x = trans_x(x)
-    y = trans_y(y)
+    x = transform(x, trans_x)[!, channels[1]]
+    y = transform(y, trans_y)[!, channels[2]]
     N = length(x)
 
-    hist_counts = fit(Histogram, (x, y); nbins = nbins)
+    train_x = x[.!isnan.(x) .& .!isnan.(y) .& .!isinf.(x) .& .!isinf.(y)]
+    train_y = y[.!isnan.(x) .& .!isnan.(y) .& .!isinf.(x) .& .!isinf.(y)]
+    kd = kde((train_x, train_y))
 
-    x_bins = hist_counts.edges[1]
-    y_bins = hist_counts.edges[2]
+    ik = InterpKDE(kd)
 
-    # Make the kde
-    kd = kde((x, y))
+    x_bins = range(minimum(train_x), stop = maximum(train_x), length = nbins + 1)
+    y_bins = range(minimum(train_y), stop = maximum(train_y), length = nbins + 1)
 
-    # Apply kde to values
-    density_values = [pdf(kd, xi, yi) for (xi, yi) in zip(x, y)]
+    x_mids = (x_bins[1:(end - 1)] .+ x_bins[2:end]) ./ 2
+    y_mids = (y_bins[1:(end - 1)] .+ y_bins[2:end]) ./ 2
+
+    density_values = [pdf(ik, xi, yi) for xi in x_mids for yi in y_mids]
+
+    # Compute the bin index for each point in the data
+    bin_indices = Int[]
+    for j in 1:N
+        x_j = x[j]
+        y_j = y[j]
+        x_bin_idx = argmin(abs.(x_mids .- x_j))
+        y_bin_idx = argmin(abs.(y_mids .- y_j))
+        combined_index = (x_bin_idx - 1) * length(y_mids) + y_bin_idx
+        push!(bin_indices, combined_index)
+    end
 
     fraction_to_keep = gate_frac
     sorted_indices = sortperm(density_values, rev = true)
-    # Keep only the top density values of the sorted kde within the fraction to keep
-    top_indice = sorted_indices[ceil(Int, fraction_to_keep * N)]
 
-    # Threshold based on the least dense point from the sorted density vector above
-    threshold = density_values[top_indice]
-    # Only keep the values denser than the threshold
-    inside_indices = density_values .>= threshold
-    return data[inside_indices, :]
+    # Group point indices by bin so each bin's points can be looked up in O(1)
+    points_in_bin = Dict{Int, Vector{Int}}()
+    for j in 1:N
+        push!(get!(points_in_bin, bin_indices[j], Int[]), j)
+    end
+
+    indicies_to_keep = Int[]
+    while length(indicies_to_keep) < ceil(Int, fraction_to_keep * N) &&
+        !isempty(sorted_indices)
+        i = popfirst!(sorted_indices)
+        append!(indicies_to_keep, get(points_in_bin, i, Int[]))
+    end
+
+    return data[sort(indicies_to_keep), :]
 end
 
 @kwdef struct HighLowGate <: AbstractManualGate
@@ -198,7 +219,7 @@ end
 Count the number of events in the flow cytometry data.
 
 Arguments:
-- `data::Dict`: Dict returned by [to_rfi](@ref).
+- `data::DataFrame`: ESM population data.
 """
 function event_count(data)
     return nrow(data)
@@ -211,10 +232,10 @@ end
 Calculate the proportion of events remaining after gating.
 
 Arguments:
-- `data::Dict`: Dict returned by [to_rfi](@ref).
+- `data::DataFrame`: ESM population data.
 - `gate::AbstractGatingMethod`: A gating method to report on.
-- `data_before::Dict`: Dict returned by [to_rfi](@ref) before gating.
-- `data_after::Dict`: Dict returned by [to_rfi](@ref) after gating.
+- `data_before::DataFrame`: ESM population data before gating.
+- `data_after::DataFrame`: ESM population data after gating.
 """
 function gated_proportion(data, method::AbstractGatingMethod)
     total_events = event_count(data)

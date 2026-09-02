@@ -7,7 +7,7 @@ import DataFrames: transform
 abstract type AbstractTransformMethod <: AbstractESMMethod end
 
 """
-    transform(data::DataFrame, method::AbstractTransformMethod)
+    transform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
 
 Apply the specified transformation to `data`.
 
@@ -21,7 +21,7 @@ Keywords:
     `cols` (e.g., `:FSC-A`), but will be transformed if the full column name is specified
     (e.g., `:FSC-A.max`).
 """
-function transform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
+function transform(data::AbstractDataFrame, method::AbstractTransformMethod; cols = names(data))
     data = deepcopy(data)
     for name in cols
         if string(name) == "id"
@@ -33,7 +33,7 @@ function transform(data::DataFrame, method::AbstractTransformMethod; cols = name
 end
 
 """
-    untransform(data::DataFrame, method::AbstractTransformMethod)
+    untransform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
 
 Reverse a previously applied transformation on `data`.
 
@@ -56,6 +56,14 @@ function untransform(data::DataFrame, method::AbstractTransformMethod; cols = na
         data[!, name] = method.backward.(data[!, name])
     end
     return data
+end
+
+function transform(data, method::AbstractTransformMethod)
+    return method.forward.(data)
+end
+
+function untransform(data, method::AbstractTransformMethod)
+    return method.backward.(data)
 end
 
 struct Transform <: AbstractTransformMethod

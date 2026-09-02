@@ -40,4 +40,5 @@ makedocs(sitename = "ESM",
 
 deploydocs(
     repo = "github.com/eebio/esm",
+    devbranch = "dev"
 )
