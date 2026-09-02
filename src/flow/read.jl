@@ -178,13 +178,13 @@ function extract_flow(fcs, chan)
 end
 
 """
-    to_rfi(sample_name;chans=[])
+    to_rfi(es, sample_name)
 
 Calculates relative fluorescence of given sample.
 
 Arguments:
+- `es::esm_zones`: The data set to search.
 - `sample_name::String`: channel to use.
-- `chans::Vector`: vector of channels to keep.
 """
 function to_rfi(es, sample_name)
     sub = es.samples[
