@@ -16,7 +16,7 @@ abstract type AbstractLogicalGate <: AbstractGatingMethod end
 Filter `data` to only include events within the gate defined by `method`.
 
 Arguments:
-- `data::Dict`: Dict returned by [to_rfi](@ref).
+- `data::DataFrame`: ESM population data.
 - `method::AbstractGatingMethod`: The method and settings to use for gating.
 """
 function gate end
@@ -219,7 +219,7 @@ end
 Count the number of events in the flow cytometry data.
 
 Arguments:
-- `data::Dict`: Dict returned by [to_rfi](@ref).
+- `data::DataFrame`: ESM population data.
 """
 function event_count(data)
     return nrow(data)
@@ -232,10 +232,10 @@ end
 Calculate the proportion of events remaining after gating.
 
 Arguments:
-- `data::Dict`: Dict returned by [to_rfi](@ref).
+- `data::DataFrame`: ESM population data.
 - `gate::AbstractGatingMethod`: A gating method to report on.
-- `data_before::Dict`: Dict returned by [to_rfi](@ref) before gating.
-- `data_after::Dict`: Dict returned by [to_rfi](@ref) after gating.
+- `data_before::DataFrame`: ESM population data before gating.
+- `data_after::DataFrame`: ESM population data after gating.
 """
 function gated_proportion(data, method::AbstractGatingMethod)
     total_events = event_count(data)
