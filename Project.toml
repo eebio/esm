@@ -1,6 +1,6 @@
 name = "ESM"
 uuid = "31170fb7-9259-406e-89cb-fc418a8fef2f"
-version = "0.2.1"
+version = "0.3.0"
 authors = ["Micha <micha_claydon@yahoo.co.uk>", "mjowen <matt.owen@bristol.ac.uk>"]
 
 [workspace]
