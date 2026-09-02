@@ -40,6 +40,7 @@
                     "name": "FL1-A",
                     "det_type": null,
                     "perc_em": null,
+                    "esm_well": "A1",
                     "raw_metadata": {}
                 },
                 "SSC_H": {
@@ -54,6 +55,7 @@
                     "name": "SSC-H",
                     "det_type": null,
                     "perc_em": null,
+                    "esm_well": "A1",
                     "raw_metadata": {}
                 },
                 "FSC_H": {
@@ -68,6 +70,7 @@
                     "name": "FSC-H",
                     "det_type": null,
                     "perc_em": null,
+                    "esm_well": "A1",
                     "raw_metadata": {}
                 }
             }
@@ -107,6 +110,7 @@
                     "name": "FL1-A",
                     "det_type": null,
                     "perc_em": null,
+                    "esm_well": "A2",
                     "raw_metadata": {}
                 },
                 "SSC_H": {
@@ -121,6 +125,7 @@
                     "name": "SSC-H",
                     "det_type": null,
                     "perc_em": null,
+                    "esm_well": "A2",
                     "raw_metadata": {}
                 },
                 "FSC_H": {
@@ -135,6 +140,7 @@
                     "name": "FSC-H",
                     "det_type": null,
                     "perc_em": null,
+                    "esm_well": "A2",
                     "raw_metadata": {}
                 }
             }
@@ -210,17 +216,17 @@ end
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict())
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "esm_well" => "A2", "raw_metadata" => Dict())
     @test es.samples.metadata[es.samples.name .== "plate_01_a2.FSC_H"][1] ==
           Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict())
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "esm_well" => "A2", "raw_metadata" => Dict())
     for i in 1:6
         @test issetequal(keys(es.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em", "raw_metadata"])
+                "amp_gain", "name_s", "name", "det_type", "perc_em", "esm_well", "raw_metadata"])
     end
     @test issetequal(es.groups.group, ["plate_01"])
     @test issetequal(es.groups.sample_IDs, [["plate_01_a1", "plate_01_a2"]])
@@ -396,6 +402,7 @@ end
             634.0, 965.0, 643.0, 1015.0,
             628.0, 1023.0, 373.0, 1023.0],
         "id" => collect(1:8),
+        "esm_well" => ["A1", "A1", "A1", "A1", "A2", "A2", "A2", "A2"],
         "FL1_A.max" => fill(1024.0, 8),
         "FL1_A.min" => fill(1.0, 8),
         "SSC_H.max" => fill(1.0, 8),
@@ -415,6 +422,7 @@ end
             0.04740031742312117, 2.8133175148587766],
         "FSC_H" => [634.0, 965.0, 643.0, 1015.0],
         "id" => [1, 2, 3, 4],
+        "esm_well" => ["A1", "A1", "A1", "A1"],
         "FL1_A.max" => fill(1024.0, 4),
         "FL1_A.min" => fill(1.0, 4),
         "SSC_H.max" => fill(1.0, 4),
@@ -427,6 +435,7 @@ end
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0],
         "id" => [1, 2, 3, 4],
+        "esm_well" => ["A1", "A1", "A1", "A1"],
         "FL1_A.max" => fill(1024.0, 4),
         "FL1_A.min" => fill(1.0, 4))
     @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) ==
@@ -437,13 +446,15 @@ end
             0.04740031742312117, 2.8133175148587766, 0.03522694651473101,
             0.272613196449465, 0.01778279410038923, 0.9955128609158501],
         "id" => [1, 2, 3, 4, 5, 6, 7, 8],
+        "esm_well" => ["A1", "A1", "A1", "A1", "A2", "A2", "A2", "A2"],
         "SSC_H.max" => fill(1.0, 8),
         "SSC_H.min" => fill(0.010045073642544625, 8))
     @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) ==
           df[!, sort(names(df))]
     # Test groups
     df = DataFrame("FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
-        "id" => [1, 2, 3, 4, 5, 6, 7, 8], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8],"esm_well" => ["A1", "A1", "A1", "A1", "A2",
+        "A2", "A2", "A2"], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(
             1.0, 8))
     @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) ==
           df[!, sort(names(df))]

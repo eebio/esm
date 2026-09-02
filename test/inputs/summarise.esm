@@ -807,6 +807,7 @@
           "amp_type": "0,0",
           "det_type": null,
           "det_volt": null,
+          "esm_well": "a1",
           "ex_pow": null,
           "ex_wav": null,
           "filter": null,
@@ -1040,8 +1041,8 @@
     "date_created": "",
     "date_modified": "",
     "description": "",
-    "esm_version": "0.2.1",
-    "schema_version": "0.2.0",
+    "esm_version": "0.3.0",
+    "schema_version": "0.3.0",
     "versioninfo": ""
   }
 }

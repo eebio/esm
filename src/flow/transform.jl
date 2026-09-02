@@ -24,7 +24,7 @@ Keywords:
 function transform(data::AbstractDataFrame, method::AbstractTransformMethod; cols = names(data))
     data = deepcopy(data)
     for name in cols
-        if string(name) == "id"
+        if string(name) == "id" || string(name) == "esm_well"
             continue
         end
         data[!, name] = method.forward.(data[!, name])
@@ -50,7 +50,7 @@ Keywords:
 function untransform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
     data = deepcopy(data)
     for name in cols
-        if string(name) == "id"
+        if string(name) == "id" || string(name) == "esm_well"
             continue
         end
         data[!, name] = method.backward.(data[!, name])

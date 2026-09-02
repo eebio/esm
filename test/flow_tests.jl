@@ -14,6 +14,7 @@
         "FL2_A" => [51.0, 52.0, 53.0, 54.0, 55.0],
         "FL2_A.min" => fill(0.0, 5),
         "FL2_A.max" => fill(1e5, 5),
+        "esm_well" => ["A1", "A1", "A1", "A1", "A1"],
         "id" => [1, 2, 3, 4, 5]
     )
 end
@@ -102,6 +103,7 @@ end
     df[!, "SSC-A.min"] .= 0.0
     df[!, "SSC-A.max"] .= 1e6
     df[!, "id"] .= 1:nrow(df)
+    df[!, "esm_well"] .= "A1"
 
     copy = deepcopy(df)
 
@@ -119,7 +121,7 @@ end
     @test all(calibrated_df[!, "BL1-H.min"] .== 0.0)
     @test all(calibrated_df[!, "BL1-H.max"] .> 0.0)
     @test all(calibrated_df[!, "BL1-H"] .>= 0.0)
-
+    @test all(calibrated_df[!, "esm_well"] .== "A1")
     # Check plots are created
     @test isfile(joinpath(dir, "mef_calibration_fluorescence_data.png"))
     @test isfile(joinpath(dir, "mef_calibration_clusters.png"))
@@ -132,6 +134,7 @@ end
     @test calibrated_df[!, "FSC-A"] == copy[!, "FSC-A"]
     @test calibrated_df[!, "SSC-A"] == copy[!, "SSC-A"]
     @test calibrated_df[!, "id"] == copy[!, "id"]
+    @test calibrated_df[!, "esm_well"] == copy[!, "esm_well"]
     @test calibrated_df[!, "FSC-A.min"] == copy[!, "FSC-A.min"]
     @test calibrated_df[!, "SSC-A.min"] == copy[!, "SSC-A.min"]
     @test calibrated_df[!, "FSC-A.max"] == copy[!, "FSC-A.max"]
@@ -157,6 +160,7 @@ end
     beads[!, "BL1-H.min"] .= 0.0
     beads[!, "BL1-H.max"] .= 1e6
     beads[!, "id"] .= 1:nrow(beads)
+    beads[!, "esm_well"] .= "A1"
 
     method = MEF(beads = beads, channel="BL1-H", mef=[10.0, 110.0, 1100.0, nothing], nRepeats=1)
     calibrated_beads = calibrate(beads, method)
@@ -276,14 +280,17 @@ end
     @test tmp[!, "ints"] == data[!, "ints"]
     @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0); cols = ["FSC-A"]) ≈ data atol=1e-4
 
-    # ID shouldn't be transformed
+    # ID and well shouldn't be transformed
     data = DataFrame("FSC-A" => [-10, -5, -1, 0, 0.3, 1, 3, 10, 100, 1000],
         "ints" => [-10, -5, -1, 0, 1, 2, 3, 10, 100, 1000],
-        "id" => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        "esm_well" => ["A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1"])
     tmp = transform(data, Logicle(T = 1000, W = 1, M = 4, A = 0))
     @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
     @test tmp[!, "id"] == data[!, "id"]
-    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0)) ≈ data atol=1e-4
+    @test tmp[!, "esm_well"] == data[!, "esm_well"]
+    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0))[!, Not(:esm_well)] ≈ data[!, Not(:esm_well)] atol=1e-4
+    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0))[!, :esm_well] == data[!, :esm_well]
 end
 
 @testitem "flowdir" setup=[environment_path] begin
