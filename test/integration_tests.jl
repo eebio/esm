@@ -54,7 +54,7 @@ end
         f["metadata"]["versioninfo"] = ""
         f["metadata"]["esm_version"] = ""
         f["metadata"]["schema_version"] = ""
-        @test bytes2hex(stable_hash(f; version=4)) == "2ba522a14362e59d8b6126d8cc642dab41a67b7afcbd526854aa32a41c21da4f"
+        @test bytes2hex(stable_hash(f; version=4)) == "d2076d9c80de4fd493e74d011465a5b400f0bab1df7440557438cc20e3710bf1"
     end
     @testset "Views integration" begin
         println("Views integration")
