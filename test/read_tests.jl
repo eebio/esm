@@ -216,17 +216,17 @@ end
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict("esm_well" => "A2"))
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "esm_well" => "A2", "raw_metadata" => Dict())
     @test es.samples.metadata[es.samples.name .== "plate_01_a2.FSC_H"][1] ==
           Dict{String, Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
-        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "raw_metadata" => Dict("esm_well" => "A2"))
+        "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "esm_well" => "A2", "raw_metadata" => Dict())
     for i in 1:6
         @test issetequal(keys(es.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em", "raw_metadata"])
+                "amp_gain", "name_s", "name", "det_type", "perc_em", "esm_well", "raw_metadata"])
     end
     @test issetequal(es.groups.group, ["plate_01"])
     @test issetequal(es.groups.sample_IDs, [["plate_01_a1", "plate_01_a2"]])
