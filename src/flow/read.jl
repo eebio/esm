@@ -42,6 +42,9 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                 "Error: Property could not be read"
             end
         for k in propertynames(temp_data))
+        for c in channels
+            temp["metadata"][channel_map[c]]["esm_well"] = j.Well
+        end
 
         # Handle time channel units
         if haskey(channel_map, "time") && haskey(temp["values"], channel_map["time"])
@@ -219,5 +222,6 @@ function to_rfi(es, sample_name)
         o[i] = data
     end
     o["id"] = 1:length(o[chans[1]])
+    o["esm_well"] = sub.metadata[1]["esm_well"]
     return DataFrame(o)[!, sort(names(DataFrame(o)))]
 end
