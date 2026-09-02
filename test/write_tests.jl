@@ -105,21 +105,26 @@ end
     trans_meta_map = Dict(Symbol(i) => Meta.parse(es_written.transformations[i]["equation"])
     for i in keys(es_written.transformations))
     @test eval(ESM.sexp_to_nested_list(:(f), es_written, trans_meta_map)) ==
-          DataFrame(:forward => [628.0, 1023.0, 373.0, 1023.0],
+          DataFrame(:esm_well => ["A1", "A1", "A1", "A1"], :forward => [628.0, 1023.0, 373.0, 1023.0],
         Symbol("forward.max") => fill(1024.0, 4),
-        Symbol("forward.min") => fill(1.0, 4), :id => [1, 2, 3, 4])
-    @test isapprox(eval(ESM.sexp_to_nested_list(:(ssc), es_written, trans_meta_map)),
+        Symbol("forward.min") => fill(1.0, 4), :id =>
+            [1, 2, 3, 4])
+    @test isapprox(eval(ESM.sexp_to_nested_list(:(ssc), es_written, trans_meta_map))[!, Not(:esm_well)],
         DataFrame(:SSC_H => [0.0352269, 0.272613, 0.0177828, 0.995513],
             Symbol("SSC_H.max") => fill(1.0, 4),
             Symbol("SSC_H.min") => fill(0.0100451, 4), :id => [1, 2, 3, 4]); atol = 0.0001)
+    @test eval(ESM.sexp_to_nested_list(:(ssc), es_written, trans_meta_map))[!, :esm_well] ==
+        ["A1", "A1", "A1", "A1"]
     @test isapprox(
-        eval(ESM.sexp_to_nested_list(:(plate_01_a1.FL1_H), es_written, trans_meta_map)),
+        eval(ESM.sexp_to_nested_list(:(plate_01_a1.FL1_H), es_written, trans_meta_map))[!, Not(:esm_well)],
         DataFrame(:FL1_H => [2.26449, 134.403, 1.53816, 64.8638],
             Symbol("FL1_H.max") => fill(256.0, 4),
             Symbol("FL1_H.min") => fill(0.25, 4), :id => [1, 2, 3, 4]); atol = 0.0001)
+    @test eval(ESM.sexp_to_nested_list(:(plate_01_a1.FL1_H), es_written, trans_meta_map))[!, :esm_well] ==
+        ["A1", "A1", "A1", "A1"]
     @test issetequal(
         names(eval(ESM.sexp_to_nested_list(:(plate_01), es_written, trans_meta_map))),
         ["FL1_H", "FL1_H.max", "FL1_H.min", "SSC_H", "SSC_H.max",
             "SSC_H.min", "forward", "forward.max", "forward.min", "newtime",
-            "newtime.max", "newtime.min", "newtime.max", "newtime.min", "id"])
+            "newtime.max", "newtime.min", "newtime.max", "newtime.min", "id", "esm_well"])
 end
