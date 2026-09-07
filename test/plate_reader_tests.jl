@@ -695,10 +695,13 @@ end
     fl = calibrate(fl, time_fl, StartData())
     @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4 * 60))[
         1, "plate_01_b6"]) == 102
+    dir = mktempdir()
     @test floor(fluorescence(
         fl, time_fl, od, time_od,
-        RatioAtMaxGrowth(method = LinearOnLog(start_time = 220, end_time = 300)))[
+        RatioAtMaxGrowth(method = LinearOnLog(start_time = 220, end_time = 300), plot_directory = dir))[
         1, "plate_01_a10"]) == 1411
+    # Check files exist in plot directory
+    @test length(readdir(dir)) > 0
 end
 
 @testitem "warning for calibrating multiple channels" begin
