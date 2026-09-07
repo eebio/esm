@@ -335,8 +335,8 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
 
     # Weight residuals due to log scale warping noise
     weights = df[indexes, 1] ./ first(df[:, 1])
-    weights = weights ./ sum(weights) * length(weights) # Normalize weights
-    lm_model = lm(@formula(log_od~time), lm_df; weights = FrequencyWeights(weights))
+    weights = weights .^2 ./ mean(weights .^ 2)
+    lm_model = lm(@formula(log_od~time), lm_df; weights = aweights(weights))
     growth_rate = coef(lm_model)[2]
     time_to_max_growth = (start_time + end_time) / 2
 
@@ -487,10 +487,10 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory
     # residual function for NonlinearLeastSquaresProblem
     # signature (res, u, p, t) is used by NonlinearSolve
     weights = y ./ first(y)
-    weights = weights ./ sum(weights) * length(weights) # Normalize weights
+    weights = weights .^ 2 ./ mean(weights .^ 2)
     residuals! = function (res, u, _)
         for k in eachindex(t)
-            res[k] = (method.func(t[k], u) .- ly[k]) .* weights[k]
+            res[k] = (method.func(t[k], u) .- ly[k]) .* sqrt(weights[k])
         end
         return nothing
     end
@@ -613,7 +613,7 @@ function _growth_rate(df, time_col, method::Regularization; plot_directory = not
     end
     t_refined = range(first(t), last(t), length = 100 * n)
     weights = y ./ first(y)
-    weights = weights ./ sum(weights) * length(weights) # Normalize weights
+    weights = weights .^ 2 ./ mean(weights .^ 2)
     A = RegularizationSmooth(ly, t, nothing, weights, d; alg = method.alg, λ = method.lambda)
     deriv = [DataInterpolations.derivative(A, ti) for ti in t_refined]
     # maximum derivative (growth rate)
