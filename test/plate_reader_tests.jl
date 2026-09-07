@@ -651,6 +651,18 @@ end
             0.83 - 0.5 + 0.1, 0.95 - 0.5 + 0.1],
         B = [1.11 - 1.11 + 0.1, 1.05 - 1.11 + 0.1, 1.23 - 1.11 + 0.1,
             1.36 - 1.11 + 0.1, 1.44 - 1.11 + 0.1])
+
+    # missing data
+    data = DataFrame(A = [missing, missing, 0.79, 0.83, missing], B = [missing, missing, 1.23, 1.36, missing])
+    time_col = DataFrame(Time = [missing, missing, 1200000, 1800000, missing])
+    datacopy = deepcopy(data)
+    blanks = DataFrame(C = [missing, missing, 0.2, 0.17, 0.08], D = [missing, missing, 0.22, 0.23, missing])
+    tmp = calibrate(data, time_col, SmoothedTimeseriesBlank(blanks = blanks))
+    @test collect(skipmissing(tmp[:, :A])) ≈ [0.79 - 0.21, 0.83 - 0.2]
+    @test collect(skipmissing(tmp[:, :B])) ≈ [1.23 - 0.21, 1.36 - 0.2]
+    tmp = calibrate(data, time_col, TimeseriesBlank(blanks = blanks))
+    @test collect(skipmissing(tmp[:, :A])) ≈ [0.79 - 0.21, 0.83 - 0.2]
+    @test collect(skipmissing(tmp[:, :B])) ≈ [1.23 - 0.21, 1.36 - 0.2]
 end
 
 @testitem "fluorescence per cell" setup=[environment_path] begin
