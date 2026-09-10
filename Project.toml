@@ -4,7 +4,7 @@ version = "0.3.1"
 authors = ["Micha <micha_claydon@yahoo.co.uk>", "mjowen <matt.owen@bristol.ac.uk>"]
 
 [workspace]
-projects = ["test"]
+projects = ["test", "docs"]
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
