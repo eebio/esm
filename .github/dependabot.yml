@@ -4,10 +4,12 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "dev"
   - package-ecosystem: "julia"
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "dev"
     # groups: # uncomment to group all julia package updates into a single PR
     #   all-julia-packages:
     #     patterns:

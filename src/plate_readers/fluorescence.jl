@@ -36,12 +36,21 @@ function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtTime)
     return out
 end
 
-@kwdef struct RatioAtMaxGrowth <: AbstractFluorescenceMethod
+struct RatioAtMaxGrowth <: AbstractFluorescenceMethod
     method::AbstractGrowthRateMethod
+    kwargs::Dict{Symbol, Any}
 end
 
-function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtMaxGrowth; kwargs...)
-    time = time_to_max_growth(data_od, time_od, method.method; kwargs...)
+function RatioAtMaxGrowth(method::AbstractGrowthRateMethod; kwargs...)
+    return RatioAtMaxGrowth(method, kwargs)
+end
+
+function RatioAtMaxGrowth(; method::AbstractGrowthRateMethod, kwargs...)
+    return RatioAtMaxGrowth(method; kwargs...)
+end
+
+function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtMaxGrowth)
+    time = time_to_max_growth(data_od, time_od, method.method; method.kwargs...)
     out = DataFrame()
     for col in names(data_od)
         out[!, col] = ESM.fluorescence(data_fl, time_fl, data_od, time_od, RatioAtTime(time[1, col]))[:, col]
