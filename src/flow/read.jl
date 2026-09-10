@@ -16,10 +16,10 @@ Arguments:
 function read_flow(samples, sample_dict, channels, broad_g, channel_map)
     @info "Processing flow cytometer data from plate $(unique(samples.Plate)[1])"
     for j in eachrow(samples)
-        if ismissing(j.Name)
-            name = "plate_0$(j.Plate)_$(lowercase(j.Well))"
+        if j.Plate > 9
+            name = "plate_$(j.Plate)_$(lowercase(j.Well))"
         else
-            name = j.Name
+            name = "plate_0$(j.Plate)_$(lowercase(j.Well))"
         end
         temp = Dict()
         temp["type"] = "population"
