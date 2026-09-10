@@ -113,6 +113,7 @@ Produce a template excel file for data entry into the ESM.
     e = pathof(ESM)
     e = e[1:(length(e) - 6)]
     cp(joinpath(e, "ESM.xlsx"), output_path)
+    @info "New template file created at \"$output_path\""
 end
 
 """
