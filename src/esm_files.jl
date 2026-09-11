@@ -229,7 +229,8 @@ function read_data(file::AbstractString)
     channel_map = DataFrame(XLSX.readtable(file, "Channel Map"; stop_in_empty_row = false))
 
     # Create the dict to show what channels need to be changed
-    channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
+    channel_map = Dict(string(i."Channel") => string(i."New name") for i in eachrow(channel_map)
+        if !ismissing(i."Channel") && !ismissing(i."New name") && !isempty(string(i."Channel")))
     if any(val != format_channel(val) for val in values(channel_map))
         error("Some channels in the channel map are not in a valid format. Channels should only contain letters, numbers, and underscores.")
     end
@@ -257,7 +258,7 @@ function read_data(file::AbstractString)
             error("All experiments on one plate must be from the same instrument types. \
             Instrument types used here are: $(Set(samples[i].Type))")
         # Process channels
-        channels = []
+        channels = String[]
         # Convert to string if not already
         str_j = string(samples[i].Channels[1])
         # Add the remaining channels to the list
@@ -273,7 +274,9 @@ function read_data(file::AbstractString)
                            else
                                i
                            end for i in union(channels, keys(channel_map)) if i!="missing")
-        tmp = join([string(j) * ", " for j in channels])[1:(end - 2)]
+        if channels == ["missing"]
+            channels = String[]
+        end
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
         if isempty(prb)
@@ -281,9 +284,6 @@ function read_data(file::AbstractString)
         end
         @info "Channel map: \n$(prb...)"
         broad_g = []
-        if channels == ["missing"]
-            channels = []
-        end
         if "plate reader" in lowercase.(ins_type)
             sample_dict, broad_g = read_pr(
                 samples[i], sample_dict, channels, broad_g, channel_map)
