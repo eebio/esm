@@ -71,6 +71,20 @@ Translates the completed .xlsx template file to a .esm file.
 end
 
 """
+    esm untranslate
+
+Reconstruct an Excel template from an .esm file.
+
+# Args
+
+- `input`: The .esm file to reconstruct.
+- `output`: The filepath/destination for the Excel template.
+"""
+@cast function untranslate(input::String, output::String)
+    untranslate_esm(input, output)
+end
+
+"""
     esm views
 
 Produce and save the views from a .esm file.
