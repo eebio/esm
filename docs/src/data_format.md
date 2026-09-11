@@ -260,3 +260,7 @@ Under views, we have key-value pairs (name of the view is the key) with a variab
     }
 }
 ```
+
+## Metadata
+
+TBD
