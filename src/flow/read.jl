@@ -24,17 +24,21 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         temp = Dict()
         temp["type"] = "population"
         temp_data = load(j."Data Location")
-        if isempty(channels)
-            channels = format_channel.(keys(temp_data))
-            channels = [c == "Time" ? "time" : c for c in channels]
-            channel_map = merge(Dict(c => c for c in channels), channel_map)
+        current_channels = if isempty(channels)
+            discovered_channels = format_channel.(keys(temp_data))
+            discovered_channels = [c == "Time" ? "time" : c
+                                   for c in discovered_channels]
+            channel_map = merge(Dict(c => c for c in discovered_channels), channel_map)
+            discovered_channels
+        else
+            channels
         end
-        temp["values"] = Dict{String, Any}(channel_map[x] => temp_data[flow_channel(x, temp_data)]
-        for x in channels)
+        temp["values"] = Dict{String, Any}(get(channel_map, x, x) =>
+            temp_data[flow_channel(x, temp_data)] for x in current_channels)
         temp["metadata"] = convert(Dict{String, Any},
             Dict(channel_map[x] => extract_flow(
                      temp_data, flow_channel(x, temp_data))
-            for x in channels))
+            for x in current_channels))
         temp["metadata"]["raw_metadata"] = Dict(k =>
             try
                 getproperty(temp_data, k)
@@ -42,7 +46,7 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                 "Error: Property could not be read"
             end
         for k in propertynames(temp_data))
-        for c in channels
+        for c in current_channels
             temp["metadata"][channel_map[c]]["esm_well"] = j.Well
         end
 
