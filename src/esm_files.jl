@@ -43,15 +43,7 @@ function read_esm(file::AbstractString)
                  j,
                  ef["samples"][i]["type"],
                  replace(ef["samples"][i]["values"][j], nothing => NaN),
-                 if length(keys(ef["samples"][i]["metadata"])) > 1
-                    if "raw_metadata" in keys(ef["samples"][i]["metadata"][j])
-                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"][j]["raw_metadata"]))
-                     else
-                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"]["raw_metadata"]))
-                     end
-                 else
-                     ef["samples"][i]["metadata"]
-                 end,
+                 sample_channel_metadata(ef["samples"][i]["metadata"], j),
                  [i in lowercase.(ef["groups"][k]["sample_IDs"])
                   for k in keys(ef["groups"])]...) for i in keys(ef["samples"])
              for j in keys(ef["samples"][i]["values"])],
@@ -72,6 +64,24 @@ function read_esm(file::AbstractString)
     es.samples.name = string.(es.samples.name, ".", es.samples.channel)
     @info "ESM file successfully read."
     return es
+end
+
+function sample_channel_metadata(sample_metadata, channel)
+    metadata = if haskey(sample_metadata, channel)
+        channel_metadata = sample_metadata[channel]
+        raw_metadata = if haskey(channel_metadata, "raw_metadata")
+            channel_metadata["raw_metadata"]
+        else
+            get(sample_metadata, "raw_metadata", Dict())
+        end
+        merge(channel_metadata, Dict("raw_metadata" => raw_metadata))
+    else
+        copy(sample_metadata)
+    end
+    if haskey(sample_metadata, "template")
+        metadata = merge(metadata, Dict("template" => sample_metadata["template"]))
+    end
+    return metadata
 end
 
 """
@@ -166,6 +176,19 @@ function read_data(file::AbstractString)
         else
             error("Unknown instrument type: $(first(ins_type))")
         end
+
+        if "plate reader" in lowercase.(ins_type)
+            template = template_metadata(first(eachrow(samples[i])), "plate reader",
+                channels)
+            for sample_name in broad_g
+                sample_dict[sample_name]["metadata"]["template"] = template
+            end
+        else
+            for (sample_row, sample_name) in zip(eachrow(samples[i]), broad_g)
+                sample_dict[sample_name]["metadata"]["template"] = template_metadata(
+                    sample_row, "flow", channels)
+            end
+        end
         # Add the physical plate to the group dict
         group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, "type" => "physical",
             "metadata" => Dict("autodefined" => "true"))
@@ -176,8 +199,29 @@ function read_data(file::AbstractString)
     views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
     for i in eachrow(views))
     metadata = get_metadata()
+    metadata["channel_map"] = channel_map
     return OrderedDict("samples" => sample_dict, "groups" => group_dict,
         "transformations" => trans_dict, "views" => views_dict, "metadata" => metadata)
+end
+
+function template_metadata(row, sample_type, channels)
+    value(column) =
+        if column in propertynames(row)
+            column_value = row[column]
+            ismissing(column_value) ? "" : column_value
+        else
+            ""
+        end
+    data_location = value(Symbol("Data Location"))
+    plate_brand = value(Symbol("Plate brand"))
+    return Dict{String,Any}(
+        "sample_type" => sample_type,
+        "data_location" => string(data_location),
+        "plate_brand" => string(plate_brand),
+        "channels" => string.(channels),
+        "plate" => value(:Plate),
+        "well" => value(:Well)
+    )
 end
 
 """
@@ -196,7 +240,7 @@ function get_metadata()
     return Dict(
         "description" => "",
         "esm_version" => pkgversion(ESM),
-        "schema_version" => "0.3.0",
+        "schema_version" => "0.4.0",
         "date_created" => string(Dates.now()),
         "date_modified" => string(Dates.now()),
         "Project.toml" => project_toml,
