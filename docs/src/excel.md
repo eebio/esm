@@ -12,6 +12,10 @@ The Excel template features five sheets to be filled out with relevant informati
 
 On this page, we document what is required to be filled out and give examples of how to use the Excel template file.
 
+## Reconstructing a template
+
+The command `esm untranslate input.esm output.xlsx` reconstructs these five sheets from a `.esm` file. This won't necessarily be the same template that was used to generate the data, but assuming you have the original data files, it should be `esm translate`-able into the same (or similar) `.esm` file.
+
 ## Samples
 
 The first sheet is called **Samples** and requires information about where you data is stored and what information should be read from it.
@@ -26,15 +30,11 @@ The **Data Location** gives the full filepath to the data. It should include any
 
 The **Plate brand** identifies the format the data will be in and how it should be parsed. Available options are: `spectramax`, `biotek`, `bmg`, `tecan` and `generic`. Leave it blank for flow cytometry data.
 
-The next few columns control the naming scheme for the samples. By default this will look something like `plate_01_a1.OD_600`.
-
 The **Plate** column lets you put in labels for plates. Here, we have labelled the sample `1`. The final name for this plates will be `plate_01`.
 
 For data where a single file is recorded for each well, such as flow cytometry data, a **Well** can be specified. For example, if you have flow cytometry data from different wells, stored in different `.fcs` files, you can label the well that each `.fcs` file corresponds to, giving you access to the files as `plate_01_a1`, `plate_01_a2`, etc.
 
-The sample names will be stored as `plate_0$Plate$_$Well$`. That is unless a name is provided in the third column.
-
-The **Name** column can override a plate name. In this case, anything entered into the **Name** column will replace the entire `plate_01`-style name. This only happens for flow cytometry data.
+The sample names will be stored as `plate_0$Plate$_$Well$`.
 
 ![alt text](assets/samples.png)
 
