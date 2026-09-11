@@ -43,15 +43,7 @@ function read_esm(file::AbstractString)
                  j,
                  ef["samples"][i]["type"],
                  replace(ef["samples"][i]["values"][j], nothing => NaN),
-                 if length(keys(ef["samples"][i]["metadata"])) > 1
-                    if "raw_metadata" in keys(ef["samples"][i]["metadata"][j])
-                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"][j]["raw_metadata"]))
-                     else
-                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"]["raw_metadata"]))
-                     end
-                 else
-                     ef["samples"][i]["metadata"]
-                 end,
+                 sample_channel_metadata(ef["samples"][i]["metadata"], j),
                  [i in lowercase.(ef["groups"][k]["sample_IDs"])
                   for k in keys(ef["groups"])]...) for i in keys(ef["samples"])
              for j in keys(ef["samples"][i]["values"])],
@@ -74,6 +66,24 @@ function read_esm(file::AbstractString)
     return es
 end
 
+function sample_channel_metadata(sample_metadata, channel)
+    metadata = if haskey(sample_metadata, channel)
+        channel_metadata = sample_metadata[channel]
+        raw_metadata = if haskey(channel_metadata, "raw_metadata")
+            channel_metadata["raw_metadata"]
+        else
+            get(sample_metadata, "raw_metadata", Dict())
+        end
+        merge(channel_metadata, Dict("raw_metadata" => raw_metadata))
+    else
+        copy(sample_metadata)
+    end
+    if haskey(sample_metadata, "template")
+        metadata = merge(metadata, Dict("template" => sample_metadata["template"]))
+    end
+    return metadata
+end
+
 """
     write_esm(data, file::AbstractString)
 
@@ -82,6 +92,123 @@ Write the esm data to the path `file`.
 function write_esm(data, file::AbstractString)
     JSON.json(file, data; pretty = true)
     @info "ESM written to $file"
+end
+
+function untranslate_esm(input::AbstractString, output::AbstractString)
+    esm = read_esm(input)
+    cp(joinpath(@__DIR__, "ESM.xlsx"), output; force=true)
+
+    sample_rows = untranslate_sample_rows(esm)
+    channel_map_rows = untranslate_channel_map_rows(esm)
+    group_headers, group_rows = untranslate_group_rows(esm)
+    transformation_rows = untranslate_transformation_rows(esm)
+    view_rows = untranslate_view_rows(esm)
+
+    XLSX.openxlsx(output, mode="rw") do workbook
+        write_excel_table!(workbook["Samples"],
+            ["Type", "Data Location", "Channels", "Plate brand", "Plate", "Well"],
+            sample_rows)
+        write_excel_table!(workbook["Channel Map"], ["Channel", "New name"],
+            channel_map_rows)
+        write_excel_table!(workbook["Groups"], group_headers, group_rows)
+        write_excel_table!(workbook["Transformations"], ["Name", "Equation"],
+            transformation_rows)
+        write_excel_table!(workbook["Views"], ["Name", "View"], view_rows)
+    end
+    @info "Template written to $output"
+    return nothing
+end
+
+function write_excel_table!(sheet, headers, rows)
+    data = Matrix{Any}(undef, length(rows) + 1, length(headers))
+    for (column, header) in enumerate(headers)
+        data[1, column] = header
+    end
+    for (row_number, row) in enumerate(rows)
+        for (column, value) in enumerate(row)
+            data[row_number+1, column] = excel_value(value)
+        end
+    end
+    sheet["A1"] = data
+end
+
+function excel_value(value)
+    if value === nothing || ismissing(value)
+        return ""
+    elseif value isa AbstractString || value isa Number || value isa Bool
+        return value
+    end
+    return string(value)
+end
+
+# This function is used to de-duplicate the sample rows. For example, a single PR file gives
+# many samples, but they all have the same template metadata. We only want to write one row
+# for that template metadata
+function untranslate_sample_rows(esm)
+    rows = Any[]
+    seen = Set{String}()
+    for sample in eachrow(esm.samples)
+        template = sample.metadata["template"]
+        row = template_sample_row(template)
+        signature = join(string.(row), "\u001f")
+        if !(signature in seen)
+            push!(seen, signature)
+            push!(rows, row)
+        end
+    end
+    return rows
+end
+
+function template_sample_row(template)
+    return [template["sample_type"],
+        template["data_location"],
+        join(string.(template["channels"]), ", "),
+        template["plate_brand"],
+        template["plate"],
+        template["well"]]
+end
+
+function untranslate_channel_map_rows(esm)
+    stored_map = esm.metadata["channel_map"]
+    return [[string(source), string(target)] for (source, target) in stored_map]
+end
+
+function untranslate_group_rows(esm)
+    groups = Any[]
+    metadata_keys = String[]
+    for group in eachrow(esm.groups)
+        group_name = string(group.group)
+        group_metadata = group.metadata
+        autogenerated = lowercase(string(get(group_metadata, "autodefined", "false"))) == "true"
+        if autogenerated
+            continue
+        end
+        for key in keys(group_metadata)
+            key = string(key)
+            if key != "autodefined" && !(key in metadata_keys)
+                push!(metadata_keys, key)
+            end
+        end
+        push!(groups, (group_name, group.sample_IDs, group_metadata))
+    end
+    headers = ["Name", "Samples", metadata_keys...]
+    rows = Any[]
+    for (group_name, sample_ids, group_metadata) in groups
+        row = Any[group_name, join(string.(sample_ids), ", ")]
+        append!(row, [group_metadata[key] for key in metadata_keys])
+        push!(rows, row)
+    end
+    return headers, rows
+end
+
+function untranslate_transformation_rows(esm)
+    return [[name, transformation["equation"]] for
+            (name, transformation) in esm.transformations]
+end
+
+function untranslate_view_rows(esm)
+    return [[name, join(string.(view["data"]), ", ")] for
+            (name, view) in esm.views]
 end
 
 """
@@ -102,7 +229,8 @@ function read_data(file::AbstractString)
     channel_map = DataFrame(XLSX.readtable(file, "Channel Map"; stop_in_empty_row = false))
 
     # Create the dict to show what channels need to be changed
-    channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
+    channel_map = Dict(string(i."Channel") => string(i."New name") for i in eachrow(channel_map)
+        if !ismissing(i."Channel") && !ismissing(i."New name") && !isempty(string(i."Channel")))
     if any(val != format_channel(val) for val in values(channel_map))
         error("Some channels in the channel map are not in a valid format. Channels should only contain letters, numbers, and underscores.")
     end
@@ -130,7 +258,7 @@ function read_data(file::AbstractString)
             error("All experiments on one plate must be from the same instrument types. \
             Instrument types used here are: $(Set(samples[i].Type))")
         # Process channels
-        channels = []
+        channels = String[]
         # Convert to string if not already
         str_j = string(samples[i].Channels[1])
         # Add the remaining channels to the list
@@ -146,7 +274,9 @@ function read_data(file::AbstractString)
                            else
                                i
                            end for i in union(channels, keys(channel_map)) if i!="missing")
-        tmp = join([string(j) * ", " for j in channels])[1:(end - 2)]
+        if channels == ["missing"]
+            channels = String[]
+        end
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
         if isempty(prb)
@@ -154,9 +284,6 @@ function read_data(file::AbstractString)
         end
         @info "Channel map: \n$(prb...)"
         broad_g = []
-        if channels == ["missing"]
-            channels = []
-        end
         if "plate reader" in lowercase.(ins_type)
             sample_dict, broad_g = read_pr(
                 samples[i], sample_dict, channels, broad_g, channel_map)
@@ -165,6 +292,19 @@ function read_data(file::AbstractString)
                 samples[i], sample_dict, channels, broad_g, channel_map)
         else
             error("Unknown instrument type: $(first(ins_type))")
+        end
+
+        if "plate reader" in lowercase.(ins_type)
+            template = template_metadata(first(eachrow(samples[i])), "plate reader",
+                channels)
+            for sample_name in broad_g
+                sample_dict[sample_name]["metadata"]["template"] = template
+            end
+        else
+            for (sample_row, sample_name) in zip(eachrow(samples[i]), broad_g)
+                sample_dict[sample_name]["metadata"]["template"] = template_metadata(
+                    sample_row, "flow", channels)
+            end
         end
         # Add the physical plate to the group dict
         group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, "type" => "physical",
@@ -176,8 +316,29 @@ function read_data(file::AbstractString)
     views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
     for i in eachrow(views))
     metadata = get_metadata()
+    metadata["channel_map"] = channel_map
     return OrderedDict("samples" => sample_dict, "groups" => group_dict,
         "transformations" => trans_dict, "views" => views_dict, "metadata" => metadata)
+end
+
+function template_metadata(row, sample_type, channels)
+    value(column) =
+        if column in propertynames(row)
+            column_value = row[column]
+            ismissing(column_value) ? "" : column_value
+        else
+            ""
+        end
+    data_location = value(Symbol("Data Location"))
+    plate_brand = value(Symbol("Plate brand"))
+    return Dict{String,Any}(
+        "sample_type" => sample_type,
+        "data_location" => string(data_location),
+        "plate_brand" => string(plate_brand),
+        "channels" => string.(channels),
+        "plate" => value(:Plate),
+        "well" => value(:Well)
+    )
 end
 
 """
@@ -196,7 +357,7 @@ function get_metadata()
     return Dict(
         "description" => "",
         "esm_version" => pkgversion(ESM),
-        "schema_version" => "0.3.0",
+        "schema_version" => "0.4.0",
         "date_created" => string(Dates.now()),
         "date_modified" => string(Dates.now()),
         "Project.toml" => project_toml,

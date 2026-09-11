@@ -26,6 +26,15 @@ Once the template has been filled out and completed, it can be translated into a
 ESM.translate
 ```
 
+## untranslate
+
+An `.esm` file can be reconstructed into an Excel workbook with `esm untranslate ...`.
+This won't neccessarily return the same template that was used to generate the `.esm` file, but it will make a best attempt and assuming you have access to the raw data files, should be `esm translate`-able into the orignal `.esm` file.
+
+```@docs; canonical=false
+ESM.untranslate
+```
+
 ## views
 
 To create the views from a `.esm` file, you can use the `esm views ...` function. This saves the views as `.csv` files or plots relevant figures.

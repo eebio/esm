@@ -47,6 +47,9 @@ end
         run(`$(shell) esm translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.esm"))`)
         @test isfile(joinpath(dir, "tmp.esm"))
         f = JSON.parsefile(joinpath(dir, "tmp.esm"))
+        @test haskey(f["metadata"], "channel_map")
+        @test all(haskey(sample["metadata"], "template")
+              for sample in values(f["samples"]))
         f["metadata"]["Manifest.toml"] = ""
         f["metadata"]["Project.toml"] = ""
         f["metadata"]["date_created"] = ""
@@ -54,7 +57,30 @@ end
         f["metadata"]["versioninfo"] = ""
         f["metadata"]["esm_version"] = ""
         f["metadata"]["schema_version"] = ""
-        @test bytes2hex(stable_hash(f; version=4)) == "d2076d9c80de4fd493e74d011465a5b400f0bab1df7440557438cc20e3710bf1"
+        @test bytes2hex(stable_hash(f; version=4)) == "006b7c3f88d64c5921f074238a6c93487bf8b9a5094104da350c0ca853363506"
+
+        run(`$(shell) esm untranslate $(joinpath(dir, "tmp.esm")) $(joinpath(dir, "tmp.xlsx"))`)
+        @test isfile(joinpath(dir, "tmp.xlsx"))
+    end
+    @testset "Untranslate round-trip integration" begin
+        println("Untranslate round-trip integration")
+        dir = Base.Filesystem.mktempdir()
+        first_esm = joinpath(dir, "first.esm")
+        reconstructed_xlsx = joinpath(dir, "reconstructed.xlsx")
+        second_esm = joinpath(dir, "second.esm")
+        input = joinpath("inputs", "untranslate.xlsx")
+
+        run(`$(shell) esm translate $input $first_esm`)
+        run(`$(shell) esm untranslate $first_esm $reconstructed_xlsx`)
+        run(`$(shell) esm translate $reconstructed_xlsx $second_esm`)
+
+        first_data = JSON.parsefile(first_esm)
+        second_data = JSON.parsefile(second_esm)
+        for data in (first_data, second_data)
+            delete!(data["metadata"], "date_created")
+            delete!(data["metadata"], "date_modified")
+        end
+        @test first_data == second_data
     end
     @testset "Views integration" begin
         println("Views integration")
