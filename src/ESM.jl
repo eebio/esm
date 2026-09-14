@@ -16,6 +16,7 @@ include("plate_readers/main.jl")
 include("flow/main.jl")
 include("summarise.jl")
 include("views.jl")
+include("interactive.jl")
 
 export read_esm, esm_zones, read_data, write_esm
 export template, translate, views, summarise, untranslate
@@ -182,6 +183,23 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
     else
         error("Unsupported file type: $type.")
     end
+end
+
+"""
+    esm interactive
+
+Open an esm file in an interactive session.
+
+# Args
+
+- `file`: The esm data file to source data from. It should contain all the samples you want
+    to use (and potentially a channel map), but does not need transformations, groups,
+    views, etc.
+"""
+@cast function interactive(file)
+    es = read_esm(file)
+    main_menu(es)
+    return nothing
 end
 Comonicon.@main
 
