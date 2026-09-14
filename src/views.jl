@@ -129,3 +129,10 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
     # Not a symbol or expression - return as is
     return sexp
 end
+
+function run_transformation(esm, transform)
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(esm.transformations[i]["equation"])
+        for i in keys(esm.transformations))
+    expression = sexp_to_nested_list(Meta.parse(transform), esm, trans_meta_map)
+    return eval(expression)
+end
