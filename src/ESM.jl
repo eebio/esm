@@ -198,7 +198,7 @@ Open an esm file in an interactive session.
 """
 @cast function interactive(file)
     es = read_esm(file)
-    main_menu(es)
+    main_menu(es, false)
     return nothing
 end
 Comonicon.@main
