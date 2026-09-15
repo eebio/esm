@@ -68,7 +68,7 @@ function remove_group!(esm, changes_made)
 end
 
 function edit_group!(esm, changes_made)
-    group_names = [g.group for g in esm.groups]
+    group_names = [g.group for g in eachrow(esm.groups)]
     push!(group_names, "Back")
     menu = RadioMenu(group_names)
     choice = request("Select a group to edit (press [q] to quit):", menu)
@@ -80,7 +80,7 @@ function edit_group!(esm, changes_made)
         return group_menu(esm, changes_made)
     else
         group_to_edit = group_names[choice]
-        println("Current samples for $group_to_edit: \n", join(esm.groups[findfirst(g -> g.group == group_to_edit, esm.groups)].samples, ", "))
+        println("Current samples for $group_to_edit: \n", join(esm.groups.sample_IDs[findfirst(g -> g.group == group_to_edit, eachrow(esm.groups))], ", "))
         println("Enter the new samples for the group (comma-separated) (or just press Enter to go back):")
         flush(stdout)
         new_samples_input = read_with_editing("New Group Samples> ")
@@ -89,7 +89,7 @@ function edit_group!(esm, changes_made)
             return group_menu(esm, changes_made)
         else
             new_samples = expand_groups(new_samples_input)
-            esm.groups[findfirst(g -> g.group == group_to_edit, esm.groups)].samples = new_samples
+            esm.groups.sample_IDs[findfirst(g -> g.group == group_to_edit, eachrow(esm.groups))] = new_samples
             esm.samples[!, group_to_edit] = [in(sample_name, new_samples) for sample_name in first.(splitext.(esm.samples[!, :name]))]
             changes_made = true
         end
