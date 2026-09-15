@@ -37,7 +37,7 @@ function produce_view(esm, changes_made)
         # Produce the selected view
         trans_meta_map = Dict(Symbol(i) => Meta.parse(esm.transformations[i]["equation"])
                               for i in keys(esm.transformations))
-        produce_views(esm, trans_meta_map; to_out=[options[choice]])
+        view_to_csv(esm, trans_meta_map; to_out=[options[choice]])
         return views_menu(esm, changes_made)
     end
 end
