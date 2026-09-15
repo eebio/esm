@@ -16,7 +16,7 @@ include("plate_readers/main.jl")
 include("flow/main.jl")
 include("summarise.jl")
 include("views.jl")
-include("interactive.jl")
+include("interactive/main.jl")
 
 export read_esm, esm_zones, read_data, write_esm
 export template, translate, views, summarise, untranslate
