@@ -38,7 +38,6 @@ function add_group!(esm, changes_made)
         # Go back to group menu
         return group_menu(esm, changes_made)
     end
-    # TODO check for metadata in other groups and ask user to fill in values
     samples = expand_groups(samples_input)
     meta_select = :(filter(row -> row.name in ef["groups"][i]["sample_IDs"],
         samples, view=true))
