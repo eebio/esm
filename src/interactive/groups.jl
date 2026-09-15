@@ -17,8 +17,10 @@ function group_menu(esm, changes_made)
     elseif group_options[choice] == "Edit Group"
         # Edit Group
         return edit_group!(esm, changes_made)
+    elseif group_options[choice] == "Group Metadata"
+        # Group Metadata
+        return group_metadata_menu(esm, changes_made)
     end
-    # TODO another menu for group metadata, which will allow adding/editing/removing metadata fields for a group
 end
 
 function add_group!(esm, changes_made)
@@ -95,4 +97,111 @@ function edit_group!(esm, changes_made)
         end
     end
     return group_menu(esm, changes_made)
+end
+
+function group_metadata_menu(esm, changes_made)
+    group_options = ["Add Group Metadata", "Remove Group Metadata", "Edit Group Metadata", "Back"]
+    menu = RadioMenu(group_options)
+    choice = request("Main Menu / Groups / Group Metadata (press [q] to quit):", menu)
+    if choice == -1
+        # Quit
+        return quit(esm, changes_made)
+    elseif group_options[choice] == "Back"
+        # Back to group menu
+        return group_menu(esm, changes_made)
+    elseif group_options[choice] == "Add Group Metadata"
+        # Add Group Metadata
+        return add_group_metadata!(esm, changes_made)
+    elseif group_options[choice] == "Remove Group Metadata"
+        # Remove Group Metadata
+        return remove_group_metadata!(esm, changes_made)
+    elseif group_options[choice] == "Edit Group Metadata"
+        # Edit Group Metadata
+        return edit_group_metadata!(esm, changes_made)
+    end
+end
+
+function add_group_metadata!(esm, changes_made)
+    println("Enter the name of the new group metadata field (or just press Enter to go back):")
+    flush(stdout)
+    name = read_with_editing("New Group Metadata Field Name> ")
+    if isempty(name)
+        # Go back to group metadata menu
+        return group_metadata_menu(esm, changes_made)
+    end
+    values = fill("", nrow(esm.groups))
+    for (i, g) in enumerate(eachrow(esm.groups))
+        println("Enter the value of the metadata $name for group $(g.group) (or just press Enter to go back):")
+        flush(stdout)
+        values[i] = read_with_editing("New Group Metadata Field Values> ")
+        if isempty(values[i])
+            # Go back to group metadata menu
+            return group_metadata_menu(esm, changes_made)
+        end
+    end
+    for (i, g) in enumerate(eachrow(esm.groups))
+        g.metadata[name] = values[i]
+    end
+    changes_made = true
+    return group_metadata_menu(esm, changes_made)
+end
+
+function remove_group_metadata!(esm, changes_made)
+    group_metadata_fields = unique(Base.Iterators.flatten([keys(g.metadata) for g in eachrow(esm.groups)]))
+    filter!(field -> field != "autodefined", group_metadata_fields)
+    push!(group_metadata_fields, "Back")
+    menu = RadioMenu(group_metadata_fields)
+    choice = request("Select a group metadata field to remove (press [q] to quit):", menu)
+    if choice == -1
+        # Quit
+        return quit(esm, changes_made)
+    elseif group_metadata_fields[choice] == "Back"
+        # Back to group metadata menu
+        return group_metadata_menu(esm, changes_made)
+    else
+        field_to_remove = group_metadata_fields[choice]
+        for g in eachrow(esm.groups)
+            delete!(g.metadata, field_to_remove)
+        end
+        changes_made = true
+    end
+    return group_metadata_menu(esm, changes_made)
+end
+
+function edit_group_metadata!(esm, changes_made)
+    group_metadata_fields = unique(Base.Iterators.flatten([keys(g.metadata) for g in eachrow(esm.groups)]))
+    filter!(field -> field != "autodefined", group_metadata_fields)
+    push!(group_metadata_fields, "Back")
+    menu = RadioMenu(group_metadata_fields)
+    choice = request("Select a group metadata field to edit (press [q] to quit):", menu)
+    if choice == -1
+        # Quit
+        return quit(esm, changes_made)
+    elseif group_metadata_fields[choice] == "Back"
+        # Back to group metadata menu
+        return group_metadata_menu(esm, changes_made)
+    else
+        field_to_edit = group_metadata_fields[choice]
+        values = []
+        for g in eachrow(esm.groups)
+            if haskey(g.metadata, field_to_edit)
+                println("Current value of $field_to_edit for group $(g.group): \n", g.metadata[field_to_edit])
+            else
+                println("No defined value of $field_to_edit for group $(g.group)")
+            end
+            println("Enter the new value of the metadata $field_to_edit for group $(g.group) (or just press Enter to go back):")
+            flush(stdout)
+            new_value = read_with_editing("New Group Metadata Field Value> ")
+            if isempty(new_value)
+                # Go back to group metadata menu
+                return group_metadata_menu(esm, changes_made)
+            end
+            push!(values, new_value)
+        end
+        for (i, g) in enumerate(eachrow(esm.groups))
+            g.metadata[field_to_edit] = values[i]
+        end
+        changes_made = true
+    end
+    return group_metadata_menu(esm, changes_made)
 end
