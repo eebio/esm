@@ -53,7 +53,7 @@ function add_group!(esm, changes_made)
 end
 
 function remove_group!(esm, changes_made)
-    group_names = [g.group for g in esm.groups]
+    group_names = [g.group for g in eachrow(esm.groups) if ! (get(g.metadata, "autodefined", "false") == "true")]
     push!(group_names, "Back")
     menu = RadioMenu(group_names)
     choice = request("Select a group to remove (press [q] to quit):", menu)
@@ -73,7 +73,7 @@ function remove_group!(esm, changes_made)
 end
 
 function edit_group!(esm, changes_made)
-    group_names = [g.group for g in eachrow(esm.groups)]
+    group_names = [g.group for g in eachrow(esm.groups) if ! (get(g.metadata, "autodefined", "false") == "true")]
     push!(group_names, "Back")
     menu = RadioMenu(group_names)
     choice = request("Select a group to edit (press [q] to quit):", menu)
@@ -191,6 +191,10 @@ function edit_group_metadata!(esm, changes_made)
         field_to_edit = group_metadata_fields[choice]
         values = []
         for g in eachrow(esm.groups)
+            if get(g.metadata, "autodefined", false)
+                push!(values, "")
+                continue
+            end
             if haskey(g.metadata, field_to_edit)
                 println("Current value of $field_to_edit for group $(g.group): \n", g.metadata[field_to_edit])
             else
