@@ -40,7 +40,7 @@ function add_group!(esm, changes_made)
     samples = expand_groups(samples_input)
     meta_select = :(filter(row -> row.name in ef["groups"][i]["sample_IDs"],
         samples, view=true))
-    push!(esm.groups, (name=name, samples=samples, metadata=JSON.Object{String,Any}(),
+    push!(esm.groups, (group=name, sample_IDs=samples, metadata=JSON.Object{String,Any}(),
         meta_select=meta_select))
     changes_made = true
     esm.samples[!, name] = [in(sample_name, samples) for sample_name in first.(splitext.(esm.samples[!, :name]))]
