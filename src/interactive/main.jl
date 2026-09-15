@@ -30,6 +30,12 @@ function main_menu(esm, changes_made)
     elseif main_options[choice] == "Transforms"
         # Transforms
         return transforms_menu(esm, changes_made)
+    elseif main_options[choice] == "Groups"
+        # Groups
+        return group_menu(esm, changes_made)
+    elseif main_options[choice] == "Views"
+        # Views
+        return views_menu(esm, changes_made)
     elseif main_options[choice] == "Save Changes"
         # Groups
         return save_esm(esm, changes_made; exit_on_success=false)
