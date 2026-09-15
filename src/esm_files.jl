@@ -9,7 +9,7 @@ using FileIO
 using FCSFiles
 using StyledStrings
 
-@with_kw struct esm_zones
+@with_kw mutable struct esm_zones
     samples::DataFrame
     groups::Any
     transformations::Any

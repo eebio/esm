@@ -3,6 +3,9 @@ using REPL.TerminalMenus
 using REPL.LineEdit
 using REPL.Terminals
 
+# TODO update metadata (raise warning if important metadata is different (ie different versions of ESM between original file and interactive session))
+# TODO TerminalRegressionTests.jl
+
 include("transforms.jl")
 include("groups.jl")
 include("views.jl")
@@ -70,8 +73,41 @@ function save_esm(esm, changes_made; exit_on_success=false)
         println("Save cancelled. Returning to main menu.")
         return main_menu(esm, changes_made)
     else
-        write_esm(esm, filename)
-        println("ESM saved to $filename.")
+        # Check metadata compatibility
+        new_metadata = get_metadata()
+        old_metadata = esm.metadata
+        if new_metadata["esm_version"] != old_metadata["esm_version"] ||
+            new_metadata["schema_version"] != old_metadata["schema_version"] ||
+            new_metadata["Project.toml"] != old_metadata["Project.toml"] ||
+            new_metadata["Manifest.toml"] != old_metadata["Manifest.toml"] ||
+            new_metadata["versioninfo"] != old_metadata["versioninfo"]
+            match = false
+        else
+            match = false
+        end
+        if !match
+            @warn "The current version of ESM is different from the version used to create \
+            the original file. If you have access to the original data, it is recommended \
+            to re-translate the .esm file with this version. Otherwise, we can save the \
+            file with these changes and append a warning to the description metadata to \
+            record the original metadata used to create the esm file."
+            options = ["Yes, save changes and update the metadata", "No, discard changes"]
+            menu = RadioMenu(options)
+            should_save = request("Version mismatch detected. Would you still like to save the changes?", menu)
+            should_save = should_save == 1
+            if should_save
+                new_metadata["description"] = old_metadata["description"] * "\nWARNING: This ESM file was modified after creation using a different version of ESM. Original metadata: \n" * string(old_metadata)
+                new_metadata["date_created"] = old_metadata["date_created"]
+                esm.metadata = new_metadata
+            end
+        else
+            should_save = true
+        end
+        if should_save
+            esm.metadata["date_modified"] = Dates.now()
+            write_esm(esm, filename)
+            println("ESM saved to $filename.")
+        end
         if exit_on_success
             println("Exiting ESM interactive mode.")
             return
