@@ -24,7 +24,8 @@ function transforms_menu(esm, changes_made)
 end
 
 function test_transform(esm, changes_made)
-    println("Enter a transform to evaluate (or just press Enter to go back):")
+    # TODO make this into a repl mode with history
+    println("Enter a transform to evaluate (or just press [Enter] to go back):")
     flush(stdout)
     while true
         input = read_with_editing("Test Transform> ")
@@ -32,6 +33,9 @@ function test_transform(esm, changes_made)
             # Go back to transforms menu
             return transforms_menu(esm, changes_made)
         else
+            if input == "q"
+                println("You may have tried to quit the interactive session. To do so, please press [Enter] to return to a menu and then press [q].")
+            end
             try
                 a = ESM.run_transformation(esm, input)
                 println("Transform evaluated successfully.")
@@ -39,8 +43,8 @@ function test_transform(esm, changes_made)
                 show(a)
                 print("\n")
             catch e
-                # TODO Would be helpful to show some better error messages here, like parse errors
-                println("Error occurred while evaluating transform: ", e)
+                Base.showerror(stdout, e)
+                println("")
             end
         end
     end

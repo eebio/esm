@@ -3,7 +3,6 @@ using REPL.TerminalMenus
 using REPL.LineEdit
 using REPL.Terminals
 
-# TODO update metadata (raise warning if important metadata is different (ie different versions of ESM between original file and interactive session))
 # TODO TerminalRegressionTests.jl
 
 include("transforms.jl")
