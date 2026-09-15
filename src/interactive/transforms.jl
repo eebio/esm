@@ -58,6 +58,10 @@ function add_transform!(esm, changes_made)
         # Go back to transforms menu
         return transforms_menu(esm, changes_made)
     end
+    if haskey(esm.transformations, name)
+        println("A transform with the name $name already exists. Please choose a different name.")
+        return add_transform!(esm, changes_made)
+    end
     println("Enter the equation for the new transform (or just press Enter to go back):")
     flush(stdout)
     equation = read_with_editing("New Transform Equation> ")

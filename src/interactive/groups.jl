@@ -31,6 +31,10 @@ function add_group!(esm, changes_made)
         # Go back to group menu
         return group_menu(esm, changes_made)
     end
+    if in(name, esm.groups.group)
+        println("A group with the name $name already exists. Please choose a different name.")
+        return add_group!(esm, changes_made)
+    end
     println("Enter the samples for the new group (comma-separated) (or just press Enter to go back):")
     flush(stdout)
     samples_input = read_with_editing("New Group Samples> ")
@@ -127,6 +131,10 @@ function add_group_metadata!(esm, changes_made)
     if isempty(name)
         # Go back to group metadata menu
         return group_metadata_menu(esm, changes_made)
+    end
+    if any(haskey(g.metadata, name) for g in eachrow(esm.groups))
+        println("A group metadata field with the name $name already exists. Please choose a different name.")
+        return add_group_metadata!(esm, changes_made)
     end
     values = fill("", nrow(esm.groups))
     for (i, g) in enumerate(eachrow(esm.groups))

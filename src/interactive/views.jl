@@ -50,6 +50,10 @@ function add_view!(esm, changes_made)
         # Go back to views menu
         return views_menu(esm, changes_made)
     end
+    if haskey(esm.views, name)
+        println("A view with the name $name already exists. Please choose a different name.")
+        return add_view!(esm, changes_made)
+    end
     println("Enter the equation for the new view (or just press Enter to go back):")
     flush(stdout)
     equation = read_with_editing("New View Equation> ")
