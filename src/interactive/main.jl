@@ -53,10 +53,10 @@ function quit(esm, changes_made)
             println("Discarding changes.")
             return
         elseif options[choice] == "Save changes and exit"
-            return save_esm(esm, changes_made)
+            return save_esm(esm, changes_made; exit_on_success=true)
         elseif options[choice] == "Cancel"
             println("Returning to main menu.")
-            return main_menu(esm, changes_made; exit_on_success=true)
+            return main_menu(esm, changes_made)
         end
     else
         println("No changes made.")
