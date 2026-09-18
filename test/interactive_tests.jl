@@ -91,6 +91,7 @@ end
         [
             joinpath(@__DIR__, "inputs", "interactive_events", "menu_navigation.events"),
             joinpath(@__DIR__, "inputs", "interactive_events", "transform_interaction.events"),
+            joinpath(@__DIR__, "inputs", "interactive_events", "groups_interaction.events"),
             joinpath(@__DIR__, "inputs", "interactive_events", "views_interaction.events")
         ],
         joinpath(@__DIR__, "interactive_child.jl"),

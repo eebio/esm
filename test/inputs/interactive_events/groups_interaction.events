@@ -1,0 +1,182 @@
+## Groups interaction
+## Add, edit, verify, and remove a group and group metadata field.
+
+# Main menu -> Groups.
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+
+# Add a group with an initial sample list.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+ENTER
+EXPECT:New Group Name>
+TEXT:temporary_group
+ENTER
+EXPECT:New Group Samples>
+TEXT:plate_01_A1, plate_01_A2
+ENTER
+
+# Edit the new group.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to edit
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT:Current samples for temporary_group
+EXPECT:New Group Samples>
+TEXT:plate_01_A3, plate_01_A4
+ENTER
+
+# Reopen it to verify that editing changed its samples.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to edit
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT:Current samples for temporary_group
+EXPECT:plate_01_A3, plate_01_A4
+EXPECT:New Group Samples>
+ENTER
+
+# Add group metadata and provide values for all groups.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+ENTER
+EXPECT:New Group Metadata Field Name>
+TEXT:temporary_metadata
+ENTER
+EXPECT:for group first_group
+EXPECT:New Group Metadata Field Values>
+TEXT:first_value
+ENTER
+EXPECT:for group second_group
+EXPECT:New Group Metadata Field Values>
+TEXT:second_value
+ENTER
+EXPECT:for group third_group
+EXPECT:New Group Metadata Field Values>
+TEXT:third_value
+ENTER
+EXPECT:for group plate_01
+EXPECT:New Group Metadata Field Values>
+TEXT:plate_one_value
+ENTER
+EXPECT:for group plate_02
+EXPECT:New Group Metadata Field Values>
+TEXT:plate_two_value
+ENTER
+EXPECT:for group temporary_group
+EXPECT:New Group Metadata Field Values>
+TEXT:temporary_value
+ENTER
+
+# Edit the new metadata field.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to edit
+ENTER
+EXPECT:Current value of temporary_metadata for group first_group
+EXPECT:New Group Metadata Field Value>
+TEXT:edited_first_value
+ENTER
+EXPECT:for group second_group
+EXPECT:New Group Metadata Field Value>
+TEXT:edited_second_value
+ENTER
+EXPECT:for group third_group
+EXPECT:New Group Metadata Field Value>
+TEXT:edited_third_value
+ENTER
+EXPECT:for group temporary_group
+EXPECT:New Group Metadata Field Value>
+TEXT:edited_temporary_value
+ENTER
+
+# Reopen it to verify that editing changed its value.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to edit
+ENTER
+EXPECT:Current value of temporary_metadata for group first_group
+EXPECT:edited_first_value
+EXPECT:New Group Metadata Field Value>
+ENTER
+
+# Delete the new metadata field.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to remove
+ENTER
+
+# Verify the deleted field is absent from the edit list.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT:> Back
+ENTER
+
+# Verify the deleted field is absent from the remove list.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+ENTER
+EXPECT:> Back
+ENTER
+
+# Back to Groups, then delete the temporary group.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to remove
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Verify the deleted group is absent from the edit list.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to edit
+DOWN
+DOWN
+DOWN
+EXPECT:> Back
+ENTER
+
+# Return to the main menu and discard the unsaved changes.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+ENTER
+EXPECT:Discarding changes.
