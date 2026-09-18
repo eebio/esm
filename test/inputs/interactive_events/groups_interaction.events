@@ -6,6 +6,21 @@ EXPECT_WAIT:Main Menu (press [q] to quit):
 DOWN
 ENTER
 
+# Group name already exists
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+ENTER
+EXPECT:New Group Name>
+TEXT:first_group
+ENTER
+EXPECT:already exists
+
+# Empty samples input
+EXPECT:New Group Name>
+TEXT:fake_group
+ENTER
+EXPECT:New Group Samples>
+ENTER
+
 # Add a group with an initial sample list.
 EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
 ENTER
@@ -58,27 +73,27 @@ EXPECT:New Group Metadata Field Name>
 TEXT:temporary_metadata
 ENTER
 EXPECT:for group first_group
-EXPECT:New Group Metadata Field Values>
+EXPECT:New Group Metadata Field Value>
 TEXT:first_value
 ENTER
 EXPECT:for group second_group
-EXPECT:New Group Metadata Field Values>
+EXPECT:New Group Metadata Field Value>
 TEXT:second_value
 ENTER
 EXPECT:for group third_group
-EXPECT:New Group Metadata Field Values>
+EXPECT:New Group Metadata Field Value>
 TEXT:third_value
 ENTER
 EXPECT:for group plate_01
-EXPECT:New Group Metadata Field Values>
+EXPECT:New Group Metadata Field Value>
 TEXT:plate_one_value
 ENTER
 EXPECT:for group plate_02
-EXPECT:New Group Metadata Field Values>
+EXPECT:New Group Metadata Field Value>
 TEXT:plate_two_value
 ENTER
 EXPECT:for group temporary_group
-EXPECT:New Group Metadata Field Values>
+EXPECT:New Group Metadata Field Value>
 TEXT:temporary_value
 ENTER
 
@@ -138,6 +153,158 @@ EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
 DOWN
 ENTER
 EXPECT:> Back
+ENTER
+
+# Add group metadata and provide values for all groups.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+ENTER
+EXPECT:New Group Metadata Field Name>
+TEXT:temp2
+ENTER
+EXPECT:for group first_group
+EXPECT:New Group Metadata Field Value>
+TEXT:first_value
+ENTER
+EXPECT:for group second_group
+EXPECT:New Group Metadata Field Value>
+TEXT:second_value
+ENTER
+EXPECT:for group third_group
+EXPECT:New Group Metadata Field Value>
+TEXT:third_value
+ENTER
+EXPECT:for group plate_01
+EXPECT:New Group Metadata Field Value>
+TEXT:plate_one_value
+ENTER
+EXPECT:for group plate_02
+EXPECT:New Group Metadata Field Value>
+TEXT:plate_two_value
+ENTER
+EXPECT:for group temporary_group
+EXPECT:New Group Metadata Field Value>
+TEXT:temporary_value
+ENTER
+
+# Group metadata name already exists
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+ENTER
+EXPECT:New Group Metadata Field Name>
+TEXT:temp2
+ENTER
+EXPECT:already exists
+
+# Empty group metadata values
+EXPECT:New Group Metadata Field Name>
+TEXT:temp
+ENTER
+EXPECT:Enter the value of the metadata temp
+EXPECT:New Group Metadata Field Value>
+ENTER
+
+# Remove temp2
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to remove (press [q] to quit):
+ENTER
+
+# Edit metadata where group has no defined value
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+ENTER
+EXPECT:New Group Metadata Field Name>
+TEXT:m1
+ENTER
+EXPECT:first_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:second_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:third_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:plate_01
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:plate_02
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:temporary_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+ENTER
+EXPECT:New Group Name>
+TEXT:new_group
+ENTER
+EXPECT:New Group Samples>
+TEXT:plate_01_a1
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to edit (press [q] to quit):
+ENTER
+EXPECT:first_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:second_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:third_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:temporary_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT:new_group
+EXPECT:New Group Metadata Field Value>
+TEXT:1
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to remove (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to remove (press [q] to quit):
 ENTER
 
 # Back to Groups, then delete the temporary group.
