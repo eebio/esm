@@ -13,18 +13,50 @@ TEXT:1 + 1
 ENTER
 EXPECT:1 + 1 = 2
 EXPECT:Test Transform>
-TEXT:2 * 3
+TEXT:plate_01_a1
 ENTER
-EXPECT:2 * 3 = 6
+EXPECT:0.165
 EXPECT:Test Transform>
-TEXT:3 ^ 2
+TEXT:(
 ENTER
-EXPECT:3 ^ 2 = 9
+EXPECT:ParseError
+EXPECT:Test Transform>
+Q
+ENTER
+EXPECT:You may have tried to quit the interactive session.
+EXPECT:UndefVarError
 EXPECT:Test Transform>
 ENTER
+
+# Transform name already exists
 EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Enter the name of the new transform (or just press Enter to go back):
+EXPECT:New Transform Name>
+TEXT:od_sub
+ENTER
+EXPECT:A transform with the name od_sub already exists
+
+# Empty equation in transform add
+EXPECT:New Transform Name>
+TEXT:test
+ENTER
+EXPECT:New Transform Equation>
+ENTER
+# Same for edit
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to edit (press [q] to quit):
+ENTER
+EXPECT:New Transform Equation>
+ENTER
 
 # Add a transform and give it an initial equation.
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
 DOWN
 ENTER
 EXPECT:New Transform Name>
