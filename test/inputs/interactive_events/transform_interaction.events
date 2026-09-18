@@ -1,5 +1,5 @@
-## Pure menu navigation
-## Enter every menu and click on every button and make sure no errors are thrown
+## Transform interaction
+## Test specifically the transform menu and its sub-menus
 
 # Main menu -> Transforms.
 EXPECT_WAIT:Main Menu (press [q] to quit):

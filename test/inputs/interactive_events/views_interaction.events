@@ -1,3 +1,6 @@
+## Views interaction
+## Test specifically the views menu and its sub-menus
+
 # Main menu -> Views.
 EXPECT_WAIT:Main Menu (press [q] to quit):
 DOWN
