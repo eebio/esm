@@ -40,7 +40,7 @@ StyledStrings = "f489334b-da3d-4c2e-b8f0-e476e12c162b"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
 
 [compat]
-CSV = "0.10.15"
+CSV = "0.10.15, 1.0"
 Combinatorics = "1.0.3"
 Comonicon = "1.0.8"
 DataFrames = "1.8.1"
