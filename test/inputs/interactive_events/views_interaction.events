@@ -13,6 +13,32 @@ ENTER
 EXPECT_WAIT:Select a view to produce
 ENTER
 
+# View name already exists
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Enter the name of the new view (or just press Enter to go back):
+EXPECT:New View Name>
+TEXT:mega
+ENTER
+EXPECT:A view with the name mega already exists
+
+# Empty equations
+EXPECT:New View Name>
+TEXT:test
+ENTER
+EXPECT:New View Equation>
+ENTER
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit (press [q] to quit):
+ENTER
+EXPECT:New View Equation>
+ENTER
+
 # Add a view with an initial equation.
 EXPECT_WAIT:Main Menu / Views (press [q] to quit):
 DOWN
