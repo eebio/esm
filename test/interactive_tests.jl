@@ -87,6 +87,7 @@ using TestItemRunner
 end
 
 @testitem "interactive menu replay" setup=[InteractiveReplay] begin
+    @test !isfile(joinpath(@__DIR__, "temp.esm"))
     InteractiveReplay.run_interactive_replays(
         [
             joinpath(@__DIR__, "inputs", "interactive_events", "menu_navigation.events"),
@@ -97,4 +98,6 @@ end
         joinpath(@__DIR__, "interactive_child.jl"),
         joinpath(@__DIR__, "inputs", "example.esm"),
     )
+    @test isfile(joinpath(@__DIR__, "temp.esm"))
+    rm(joinpath(@__DIR__, "temp.esm"); force=true)
 end
