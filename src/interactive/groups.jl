@@ -191,7 +191,7 @@ function edit_group_metadata!(esm, changes_made)
         field_to_edit = group_metadata_fields[choice]
         values = []
         for g in eachrow(esm.groups)
-            if get(g.metadata, "autodefined", false)
+            if get(g.metadata, "autodefined", "false") == "true"
                 push!(values, "")
                 continue
             end
