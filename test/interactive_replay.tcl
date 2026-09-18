@@ -1,12 +1,16 @@
 set timeout 120
+set verbose 0
 
-exp_internal 1
-log_user 1
+exp_internal $verbose
+log_user $verbose
 log_file -a /tmp/esm-interactive.expect.log
 
 proc debug {message} {
-    puts stderr "DEBUG: $message"
-    flush stderr
+    global verbose
+    if {$verbose} {
+        puts stderr "DEBUG: $message"
+        flush stderr
+    }
 }
 
 set event_file [lindex $argv 0]
