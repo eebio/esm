@@ -101,11 +101,11 @@ function edit_view!(esm, changes_made)
         println("Enter the new equation for the view (or just press Enter to go back):")
         flush(stdout)
         new_equation = read_with_editing("New View Equation> ")
-        new_equation = strip.(split(new_equation, ","))
         if isempty(new_equation)
             # Go back to views menu
             return views_menu(esm, changes_made)
         else
+            new_equation = strip.(split(new_equation, ","))
             esm.views[view_to_edit]["data"] = new_equation
             changes_made = true
         end
