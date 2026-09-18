@@ -1,0 +1,252 @@
+## Pure menu navigation
+## Enter every menu and click on every button and make sure no errors are thrown
+
+# Main menu -> Transforms.
+EXPECT_WAIT:Main Menu (press [q] to quit):
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+
+# Test several expressions.
+ENTER
+EXPECT:Test Transform>
+TEXT:1 + 1
+ENTER
+EXPECT:1 + 1 = 2
+EXPECT:Test Transform>
+TEXT:2 * 3
+ENTER
+EXPECT:2 * 3 = 6
+EXPECT:Test Transform>
+TEXT:3 ^ 2
+ENTER
+EXPECT:3 ^ 2 = 9
+EXPECT:Test Transform>
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+
+# Add a transform and give it an initial equation.
+DOWN
+ENTER
+EXPECT:New Transform Name>
+TEXT:temporary_transform
+ENTER
+EXPECT:New Transform Equation>
+TEXT:1 + 1
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+
+# Edit the new transform.
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to edit
+DOWN
+DOWN
+ENTER
+EXPECT:1 + 1
+EXPECT:New Transform Equation>
+TEXT:2 + 2
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+
+# Reopen it to verify that editing changed its equation, then leave unchanged.
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to edit
+DOWN
+DOWN
+ENTER
+EXPECT:2 + 2
+EXPECT:New Transform Equation>
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+
+# Delete the new transform.
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to remove
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+
+# Verify the deleted transform is absent from the edit list.
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to edit
+DOWN
+DOWN
+EXPECT:> Back
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+
+# Verify the deleted transform is absent from the remove list.
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to remove
+DOWN
+DOWN
+EXPECT:> Back
+ENTER
+
+# Back from Transforms.
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+DOWN
+DOWN
+DOWN
+DOWN
+EXPECT:> Back
+ENTER
+
+# Visit Groups and exercise every group operation.
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+
+# Add Group, then cancel the name prompt.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+ENTER
+EXPECT:New Group Name>
+ENTER
+
+# Remove Group, then choose Back from the group selection menu.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to remove
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Edit Group, then choose Back from the group selection menu.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to edit
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Enter Group Metadata and exercise every metadata operation.
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Add Group Metadata, then cancel the field-name prompt.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+ENTER
+EXPECT:New Group Metadata Field Name>
+ENTER
+
+# Remove Group Metadata, then choose Back from the field selection menu.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to remove
+ENTER
+
+# Edit Group Metadata, then choose Back from the field selection menu.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to edit
+ENTER
+
+# Back to Groups, then back to the main menu.
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Visit Views and exercise every view operation.
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+ENTER
+
+# Produce the first available view.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+ENTER
+EXPECT_WAIT:Select a view to produce
+ENTER
+
+# Add View, then cancel the name prompt.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+ENTER
+EXPECT:New View Name>
+ENTER
+
+# Remove View, then choose Back from the view selection menu.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to remove
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Edit View, then choose Back from the view selection menu.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Back to the main menu.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Visit Save Changes, cancel the filename prompt, then quit.
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT:Filename> 
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+ENTER
+EXPECT:Discarding changes.
