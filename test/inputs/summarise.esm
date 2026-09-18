@@ -2,7 +2,19 @@
   "samples": {
     "plate_01_time": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -52,7 +64,19 @@
     },
     "plate_01_temperature": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -102,7 +126,19 @@
     },
     "plate_01_a1": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -152,7 +188,19 @@
     },
     "plate_01_a2": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -202,7 +250,19 @@
     },
     "plate_01_a3": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -252,7 +312,19 @@
     },
     "plate_01_a4": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -302,7 +374,19 @@
     },
     "plate_01_a5": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -352,7 +436,19 @@
     },
     "plate_01_a6": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -402,7 +498,19 @@
     },
     "plate_01_a7": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -452,7 +560,19 @@
     },
     "plate_01_a8": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -502,7 +622,19 @@
     },
     "plate_01_a9": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -552,7 +684,19 @@
     },
     "plate_01_a10": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -602,7 +746,19 @@
     },
     "plate_01_a11": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -652,7 +808,19 @@
     },
     "plate_01_a12": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -702,7 +870,19 @@
     },
     "plate_01_column15": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -752,7 +932,19 @@
     },
     "plate_01_column16": {
       "metadata": {
-        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n"
+        "raw_metadata": "Plate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tAbsorbance\tRaw\tFALSE\t1\t50\t50\t2\t600 700 \t1\t12\t96\t1\t5\nPlate:\tPlate1\t1.3\tTimeFormat\tKinetic\tFluorescence\tFALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+        "template": {
+          "channels": [
+            "535_485",
+            "600",
+            "700"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
+          "plate": 1,
+          "plate_brand": "spectramax",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -985,6 +1177,16 @@
           "timeticks": "50",
           "tot": "4",
           "transformation": "applied"
+        },
+        "template": {
+          "channels": [
+            "FSC_H"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/small.fcs",
+          "plate": 2,
+          "plate_brand": "",
+          "sample_type": "flow",
+          "well": "a1"
         }
       },
       "type": "population",
@@ -1038,11 +1240,17 @@
   "metadata": {
     "Manifest.toml": "",
     "Project.toml": "",
+    "channel_map": {
+      "535_485": "535_485",
+      "600": "abs600",
+      "700": "abs700",
+      "FSC_H": "FSC_H"
+    },
     "date_created": "",
     "date_modified": "",
     "description": "",
     "esm_version": "0.3.1",
-    "schema_version": "0.3.0",
+    "schema_version": "0.4.0",
     "versioninfo": ""
   }
 }

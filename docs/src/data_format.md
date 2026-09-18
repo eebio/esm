@@ -1,6 +1,6 @@
 # Data Format
 
-The ESM data format (the format used for `.esm` files) is a JSON format, with its highest level storing 4 key-value pairs. The keys are "samples", "groups", "transformations", and "views", with their values defined as outlined below.
+The ESM data format (the format used for `.esm` files) is a JSON format, with its highest level storing the keys "samples", "groups", "transformations", "views", and "metadata". The first four keys contain the data structures described below. The `metadata` object contains information about the ESM version and how the source data was imported.
 
 ## Samples
 
@@ -260,3 +260,7 @@ Under views, we have key-value pairs (name of the view is the key) with a variab
     }
 }
 ```
+
+## Metadata
+
+TBD

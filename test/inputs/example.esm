@@ -2,7 +2,18 @@
   "samples": {
     "plate_01_time": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -238,7 +249,18 @@
     },
     "plate_01_temperature": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -474,7 +496,18 @@
     },
     "plate_01_a1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -710,7 +743,18 @@
     },
     "plate_01_a2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -946,7 +990,18 @@
     },
     "plate_01_a3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -1182,7 +1237,18 @@
     },
     "plate_01_a4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -1418,7 +1484,18 @@
     },
     "plate_01_a5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -1654,7 +1731,18 @@
     },
     "plate_01_a6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -1890,7 +1978,18 @@
     },
     "plate_01_a7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -2126,7 +2225,18 @@
     },
     "plate_01_a8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -2362,7 +2472,18 @@
     },
     "plate_01_a9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -2598,7 +2719,18 @@
     },
     "plate_01_a10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -2834,7 +2966,18 @@
     },
     "plate_01_a11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -3070,7 +3213,18 @@
     },
     "plate_01_a12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -3306,7 +3460,18 @@
     },
     "plate_01_b1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -3542,7 +3707,18 @@
     },
     "plate_01_b2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -3778,7 +3954,18 @@
     },
     "plate_01_b3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -4014,7 +4201,18 @@
     },
     "plate_01_b4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -4250,7 +4448,18 @@
     },
     "plate_01_b5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -4486,7 +4695,18 @@
     },
     "plate_01_b6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -4722,7 +4942,18 @@
     },
     "plate_01_b7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -4958,7 +5189,18 @@
     },
     "plate_01_b8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -5194,7 +5436,18 @@
     },
     "plate_01_b9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -5430,7 +5683,18 @@
     },
     "plate_01_b10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -5666,7 +5930,18 @@
     },
     "plate_01_b11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -5902,7 +6177,18 @@
     },
     "plate_01_b12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -6138,7 +6424,18 @@
     },
     "plate_01_c1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -6374,7 +6671,18 @@
     },
     "plate_01_c2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -6610,7 +6918,18 @@
     },
     "plate_01_c3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -6846,7 +7165,18 @@
     },
     "plate_01_c4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -7082,7 +7412,18 @@
     },
     "plate_01_c5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -7318,7 +7659,18 @@
     },
     "plate_01_c6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -7554,7 +7906,18 @@
     },
     "plate_01_c7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -7790,7 +8153,18 @@
     },
     "plate_01_c8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -8026,7 +8400,18 @@
     },
     "plate_01_c9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -8262,7 +8647,18 @@
     },
     "plate_01_c10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -8498,7 +8894,18 @@
     },
     "plate_01_c11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -8734,7 +9141,18 @@
     },
     "plate_01_c12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -8970,7 +9388,18 @@
     },
     "plate_01_d1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -9206,7 +9635,18 @@
     },
     "plate_01_d2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -9442,7 +9882,18 @@
     },
     "plate_01_d3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -9678,7 +10129,18 @@
     },
     "plate_01_d4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -9914,7 +10376,18 @@
     },
     "plate_01_d5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -10150,7 +10623,18 @@
     },
     "plate_01_d6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -10386,7 +10870,18 @@
     },
     "plate_01_d7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -10622,7 +11117,18 @@
     },
     "plate_01_d8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -10858,7 +11364,18 @@
     },
     "plate_01_d9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -11094,7 +11611,18 @@
     },
     "plate_01_d10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -11330,7 +11858,18 @@
     },
     "plate_01_d11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -11566,7 +12105,18 @@
     },
     "plate_01_d12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -11802,7 +12352,18 @@
     },
     "plate_01_e1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -12038,7 +12599,18 @@
     },
     "plate_01_e2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -12274,7 +12846,18 @@
     },
     "plate_01_e3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -12510,7 +13093,18 @@
     },
     "plate_01_e4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -12746,7 +13340,18 @@
     },
     "plate_01_e5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -12982,7 +13587,18 @@
     },
     "plate_01_e6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -13218,7 +13834,18 @@
     },
     "plate_01_e7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -13454,7 +14081,18 @@
     },
     "plate_01_e8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -13690,7 +14328,18 @@
     },
     "plate_01_e9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -13926,7 +14575,18 @@
     },
     "plate_01_e10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -14162,7 +14822,18 @@
     },
     "plate_01_e11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -14398,7 +15069,18 @@
     },
     "plate_01_e12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -14634,7 +15316,18 @@
     },
     "plate_01_f1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -14870,7 +15563,18 @@
     },
     "plate_01_f2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -15106,7 +15810,18 @@
     },
     "plate_01_f3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -15342,7 +16057,18 @@
     },
     "plate_01_f4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -15578,7 +16304,18 @@
     },
     "plate_01_f5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -15814,7 +16551,18 @@
     },
     "plate_01_f6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -16050,7 +16798,18 @@
     },
     "plate_01_f7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -16286,7 +17045,18 @@
     },
     "plate_01_f8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -16522,7 +17292,18 @@
     },
     "plate_01_f9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -16758,7 +17539,18 @@
     },
     "plate_01_f10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -16994,7 +17786,18 @@
     },
     "plate_01_f11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -17230,7 +18033,18 @@
     },
     "plate_01_f12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -17466,7 +18280,18 @@
     },
     "plate_01_g1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -17702,7 +18527,18 @@
     },
     "plate_01_g2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -17938,7 +18774,18 @@
     },
     "plate_01_g3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -18174,7 +19021,18 @@
     },
     "plate_01_g4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -18410,7 +19268,18 @@
     },
     "plate_01_g5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -18646,7 +19515,18 @@
     },
     "plate_01_g6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -18882,7 +19762,18 @@
     },
     "plate_01_g7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -19118,7 +20009,18 @@
     },
     "plate_01_g8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -19354,7 +20256,18 @@
     },
     "plate_01_g9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -19590,7 +20503,18 @@
     },
     "plate_01_g10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -19826,7 +20750,18 @@
     },
     "plate_01_g11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -20062,7 +20997,18 @@
     },
     "plate_01_g12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -20298,7 +21244,18 @@
     },
     "plate_01_h1": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -20534,7 +21491,18 @@
     },
     "plate_01_h2": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -20770,7 +21738,18 @@
     },
     "plate_01_h3": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -21006,7 +21985,18 @@
     },
     "plate_01_h4": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -21242,7 +22232,18 @@
     },
     "plate_01_h5": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -21478,7 +22479,18 @@
     },
     "plate_01_h6": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -21714,7 +22726,18 @@
     },
     "plate_01_h7": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -21950,7 +22973,18 @@
     },
     "plate_01_h8": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -22186,7 +23220,18 @@
     },
     "plate_01_h9": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -22422,7 +23467,18 @@
     },
     "plate_01_h10": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -22658,7 +23714,18 @@
     },
     "plate_01_h11": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -22894,7 +23961,18 @@
     },
     "plate_01_h12": {
       "metadata": {
-        "raw_metadata": ""
+        "raw_metadata": "",
+        "template": {
+          "channels": [
+            "OD",
+            "flo"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "plate": 1,
+          "plate_brand": "generic",
+          "sample_type": "plate reader",
+          "well": ""
+        }
       },
       "type": "timeseries",
       "values": {
@@ -23383,6 +24461,21 @@
           "timeticks": "50",
           "tot": "4",
           "transformation": "applied"
+        },
+        "template": {
+          "channels": [
+            "FSC_H",
+            "SSC_H",
+            "FL1_H",
+            "FL3_H",
+            "FL1_A",
+            "FL4_H"
+          ],
+          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/small.fcs",
+          "plate": 2,
+          "plate_brand": "",
+          "sample_type": "flow",
+          "well": "A1"
         }
       },
       "type": "population",
@@ -23625,11 +24718,21 @@
   "metadata": {
     "Manifest.toml": "",
     "Project.toml": "",
+    "channel_map": {
+      "FL1_A": "FL1_A",
+      "FL1_H": "FL1_H",
+      "FL3_H": "FL3_H",
+      "FL4_H": "FL4_H",
+      "FSC_H": "FSC_H",
+      "OD": "OD",
+      "SSC_H": "SSC_H",
+      "flo": "flo"
+    },
     "date_created": "",
     "date_modified": "",
     "description": "",
     "esm_version": "0.3.1",
-    "schema_version": "0.3.0",
+    "schema_version": "0.4.0",
     "versioninfo": ""
   }
 }
