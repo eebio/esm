@@ -540,7 +540,7 @@ end
             growth_rate(od_df, time_col, method; plot_directory = :temp)
         end
         str = String(take!(io))
-        str = replace(str, "┌ Info: Saving growth curve plots to temporary directory: " => "")
+        str = replace(str, "┌ Info: Saving plots to temporary directory: " => "")
         str = split(str, "\n")[1]
         @test isdir(str)
         if hasproperty(method, :method)
@@ -569,7 +569,7 @@ end
             func(od_df, time_col, FiniteDiff(); plot_directory = :temp)
         end
         str = String(take!(io))
-        str = replace(str, "┌ Info: Saving growth curve plots to temporary directory: " => "")
+        str = replace(str, "┌ Info: Saving plots to temporary directory: " => "")
         str = split(str, "\n")[1]
         @test isfile(joinpath(str, "growth_curve_FiniteDiff_central_A.png"))
         @test isfile(joinpath(str, "growth_curve_FiniteDiff_central_B.png"))
@@ -685,6 +685,15 @@ end
     @test floor(fluorescence(
         fl, time_fl, od, time_od, RatioAtMaxGrowth(method = FiniteDiff(type = :central)))[
         1, 1]) == 4069
+
+    # Plot directory
+    rm(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"), force = true)
+    @test !isfile(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"))
+    @test floor(fluorescence(
+        fl, time_fl, od, time_od, RatioAtMaxGrowth(method=FiniteDiff(type=:central)); plot_directory=".")[
+        1, 1]) == 4069
+    @test isfile(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"))
+    rm(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"), force = true)
 
     # Including calibration and groups
     od = eval(ESM.sexp_to_nested_list(:(plate1.od1), es, trans_meta_map))
