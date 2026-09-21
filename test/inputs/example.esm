@@ -10,7 +10,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -257,7 +257,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -504,7 +504,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -751,7 +751,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -998,7 +998,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -1245,7 +1245,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -1492,7 +1492,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -1739,7 +1739,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -1986,7 +1986,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -2233,7 +2233,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -2480,7 +2480,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -2727,7 +2727,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -2974,7 +2974,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -3221,7 +3221,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -3468,7 +3468,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -3715,7 +3715,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -3962,7 +3962,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -4209,7 +4209,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -4456,7 +4456,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -4703,7 +4703,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -4950,7 +4950,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -5197,7 +5197,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -5444,7 +5444,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -5691,7 +5691,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -5938,7 +5938,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -6185,7 +6185,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -6432,7 +6432,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -6679,7 +6679,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -6926,7 +6926,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -7173,7 +7173,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -7420,7 +7420,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -7667,7 +7667,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -7914,7 +7914,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -8161,7 +8161,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -8408,7 +8408,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -8655,7 +8655,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -8902,7 +8902,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -9149,7 +9149,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -9396,7 +9396,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -9643,7 +9643,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -9890,7 +9890,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -10137,7 +10137,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -10384,7 +10384,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -10631,7 +10631,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -10878,7 +10878,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -11125,7 +11125,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -11372,7 +11372,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -11619,7 +11619,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -11866,7 +11866,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -12113,7 +12113,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -12360,7 +12360,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -12607,7 +12607,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -12854,7 +12854,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -13101,7 +13101,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -13348,7 +13348,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -13595,7 +13595,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -13842,7 +13842,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -14089,7 +14089,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -14336,7 +14336,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -14583,7 +14583,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -14830,7 +14830,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -15077,7 +15077,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -15324,7 +15324,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -15571,7 +15571,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -15818,7 +15818,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -16065,7 +16065,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -16312,7 +16312,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -16559,7 +16559,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -16806,7 +16806,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -17053,7 +17053,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -17300,7 +17300,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -17547,7 +17547,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -17794,7 +17794,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -18041,7 +18041,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -18288,7 +18288,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -18535,7 +18535,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -18782,7 +18782,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -19029,7 +19029,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -19276,7 +19276,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -19523,7 +19523,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -19770,7 +19770,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -20017,7 +20017,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -20264,7 +20264,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -20511,7 +20511,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -20758,7 +20758,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -21005,7 +21005,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -21252,7 +21252,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -21499,7 +21499,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -21746,7 +21746,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -21993,7 +21993,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -22240,7 +22240,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -22487,7 +22487,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -22734,7 +22734,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -22981,7 +22981,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -23228,7 +23228,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -23475,7 +23475,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -23722,7 +23722,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -23969,7 +23969,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
           "plate": 1,
-          "plate_brand": "generic",
+          "plate_brand": "Generic",
           "sample_type": "plate reader",
           "well": ""
         }

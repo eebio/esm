@@ -60,7 +60,7 @@ end
         for key in keys(f["samples"])
             f["samples"][key]["metadata"]["template"]["data_location"] = ""
         end
-        @test bytes2hex(stable_hash(f; version=4)) == "baa00e20095ea796ebae6e2dfc013f4773d3dc1acfb5d3355c54984bf6aeaed9"
+        @test bytes2hex(stable_hash(f; version=4)) == "cb0d907467ada73855644c828f4b526bb74bd4df03e70fce45b8c3104be1e610"
 
         run(`$(shell) esm untranslate $(joinpath(dir, "tmp.esm")) $(joinpath(dir, "tmp.xlsx"))`)
         @test isfile(joinpath(dir, "tmp.xlsx"))

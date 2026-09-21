@@ -11,7 +11,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -73,7 +73,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -135,7 +135,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -197,7 +197,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -259,7 +259,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -321,7 +321,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -383,7 +383,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -445,7 +445,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -507,7 +507,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -569,7 +569,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -631,7 +631,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -693,7 +693,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -755,7 +755,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -817,7 +817,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -879,7 +879,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
@@ -941,7 +941,7 @@
           ],
           "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/spectramax-summarise.txt",
           "plate": 1,
-          "plate_brand": "spectramax",
+          "plate_brand": "SpectraMax",
           "sample_type": "plate reader",
           "well": ""
         }
