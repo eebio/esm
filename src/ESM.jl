@@ -18,7 +18,7 @@ include("summarise.jl")
 include("views.jl")
 
 export read_esm, esm_zones, read_data, write_esm
-export template, translate, views, summarise
+export template, translate, views, summarise, untranslate
 
 export growth_rate, doubling_time, lag_time, max_od, time_to_max_growth, od_at_max_growth
 export MovingWindow, FiniteDiff, Endpoints, LinearOnLog, ExpandingWindow
@@ -68,6 +68,20 @@ Translates the completed .xlsx template file to a .esm file.
 @cast function translate(input::String, output::String)
     x = read_data(input)
     write_esm(x, output)
+end
+
+"""
+    esm untranslate
+
+Reconstruct an Excel template from an .esm file.
+
+# Args
+
+- `input`: The .esm file to reconstruct.
+- `output`: The filepath/destination for the Excel template.
+"""
+@cast function untranslate(input::String, output::String)
+    untranslate_esm(input, output)
 end
 
 """

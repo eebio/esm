@@ -34,11 +34,11 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
     # Just so that the broader physical group can be defined using the set difference
     pre = keys(sample_dict)
     sample_dict = merge(sample_dict,
-        OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(
+        OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict( # TODO Plate[1] could be >9
                         "type" => "timeseries",
                         "values" => Dict(i => data[i][!, k]
                         for i in channels if k in names(data[i])),
-                        "metadata" => Dict("raw_metadata" => raw_metadata))
+                        "metadata" => Dict{String, Any}("raw_metadata" => raw_metadata))
         for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
     broad_g = [i for i in keys(sample_dict) if !(i in pre)]
     return sample_dict, broad_g

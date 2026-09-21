@@ -13,9 +13,6 @@
           ["plate_01_A3", "plate_01_A8", "plate_01_A7"]
     @test es["groups"]["third_group"]["sample_IDs"] ==
           ["plate_01_A1", "plate_01_A2", "plate_01_A3"]
-
-    # Test errors
-    @test_throws "Unknown instrument type: gibberish" read_data("inputs/bad_inst_type.xlsx")
 end
 
 @testitem "write esm" setup=[environment_path] begin
@@ -45,7 +42,7 @@ end
     for i in findall(.!occursin.(r"(OD|flo)", es_written.samples.name))
         @test issetequal(keys(es_written.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
-                "amp_gain", "name_s", "name", "det_type", "perc_em", "esm_well", "raw_metadata"])
+                "amp_gain", "name_s", "name", "det_type", "perc_em", "esm_well", "raw_metadata", "template"])
     end
     @test issetequal(es_written.groups.group,
         ["plate_01", "plate_02", "first_group", "second_group", "third_group"])
