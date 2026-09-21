@@ -3,7 +3,7 @@ using REPL.TerminalMenus
 using REPL.LineEdit
 using REPL.Terminals
 
-# TODO TerminalRegressionTests.jl
+# TODO backspace to go back may work better than enter, so enter can be used to skip for group metadata
 
 include("transforms.jl")
 include("groups.jl")
