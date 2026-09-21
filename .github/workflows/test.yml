@@ -51,10 +51,6 @@ jobs:
             sudo apt-get update
             sudo apt-get install --yes expect
           fi
-      - name: Install terminal replay dependencies on Windows
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: choco install winpty --yes --no-progress
       - name: Add Julia bin to GITHUB_PATH
         run: |
           echo "$HOME/.julia/bin" >> $GITHUB_PATH

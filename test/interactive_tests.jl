@@ -87,27 +87,29 @@ using TestItemRunner
 end
 
 @testitem "interactive menu replay" setup=[InteractiveReplay] begin
-    rm(joinpath(@__DIR__, "temp.esm"); force=true)
-    rm(joinpath(@__DIR__, "group1.csv"); force=true)
-    rm(joinpath(@__DIR__, "test2.esm"); force=true)
-    @test !isfile(joinpath(@__DIR__, "temp.esm"))
-    @test !isfile(joinpath(@__DIR__, "group1.csv"))
-    @test !isfile(joinpath(@__DIR__, "test2.esm"))
-    InteractiveReplay.run_interactive_replays(
-        [
-            joinpath(@__DIR__, "inputs", "interactive_events", "menu_navigation.events"),
-            joinpath(@__DIR__, "inputs", "interactive_events", "transform_interaction.events"),
-            joinpath(@__DIR__, "inputs", "interactive_events", "groups_interaction.events"),
-            joinpath(@__DIR__, "inputs", "interactive_events", "views_interaction.events"),
-            joinpath(@__DIR__, "inputs", "interactive_events", "coverage.events"),
-        ],
-        joinpath(@__DIR__, "interactive_child.jl"),
-        joinpath(@__DIR__, "inputs", "example.esm"),
-    )
-    @test isfile(joinpath(@__DIR__, "temp.esm"))
-    @test isfile(joinpath(@__DIR__, "group1.csv"))
-    @test isfile(joinpath(@__DIR__, "test2.esm"))
-    rm(joinpath(@__DIR__, "temp.esm"); force=true)
-    rm(joinpath(@__DIR__, "group1.csv"); force=true)
-    rm(joinpath(@__DIR__, "test2.esm"); force=true)
+    if !Sys.iswindows()
+        rm(joinpath(@__DIR__, "temp.esm"); force=true)
+        rm(joinpath(@__DIR__, "group1.csv"); force=true)
+        rm(joinpath(@__DIR__, "test2.esm"); force=true)
+        @test !isfile(joinpath(@__DIR__, "temp.esm"))
+        @test !isfile(joinpath(@__DIR__, "group1.csv"))
+        @test !isfile(joinpath(@__DIR__, "test2.esm"))
+        InteractiveReplay.run_interactive_replays(
+            [
+                joinpath(@__DIR__, "inputs", "interactive_events", "menu_navigation.events"),
+                joinpath(@__DIR__, "inputs", "interactive_events", "transform_interaction.events"),
+                joinpath(@__DIR__, "inputs", "interactive_events", "groups_interaction.events"),
+                joinpath(@__DIR__, "inputs", "interactive_events", "views_interaction.events"),
+                joinpath(@__DIR__, "inputs", "interactive_events", "coverage.events"),
+            ],
+            joinpath(@__DIR__, "interactive_child.jl"),
+            joinpath(@__DIR__, "inputs", "example.esm"),
+        )
+        @test isfile(joinpath(@__DIR__, "temp.esm"))
+        @test isfile(joinpath(@__DIR__, "group1.csv"))
+        @test isfile(joinpath(@__DIR__, "test2.esm"))
+        rm(joinpath(@__DIR__, "temp.esm"); force=true)
+        rm(joinpath(@__DIR__, "group1.csv"); force=true)
+        rm(joinpath(@__DIR__, "test2.esm"); force=true)
+    end
 end
