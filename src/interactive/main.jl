@@ -82,7 +82,7 @@ function save_esm(esm, changes_made; exit_on_success=false)
             new_metadata["versioninfo"] != old_metadata["versioninfo"]
             match = false
         else
-            match = false
+            match = true
         end
         if !match
             @warn "The current version of ESM is different from the version used to create \
