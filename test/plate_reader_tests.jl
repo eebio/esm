@@ -686,6 +686,15 @@ end
         fl, time_fl, od, time_od, RatioAtMaxGrowth(method = FiniteDiff(type = :central)))[
         1, 1]) == 4069
 
+    # Plot directory
+    rm(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"), force = true)
+    @test !isfile(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"))
+    @test floor(fluorescence(
+        fl, time_fl, od, time_od, RatioAtMaxGrowth(method=FiniteDiff(type=:central)); plot_directory=".")[
+        1, 1]) == 4069
+    @test isfile(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"))
+    rm(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"), force = true)
+
     # Including calibration and groups
     od = eval(ESM.sexp_to_nested_list(:(plate1.od1), es, trans_meta_map))
     fl = eval(ESM.sexp_to_nested_list(:(plate1.flu1), es, trans_meta_map))

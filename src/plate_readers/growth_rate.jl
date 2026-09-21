@@ -44,7 +44,7 @@ end
 function process_plot_directory(plot_directory)
     if plot_directory == :temp
         plot_directory = mktempdir()
-        @info "Saving growth curve plots to temporary directory: $plot_directory"
+        @info "Saving plots to temporary directory: $plot_directory"
     end
     if !isnothing(plot_directory) && !isdir(plot_directory)
         # Is directory/path doesn't exist, create it
