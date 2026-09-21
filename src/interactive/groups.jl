@@ -138,6 +138,10 @@ function add_group_metadata!(esm, changes_made)
     end
     values = fill("", nrow(esm.groups))
     for (i, g) in enumerate(eachrow(esm.groups))
+        if get(g.metadata, "autodefined", "false") == "true"
+            push!(values, "")
+            continue
+        end
         println("Enter the value of the metadata $name for group $(g.group) (or just press Enter to go back):")
         flush(stdout)
         values[i] = read_with_editing("New Group Metadata Field Value> ")

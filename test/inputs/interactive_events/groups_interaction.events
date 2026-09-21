@@ -84,14 +84,6 @@ EXPECT:for group third_group
 EXPECT:New Group Metadata Field Value>
 TEXT:third_value
 ENTER
-EXPECT:for group plate_01
-EXPECT:New Group Metadata Field Value>
-TEXT:plate_one_value
-ENTER
-EXPECT:for group plate_02
-EXPECT:New Group Metadata Field Value>
-TEXT:plate_two_value
-ENTER
 EXPECT:for group temporary_group
 EXPECT:New Group Metadata Field Value>
 TEXT:temporary_value
@@ -173,14 +165,6 @@ EXPECT:for group third_group
 EXPECT:New Group Metadata Field Value>
 TEXT:third_value
 ENTER
-EXPECT:for group plate_01
-EXPECT:New Group Metadata Field Value>
-TEXT:plate_one_value
-ENTER
-EXPECT:for group plate_02
-EXPECT:New Group Metadata Field Value>
-TEXT:plate_two_value
-ENTER
 EXPECT:for group temporary_group
 EXPECT:New Group Metadata Field Value>
 TEXT:temporary_value
@@ -224,14 +208,6 @@ EXPECT:New Group Metadata Field Value>
 TEXT:1
 ENTER
 EXPECT:third_group
-EXPECT:New Group Metadata Field Value>
-TEXT:1
-ENTER
-EXPECT:plate_01
-EXPECT:New Group Metadata Field Value>
-TEXT:1
-ENTER
-EXPECT:plate_02
 EXPECT:New Group Metadata Field Value>
 TEXT:1
 ENTER
