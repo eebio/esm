@@ -205,6 +205,7 @@ end
     views(joinpath(dir, "tmp.esm"); view = "mega", output_dir = dir)
     views(joinpath(dir, "tmp.esm"); view = "flowsub,mega", output_dir = dir)
     translate(joinpath("inputs", "summarise.xlsx"), joinpath(dir, "summarise.esm"))
+    untranslate(joinpath(dir, "summarise.esm"), joinpath(dir, "reconstructed.xlsx"))
     summarise(joinpath(dir, "summarise.esm"); plot = true)
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
     cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))

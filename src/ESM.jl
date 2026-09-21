@@ -18,7 +18,7 @@ include("summarise.jl")
 include("views.jl")
 
 export read_esm, esm_zones, read_data, write_esm
-export template, translate, views, summarise
+export template, translate, views, summarise, untranslate
 
 export growth_rate, doubling_time, lag_time, max_od, time_to_max_growth, od_at_max_growth
 export MovingWindow, FiniteDiff, Endpoints, LinearOnLog, ExpandingWindow
