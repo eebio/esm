@@ -540,7 +540,7 @@ end
             growth_rate(od_df, time_col, method; plot_directory = :temp)
         end
         str = String(take!(io))
-        str = replace(str, "┌ Info: Saving growth curve plots to temporary directory: " => "")
+        str = replace(str, "┌ Info: Saving plots to temporary directory: " => "")
         str = split(str, "\n")[1]
         @test isdir(str)
         if hasproperty(method, :method)
@@ -569,7 +569,7 @@ end
             func(od_df, time_col, FiniteDiff(); plot_directory = :temp)
         end
         str = String(take!(io))
-        str = replace(str, "┌ Info: Saving growth curve plots to temporary directory: " => "")
+        str = replace(str, "┌ Info: Saving plots to temporary directory: " => "")
         str = split(str, "\n")[1]
         @test isfile(joinpath(str, "growth_curve_FiniteDiff_central_A.png"))
         @test isfile(joinpath(str, "growth_curve_FiniteDiff_central_B.png"))
