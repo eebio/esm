@@ -9,7 +9,7 @@ using FileIO
 using FCSFiles
 using StyledStrings
 
-@with_kw struct esm_zones
+@with_kw mutable struct esm_zones
     samples::DataFrame
     groups::Any
     transformations::Any
@@ -313,8 +313,7 @@ function read_data(file::AbstractString)
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => string(i.Equation) for i in eachrow(trans))
     # Add the views
-    views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
-    for i in eachrow(views))
+    views_dict = OrderedDict(i.Name => "data" => strip.(split(i.View, ",")) for i in eachrow(views))
     metadata = get_metadata()
     metadata["channel_map"] = channel_map
     return OrderedDict("samples" => sample_dict, "groups" => group_dict,

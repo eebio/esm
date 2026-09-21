@@ -1,0 +1,181 @@
+## Views interaction
+## Test specifically the views menu and its sub-menus
+
+# Main menu -> Views.
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+ENTER
+
+# Produce the first available view.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+ENTER
+EXPECT_WAIT:Select a view to produce
+ENTER
+
+# Go back from produce views
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+ENTER
+EXPECT_WAIT:Select a view to produce (press [q] to quit):
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+EXPECT:> Back
+ENTER
+
+# View name already exists
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Enter the name of the new view (or just press Enter to go back):
+EXPECT:New View Name>
+TEXT:mega
+ENTER
+EXPECT:A view with the name mega already exists
+
+# Empty equations
+EXPECT:New View Name>
+TEXT:test
+ENTER
+EXPECT:New View Equation>
+ENTER
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit (press [q] to quit):
+ENTER
+EXPECT:New View Equation>
+ENTER
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit (press [q] to quit):
+ENTER
+EXPECT:Any["first_group"]
+EXPECT:New View Equation>
+ENTER
+
+# Add a view with an initial equation.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+ENTER
+EXPECT:New View Name>
+TEXT:temporary_view
+ENTER
+EXPECT:New View Equation>
+TEXT:first_group
+ENTER
+
+# Edit the new view.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT:Current equation for temporary_view
+EXPECT:New View Equation>
+TEXT:second_group
+ENTER
+
+# Reopen it to verify that editing changed its equation.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT:Current equation for temporary_view
+EXPECT:second_group
+EXPECT:New View Equation>
+ENTER
+
+# Delete the new view.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to remove
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+
+# Verify the deleted view is absent from the edit list.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+EXPECT:> Back
+ENTER
+
+# Verify the deleted view is absent from the remove list.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to remove
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+DOWN
+EXPECT:> Back
+ENTER
+
+# Back to the main menu and quit.
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+ENTER
+EXPECT:Filename>
+TEXT:temp.esm
+ENTER
+EXPECT_WAIT:The current version of ESM is different
+ENTER
+EXPECT:ESM saved to temp.esm

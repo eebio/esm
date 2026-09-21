@@ -1,0 +1,209 @@
+## Extra random events for coverage
+
+# Quit from every menu
+# Start by making a change so we can cancel all quits
+EXPECT_WAIT:Main Menu (press [q] to quit):
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+DOWN
+ENTER
+EXPECT:New Transform Name>
+TEXT:a
+ENTER
+EXPECT:New Transform Equation>
+TEXT:1
+ENTER
+# Now quit from each menu and cancel
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+# Now the main menus are done, we need to do it from the smaller menus
+# For transforms
+EXPECT_WAIT:Main Menu (press [q] to quit):
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to remove (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+ENTER
+EXPECT_WAIT:Main Menu / Transforms (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a transform to edit (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+# For groups
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to remove (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group to edit (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+# For group metadata
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to remove (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Groups / Group Metadata (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a group metadata field to edit (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+# For views
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+ENTER
+EXPECT_WAIT:Select a view to produce (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to remove (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Main Menu / Views (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT_WAIT:Select a view to edit (press [q] to quit):
+Q
+EXPECT_WAIT:You have unsaved changes. What would you like to do?
+DOWN
+DOWN
+ENTER
+
+# Save changes without quitting
+EXPECT_WAIT:Main Menu (press [q] to quit):
+DOWN
+DOWN
+DOWN
+ENTER
+EXPECT:Filename>
+TEXT:test2.esm
+ENTER
+EXPECT:> Yes, save changes and update the metadata
+ENTER
+
+# Quit
+EXPECT_WAIT:Main Menu (press [q] to quit):
+Q
+EXPECT:Exiting ESM interactive mode.

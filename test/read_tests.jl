@@ -383,15 +383,15 @@ end
     for i in keys(es.transformations))
 
     #Test numbers
-    @test ESM.sexp_to_nested_list(5, es, trans_meta_map) == 5
+    @test ESM.run_transformation(es, "5") == 5
     # Test strings
-    @test ESM.sexp_to_nested_list(:("hello"), es, trans_meta_map) == "hello"
+    @test ESM.run_transformation(es, "\"hello\"") == "hello"
     # Test functions
-    @test eval(ESM.sexp_to_nested_list(:(sum([1, 2, 3])), es, trans_meta_map)) == 6
+    @test eval(ESM.run_transformation(es, "sum([1, 2, 3])")) == 6
     # Test accessing transformations
-    @test eval(ESM.sexp_to_nested_list(:extra_transform, es, trans_meta_map)) == 10
+    @test ESM.run_transformation(es, "extra_transform") == 10
     # Test accessing views
-    @test ESM.sexp_to_nested_list(:flow_cyt, es, trans_meta_map) == 1
+    @test ESM.run_transformation(es, "flow_cyt") == 1
     # Test accessing groups
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
@@ -409,7 +409,7 @@ end
         "SSC_H.min" => fill(0.010045073642544625, 8),
         "FSC_H.max" => fill(1024.0, 8),
         "FSC_H.min" => fill(1.0, 8))
-    @test ESM.sexp_to_nested_list(:plate_01, es, trans_meta_map) == df[!, sort(names(df))]
+    @test ESM.run_transformation(es, "plate_01") == df[!, sort(names(df))]
     # Test other symbols - should just be returned
     @test ESM.sexp_to_nested_list(:not_defined, es, trans_meta_map) == :not_defined
     @test ESM.sexp_to_nested_list(:(form_df(es.samples)), es, trans_meta_map) ==
@@ -429,8 +429,8 @@ end
         "SSC_H.min" => fill(0.010045073642544625, 4),
         "FSC_H.max" => fill(1024.0, 4),
         "FSC_H.min" => fill(1.0, 4))
-    @test ESM.sexp_to_nested_list(:plate_01_a1, es, trans_meta_map) ==
-          df[!, sort(names(df))]
+    @test ESM.run_transformation(es, "plate_01_a1") ==
+        df[!, sort(names(df))]
     # Test channels
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0],
@@ -438,8 +438,8 @@ end
         "esm_well" => ["A1", "A1", "A1", "A1"],
         "FL1_A.max" => fill(1024.0, 4),
         "FL1_A.min" => fill(1.0, 4))
-    @test ESM.sexp_to_nested_list(:(plate_01_a1.FL1_A), es, trans_meta_map) ==
-          df[!, sort(names(df))]
+    @test ESM.run_transformation(es, "plate_01_a1.FL1_A") ==
+        df[!, sort(names(df))]
     df = DataFrame(
         "SSC_H" => [
             0.11039991779173976, 0.18187190885323648,
@@ -449,15 +449,15 @@ end
         "esm_well" => ["A1", "A1", "A1", "A1", "A2", "A2", "A2", "A2"],
         "SSC_H.max" => fill(1.0, 8),
         "SSC_H.min" => fill(0.010045073642544625, 8))
-    @test ESM.sexp_to_nested_list(:(plate_01.SSC_H), es, trans_meta_map) ==
-          df[!, sort(names(df))]
+    @test ESM.run_transformation(es, "plate_01.SSC_H") ==
+        df[!, sort(names(df))]
     # Test groups
     df = DataFrame("FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
-        "id" => [1, 2, 3, 4, 5, 6, 7, 8],"esm_well" => ["A1", "A1", "A1", "A1", "A2",
+        "id" => [1, 2, 3, 4, 5, 6, 7, 8], "esm_well" => ["A1", "A1", "A1", "A1", "A2",
         "A2", "A2", "A2"], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(
-            1.0, 8))
-    @test ESM.sexp_to_nested_list(:(plate_01.FL1_A), es, trans_meta_map) ==
-          df[!, sort(names(df))]
+        1.0, 8))
+    @test ESM.run_transformation(es, "plate_01.FL1_A") ==
+        df[!, sort(names(df))]
 end
 
 @testitem "produce_views" setup=[environment_path] begin
