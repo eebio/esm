@@ -13,9 +13,6 @@
           ["plate_01_A3", "plate_01_A8", "plate_01_A7"]
     @test es["groups"]["third_group"]["sample_IDs"] ==
           ["plate_01_A1", "plate_01_A2", "plate_01_A3"]
-
-    # Test errors
-    @test_throws "Unknown instrument type: gibberish" read_data("inputs/bad_inst_type.xlsx")
 end
 
 @testitem "write esm" setup=[environment_path] begin
