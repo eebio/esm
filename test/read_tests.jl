@@ -460,6 +460,20 @@ end
         df[!, sort(names(df))]
 end
 
+@testitem "blocked expressions" setup=[MockESM] begin
+    using DataFrames
+    es = read_esm(MockESM.temp_file)
+    es.transformations["extra_transform"] = Dict{String, Any}("equation" => "sum([1,2,3,4])")
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
+    for i in keys(es.transformations))
+
+    @test_throws ErrorException "Blocked" ESM.sexp_to_nested_list(:(rm(file)), es, trans_meta_map)
+    @test_throws ErrorException "Blocked" ESM.sexp_to_nested_list(:(Base.Filesystem.unknown(file); force=true), es, trans_meta_map)
+    @test_throws ErrorException "Blocked" ESM.sexp_to_nested_list(:(run("ls")), es, trans_meta_map)
+    @test_throws ErrorException "Blocked" ESM.sexp_to_nested_list(:(@ccall 1), es, trans_meta_map)
+    @test_throws ErrorException "Blocked" ESM.sexp_to_nested_list(:(@eval 1), es, trans_meta_map)
+end
+
 @testitem "produce_views" setup=[environment_path] begin
     println("produce_views")
     es = read_esm("inputs/example.esm")
