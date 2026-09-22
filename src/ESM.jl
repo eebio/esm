@@ -24,7 +24,7 @@ export template, translate, views, summarise, untranslate
 export growth_rate, doubling_time, lag_time, max_od, time_to_max_growth, od_at_max_growth
 export MovingWindow, FiniteDiff, Endpoints, LinearOnLog, ExpandingWindow
 export ParametricGrowthRate, Logistic, Gompertz, ModifiedGompertz, Richards
-export Regularization
+export SmoothedSpline
 
 export fluorescence
 export RatioAtTime, RatioAtMaxGrowth
