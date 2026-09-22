@@ -133,7 +133,7 @@ end
           DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, FiniteDiff()) ≈ DataFrame(A = 1.0)
     @test doubling_time(od_df, time_col, FiniteDiff(type = :onesided)) ≈ DataFrame(A = 1.0)
-    @test doubling_time(od_df, time_col, Regularization(order = 4.0)) ≈
+    @test doubling_time(od_df, time_col, SmoothedSpline(order = 4.0)) ≈
           DataFrame(A = 1.0)
 
     # Parametric tests
@@ -173,7 +173,7 @@ end
         1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, Regularization())[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline())[1, "A"] ≈ log(2)
 
     # Tests for warnings
     od_df_warn = DataFrame(A = [
@@ -183,7 +183,7 @@ end
     @test_logs (:warn, r"Not enough data points") match_mode=:any growth_rate(
         od_df_warn, time_col, LinearOnLog(start_time = 1.1, end_time = 1.2); recalibrate = false)
     @test_logs (:warn, r"Not enough data points") match_mode=:any growth_rate(
-        od_df_warn, time_col, Regularization(); recalibrate = false)
+        od_df_warn, time_col, SmoothedSpline(); recalibrate = false)
     @test_logs (:warn, r"Not enough data points") match_mode=:any growth_rate(
         od_df_warn, time_col, Logistic(); recalibrate = false)
     @test_logs (:warn, r"No data points found between start_time") match_mode=:any growth_rate(
@@ -267,7 +267,7 @@ end
     @test 7 <
           time_to_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[
               1, "A"] < 10
-    @test 7 < time_to_max_growth(od_df, time_col, Regularization())[1, "A"] < 10
+    @test 7 < time_to_max_growth(od_df, time_col, SmoothedSpline())[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Logistic())[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, Gompertz())[1, "A"] < 10
     @test 7 < time_to_max_growth(od_df, time_col, ModifiedGompertz())[1, "A"] < 10
@@ -282,7 +282,7 @@ end
     @test_logs (:warn, r"Not enough data points") match_mode=:any time_to_max_growth(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_logs (:warn, r"Not enough data points") match_mode=:any time_to_max_growth(
-        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
+        od_df_warn, time_col_warn, SmoothedSpline(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" time_to_max_growth(
@@ -334,7 +334,7 @@ end
     @test 5 < lag_time(od_df, time_col, FiniteDiff(); offset = 0.01)[1, "A"] < 8
     @test 5 <
           lag_time(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[1, "A"] < 8
-    @test 5 < lag_time(od_df, time_col, Regularization())[1, "A"] < 8
+    @test 5 < lag_time(od_df, time_col, SmoothedSpline())[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Logistic())[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, Gompertz())[1, "A"] < 8
     @test 5 < lag_time(od_df, time_col, ModifiedGompertz())[1, "A"] < 8
@@ -349,7 +349,7 @@ end
     @test_logs (:warn, r"Not enough data points") match_mode=:any lag_time(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_logs (:warn, r"Not enough data points") match_mode=:any lag_time(
-        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
+        od_df_warn, time_col_warn, SmoothedSpline(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" lag_time(
@@ -409,7 +409,7 @@ end
           od_at_max_growth(od_df, time_col, FiniteDiff(type = :onesided); offset = 0.1)[
               1, "A"] <
           f(10)
-    @test 0 < od_at_max_growth(od_df, time_col, Regularization())[1, "A"] < f(10)
+    @test 0 < od_at_max_growth(od_df, time_col, SmoothedSpline())[1, "A"] < f(10)
     @test 0 < od_at_max_growth(od_df, time_col, Logistic())[1, "A"] < f(10)
     @test 0 < od_at_max_growth(od_df, time_col, Gompertz())[1, "A"] < f(10)
     @test 0 < od_at_max_growth(od_df, time_col, ModifiedGompertz())[1, "A"] < f(10)
@@ -424,7 +424,7 @@ end
     @test_logs (:warn, r"Not enough data points") match_mode=:any od_at_max_growth(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_logs (:warn, r"Not enough data points") match_mode=:any od_at_max_growth(
-        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
+        od_df_warn, time_col_warn, SmoothedSpline(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" od_at_max_growth(
@@ -475,7 +475,7 @@ end
           1.05
     @test 0.95 < max_od(od_df, time_col, FiniteDiff())[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] < 1.05
-    @test 0.95 < max_od(od_df, time_col, Regularization(); offset = 0.05)[1, "A"] < 1.05
+    @test 0.95 < max_od(od_df, time_col, SmoothedSpline(); offset = 0.05)[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, Logistic())[1, "A"] < 1.05
     @test 0.95 < max_od(od_df, time_col, Gompertz())[1, "A"] < 1.05
     @test_skip 0.95 < max_od(od_df, time_col, ModifiedGompertz())[1, "A"] < 1.05
@@ -490,7 +490,7 @@ end
     @test_logs (:warn, r"Not enough data points") match_mode=:any max_od(
         od_df_warn, time_col_warn, LinearOnLog(start_time = 1, end_time = 1.5); recalibrate = false)
     @test_logs (:warn, r"Not enough data points") match_mode=:any max_od(
-        od_df_warn, time_col_warn, Regularization(); recalibrate = false)
+        od_df_warn, time_col_warn, SmoothedSpline(); recalibrate = false)
 
     # Tests for errors
     @test_throws "Unknown finite difference type: unknown" max_od(
@@ -535,7 +535,7 @@ end
     logger = SimpleLogger(io)
 
     # Call growth_rate with all methods and check that plots are produced
-    for method in (MovingWindow(window_size = 5), ExpandingWindow(), LinearOnLog(start_time = 7, end_time = 10), Endpoints(start_time = 7, end_time = 10), FiniteDiff(), Regularization(), Logistic(), Gompertz(), ModifiedGompertz(), Richards())
+    for method in (MovingWindow(window_size = 5), ExpandingWindow(), LinearOnLog(start_time = 7, end_time = 10), Endpoints(start_time = 7, end_time = 10), FiniteDiff(), SmoothedSpline(), Logistic(), Gompertz(), ModifiedGompertz(), Richards())
         with_logger(logger) do
             growth_rate(od_df, time_col, method; plot_directory = :temp)
         end
@@ -753,7 +753,7 @@ end
         1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, Regularization())[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline())[1, "A"] ≈ log(2)
 
     # Parametric tests
     using Dates
@@ -784,7 +784,7 @@ end
     @test !ismissing(lag_time(od_df, time_col, Endpoints(start_time = 3, end_time = 6))[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, FiniteDiff())[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"])
-    @test !ismissing(lag_time(od_df, time_col, Regularization())[1, "A"])
+    @test !ismissing(lag_time(od_df, time_col, SmoothedSpline())[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, Logistic())[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, Gompertz())[1, "A"])
     @test !ismissing(lag_time(od_df, time_col, ModifiedGompertz())[1, "A"])

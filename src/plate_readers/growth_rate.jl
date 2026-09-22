@@ -1,6 +1,5 @@
 using NonlinearSolve
-using RegularizationTools
-using DataInterpolations
+using Dierckx
 using GLM
 using Statistics
 using StatsBase
@@ -585,14 +584,13 @@ function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing
     return summaries
 end
 
-@kwdef struct Regularization <: AbstractGrowthRateMethod
-    order::Int = 2
-    alg::Symbol = :fixed
-    lambda::Float64 = 1e-2
+@kwdef struct SmoothedSpline <: AbstractGrowthRateMethod
+    order::Int = 3
+    smoothness::Float64 = 0.01
+    knots::Union{Nothing, Vector{Float64}} = nothing
 end
 
-function _growth_rate(df, time_col, method::Regularization; plot_directory = nothing)
-    d = method.order
+function _growth_rate(df, time_col, method::SmoothedSpline; plot_directory = nothing)
     time_col = time_col ./ 60000
     t = time_col[!, 1]
     y = df[!, 1]
@@ -613,23 +611,27 @@ function _growth_rate(df, time_col, method::Regularization; plot_directory = not
     end
     t_refined = range(first(t), last(t), length = 100 * n)
     weights = y ./ first(y)
-    weights = weights .^ 2 ./ mean(weights .^ 2)
-    A = RegularizationSmooth(ly, t, nothing, weights, d; alg = method.alg, λ = method.lambda)
-    deriv = [DataInterpolations.derivative(A, ti) for ti in t_refined]
+    weights = weights ./ mean(weights)
+    if isnothing(method.knots)
+        spl = Dierckx.Spline1D(t, ly; k = method.order, w = weights, s = method.smoothness)
+    else
+        spl = Dierckx.Spline1D(t, ly, method.knots; k = method.order, w = weights, s = method.smoothness)
+    end
+    deriv = Dierckx.derivative(spl, t_refined)
     # maximum derivative (growth rate)
     growth_rate, i = findmax(deriv)
     time_to_max_growth = t_refined[i]
-    od_at_max_growth = exp(A(time_to_max_growth)) * first(y)
+    od_at_max_growth = exp(spl(time_to_max_growth)) * first(y)
     summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maximum([exp(A(ti)) * first(y) for ti in t_refined])
+        "maxOD" => maximum([exp(spl(ti)) * first(y) for ti in t_refined])
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
-        plot!(p, t_refined, A.(t_refined), label = "Regularized Fit", color = :blue, linestyle = :dot)
-        savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.alg)_$(names(df)[1]).png"))
+        plot!(p, t_refined, spl(t_refined), label = "Regularized Fit", color = :blue, linestyle = :dot)
+        savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
     end
     return summaries
 end
