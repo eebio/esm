@@ -7,6 +7,7 @@ Different plate reader machines format their outputs in different ways. To ensur
 * SpectraMax was verified using data from a "Molecular Devices SpectraMax iD5 multi-mode microplate reader (Serial: 375703621)"
 * BioTek was verfied using data from a "BioTek Synergy neo2 multi-mode reader (Serial: 18071614)"
 * Tecan was verified using data from a "Tecan Infinite 200 Pro (Cat#: 30050303 Serial: 1906010638)"
+* BMG was verified using data from a "BMG LABTECH CLARIOstar Plus (Serial: 430-5148)"
 
 If you find that you are using any of these plate reader brands and your data is not being correctly parsed, please let us know by [opening an issue on GitHub](https://github.com/eebio/esm/issues/new/choose).
 
