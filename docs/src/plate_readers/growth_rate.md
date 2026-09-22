@@ -162,7 +162,7 @@ It can be called using `growth_rate(data, time_col, Richards())` or `doubling_ti
 
 ## Smoothed Spline
 
-For the `SmoothedSpline` method, the data is log scaled (negative points removed) and a weighted least squares spline is fitted using [Dierckx.jl](@extref Dierckx). The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
+For the `SmoothedSpline` method, the data is log scaled (negative points removed) and a weighted least squares spline is fitted using [Dierckx.jl](https://github.com/JuliaMath/Dierckx.jl). The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
     order::Int = 3
     smoothness::Float64 = 0.01
     knots::Union{Nothing, Vector{Float64}} = nothing
