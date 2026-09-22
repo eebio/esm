@@ -160,20 +160,26 @@ It can be called using `growth_rate(data, time_col, Richards())` or `doubling_ti
 
 !!! todo "add more options here"
 
-## Regularization
+## Smoothed Spline
 
-For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
+For the `SmoothedSpline` method, the data is log scaled (negative points removed) and a weighted least squares spline is fitted using [Dierckx.jl](@extref Dierckx). The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
+    order::Int = 3
+    smoothness::Float64 = 0.01
+    knots::Union{Nothing, Vector{Float64}} = nothing
+It can be called using `growth_rate(data, time_col, SmoothedSpline(order, smoothness, knots))` or `doubling_time(data, time_col, SmoothedSpline(order, smoothness, knots))`.
 
-This method uses the `RegularizationSmooth()` method of DataInterpolations.jl, see [here](@extref DataInterpolations methods).
+By default:
 
-It can be called using `growth_rate(data, time_col, Regularization())` or `doubling_time(data, time_col, Regularization())`.
+- `order=3` which means cubic splines are used,
+- `smoothness=0.01` with larger values producing a smoother curve,
+- `knots=nothing` controls the time position of the spline knots (in minutes). If `knots=nothing`, then they are chosen automatically.
 
-- `max_od` - returns the maximum value of the regularization within the time interval
-- `time_to_max_growth` - return the time where the derivative of the regularization is maximised
-- `od_at_max_growth` - return the regularized OD at `time_to_max_growth`
+- `max_od` - returns the maximum value of the spline within the time interval
+- `time_to_max_growth` - return the time where the derivative of the spline is maximised
+- `od_at_max_growth` - return the evaluation of the spline at `time_to_max_growth`
 
 !!! tip "Help! My growth curve is wrong"
-    The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This only happens if the regularization curve is overfitting the data (following the noise rather than just the general trends). This can fixed by changing the smoothing parameter `lambda` (this varies on a log scale, try `10^6`) and changing the `alg` to `:fixed`.
+    The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This only happens if the smoothed spline is overfitting the data (following the noise rather than just the general trends). This can fixed by changing the smoothing parameter `smoothness` (the default is `0.01`).
 
 ## OD Thresholds
 
