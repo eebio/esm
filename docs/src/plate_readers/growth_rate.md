@@ -172,7 +172,7 @@ By default:
 
 - `order=3` which means cubic splines are used,
 - `smoothness=0.01` with larger values producing a smoother curve,
-- `knots=nothing` controls the time position of the spline knots (in minutes). If `knots=nothing`, then they are chosen automatically.
+- `knots=nothing` controls the time position of the spline knots (in minutes). If `knots=nothing`, then they are chosen automatically. If `knots` are specified, then the `smoothness` is ignored and the spline with minimise the discontinuity of the `order`-th derivative at the `knots`.
 
 - `max_od` - returns the maximum value of the spline within the time interval
 - `time_to_max_growth` - return the time where the derivative of the spline is maximised

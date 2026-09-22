@@ -174,6 +174,7 @@ end
     @test growth_rate(od_df, time_col, FiniteDiff())[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, FiniteDiff(type = :onesided))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, SmoothedSpline())[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline(knots = [2, 4, 6, 8]))[1, "A"] ≈ log(2)
 
     # Tests for warnings
     od_df_warn = DataFrame(A = [

@@ -615,7 +615,7 @@ function _growth_rate(df, time_col, method::SmoothedSpline; plot_directory = not
     if isnothing(method.knots)
         spl = Dierckx.Spline1D(t, ly; k = method.order, w = weights, s = method.smoothness)
     else
-        spl = Dierckx.Spline1D(t, ly, method.knots; k = method.order, w = weights, s = method.smoothness)
+        spl = Dierckx.Spline1D(t, ly, method.knots; k = method.order, w = weights)
     end
     deriv = Dierckx.derivative(spl, t_refined)
     # maximum derivative (growth rate)
