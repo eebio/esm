@@ -72,6 +72,69 @@ function view_to_csv(es, trans_meta_map; outdir = "", to_out = [])
     @info "Views written successfully."
 end
 
+const BLOCKED_CALLS = [
+    :eval,
+    :run,
+    :Filesystem,
+    :include,
+    :read,
+    :write,
+    :success,
+    :unsafe_load,
+    :unsafe_read,
+    :unsafe_write,
+    :unsafe_wrap,
+    :unsafe_store!,
+    :unsafe_swap!,
+    :unsafe_string,
+    :rm,
+    :mv,
+    :cp,
+    :mkdir,
+    :mkpath,
+    :walkpath,
+    :chmod,
+    :touch,
+    :download,
+]
+
+const BLOCKED_MACROS = [
+    Symbol("@eval"),
+    Symbol("@includet"),
+    Symbol("@ccall"),
+    Symbol("@llvmcall"),
+    Symbol("@cglobal")
+]
+
+function _check_expression(sexp)
+    if sexp.head == :call
+        func_name = sexp.args[1]
+        check_expression_args(func_name)
+    end
+    if sexp.head == :macrocall
+        macro_name = sexp.args[1]
+        if macro_name in BLOCKED_MACROS
+            error("Blocked macro call: $macro_name")
+        end
+    end
+end
+
+function check_expression_args(sexp)
+    if sexp isa Expr
+        for arg in sexp.args
+            check_expression_args(arg)
+        end
+    elseif sexp isa Symbol
+        if sexp in BLOCKED_CALLS
+            error("Blocked function call: $sexp")
+        end
+    elseif sexp isa QuoteNode
+        if sexp.value in BLOCKED_CALLS
+            error("Blocked function call: $(sexp.value)")
+        end
+    end
+end
+
 """
     sexp_to_nested_list(sexp,es,trans_meta_map)
 
@@ -99,6 +162,7 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
         return sexp
     end
     if isa(sexp, Expr)
+        _check_expression(sexp)
         # Check if the symbol is an expression as this could mean further processing
         for i in eachindex(sexp.args)
             # Recursively process each argument of the expression
