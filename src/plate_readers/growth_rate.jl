@@ -5,6 +5,8 @@ using Statistics
 using StatsBase
 using ForwardDiff
 using NaNMath
+using Measurements
+using CurveFit
 using Plots
 using ESM
 
@@ -74,8 +76,9 @@ Keywords:
 - `recalibrate`: Whether to recalibrate the data using `calibrate` before calculating growth rate. Default is :negative (only if negative values are present in the well). Available options are `:negative`, true, and false.
 - `offset`: If data is recalibrated, this is the offset applied after calibration. Default is 0.001.
 - `plot_directory`: If provided, this is the directory to save plots of the growth curves with the fitted growth rate. Default is nothing (no plots saved). If :temp, plots will be saved to a temporary directory.
+- `uncertainty`: If true, the function will also return the uncertainty of the growth rate (standard error). Default is false.
 """
-function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing)
+function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :negative, offset = 0.001, plot_directory = nothing, uncertainty = false)
     plot_directory = process_plot_directory(plot_directory)
 
     dict_2 = Dict()
@@ -87,7 +90,12 @@ function growth_rate(df, time_col, method::AbstractGrowthRateMethod; recalibrate
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["growth_rate"]
+        if uncertainty
+            tmp = _growth_rate(od, times, method; plot_directory = plot_directory, uncertainty = uncertainty)
+            dict_2[i] = Measurements.measurement(tmp["growth_rate"], tmp["growth_rate_uncertainty"])
+        else
+            dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory, uncertainty = uncertainty)["growth_rate"]
+        end
     end
     return DataFrame(dict_2)
 end
@@ -115,7 +123,7 @@ function max_od(df, time_col, method::AbstractGrowthRateMethod; recalibrate = :n
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["maxOD"] + recalibrant
+        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory, uncertainty = false)["maxOD"] + recalibrant
     end
     return DataFrame(dict_2)
 end
@@ -142,7 +150,7 @@ function time_to_max_growth(df, time_col, method::AbstractGrowthRateMethod; reca
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["time_to_max_growth"]
+        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory, uncertainty = false)["time_to_max_growth"]
     end
     return DataFrame(dict_2)
 end
@@ -169,7 +177,7 @@ function od_at_max_growth(df, time_col, method::AbstractGrowthRateMethod; recali
             dict_2[i] = NaN
             continue
         end
-        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory)["od_at_max_growth"] + recalibrant
+        dict_2[i] = _growth_rate(od, times, method; plot_directory = plot_directory, uncertainty = false)["od_at_max_growth"] + recalibrant
     end
     return DataFrame(dict_2)
 end
@@ -198,7 +206,7 @@ function lag_time(df, time_col, method::AbstractGrowthRateMethod; recalibrate = 
             dict_2[i] = NaN
             continue
         end
-        tmp = _growth_rate(od, times, method; plot_directory = plot_directory)
+        tmp = _growth_rate(od, times, method; plot_directory = plot_directory, uncertainty = false)
         dict_2[i] = _lagtime(tmp["time_to_max_growth"], tmp["growth_rate"],
             tmp["od_at_max_growth"] + recalibrant, od[1, 1] + recalibrant)
     end
@@ -215,7 +223,7 @@ end
     end_time::Float64
 end
 
-function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing)
+function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing, uncertainty = false)
     start_od = at_time(df, time_col, method.start_time)
     end_od = at_time(df, time_col, method.end_time)
     if isempty(start_od) || isempty(end_od)
@@ -224,7 +232,8 @@ function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing)
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "maxOD" => NaN
+            "maxOD" => NaN,
+            "growth_rate_uncertainty" => NaN
         )
     end
     start_od = start_od[1]
@@ -239,7 +248,8 @@ function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing)
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maximum(df[!, 1])
+        "maxOD" => maximum(df[!, 1]),
+        "growth_rate_uncertainty" => NaN,
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
@@ -254,10 +264,11 @@ end
     method::Symbol = :Endpoints
 end
 
-function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothing)
+function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothing, uncertainty = false)
     window_size = method.window_size
     max_rate = -Inf
     time_to_max_growth = NaN
+    growth_rate_se = NaN
     od_at_max_growth = NaN
     best_window = nothing
     for j in 1:(nrow(df) - window_size + 1)
@@ -273,6 +284,7 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         if rate["growth_rate"] > max_rate && !isinf(rate["growth_rate"])
             best_window = [start_time, end_time]
             max_rate = rate["growth_rate"]
+            growth_rate_se = rate["growth_rate_uncertainty"]
             time_to_max_growth = (start_time + end_time) / 2
             od_at_max_growth = exp((NaNMath.log(at_time(df, time_col, start_time)[1]) +
                                     NaNMath.log(at_time(df, time_col, end_time)[1])) / 2)
@@ -282,7 +294,8 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         "growth_rate" => max_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maximum(df[!, 1])
+        "maxOD" => maximum(df[!, 1]),
+        "growth_rate_uncertainty" => isnothing(growth_rate_se) ? NaN : growth_rate_se
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
@@ -299,7 +312,7 @@ end
     end_time::Float64
 end
 
-function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothing)
+function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothing, uncertainty = false)
     start_time = method.start_time
     end_time = method.end_time
 
@@ -310,7 +323,8 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "maxOD" => NaN
+            "maxOD" => NaN,
+            "growth_rate_uncertainty" => NaN
         )
     end
 
@@ -325,7 +339,9 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "maxOD" => NaN)
+            "maxOD" => NaN,
+            "growth_rate_uncertainty" => NaN
+        )
     end
     indexes = indexes[1]:indexes[2]
 
@@ -340,12 +356,13 @@ function _growth_rate(df, time_col, method::LinearOnLog; plot_directory = nothin
     time_to_max_growth = (start_time + end_time) / 2
 
     od_at_max_growth = geomean(skipmissing(between_times(df, time_col; mint = start_time, maxt = end_time)[:,1]))
-
+    se = stderror(lm_model)[2]
     summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maximum(df[!, 1])
+        "maxOD" => maximum(df[!, 1]),
+        "growth_rate_uncertainty" => isnothing(uncertainty) ? NaN : se
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
@@ -360,7 +377,7 @@ end
     growth_threshold::Float64 = 0.95
 end
 
-function _growth_rate(df, time_col, method::ExpandingWindow; plot_directory = nothing)
+function _growth_rate(df, time_col, method::ExpandingWindow; plot_directory = nothing, uncertainty = false)
     window_size = method.window_size
     growth_threshold = method.growth_threshold
 
@@ -371,7 +388,8 @@ function _growth_rate(df, time_col, method::ExpandingWindow; plot_directory = no
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "maxOD" => NaN
+            "maxOD" => NaN,
+            "growth_rate_uncertainty" => NaN
         )
     end
 
@@ -433,37 +451,38 @@ struct ParametricGrowthRate <: AbstractGrowthRateMethod
     func::Function
     initial_params::Vector{Float64}
     name::String
+    lower_limit_flexible::Bool
 end
 
-function Logistic()
+function Logistic(; lower_limit_flexible = false)
     return ParametricGrowthRate(
-        (t, p) -> p[2] ./ (1 .+ exp.(4 * p[1] / p[2] .* (p[3] .- t) .+ 2)),
-        [1.0, 4.0, 5.0], "Logistic")
+        (p, t) -> p[4] .+ p[2] ./ (1 .+ exp.(4 * p[1] / p[2] .* (p[3] .- t) .+ 2)),
+        [1.0, 4.0, 5.0, 0.0], "Logistic", lower_limit_flexible)
 end
 
-function Gompertz()
+function Gompertz(; lower_limit_flexible = false)
     return ParametricGrowthRate(
-        (t, p) -> p[2] .* exp.(-exp.(p[1] .* exp(1) ./ p[2] .* (p[3] .- t) .+ 1)),
-        [1.0, 4.0, 5.0], "Gompertz")
+        (p, t) -> p[4] .+ p[2] .* exp.(-exp.(p[1] .* exp(1) ./ p[2] .* (p[3] .- t) .+ 1)),
+        [1.0, 4.0, 5.0, 0.0], "Gompertz", lower_limit_flexible)
 end
 
-function ModifiedGompertz()
+function ModifiedGompertz(; lower_limit_flexible = false)
     return ParametricGrowthRate(
-        (t, p) -> p[2] .* exp.(-exp.((p[1] .* exp(1) ./ p[2]) .* (p[3] .- t) .+ 1)) .+
+        (p, t) -> p[6] .+ p[2] .* exp.(-exp.((p[1] .* exp(1) ./ p[2]) .* (p[3] .- t) .+ 1)) .+
                   p[2] .* exp.(p[4] * (t .- p[5])),
-        [1.0, 4.0, 5.0, 0.001, 4.0], "Modified_Gompertz")
+        [1.0, 4.0, 5.0, 0.001, 4.0, 0.0], "Modified_Gompertz", lower_limit_flexible)
 end
 
-function Richards()
+function Richards(; lower_limit_flexible = false)
     return ParametricGrowthRate(
-        (t, p) -> p[2] ./ ((1 .+
+        (p, t) -> p[5] .+ p[2] ./ ((1 .+
                     exp(p[4]) .* exp(1 + exp(p[4])) .*
                     exp.(p[1] / p[2] .* (1 + exp(p[4]))^(1 + 1 / exp(p[4])) .*
                          (p[3] .- t))) .^ (1 ./ exp(p[4]))),
-        [1.0, 4.0, 5.0, 0.0], "Richards")
+        [1.0, 4.0, 5.0, 0.0, 0.0], "Richards", lower_limit_flexible)
 end
 
-function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory = nothing)
+function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory = nothing, uncertainty = false)
     time_col = time_col ./ 60000
     t = time_col[!, 1]
     y = df[!, 1]
@@ -479,42 +498,44 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
+            "growth_rate_uncertainty" => NaN,
             "maxOD" => NaN
         )
     end
 
-    # residual function for NonlinearLeastSquaresProblem
-    # signature (res, u, p, t) is used by NonlinearSolve
     weights = y ./ first(y)
-    weights = weights .^ 2 ./ mean(weights .^ 2)
-    residuals! = function (res, u, _)
-        for k in eachindex(t)
-            res[k] = (method.func(t[k], u) .- ly[k]) .* sqrt(weights[k])
-        end
-        return nothing
-    end
+    weights = 1 ./ weights
 
     # initial guess: A ~ max(y), b small, c ~ end of time
-    u0 = method.initial_params
-    nonlinfun = NonlinearFunction(residuals!, resid_prototype = zeros(length(y)))
-    prob = NonlinearLeastSquaresProblem(nonlinfun, u0)
-    sol = NonlinearSolve.solve(prob; verbose = false, maxiters = 200)
-    psol = sol.u
+    if method.lower_limit_flexible
+        func = method.func
+        u0 = method.initial_params
+    else
+        func = (p, t) -> method.func([p..., 0.0], t)
+        u0 = method.initial_params[1:end-1]
+    end
+
+    prob = NonlinearCurveFitProblem(func, u0, t, ly, weights)
+    sol = solve(prob)
+
+    psol = coef(sol)
     growth_rate = psol[1]
     t_refined = range(first(t), last(t), length = 100 * n)
-    dOD = ForwardDiff.derivative.(ti -> method.func(ti, psol), t_refined)
+    dOD = ForwardDiff.derivative.(ti -> func(psol, ti), t_refined)
     time_to_max_growth = t_refined[findmin(abs.(dOD .- growth_rate))[2]]
-    od_at_max_growth = exp(method.func(time_to_max_growth, psol)) * first(y)
-    maxOD = exp(psol[2]) * first(y)
+    od_at_max_growth = exp(func(psol, time_to_max_growth)) * first(y)
+    maxOD = exp(psol[2] + psol[end]) * first(y)
+
     summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maxOD
+        "maxOD" => maxOD,
+        "growth_rate_uncertainty" => uncertainty ? stderror(sol)[1] : NaN
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
-        plot!(p, t_refined, ti -> method.func(ti, psol), label = "Parametric Fit", color = :blue, linestyle = :dot)
+        plot!(p, t_refined, ti -> func(psol, ti), label = "Parametric Fit", color = :blue, linestyle = :dot)
         savefig(p,joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(method.name)_$(names(df)[1]).png"))
     end
     return summaries
@@ -524,7 +545,7 @@ end
     type = :central
 end
 
-function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing)
+function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing, uncertainty = false)
     type = method.type
     time_col = time_col ./ 60000
     t = time_col[!, 1]
@@ -540,7 +561,8 @@ function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "maxOD" => NaN
+            "maxOD" => NaN,
+            "growth_rate_uncertainty" => NaN
         )
     end
 
@@ -575,7 +597,8 @@ function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maximum(df[!, 1])
+        "maxOD" => maximum(df[!, 1]),
+        "growth_rate_uncertainty" => NaN
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
@@ -590,7 +613,7 @@ end
     knots::Union{Nothing, Vector{Float64}} = nothing
 end
 
-function _growth_rate(df, time_col, method::SmoothedSpline; plot_directory = nothing)
+function _growth_rate(df, time_col, method::SmoothedSpline; plot_directory = nothing, uncertainty = false)
     time_col = time_col ./ 60000
     t = time_col[!, 1]
     y = df[!, 1]
@@ -606,7 +629,8 @@ function _growth_rate(df, time_col, method::SmoothedSpline; plot_directory = not
             "growth_rate" => NaN,
             "time_to_max_growth" => NaN,
             "od_at_max_growth" => NaN,
-            "maxOD" => NaN
+            "maxOD" => NaN,
+            "growth_rate_uncertainty" => NaN
         )
     end
     t_refined = range(first(t), last(t), length = 100 * n)
@@ -622,11 +646,50 @@ function _growth_rate(df, time_col, method::SmoothedSpline; plot_directory = not
     growth_rate, i = findmax(deriv)
     time_to_max_growth = t_refined[i]
     od_at_max_growth = exp(spl(time_to_max_growth)) * first(y)
+    if uncertainty
+        # Estimate uncertainty using bootstrap resampling
+        bootstrap_growth_rates = zeros(1000)
+        # Calculate residuals
+        fitted_values = spl(t)
+        residuals = ly .- fitted_values
+        knots = get_knots(spl)
+        if length(knots) <= 2
+            knots = [t[end]/2]
+        else
+            knots = knots[2:end-1]
+        end
+        rng = Xoshiro(0)
+        for b in eachindex(bootstrap_growth_rates)
+            resampled_residuals = sample(rng, residuals, n; replace = true) # add seeded rng
+            new_data = fitted_values .+ resampled_residuals
+            try
+                new_spl = Dierckx.Spline1D(t, new_data, knots; k = method.order, w = weights)
+                new_deriv = Dierckx.derivative(new_spl, t_refined)
+                bootstrap_growth_rates[b] = maximum(new_deriv)
+            catch e
+                if contains(string(e), "The maximal number of iterations maxit")
+                    bootstrap_growth_rates[b] = NaN
+                    continue
+                else
+                    rethrow(e)
+                end
+            end
+        end
+        if all(isnan.(bootstrap_growth_rates))
+            @warn "All bootstrap samples failed to converge for column $(names(df)[1]). Returning NaN for growth rate uncertainty."
+            growth_rate_uncertainty = NaN
+        else
+            growth_rate_uncertainty = std(bootstrap_growth_rates[.!isnan.(bootstrap_growth_rates)])
+        end
+    else
+        growth_rate_uncertainty = NaN
+    end
     summaries = Dict(
         "growth_rate" => growth_rate,
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
-        "maxOD" => maximum([exp(spl(ti)) * first(y) for ti in t_refined])
+        "maxOD" => maximum([exp(spl(ti)) * first(y) for ti in t_refined]),
+        "growth_rate_uncertainty" => growth_rate_uncertainty
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
