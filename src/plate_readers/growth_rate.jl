@@ -524,7 +524,11 @@ function _growth_rate(df, time_col, method::ParametricGrowthRate; plot_directory
     dOD = ForwardDiff.derivative.(ti -> func(psol, ti), t_refined)
     time_to_max_growth = t_refined[findmin(abs.(dOD .- growth_rate))[2]]
     od_at_max_growth = exp(func(psol, time_to_max_growth)) * first(y)
-    maxOD = exp(psol[2] + psol[end]) * first(y)
+    if method.lower_limit_flexible
+        maxOD = exp(psol[2] + psol[end]) * first(y)
+    else
+        maxOD = exp(psol[2]) * first(y)
+    end
 
     summaries = Dict(
         "growth_rate" => growth_rate,
