@@ -214,6 +214,63 @@ end
     @test growth_rate(od_df, time_col, Richards())[1, "A"]≈0.35 atol=1e-2
 end
 
+@testitem "growth rate - uncertainty" begin
+    println("growth rate - uncertainty")
+    using DataFrames
+    using Measurements
+    using Random
+
+    od_df = DataFrame(A=logrange(0.01, 0.4, 21) .+ (rand(Xoshiro(0), 21) .- 0.5) * 0.01,
+                    B=logrange(0.01, 0.4, 21) .+ (rand(Xoshiro(1), 21) .- 0.5) * 0.01,
+                    C=logrange(0.01, 0.4, 21) .+ (rand(Xoshiro(2), 21) .- 0.5) * 0.01,
+                    D=logrange(0.01, 0.4, 21) .+ (rand(Xoshiro(3), 21) .- 0.5) * 0.01,
+                    E=logrange(0.01, 0.4, 21) .+ (rand(Xoshiro(4), 21) .- 0.5) * 0.01,
+                    F=logrange(0.01, 0.4, 21))
+
+    time_col = DataFrame(Time = 0:60000:1200000)
+
+    exact_gr = growth_rate(od_df, time_col, FiniteDiff())[1, :F]
+
+    function tester(measures)
+        pass_accuracy_check = false
+        pass_non_nan_check = false
+        for measure in measures[1,Not(:F)]
+            if !isnan(Measurements.value(measure)) && !isnan(Measurements.uncertainty(measure))
+                pass_non_nan_check = true
+            end
+            @test measure isa Measurement
+            @test ! (Measurements.uncertainty(measure) < 0)
+            lb = Measurements.value(measure) - 1.96 * Measurements.uncertainty(measure)
+            ub = Measurements.value(measure) + 1.96 * Measurements.uncertainty(measure)
+            if lb <= exact_gr <= ub
+                pass_accuracy_check = true
+            end
+        end
+        if !pass_accuracy_check || !pass_non_nan_check
+            @show measures
+        end
+        @test pass_non_nan_check
+        @test pass_accuracy_check
+    end
+
+    println("LinearOnLog")
+    tester(growth_rate(od_df, time_col, LinearOnLog(start_time=2, end_time=16); uncertainty=true))
+    println("ExpandingWindow")
+    tester(growth_rate(od_df, time_col, ExpandingWindow(); uncertainty=true))
+    println("MovingWindow")
+    tester(growth_rate(od_df, time_col, MovingWindow(method = :LinearOnLog); uncertainty=true))
+    println("Logistic")
+    tester(growth_rate(od_df, time_col, Logistic(lower_limit_flexible = true); uncertainty=true))
+    println("Gompertz")
+    tester(growth_rate(od_df, time_col, Gompertz(lower_limit_flexible = true); uncertainty=true))
+    println("ModifiedGompertz")
+    tester(growth_rate(od_df, time_col, ModifiedGompertz(lower_limit_flexible = true); uncertainty=true))
+    println("Richards")
+    tester(growth_rate(od_df, time_col, Richards(lower_limit_flexible = true); uncertainty=true))
+    println("SmoothedSpline")
+    tester(growth_rate(od_df, time_col, SmoothedSpline(); uncertainty=true))
+end
+
 @testitem "time to max growth" begin
     println("time to max growth")
     using DataFrames
