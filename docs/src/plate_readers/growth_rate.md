@@ -293,6 +293,16 @@ This means that $var(\varepsilon^\prime)=\frac{\sigma^2}{\widehat{OD}^2}$. Since
 
 We apply this weighting to all least squares calculations for growth rates. The weight is always $\frac{OD}{OD_0}$, since that is the value we log-transform. This applies for the parametric methods, LinearOnLog (and MovingWindow of LinearOnLog), and the least squares component of regularization.
 
+## Uncertainty
+
+For some growth rate methods, we allow the ability to calculate a confidence interval for the growth rate. Setting the keyword argument `uncertainty=true` in either `growth_rate` or `doubling_time` will change the reported growth rate/doubling time to be a measurement with uncertainty, e.g. 0.187 ± 0.015. The uncertainty value reports the standard error of the estimate, so can be used to calculate a confidence interval by converting `a ± b` to `a ± 1.96*b`.
+
+For the methods `LinearOnLog`, `ExpandingWindow`, and `MovingWindow(method=:LinearOnLog)`, the standard error is determined from the linear fit. Note that this means it does not consider how the noise may alter the fitting windows identified in `ExpandingWindow` or `MovingWindow`.
+
+For the method parametric methods, the noise is similarly defined from the nonlinear weighted least squares fit.
+
+For the `SmoothedSpline` method, we utilise a residual bootstrap algorithm to determine the standard error. Residuals are determined from the original spline fit, and new bootstrap residuals are calculated by sampling from these residuals with replacement. New splines are fitted with the same knots as the original fit and the growth rate is calculated on these new splines. We derive 1000 bootstrap samples of the growth rate by resampling from the original residuals, and calculate the standard error of these samples. If the smoothed spline fitting fails to converge, it is ignored from the standard error calculation and no new sample is made to replace it (so fewer than 1000 samples may end up being used).
+
 ## Implementation Details
 
 If you want to implement a new growth rate method to be included in ESM, you need to:
