@@ -269,6 +269,11 @@ end
     tester(growth_rate(od_df, time_col, Richards(lower_limit_flexible = true); uncertainty=true))
     println("SmoothedSpline")
     tester(growth_rate(od_df, time_col, SmoothedSpline(); uncertainty=true))
+
+    # Test other methods throw an error when uncertainty=true
+    @test_throws ArgumentError growth_rate(od_df, time_col, Endpoints(start_time = 5, end_time = 10); uncertainty=true)
+    @test_throws ArgumentError growth_rate(od_df, time_col, MovingWindow(method = :Endpoints); uncertainty=true)
+    @test_throws ArgumentError growth_rate(od_df, time_col, FiniteDiff(); uncertainty=true)
 end
 
 @testitem "time to max growth" begin

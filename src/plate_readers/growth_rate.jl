@@ -224,6 +224,9 @@ end
 end
 
 function _growth_rate(df, time_col, method::Endpoints; plot_directory = nothing, uncertainty = false)
+    if uncertainty
+        throw(ArgumentError("Uncertainty estimation is not implemented for Endpoints method."))
+    end
     start_od = at_time(df, time_col, method.start_time)
     end_od = at_time(df, time_col, method.end_time)
     if isempty(start_od) || isempty(end_od)
@@ -275,9 +278,9 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         start_time = time_col[j, 1] / 60000
         end_time = time_col[j + window_size - 1, 1] / 60000
         if method.method == :Endpoints
-            rate = _growth_rate(df, time_col, Endpoints(start_time, end_time))
+            rate = _growth_rate(df, time_col, Endpoints(start_time, end_time); uncertainty = uncertainty)
         elseif method.method == :LinearOnLog
-            rate = _growth_rate(df, time_col, LinearOnLog(start_time, end_time))
+            rate = _growth_rate(df, time_col, LinearOnLog(start_time, end_time); uncertainty = uncertainty)
         else
             error("Unknown moving window method: $(method.method).")
         end
@@ -295,7 +298,7 @@ function _growth_rate(df, time_col, method::MovingWindow; plot_directory = nothi
         "time_to_max_growth" => time_to_max_growth,
         "od_at_max_growth" => od_at_max_growth,
         "maxOD" => maximum(df[!, 1]),
-        "growth_rate_uncertainty" => isnothing(growth_rate_se) ? NaN : growth_rate_se
+        "growth_rate_uncertainty" => growth_rate_se
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col ./ 60000, summaries)
@@ -550,6 +553,9 @@ end
 end
 
 function _growth_rate(df, time_col, method::FiniteDiff; plot_directory = nothing, uncertainty = false)
+    if uncertainty
+        throw(ArgumentError("Uncertainty estimation is not implemented for FiniteDiff method."))
+    end
     type = method.type
     time_col = time_col ./ 60000
     t = time_col[!, 1]
