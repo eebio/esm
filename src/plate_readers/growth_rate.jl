@@ -703,7 +703,7 @@ function _growth_rate(df, time_col, method::SmoothedSpline; plot_directory = not
     )
     if !isnothing(plot_directory)
         p = growth_plot(df, time_col, summaries)
-        plot!(p, t_refined, spl(t_refined), label = "Regularized Fit", color = :blue, linestyle = :dot)
+        plot!(p, t_refined, spl(t_refined), label = "Smoothed Spline Fit", color = :blue, linestyle = :dot)
         savefig(p, joinpath(plot_directory, "growth_curve_$(nameof(typeof(method)))_$(names(df)[1]).png"))
     end
     return summaries
