@@ -176,6 +176,12 @@ end
     @test growth_rate(od_df, time_col, SmoothedSpline())[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, SmoothedSpline(knots = [2, 4, 6, 8]))[1, "A"] ≈ log(2)
 
+    # Recalibrate == :offset
+    @test growth_rate(od_df, time_col, FiniteDiff(); recalibrate = :offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided); recalibrate = :offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline(); recalibrate = :offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline(knots=[2, 4, 6, 8]); recalibrate = :offset)[1, "A"] ≈ log(2)
+
     # Tests for warnings
     od_df_warn = DataFrame(A = [
         0.05, -0.1, -0.2, -0.4, -0.8, -1.6, -3.2, -6.4, -12.8, -25.6, -51.2])
