@@ -42,7 +42,7 @@ function read_esm(file::AbstractString)
             [(lowercase(i),
                  j,
                  ef["samples"][i]["type"],
-                 replace(ef["samples"][i]["values"][j], nothing => NaN),
+                 replace(ef["samples"][i]["values"][j], nothing => missing),
                  sample_channel_metadata(ef["samples"][i]["metadata"], j),
                  [i in lowercase.(ef["groups"][k]["sample_IDs"])
                   for k in keys(ef["groups"])]...) for i in keys(ef["samples"])
