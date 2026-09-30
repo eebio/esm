@@ -11,7 +11,7 @@ This tutorial will walk you through the complete workflow of processing experime
 
 1. [Download the source code](https://github.com/eebio/esm/archive/refs/heads/main.zip) and unzip it.
 2. [Download Julia](https://julialang.org/) if you don’t already have it installed.
-3. Run `julia --project -e ‘using Pkg; Pkg.precompile(); Pkg.build()’` from the root directory of the repository (i.e. `/where/you/saved/source/code/esm-main`). If it fails, try running it a second time.
+3. Run `julia --project -e 'using Pkg; Pkg.precompile(); Pkg.build()'` from the root directory of the repository (i.e. `/where/you/saved/source/code/esm-main`). If it fails, try running it a second time.
 4. You can test if its working by running `esm template -h`, if you see some documentation appear, ESM is successfully installed.
 5. If you instead see an error `command not found: esm`, you may need to add `~/.julia/bin` to your PATH.
 
@@ -201,7 +201,7 @@ You should now have a file called `dt_control.csv` which contains you doubling t
 ## Best practices
 
 1. **Summarise Data Early**: Looking at plots of the data can help identify issues like contaminated wells, that may change how you want to analyse the data.
-2. **Start Small**: Its easy to fill out the template at the start, but this can make it harder to debug the transformations. Try going through, writing a transformation at a time and export it as a view to keep an eye on whats happening.
+2. **Start Small**: Its easy to fill out the template at the start, but this can make it harder to debug the transformations. Try going through, writing a transformation at a time and export it as a view to keep an eye on whats happening. You can also test out transformations through `esm interactive`.
 3. **Save Excel**: Make sure you save the Excel template before calling `esm translate`. Autosaves are not always enough.
 4. **Remember the order of ESM operations**: Using `esm translate` will import and check your raw data, and collect groups, but it won't check your transformations and views. If you are getting errors when trying to generate views, this may be due to transformations being incorrectly defined, rather than just your views.
 
@@ -211,7 +211,7 @@ If you want to learn more about ESM, you can go to:
 
 * [Plate Readers](@ref plate_reader) to learn about the functionality and different methods available for working with plate reader data, like `TimeseriesBlank()` and `Logistic()` used here.
 * [Flow Cytometry](@ref flow_cytometry) to learn about the calibration and gating methods available for working with flow cytometry data.
-* [Command Line Interface](@ref) to learn about all the features of the command line interface (`esm summarise`, `esm translate`, etc.).
+* [Command Line Interface](@ref) to learn about all the features of the command line interface (`esm summarise`, `esm translate`, etc.) including the interactive mode.
 * [Data Format](@ref) to learn about how `.esm` files are structured.
 * [Excel Interface](@ref) to learn more details about how the Excel template file works and its format.
 

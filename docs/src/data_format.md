@@ -29,7 +29,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         "plate_01_temperature":{
             "values":{
@@ -45,7 +59,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
             ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         "plate_01_a1":{
             "values":{
@@ -61,7 +89,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         ...
         "plate_01_h12":{
@@ -78,7 +120,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         "plate_02_a1":{
             "values":{
@@ -263,4 +319,24 @@ Under views, we have key-value pairs (name of the view is the key) with a variab
 
 ## Metadata
 
-TBD
+In addition to metadata about your samples and groups, ESM also stores a range of metadata about the ESM file itself. This is to help aid in reproducibility of the analysis.
+This metadata is generated when the ESM file is created. It may be changed when the `.esm` file is edited with `esm interactive`, in which case it will be overridden and the old metadata will be stored in the description. The idea behind including this metadata is so that the versions of the software used to do the analysis (the esm version and its dependencies), which is likely to be the same as the version used to generate the `.esm` file, is recorded as part of the `.esm` file, which can help to track down changes either in the functionality of ESM or its dependencies.
+
+```json
+"metadata": {
+    "Manifest.toml": "...",
+    "Project.toml": "...",
+    "channel_map": {
+      "535_485": "535_485",
+      "600": "abs600",
+      "700": "abs700",
+      "FSC_H": "FSC_H"
+    },
+    "date_created": "",
+    "date_modified": "",
+    "description": "",
+    "esm_version": "0.4.0",
+    "schema_version": "0.4.0",
+    "versioninfo": "..."
+}
+```
