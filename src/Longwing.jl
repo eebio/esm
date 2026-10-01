@@ -126,7 +126,7 @@ Produce a template excel file for data entry into the Longwing Data Standard.
 """
 @cast function template(; output_path::String="template.xlsx")
     e = pathof(Longwing)
-    e = e[1:(length(e)-6)]
+    e = e[1:(length(e)-11)]
     cp(joinpath(e, "template.xlsx"), output_path)
     @info "New template file created at \"$output_path\""
 end
