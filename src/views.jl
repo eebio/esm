@@ -2,16 +2,16 @@ using CSV
 using DataFrames
 
 """
-    produce_views(es, trans_meta_map;to_out=[])
+    produce_views(lw, trans_meta_map;to_out=[])
 
 Produces the subset of views specified in `to_out` or all views if unspecified.
 
 Arguments:
-- `es::lw_zones`: The lw_zones object
+- `lw::lw_zones`: The lw_zones object
 - `trans_meta_map::Dict`: A dictionary mapping transformations to their names.
 - `to_out::Vector{String}`: A list of all the views to be produced.
 """
-function produce_views(es, trans_meta_map; to_out=[])
+function produce_views(lw, trans_meta_map; to_out=[])
     # No views specified? Do all then
     if to_out == []
         to_out = keys(lw.views)
@@ -24,7 +24,7 @@ function produce_views(es, trans_meta_map; to_out=[])
         result = []
         # Loop over the views list
         for j in lw.views[i]["data"]
-            exp = sexp_to_nested_list(Meta.parse(j), es, trans_meta_map)
+            exp = sexp_to_nested_list(Meta.parse(j), lw, trans_meta_map)
             push!(result, eval(exp))
         end
         # Put it all in the same frame and not a vector
@@ -42,7 +42,7 @@ function produce_views(es, trans_meta_map; to_out=[])
 end
 
 """
-    view_to_csv(es,trans_meta_map;out_dir,to_out)
+    view_to_csv(lw,trans_meta_map;out_dir,to_out)
 
 Produces views and writes them to CSV files.
 
@@ -52,9 +52,9 @@ Arguments:
 - `outdir::String`: The specified output dir - defaults to nothing.
 - `to_out::Vector{String}`: The views to be processed.
 """
-function view_to_csv(es, trans_meta_map; outdir="", to_out=[])
+function view_to_csv(lw, trans_meta_map; outdir="", to_out=[])
     # Process the views
-    vs = produce_views(es, trans_meta_map; to_out=to_out)
+    vs = produce_views(lw, trans_meta_map; to_out=to_out)
     # Write the views to file
     for i in keys(vs)
         if Tables.istable(vs[i])
@@ -136,27 +136,27 @@ function check_expression_args(sexp)
 end
 
 """
-    sexp_to_nested_list(sexp,es,trans_meta_map)
+    sexp_to_nested_list(sexp,lw,trans_meta_map)
 
 Recursively converts the parsed equations to julia code and produces the correct dataframes
     over which to operate. This also calls any unprocessed transformations.
 
 Arguments:
 - sexp: Expression or part of expression to be decomposed.
-- es: The lw_zones data type that contains the data.
+- lw: The lw_zones data type that contains the data.
 - trans_meta_map: The transformation map of the parsed transformations.
 """
-function sexp_to_nested_list(sexp, es, trans_meta_map)
+function sexp_to_nested_list(sexp, lw, trans_meta_map)
     if isa(sexp, Symbol)
         if sexp in keys(trans_meta_map)
             # Is the symbol a transformation
-            return sexp_to_nested_list(trans_meta_map[sexp], es, trans_meta_map)
+            return sexp_to_nested_list(trans_meta_map[sexp], lw, trans_meta_map)
         elseif string(sexp) in lw.groups.group
             # Is the symbol a group?
-            return Longwing.get_group(es, sexp)
+            return Longwing.get_group(lw, sexp)
         elseif string(sexp) in first.(splitext.(lw.samples.name))
             # Is the symbol a sample?
-            return Longwing.get_sample(es, string(sexp))
+            return Longwing.get_sample(lw, string(sexp))
         end
         # Just return it - its something else
         return sexp
@@ -170,7 +170,7 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
                 # If this is a keyword argument, don't process the first argument as it is the keyword name
                 continue
             end
-            sexp.args[i] = sexp_to_nested_list(sexp.args[i], es, trans_meta_map)
+            sexp.args[i] = sexp_to_nested_list(sexp.args[i], lw, trans_meta_map)
         end
         if sexp.head == :.
             # If there is a dot expression, this could be a channel access

@@ -183,15 +183,15 @@ function extract_flow(fcs, chan)
 end
 
 """
-    to_rfi(es, sample_name)
+    to_rfi(lw, sample_name)
 
 Calculates relative fluorescence of given sample.
 
 Arguments:
-- `es::lw_zones`: The data set to search.
+- `lw::lw_zones`: The data set to search.
 - `sample_name::String`: channel to use.
 """
-function to_rfi(es, sample_name)
+function to_rfi(lw, sample_name)
     sub = lw.samples[
         map(x -> !isnothing(match(Regex(string(sample_name * raw"\.")), x)),
             lw.samples.name),

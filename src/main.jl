@@ -73,25 +73,25 @@ function form_df(df::Expr)
 end
 
 """
-    find_group(es,grn)
+    find_group(lw,grn)
 
 Finds a specific group from the original lw.groups dataframe.
 Returns the sample names.
 
 Arguments:
-- `es::lw_zones`: The data set to search.
+- `lw::lw_zones`: The data set to search.
 - `grn::String`: A string of a group name which can be used to filter the original
     dataframe.
 """
-function find_group(es, grn)
+function find_group(lw, grn)
     return lw.groups[lw.groups.group .== grn, :sample_IDs][1]
 end
 
-function get_group(es, grn)
+function get_group(lw, grn)
     # Is the group a flow group?
     sample_types = lw.samples.type[getproperty(lw.samples, grn)]
     if all(sample_types .== "population")
-        data = [deepcopy(Longwing.to_rfi(es, sample)) for sample in find_group(es, string(grn))]
+        data = [deepcopy(Longwing.to_rfi(lw, sample)) for sample in find_group(lw, string(grn))]
         # Check the data is compatible
         # All samples must have the same channels
         @assert all([sort(names(d))==sort(names(data[1])) for d in data]) "Samples in group $grn have different channels."
@@ -103,17 +103,17 @@ function get_group(es, grn)
         end
         return tmp
     elseif all(sample_types .== "timeseries")
-        return Longwing.form_df(Longwing.filter_row(es, grn))
+        return Longwing.form_df(Longwing.filter_row(lw, grn))
     else
         error("Group $grn contains mixed sample types (population and timeseries).")
     end
 end
 
-function get_sample(es, sample)
+function get_sample(lw, sample)
     # Is the sample a flow sample?
     sample_types = lw.samples[sample .== get_sample_id.(lw.samples.name), "type"]
     if all(sample_types .== "population")
-        return Longwing.to_rfi(es, sample)
+        return Longwing.to_rfi(lw, sample)
     end
     # Otherwise return DataFrame
     return Longwing.form_df(lw.samples[sample .== get_sample_id.(lw.samples.name), :])

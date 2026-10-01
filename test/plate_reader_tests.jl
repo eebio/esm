@@ -738,10 +738,10 @@ end
                           for i in keys(lw.transformations))
 
     # Single sample with no calibration
-    od = eval(Longwing.sexp_to_nested_list(:(plate_01_a2.od1), es, trans_meta_map))
-    fl = eval(Longwing.sexp_to_nested_list(:(plate_01_a2.flu1), es, trans_meta_map))
-    time_od = eval(Longwing.sexp_to_nested_list(:(plate_01_time.od1), es, trans_meta_map))
-    time_fl = eval(Longwing.sexp_to_nested_list(:(plate_01_time.flu1), es, trans_meta_map))
+    od = eval(Longwing.sexp_to_nested_list(:(plate_01_a2.od1), lw, trans_meta_map))
+    fl = eval(Longwing.sexp_to_nested_list(:(plate_01_a2.flu1), lw, trans_meta_map))
+    time_od = eval(Longwing.sexp_to_nested_list(:(plate_01_time.od1), lw, trans_meta_map))
+    time_fl = eval(Longwing.sexp_to_nested_list(:(plate_01_time.flu1), lw, trans_meta_map))
 
     # Doesn't include any calibration (od or flu) so numbers are kind of meaningless
     @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4 * 60))[1, 1]) == 5455
@@ -759,10 +759,10 @@ end
     rm(joinpath(pwd(), "fluorescence_per_cell_plate_01_a2.png"), force=true)
 
     # Including calibration and groups
-    od = eval(Longwing.sexp_to_nested_list(:(plate1.od1), es, trans_meta_map))
-    fl = eval(Longwing.sexp_to_nested_list(:(plate1.flu1), es, trans_meta_map))
-    time_od = eval(Longwing.sexp_to_nested_list(:(plate_01_time.od1), es, trans_meta_map))
-    time_fl = eval(Longwing.sexp_to_nested_list(:(plate_01_time.flu1), es, trans_meta_map))
+    od = eval(Longwing.sexp_to_nested_list(:(plate1.od1), lw, trans_meta_map))
+    fl = eval(Longwing.sexp_to_nested_list(:(plate1.flu1), lw, trans_meta_map))
+    time_od = eval(Longwing.sexp_to_nested_list(:(plate_01_time.od1), lw, trans_meta_map))
+    time_fl = eval(Longwing.sexp_to_nested_list(:(plate_01_time.flu1), lw, trans_meta_map))
     od = calibrate(od, time_od, StartData())
     fl = calibrate(fl, time_fl, StartData())
     @test floor(fluorescence(fl, time_fl, od, time_od, RatioAtTime(4 * 60))[
@@ -780,9 +780,9 @@ end
     lw = read_longwing("inputs/example.longwing")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
-    data = eval(Longwing.sexp_to_nested_list(:(plate_01_a1), es, trans_meta_map))
-    time_col = eval(Longwing.sexp_to_nested_list(:(plate_01_time), es, trans_meta_map))
-    blanks = eval(Longwing.sexp_to_nested_list(:(plate_01_a2), es, trans_meta_map))
+    data = eval(Longwing.sexp_to_nested_list(:(plate_01_a1), lw, trans_meta_map))
+    time_col = eval(Longwing.sexp_to_nested_list(:(plate_01_time), lw, trans_meta_map))
+    blanks = eval(Longwing.sexp_to_nested_list(:(plate_01_a2), lw, trans_meta_map))
     methods = [TimeseriesBlank(blanks=blanks), SmoothedTimeseriesBlank(blanks=blanks),
         MeanBlank(blanks=blanks), MinBlank(blanks=blanks)]
     for method in methods

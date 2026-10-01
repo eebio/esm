@@ -211,20 +211,20 @@ end
             [280.0, 735.0, 128.0, 1023.0],
             [628.0, 1023.0, 373.0, 1023.0]
         ])
-    @test lw.sampllw.metadata[lw.samples.name .== "plate_01_a2.FL1_A"][1] ==
+    @test lw.samples.metadata[lw.samples.name .== "plate_01_a2.FL1_A"][1] ==
         Dict{String,Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FL1-A", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => nothing,
         "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "longwing_well" => "A2", "raw_metadata" => Dict())
-    @test lw.sampllw.metadata[lw.samples.name .== "plate_01_a2.FSC_H"][1] ==
+    @test lw.samples.metadata[lw.samples.name .== "plate_01_a2.FSC_H"][1] ==
         Dict{String,Any}(
         "amp_type" => "0,0", "filter" => nothing, "det_type" => nothing,
         "name" => "FSC-H", "range" => "1024", "det_volt" => nothing,
         "amp_gain" => nothing, "name_s" => "FSC-H",
         "perc_em" => nothing, "ex_wav" => nothing, "ex_pow" => nothing, "longwing_well" => "A2", "raw_metadata" => Dict())
     for i in 1:6
-        @test issetequal(keys(lw.sampllw.metadata[i]),
+        @test issetequal(keys(lw.samples.metadata[i]),
             ["range", "ex_pow", "filter", "det_volt", "amp_type", "ex_wav",
                 "amp_gain", "name_s", "name", "det_type", "perc_em", "longwing_well", "raw_metadata"])
     end
@@ -383,15 +383,15 @@ end
                           for i in keys(lw.transformations))
 
     #Test numbers
-    @test Longwing.run_transformation(es, "5") == 5
+    @test Longwing.run_transformation(lw, "5") == 5
     # Test strings
-    @test Longwing.run_transformation(es, "\"hello\"") == "hello"
+    @test Longwing.run_transformation(lw, "\"hello\"") == "hello"
     # Test functions
-    @test eval(Longwing.run_transformation(es, "sum([1, 2, 3])")) == 6
+    @test eval(Longwing.run_transformation(lw, "sum([1, 2, 3])")) == 6
     # Test accessing transformations
-    @test Longwing.run_transformation(es, "extra_transform") == 10
+    @test Longwing.run_transformation(lw, "extra_transform") == 10
     # Test accessing views
-    @test Longwing.run_transformation(es, "flow_cyt") == 1
+    @test Longwing.run_transformation(lw, "flow_cyt") == 1
     # Test accessing groups
     df = DataFrame(
         "FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
@@ -409,10 +409,10 @@ end
         "SSC_H.min" => fill(0.010045073642544625, 8),
         "FSC_H.max" => fill(1024.0, 8),
         "FSC_H.min" => fill(1.0, 8))
-    @test Longwing.run_transformation(es, "plate_01") == df[!, sort(names(df))]
+    @test Longwing.run_transformation(lw, "plate_01") == df[!, sort(names(df))]
     # Test other symbols - should just be returned
-    @test Longwing.sexp_to_nested_list(:not_defined, es, trans_meta_map) == :not_defined
-    @test Longwing.sexp_to_nested_list(:(form_df(lw.samples)), es, trans_meta_map) ==
+    @test Longwing.sexp_to_nested_list(:not_defined, lw, trans_meta_map) == :not_defined
+    @test Longwing.sexp_to_nested_list(:(form_df(lw.samples)), lw, trans_meta_map) ==
         :(form_df(lw.samples))
     # Test samples
     df = DataFrame(
@@ -429,7 +429,7 @@ end
         "SSC_H.min" => fill(0.010045073642544625, 4),
         "FSC_H.max" => fill(1024.0, 4),
         "FSC_H.min" => fill(1.0, 4))
-    @test Longwing.run_transformation(es, "plate_01_a1") ==
+    @test Longwing.run_transformation(lw, "plate_01_a1") ==
         df[!, sort(names(df))]
     # Test channels
     df = DataFrame(
@@ -438,7 +438,7 @@ end
         "longwing_well" => ["A1", "A1", "A1", "A1"],
         "FL1_A.max" => fill(1024.0, 4),
         "FL1_A.min" => fill(1.0, 4))
-    @test Longwing.run_transformation(es, "plate_01_a1.FL1_A") ==
+    @test Longwing.run_transformation(lw, "plate_01_a1.FL1_A") ==
         df[!, sort(names(df))]
     df = DataFrame(
         "SSC_H" => [
@@ -449,14 +449,14 @@ end
         "longwing_well" => ["A1", "A1", "A1", "A1", "A2", "A2", "A2", "A2"],
         "SSC_H.max" => fill(1.0, 8),
         "SSC_H.min" => fill(0.010045073642544625, 8))
-    @test Longwing.run_transformation(es, "plate_01.SSC_H") ==
+    @test Longwing.run_transformation(lw, "plate_01.SSC_H") ==
         df[!, sort(names(df))]
     # Test groups
     df = DataFrame("FL1_A" => [54.0, 143.0, 25.0, 71.0, 0.0, 143.0, 0.0, 61.0],
         "id" => [1, 2, 3, 4, 5, 6, 7, 8], "longwing_well" => ["A1", "A1", "A1", "A1", "A2",
         "A2", "A2", "A2"], "FL1_A.max" => fill(1024.0, 8), "FL1_A.min" => fill(
         1.0, 8))
-    @test Longwing.run_transformation(es, "plate_01.FL1_A") ==
+    @test Longwing.run_transformation(lw, "plate_01.FL1_A") ==
         df[!, sort(names(df))]
 end
 
@@ -467,11 +467,11 @@ end
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
 
-    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(rm(file)), es, trans_meta_map)
-    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(Base.Filesystem.unknown(file); force=true), es, trans_meta_map)
-    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(run("ls")), es, trans_meta_map)
-    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(@ccall 1), es, trans_meta_map)
-    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(@eval 1), es, trans_meta_map)
+    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(rm(file)), lw, trans_meta_map)
+    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(Base.Filesystem.unknown(file); force=true), lw, trans_meta_map)
+    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(run("ls")), lw, trans_meta_map)
+    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(@ccall 1), lw, trans_meta_map)
+    @test_throws ErrorException "Blocked" Longwing.sexp_to_nested_list(:(@eval 1), lw, trans_meta_map)
 end
 
 @testitem "produce_views" setup=[environment_path] begin
@@ -479,7 +479,7 @@ end
     lw = read_longwing("inputs/example.longwing")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
-    a = Longwing.produce_views(es, trans_meta_map)
+    a = Longwing.produce_views(lw, trans_meta_map)
     # Test groups
     @test issetequal(
         keys(a), ["group1", "group2", "group3", "flowsub", "odsub", "sample", "mega"])
@@ -531,9 +531,9 @@ end
     lw.transformations["extra_transform2"] = Dict{String,Any}("equation" => "7")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
-    out = Longwing.produce_views(es, trans_meta_map; to_out=["number_view"])
+    out = Longwing.produce_views(lw, trans_meta_map; to_out=["number_view"])
     @test all(out["number_view"] .== Tables.table([42;;]))
-    out = Longwing.produce_views(es, trans_meta_map; to_out=["numbers_view2"])
+    out = Longwing.produce_views(lw, trans_meta_map; to_out=["numbers_view2"])
     @test all(out["numbers_view2"] .== Tables.table([42 7]))
     # Matrices
     lw.views["matrix_view"] = Dict{String,Any}("data" => [
@@ -542,13 +542,13 @@ end
     lw.transformations["extra_transform4"] = Dict{String,Any}("equation" => "[7 8; 10 11]")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
-    out = Longwing.produce_views(es, trans_meta_map; to_out=["matrix_view"])
+    out = Longwing.produce_views(lw, trans_meta_map; to_out=["matrix_view"])
     @test all(out["matrix_view"] .== Tables.table([1 2 3 7 8; 4 5 6 10 11]))
 
     # Test errors
     lw.views["bad_view"] = Dict{String,Any}("data" => ["nonexistent_group"])
     msg = "UndefVarError: `nonexistent_group` not defined in `Longwing`"
-    @test_throws msg Longwing.produce_views(es, trans_meta_map; to_out=["bad_view"])
+    @test_throws msg Longwing.produce_views(lw, trans_meta_map; to_out=["bad_view"])
 
     # More complex views
     dir = mktempdir()
@@ -557,7 +557,7 @@ end
     lw = read_longwing(joinpath(dir, "views.longwing"))
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
-    out = Longwing.produce_views(es, trans_meta_map)
+    out = Longwing.produce_views(lw, trans_meta_map)
 
     @test issetequal(names(out["v1"]), ["plate_01_a1.700", "plate_01_a1.od"])
     @test issetequal(names(out["v2"]), ["plate_01_a1"])
@@ -576,7 +576,7 @@ end
     lw = read_longwing(joinpath(dir, "kw_name_collision.longwing"))
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
-    out = Longwing.produce_views(es, trans_meta_map)
+    out = Longwing.produce_views(lw, trans_meta_map)
     @test !isempty(out)
 end
 
@@ -595,7 +595,7 @@ end
     logger = SimpleLogger(io)
 
     with_logger(logger) do
-        Longwing.view_to_csv(es, trans_meta_map)
+        Longwing.view_to_csv(lw, trans_meta_map)
     end
     str = String(take!(io))
     @test contains(str, "Info: method = Longwing.Endpoints(10.0, 20.0)") ||
@@ -605,7 +605,7 @@ end
 @testitem "to_rfi" begin
     println("to_rfi")
     lw = read_longwing("inputs/example.longwing")
-    out = Longwing.to_rfi(es, "plate_02_a1")
+    out = Longwing.to_rfi(lw, "plate_02_a1")
     # Linear test with no gain
     @test out[!, "FSC_H"] == [628.0, 1023.0, 373.0, 1023.0]
     @test out[!, "FSC_H.max"] == fill(1024.0, 4)
@@ -619,7 +619,7 @@ end
 @testitem "raw metadata" begin
     println("raw metadata")
     lw = read_longwing("inputs/example.longwing")
-    metadata = lw.sampllw.metadata[lw.samples.name .== "plate_02_a1.FL1_A"][1]
+    metadata = lw.samples.metadata[lw.samples.name .== "plate_02_a1.FL1_A"][1]
     @test haskey(metadata, "raw_metadata")
     @test metadata["raw_metadata"]["creator"] == "CELLQuest<aa> 3.3"
     @test metadata["raw_metadata"]["fcsversion"] == "3"
@@ -691,14 +691,14 @@ end
 @testitem "empty template rows" setup=[environment_path] begin
     # Test the empty rows in the template don't stop data being imported
     lw = read_data("inputs/blank_rows.xlsx")
-    @test "plate_01_time" in keys(es["samples"])
-    @test "plate_02_time" in keys(es["samples"])
-    @test "g1" in keys(es["groups"])
-    @test "g2" in keys(es["groups"])
-    @test "t1" in keys(es["transformations"])
-    @test "t2" in keys(es["transformations"])
-    @test "v1" in keys(es["views"])
-    @test "v2" in keys(es["views"])
+    @test "plate_01_time" in keys(lw["samples"])
+    @test "plate_02_time" in keys(lw["samples"])
+    @test "g1" in keys(lw["groups"])
+    @test "g2" in keys(lw["groups"])
+    @test "t1" in keys(lw["transformations"])
+    @test "t2" in keys(lw["transformations"])
+    @test "v1" in keys(lw["views"])
+    @test "v2" in keys(lw["views"])
 end
 
 @testitem "invalid channel map" setup=[environment_path] begin
@@ -714,15 +714,15 @@ end
 @testitem "no specified channels" setup = [environment_path] begin
     # Test that if no channels are specified, all channels are read in
     lw = read_data("inputs/no-specified-channels.xlsx")
-    @test "abs600" in keys(es["samples"]["plate_01_a1"]["values"])
-    @test "abs700" in keys(es["samples"]["plate_01_a1"]["values"])
-    @test "535_485" in keys(es["samples"]["plate_01_a1"]["values"])
-    @test "FL1_A" in keys(es["samples"]["plate_02_a1"]["values"])
+    @test "abs600" in keys(lw["samples"]["plate_01_a1"]["values"])
+    @test "abs700" in keys(lw["samples"]["plate_01_a1"]["values"])
+    @test "535_485" in keys(lw["samples"]["plate_01_a1"]["values"])
+    @test "FL1_A" in keys(lw["samples"]["plate_02_a1"]["values"])
 end
 
 @testitem "group metadata" setup=[environment_path] begin
     # Test that group metadata is read in correctly
     lw = read_data("inputs/extra-metadata.xlsx")
-    @test es["groups"]["plate1"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => true)
-    @test es["groups"]["otherdata"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => false)
+    @test lw["groups"]["plate1"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => true)
+    @test lw["groups"]["otherdata"]["metadata"] == Dict("autodefined" => "false", "Plate reader" => false)
 end
