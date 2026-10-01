@@ -18,6 +18,19 @@
         keys(read("inputs/spectramax-data2.txt", SpectraMax();
             channels=["530_485_1", "530_485_2", "530_485_3"])[1]),
         ["530_485_1", "530_485_2", "530_485_3"])
+
+    # Missing time point recording in spectramax file
+    data, _ = read("inputs/spectramax-missing-timepoint.txt", SpectraMax())
+    @test issetequal(keys(data), ["600", "530_485"])
+    @test any(ismissing.(data["600"][!, "time"]))
+    @test !all(ismissing.(data["600"][!, "time"]))
+    @test !any(isnan.(skipmissing(data["600"][!, "time"])))
+    @test any(ismissing.(data["600"][!, "temperature"]))
+    @test !all(ismissing.(data["600"][!, "temperature"]))
+    @test !any(isnan.(skipmissing(data["600"][!, "temperature"])))
+    @test any(ismissing.(data["600"][!, "B4"]))
+    @test !all(ismissing.(data["600"][!, "B4"]))
+    @test !any(isnan.(skipmissing(data["600"][!, "B4"])))
 end
 
 @testitem "read biotek" setup=[environment_path] begin
@@ -175,6 +188,12 @@ end
     @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided))[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, SmoothedSpline())[1, "A"] ≈ log(2)
     @test growth_rate(od_df, time_col, SmoothedSpline(knots=[2, 4, 6, 8]))[1, "A"] ≈ log(2)
+
+    # Recalibrate == :offset
+    @test growth_rate(od_df, time_col, FiniteDiff(); recalibrate = :offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided); recalibrate = :offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline(); recalibrate = :offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline(knots=[2, 4, 6, 8]); recalibrate = :offset)[1, "A"] ≈ log(2)
 
     # Tests for warnings
     od_df_warn = DataFrame(A=[
