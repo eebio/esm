@@ -28,7 +28,7 @@ function doubling_time(args...; kwargs...)
 end
 
 function perform_recalibration(df, time_col, recalibrate, offset)
-    if (recalibrate == :negative && any(skipmissing(df[:, 1]) .<= 0)) || recalibrate == true
+    if (recalibrate == :negative && any(skipmissing(df[:, 1]) .<= 0)) || recalibrate == true || (recalibrate == :offset && any(skipmissing(df[:, 1]) .<= offset))
         recalibrant = minimum(skipmissing(df[:, 1])) - offset
         df = calibrate(df, time_col, MinData(); offset = offset)
     elseif recalibrate == false
@@ -73,7 +73,7 @@ Arguments:
 - `method::AbstractGrowthRateMethod`: Method to use for calculating growth rate.
 
 Keywords:
-- `recalibrate`: Whether to recalibrate the data using `calibrate` before calculating growth rate. Default is :negative (only if negative values are present in the well). Available options are `:negative`, true, and false.
+- `recalibrate`: Whether to recalibrate the data using `calibrate` before calculating growth rate. Default is :negative (only if negative values are present in the well). Available options are `:negative`, `:offset` (only if values below the offset are present in the well), true, and false.
 - `offset`: If data is recalibrated, this is the offset applied after calibration. Default is 0.001.
 - `plot_directory`: If provided, this is the directory to save plots of the growth curves with the fitted growth rate. Default is nothing (no plots saved). If :temp, plots will be saved to a temporary directory.
 - `uncertainty`: If true, the function will also return the uncertainty of the growth rate (standard error). Default is false.
