@@ -32,53 +32,53 @@ end
     @testset "Template integration" begin
         println("Template integration")
         dir = Base.Filesystem.mktempdir()
-        run(`$(shell) esm template --output-path $dir/tmp.xlsx`)
+        run(`$(shell) lw template --output-path $dir/tmp.xlsx`)
         @test isfile(joinpath(dir, "tmp.xlsx"))
-        run(`$(shell) esm template -o $dir/t2.xlsx`)
+        run(`$(shell) lw template -o $dir/t2.xlsx`)
         @test isfile(joinpath(dir, "t2.xlsx"))
         cd(dir)
-        run(`$(shell) esm template`)
-        @test isfile("ESM.xlsx")
+        run(`$(shell) lw template`)
+        @test isfile("template.xlsx")
         cd(@__DIR__)
     end
     @testset "Translate integration" begin
         println("Translate integration")
         dir = Base.Filesystem.mktempdir()
-        run(`$(shell) esm translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.esm"))`)
-        @test isfile(joinpath(dir, "tmp.esm"))
-        f = JSON.parsefile(joinpath(dir, "tmp.esm"))
+        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.longwing"))`)
+        @test isfile(joinpath(dir, "tmp.longwing"))
+        f = JSON.parsefile(joinpath(dir, "tmp.longwing"))
         @test haskey(f["metadata"], "channel_map")
         @test all(haskey(sample["metadata"], "template")
-              for sample in values(f["samples"]))
+                  for sample in values(f["samples"]))
         f["metadata"]["Manifest.toml"] = ""
         f["metadata"]["Project.toml"] = ""
         f["metadata"]["date_created"] = ""
         f["metadata"]["date_modified"] = ""
         f["metadata"]["versioninfo"] = ""
-        f["metadata"]["esm_version"] = ""
-        f["metadata"]["schema_version"] = ""
+        f["metadata"]["longwing_version"] = ""
+        f["metadata"]["longwing_data_standard_version"] = ""
         for key in keys(f["samples"])
             f["samples"][key]["metadata"]["template"]["data_location"] = ""
         end
         @test bytes2hex(stable_hash(f; version=4)) == "cb0d907467ada73855644c828f4b526bb74bd4df03e70fce45b8c3104be1e610"
 
-        run(`$(shell) esm untranslate $(joinpath(dir, "tmp.esm")) $(joinpath(dir, "tmp.xlsx"))`)
+        run(`$(shell) lw untranslate $(joinpath(dir, "tmp.longwing")) $(joinpath(dir, "tmp.xlsx"))`)
         @test isfile(joinpath(dir, "tmp.xlsx"))
     end
     @testset "Untranslate round-trip integration" begin
         println("Untranslate round-trip integration")
         dir = Base.Filesystem.mktempdir()
-        first_esm = joinpath(dir, "first.esm")
+        first_lw = joinpath(dir, "first.longwing")
         reconstructed_xlsx = joinpath(dir, "reconstructed.xlsx")
-        second_esm = joinpath(dir, "second.esm")
+        second_lw = joinpath(dir, "second.longwing")
         input = joinpath("inputs", "untranslate.xlsx")
 
-        run(`$(shell) esm translate $input $first_esm`)
-        run(`$(shell) esm untranslate $first_esm $reconstructed_xlsx`)
-        run(`$(shell) esm translate $reconstructed_xlsx $second_esm`)
+        run(`$(shell) lw translate $input $first_lw`)
+        run(`$(shell) lw untranslate $first_lw $reconstructed_xlsx`)
+        run(`$(shell) lw translate $reconstructed_xlsx $second_lw`)
 
-        first_data = JSON.parsefile(first_esm)
-        second_data = JSON.parsefile(second_esm)
+        first_data = JSON.parsefile(first_lw)
+        second_data = JSON.parsefile(second_lw)
         for data in (first_data, second_data)
             delete!(data["metadata"], "date_created")
             delete!(data["metadata"], "date_modified")
@@ -89,42 +89,42 @@ end
         println("Views integration")
         # All views
         dir = Base.Filesystem.mktempdir()
-        run(`$(shell) esm translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.esm"))`)
-        run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) --output-dir $dir`)
+        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.longwing"))`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) --output-dir $dir`)
         @test issetequal(readdir(dir),
             ["flowsub.csv", "group1.csv", "group2.csv", "group3.csv",
-                "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
+                "mega.csv", "odsub.csv", "sample.csv", "tmp.longwing"])
         rm.(
             joinpath.(dir,
                 ["flowsub.csv", "group1.csv", "group2.csv",
                     "group3.csv", "mega.csv", "odsub.csv", "sample.csv"]),
-            force = true)
-        @test issetequal(readdir(dir), ["tmp.esm"])
+            force=true)
+        @test issetequal(readdir(dir), ["tmp.longwing"])
 
-        run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) -o $dir`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) -o $dir`)
         @test issetequal(readdir(dir),
             ["flowsub.csv", "group1.csv", "group2.csv", "group3.csv",
-                "mega.csv", "odsub.csv", "sample.csv", "tmp.esm"])
+                "mega.csv", "odsub.csv", "sample.csv", "tmp.longwing"])
 
         # Specifying a specific view
         dir = Base.Filesystem.mktempdir()
-        run(`$(shell) esm translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.esm"))`)
-        run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) --view mega --output-dir $dir`)
+        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.longwing"))`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) --view mega --output-dir $dir`)
         @test isfile(joinpath(dir, "mega.csv"))
-        esm_hash = stable_hash(read(joinpath(dir, "mega.csv"), String); version = 4)
-        @test bytes2hex(esm_hash) ==
-              "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
+        lw_hash = stable_hash(read(joinpath(dir, "mega.csv"), String); version=4)
+        @test bytes2hex(lw_hash) ==
+            "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
 
         dir2 = Base.Filesystem.mktempdir()
-        run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) -v mega -o $dir2`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) -v mega -o $dir2`)
         @test isfile(joinpath(dir2, "mega.csv"))
-        esm_hash2 = stable_hash(read(joinpath(dir2, "mega.csv"), String); version = 4)
-        @test bytes2hex(esm_hash2) ==
-              "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
+        lw_hash2 = stable_hash(read(joinpath(dir2, "mega.csv"), String); version=4)
+        @test bytes2hex(lw_hash2) ==
+            "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
 
         # Specifying multiple views
         dir3 = Base.Filesystem.mktempdir()
-        run(`$(shell) esm views $(joinpath(dir, "tmp.esm")) -v flowsub,mega -o $dir3`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) -v flowsub,mega -o $dir3`)
         @test isfile(joinpath(dir3, "mega.csv"))
         @test isfile(joinpath(dir3, "flowsub.csv"))
         # Other views should not be present
@@ -134,61 +134,61 @@ end
         println("Summarise integration")
 
         dir = Base.Filesystem.mktempdir()
-        cp(joinpath("inputs", "summarise.esm"), joinpath(dir, "summarise.esm"))
-        run(`$(shell) esm summarise $(joinpath(dir, "summarise.esm")) --plot`)
-        @test isfile(joinpath(dir, "summarise.esm.pdf"))
-        rm(joinpath(dir, "summarise.esm.pdf"), force = true)
-        run(`$(shell) esm summarise $(joinpath(dir, "summarise.esm")) -p`)
-        @test isfile(joinpath(dir, "summarise.esm.pdf"))
+        cp(joinpath("inputs", "summarise.longwing"), joinpath(dir, "summarise.longwing"))
+        run(`$(shell) lw summarise $(joinpath(dir, "summarise.longwing")) --plot`)
+        @test isfile(joinpath(dir, "summarise.longwing.pdf"))
+        rm(joinpath(dir, "summarise.longwing.pdf"), force=true)
+        run(`$(shell) lw summarise $(joinpath(dir, "summarise.longwing")) -p`)
+        @test isfile(joinpath(dir, "summarise.longwing.pdf"))
 
         cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
-        run(`$(shell) esm summarise $(joinpath(dir, "small.fcs"))`)
+        run(`$(shell) lw summarise $(joinpath(dir, "small.fcs"))`)
         @test !isfile(joinpath(dir, "small.fcs.pdf"))
         @test !isfile(joinpath(dir, "small.fcs.csv"))
-        run(`$(shell) esm summarise $(joinpath(dir, "small.fcs")) --plot --csv`)
+        run(`$(shell) lw summarise $(joinpath(dir, "small.fcs")) --plot --csv`)
         @test isfile(joinpath(dir, "small.fcs.pdf"))
         @test isfile(joinpath(dir, "small.fcs.csv"))
 
         cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))
-        run(`$(shell) esm summarise $(joinpath(dir, "spectramax-summarise.txt")) --type spectramax`)
+        run(`$(shell) lw summarise $(joinpath(dir, "spectramax-summarise.txt")) --type spectramax`)
         @test !isfile(joinpath(dir, "spectramax-summarise.txt.pdf"))
-        run(`$(shell) esm summarise $(joinpath(dir, "spectramax-summarise.txt")) -t spectramax --plot --csv`)
+        run(`$(shell) lw summarise $(joinpath(dir, "spectramax-summarise.txt")) -t spectramax --plot --csv`)
         @test isfile(joinpath(dir, "spectramax-summarise.txt.pdf"))
         @test isfile(joinpath(dir, "spectramax-summarise.txt_600.csv"))
         @test isfile(joinpath(dir, "spectramax-summarise.txt_700.csv"))
         @test isfile(joinpath(dir, "spectramax-summarise.txt_535_485.csv"))
 
         cp(joinpath("inputs", "biotek-summarise.csv"), joinpath(dir, "biotek-summarise.csv"))
-        run(`$(shell) esm summarise $(joinpath(dir, "biotek-summarise.csv")) --type biotek`)
+        run(`$(shell) lw summarise $(joinpath(dir, "biotek-summarise.csv")) --type biotek`)
         @test !isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
-        run(`$(shell) esm summarise $(joinpath(dir, "biotek-summarise.csv")) -t biotek -p -c`)
+        run(`$(shell) lw summarise $(joinpath(dir, "biotek-summarise.csv")) -t biotek -p -c`)
         @test isfile(joinpath(dir, "biotek-summarise.csv.pdf"))
         @test isfile(joinpath(dir, "biotek-summarise.csv_OD_600.csv"))
         @test isfile(joinpath(dir, "biotek-summarise.csv_OD_700.csv"))
         @test isfile(joinpath(dir, "biotek-summarise.csv_GFP_485_530.csv"))
 
         cp(joinpath("inputs", "tecan-summarise.xlsx"), joinpath(dir, "tecan-summarise.xlsx"))
-        run(`$(shell) esm summarise $(joinpath(dir, "tecan-summarise.xlsx")) --type tecan`)
+        run(`$(shell) lw summarise $(joinpath(dir, "tecan-summarise.xlsx")) --type tecan`)
         @test !isfile(joinpath(dir, "tecan-summarise.xlsx.pdf"))
-        run(`$(shell) esm summarise $(joinpath(dir, "tecan-summarise.xlsx")) -t tecan -p --csv`)
+        run(`$(shell) lw summarise $(joinpath(dir, "tecan-summarise.xlsx")) -t tecan -p --csv`)
         @test isfile(joinpath(dir, "tecan-summarise.xlsx.pdf"))
         @test isfile(joinpath(dir, "tecan-summarise.xlsx_OD_600.csv"))
         @test isfile(joinpath(dir, "tecan-summarise.xlsx_OD_700.csv"))
         @test isfile(joinpath(dir, "tecan-summarise.xlsx_GFP.csv"))
 
         cp(joinpath("inputs", "bmg-summarise.csv"), joinpath(dir, "bmg-summarise.csv"))
-        run(`$(shell) esm summarise $(joinpath(dir, "bmg-summarise.csv")) --type bmg`)
+        run(`$(shell) lw summarise $(joinpath(dir, "bmg-summarise.csv")) --type bmg`)
         @test !isfile(joinpath(dir, "bmg-summarise.csv.pdf"))
-        run(`$(shell) esm summarise $(joinpath(dir, "bmg-summarise.csv")) -t bmg -p --csv`)
+        run(`$(shell) lw summarise $(joinpath(dir, "bmg-summarise.csv")) -t bmg -p --csv`)
         @test isfile(joinpath(dir, "bmg-summarise.csv.pdf"))
         @test isfile(joinpath(dir, "bmg-summarise.csv_ABS_600_0_nm.csv"))
         @test isfile(joinpath(dir, "bmg-summarise.csv_ABS_700_0_nm.csv"))
         @test isfile(joinpath(dir, "bmg-summarise.csv_FI_YFP_pAN1717.csv"))
 
         cp(joinpath("inputs", "pr_folder"), joinpath(dir, "pr_folder"))
-        run(`$(shell) esm summarise $(joinpath(dir, "pr_folder"))`)
+        run(`$(shell) lw summarise $(joinpath(dir, "pr_folder"))`)
         @test !isfile(joinpath(dir, "pr_folder.pdf"))
-        run(`$(shell) esm summarise $(joinpath(dir, "pr_folder")) -p -c`)
+        run(`$(shell) lw summarise $(joinpath(dir, "pr_folder")) -p -c`)
         @test isfile(joinpath(dir, "pr_folder.pdf"))
         @test isfile(joinpath(dir, "pr_folder_OD.csv"))
         @test isfile(joinpath(dir, "pr_folder_flo.csv"))
@@ -199,24 +199,24 @@ end
 @testitem "Integration coverage" setup=[environment_path] begin
     println("Integration coverage")
     dir = Base.Filesystem.mktempdir()
-    template(output_path = joinpath(dir, "tmp.xlsx"))
-    translate(joinpath("inputs", "example.xlsx"), joinpath(dir, "tmp.esm"))
-    views(joinpath(dir, "tmp.esm"); output_dir = dir)
-    views(joinpath(dir, "tmp.esm"); view = "mega", output_dir = dir)
-    views(joinpath(dir, "tmp.esm"); view = "flowsub,mega", output_dir = dir)
-    translate(joinpath("inputs", "summarise.xlsx"), joinpath(dir, "summarise.esm"))
-    untranslate(joinpath(dir, "summarise.esm"), joinpath(dir, "reconstructed.xlsx"))
-    summarise(joinpath(dir, "summarise.esm"); plot = true)
+    template(output_path=joinpath(dir, "tmp.xlsx"))
+    translate(joinpath("inputs", "example.xlsx"), joinpath(dir, "tmp.longwing"))
+    views(joinpath(dir, "tmp.longwing"); output_dir=dir)
+    views(joinpath(dir, "tmp.longwing"); view="mega", output_dir=dir)
+    views(joinpath(dir, "tmp.longwing"); view="flowsub,mega", output_dir=dir)
+    translate(joinpath("inputs", "summarise.xlsx"), joinpath(dir, "summarise.longwing"))
+    untranslate(joinpath(dir, "summarise.longwing"), joinpath(dir, "reconstructed.xlsx"))
+    summarise(joinpath(dir, "summarise.longwing"); plot=true)
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
     cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))
     cp(joinpath("inputs", "biotek-summarise.csv"), joinpath(dir, "biotek-summarise.csv"))
     cp(joinpath("inputs", "tecan-summarise.xlsx"), joinpath(dir, "tecan-summarise.xlsx"))
     cp(joinpath("inputs", "bmg-summarise.csv"), joinpath(dir, "bmg-summarise.csv"))
     cp(joinpath("inputs", "pr_folder"), joinpath(dir, "pr_folder"))
-    summarise(joinpath(dir, "small.fcs"); plot = true)
-    summarise(joinpath(dir, "spectramax-summarise.txt"); type = "spectramax", plot = true)
-    summarise(joinpath(dir, "biotek-summarise.csv"); type = "biotek", plot = true)
-    summarise(joinpath(dir, "tecan-summarise.xlsx"); type = "tecan", plot = true)
-    summarise(joinpath(dir, "bmg-summarise.csv"); type = "bmg", plot = true)
-    summarise(joinpath(dir, "pr_folder"); plot = true)
+    summarise(joinpath(dir, "small.fcs"); plot=true)
+    summarise(joinpath(dir, "spectramax-summarise.txt"); type="spectramax", plot=true)
+    summarise(joinpath(dir, "biotek-summarise.csv"); type="biotek", plot=true)
+    summarise(joinpath(dir, "tecan-summarise.xlsx"); type="tecan", plot=true)
+    summarise(joinpath(dir, "bmg-summarise.csv"); type="bmg", plot=true)
+    summarise(joinpath(dir, "pr_folder"); plot=true)
 end

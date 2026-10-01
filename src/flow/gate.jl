@@ -2,7 +2,7 @@ using StatsBase
 using KernelDensity
 using Meshes
 
-abstract type AbstractGatingMethod <: AbstractESMMethod end
+abstract type AbstractGatingMethod <: AbstractLongwingMethod end
 
 abstract type AbstractAutoGate <: AbstractGatingMethod end
 
@@ -16,7 +16,7 @@ abstract type AbstractLogicalGate <: AbstractGatingMethod end
 Filter `data` to only include events within the gate defined by `method`.
 
 Arguments:
-- `data::DataFrame`: ESM population data.
+- `data::DataFrame`: Longwing population data.
 - `method::AbstractGatingMethod`: The method and settings to use for gating.
 """
 function gate end
@@ -25,8 +25,8 @@ function gate end
     channels::Vector{String}
     gate_frac::Float64 = 0.65
     nbins::Int64 = 1024
-    transform_x::Union{Function, Transform} = x -> x
-    transform_y::Union{Function, Transform} = y -> y
+    transform_x::Union{Function,Transform} = x -> x
+    transform_y::Union{Function,Transform} = y -> y
 end
 
 function gate(data, method::KDE)
@@ -55,11 +55,11 @@ function gate(data, method::KDE)
 
     ik = InterpKDE(kd)
 
-    x_bins = range(minimum(train_x), stop = maximum(train_x), length = nbins + 1)
-    y_bins = range(minimum(train_y), stop = maximum(train_y), length = nbins + 1)
+    x_bins = range(minimum(train_x), stop=maximum(train_x), length=nbins + 1)
+    y_bins = range(minimum(train_y), stop=maximum(train_y), length=nbins + 1)
 
-    x_mids = (x_bins[1:(end - 1)] .+ x_bins[2:end]) ./ 2
-    y_mids = (y_bins[1:(end - 1)] .+ y_bins[2:end]) ./ 2
+    x_mids = (x_bins[1:(end-1)] .+ x_bins[2:end]) ./ 2
+    y_mids = (y_bins[1:(end-1)] .+ y_bins[2:end]) ./ 2
 
     density_values = [pdf(ik, xi, yi) for xi in x_mids for yi in y_mids]
 
@@ -75,10 +75,10 @@ function gate(data, method::KDE)
     end
 
     fraction_to_keep = gate_frac
-    sorted_indices = sortperm(density_values, rev = true)
+    sorted_indices = sortperm(density_values, rev=true)
 
     # Group point indices by bin so each bin's points can be looked up in O(1)
-    points_in_bin = Dict{Int, Vector{Int}}()
+    points_in_bin = Dict{Int,Vector{Int}}()
     for j in 1:N
         push!(get!(points_in_bin, bin_indices[j], Int[]), j)
     end
@@ -115,7 +115,7 @@ end
 
 function gate(data, method::RectangleGate)
     dat_mask = (method.x_min .<= data[!, method.channel_x] .< method.x_max) .&
-               (method.y_min .<= data[!, method.channel_y] .< method.y_max)
+        (method.y_min .<= data[!, method.channel_y] .< method.y_max)
     return data[dat_mask, :]
 end
 
@@ -130,16 +130,16 @@ end
 function gate(data, method::QuadrantGate)
     if method.quadrant == 1
         dat_mask = (data[!, method.channel_x] .>= method.x_cutoff) .&
-                   (data[!, method.channel_y] .>= method.y_cutoff)
+            (data[!, method.channel_y] .>= method.y_cutoff)
     elseif method.quadrant == 2
         dat_mask = (data[!, method.channel_x] .>= method.x_cutoff) .&
-                   (data[!, method.channel_y] .< method.y_cutoff)
+            (data[!, method.channel_y] .< method.y_cutoff)
     elseif method.quadrant == 3
         dat_mask = (data[!, method.channel_x] .< method.x_cutoff) .&
-                   (data[!, method.channel_y] .< method.y_cutoff)
+            (data[!, method.channel_y] .< method.y_cutoff)
     elseif method.quadrant == 4
         dat_mask = (data[!, method.channel_x] .< method.x_cutoff) .&
-                   (data[!, method.channel_y] .>= method.y_cutoff)
+            (data[!, method.channel_y] .>= method.y_cutoff)
     else
         error("Quadrant must be between 1 and 4.")
     end
@@ -149,7 +149,7 @@ end
 @kwdef struct PolygonGate <: AbstractManualGate
     channel_x::String
     channel_y::String
-    points::Vector{Tuple{Float64, Float64}}
+    points::Vector{Tuple{Float64,Float64}}
 end
 
 function gate(data, method::PolygonGate)
@@ -162,13 +162,13 @@ end
 struct EllipseGate <: AbstractManualGate
     channel_x::String
     channel_y::String
-    center::Tuple{Float64, Float64}
+    center::Tuple{Float64,Float64}
     a::Float64
     b::Float64
     angle::Float64
 end
 
-function EllipseGate(; channel_x::String, channel_y::String, center = nothing, points)
+function EllipseGate(; channel_x::String, channel_y::String, center=nothing, points)
     n = length(points)
     if (n < 3 && !isnothing(center)) || (n < 5 && isnothing(center))
         error("At least 3 points and a center or 5 points without a center are required to \
@@ -179,8 +179,8 @@ function EllipseGate(; channel_x::String, channel_y::String, center = nothing, p
     ys = [p[2] for p in points]
     if length(points) < 5
         # Add extra points on ellipse until we have 5
-        for i in (length(points) + 1):5
-            point = points[i - length(points)]
+        for i in (length(points)+1):5
+            point = points[i-length(points)]
             push!(xs, point[1] + 2 * (center[1] - point[1]))
             push!(ys, point[2] + 2 * (center[2] - point[2]))
         end
@@ -219,7 +219,7 @@ end
 Count the number of events in the flow cytometry data.
 
 Arguments:
-- `data::DataFrame`: ESM population data.
+- `data::DataFrame`: Longwing population data.
 """
 function event_count(data)
     return nrow(data)
@@ -232,10 +232,10 @@ end
 Calculate the proportion of events remaining after gating.
 
 Arguments:
-- `data::DataFrame`: ESM population data.
+- `data::DataFrame`: Longwing population data.
 - `gate::AbstractGatingMethod`: A gating method to report on.
-- `data_before::DataFrame`: ESM population data before gating.
-- `data_after::DataFrame`: ESM population data after gating.
+- `data_before::DataFrame`: Longwing population data before gating.
+- `data_after::DataFrame`: Longwing population data after gating.
 """
 function gated_proportion(data, method::AbstractGatingMethod)
     total_events = event_count(data)
@@ -251,19 +251,19 @@ function gated_proportion(data_before, data_after)
 end
 
 # Logical operations on gates
-struct AndGate{X, Y} <:
-       AbstractLogicalGate where {X <: AbstractGatingMethod, Y <: AbstractGatingMethod}
+struct AndGate{X,Y} <:
+    AbstractLogicalGate where {X<:AbstractGatingMethod,Y<:AbstractGatingMethod}
     gate1::X
     gate2::Y
 end
 
-struct OrGate{X, Y} <:
-       AbstractLogicalGate where {X <: AbstractGatingMethod, Y <: AbstractGatingMethod}
+struct OrGate{X,Y} <:
+    AbstractLogicalGate where {X<:AbstractGatingMethod,Y<:AbstractGatingMethod}
     gate1::X
     gate2::Y
 end
 
-struct NotGate{X} <: AbstractLogicalGate where {X <: AbstractGatingMethod}
+struct NotGate{X} <: AbstractLogicalGate where {X<:AbstractGatingMethod}
     gate1::X
 end
 

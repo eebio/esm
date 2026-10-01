@@ -3,7 +3,7 @@
 There are a variety of methods for smoothing plate reader data. Each method uses the `smooth(data, time_col, Method())` function signature. These can be used in the transformations in the Excel template.
 
 ```@docs; canonical=false
-ESM.smooth
+Longwing.smooth
 ```
 
 ## MovingAverage
@@ -18,7 +18,7 @@ This method also performs moving average smoothing, but the `window_size` is spe
 
 ## Implementation Details
 
-If you want to implement a new smoothing method to be included in ESM, you need to:
+If you want to implement a new smoothing method to be included in the Longwing Data Standard, you need to:
 
 - Open a pull request with the following code changes
 - Define a new struct for your method type in `src/plate_readers/smoothing.jl`
@@ -26,4 +26,4 @@ If you want to implement a new smoothing method to be included in ESM, you need 
 - Define a new method dispatch `smooth(data, time_col, ::NameOfNewMethodType)`
 - Document that method in the smoothing documentation (this page)
 
-If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new smoothing method and explaining how the method should work.
+If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/longwing/issues/new/choose) asking for a new smoothing method and explaining how the method should work.

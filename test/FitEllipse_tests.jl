@@ -24,30 +24,30 @@ SOFTWARE.
 
 @testitem "FitEllipse.jl" begin
     function test_fit_ellipse(;
-            θ = π / 3, a = 3, b = 1.5, x_0 = 3, y_0 = -1,
-            N = 10000, ε = 1e-1, ξ = 0.001
+        θ=π / 3, a=3, b=1.5, x_0=3, y_0=-1,
+        N=10000, ε=1e-1, ξ=0.001
     )
         @assert a > b
-        x, y = ESM.ellipse_from_parametric(a, b, θ, x_0, y_0, N)
+        x, y = Longwing.ellipse_from_parametric(a, b, θ, x_0, y_0, N)
         # add noise
         xξ = x .+ randn(N) * ξ
         yξ = y .+ randn(N) * ξ
 
-        af, bf, _, x_0f, y_0f, _ = ESM.fit_ellipse(xξ, yξ)
+        af, bf, _, x_0f, y_0f, _ = Longwing.fit_ellipse(xξ, yξ)
 
         if bf > af
             af, bf = bf, af
         end
 
-        @test isapprox(af, a; atol = ε, rtol = ε)
-        @test isapprox(bf, b; atol = ε, rtol = ε)
-        @test isapprox(x_0f, x_0; atol = ε, rtol = ε)
-        @test isapprox(y_0f, y_0; atol = ε, rtol = ε)
+        @test isapprox(af, a; atol=ε, rtol=ε)
+        @test isapprox(bf, b; atol=ε, rtol=ε)
+        @test isapprox(x_0f, x_0; atol=ε, rtol=ε)
+        @test isapprox(y_0f, y_0; atol=ε, rtol=ε)
     end
 
     test_fit_ellipse()
-    test_fit_ellipse(; a = 2.0)
-    test_fit_ellipse(; θ = 0)
-    test_fit_ellipse(; θ = π / 2, ξ = 0.1, ε = 0.1)
-    test_fit_ellipse(; θ = 5π / 6)
+    test_fit_ellipse(; a=2.0)
+    test_fit_ellipse(; θ=0)
+    test_fit_ellipse(; θ=π / 2, ξ=0.1, ε=0.1)
+    test_fit_ellipse(; θ=5π / 6)
 end

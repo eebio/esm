@@ -1,6 +1,6 @@
 # Data Format
 
-The ESM data format (the format used for `.esm` files) is a JSON format, with its highest level storing the keys "samples", "groups", "transformations", "views", and "metadata". The first four keys contain the data structures described below. The `metadata` object contains information about the ESM version and how the source data was imported.
+The Longwing Data Standards data format (the format used for `.longwing` files) is a JSON format, with its highest level storing the keys "samples", "groups", "transformations", "views", and "metadata". The first four keys contain the data structures described below. The `metadata` object contains information about the Longwing version and how the source data was imported.
 
 ## Samples
 

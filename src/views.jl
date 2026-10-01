@@ -7,14 +7,14 @@ using DataFrames
 Produces the subset of views specified in `to_out` or all views if unspecified.
 
 Arguments:
-- `es::esm_zones`: The esm_zones object
+- `es::lw_zones`: The lw_zones object
 - `trans_meta_map::Dict`: A dictionary mapping transformations to their names.
 - `to_out::Vector{String}`: A list of all the views to be produced.
 """
-function produce_views(es, trans_meta_map; to_out = [])
+function produce_views(es, trans_meta_map; to_out=[])
     # No views specified? Do all then
     if to_out == []
-        to_out = keys(es.views)
+        to_out = keys(lw.views)
     end
     # Initialise the output of views dict
     v_out = Dict()
@@ -23,7 +23,7 @@ function produce_views(es, trans_meta_map; to_out = [])
         # Initialise the result dict that can be concatenated later
         result = []
         # Loop over the views list
-        for j in es.views[i]["data"]
+        for j in lw.views[i]["data"]
             exp = sexp_to_nested_list(Meta.parse(j), es, trans_meta_map)
             push!(result, eval(exp))
         end
@@ -32,7 +32,7 @@ function produce_views(es, trans_meta_map; to_out = [])
             v_out[i] = Tables.table(hcat(result...))
         elseif any(isa.(result, AbstractDataFrame))
             # TODO If transforms are a comma separated list (internally a tuple), then a view of that transform will be [(results...)], which when splatted is still a tuple of results
-            v_out[i] = hcat(result..., makeunique = true)
+            v_out[i] = hcat(result..., makeunique=true)
         else
             v_out[i] = result
         end
@@ -47,14 +47,14 @@ end
 Produces views and writes them to CSV files.
 
 Arguments:
-- `es::esm_zones`: The original esm struct
+- `lw::lw_zones`: The original Longwing struct
 - `trans_meta_map::Dict`: The transformations that have been parsed at the top level.
 - `outdir::String`: The specified output dir - defaults to nothing.
 - `to_out::Vector{String}`: The views to be processed.
 """
-function view_to_csv(es, trans_meta_map; outdir = "", to_out = [])
+function view_to_csv(es, trans_meta_map; outdir="", to_out=[])
     # Process the views
-    vs = produce_views(es, trans_meta_map; to_out = to_out)
+    vs = produce_views(es, trans_meta_map; to_out=to_out)
     # Write the views to file
     for i in keys(vs)
         if Tables.istable(vs[i])
@@ -143,7 +143,7 @@ Recursively converts the parsed equations to julia code and produces the correct
 
 Arguments:
 - sexp: Expression or part of expression to be decomposed.
-- es: The esm_zones data type that contains the data.
+- es: The lw_zones data type that contains the data.
 - trans_meta_map: The transformation map of the parsed transformations.
 """
 function sexp_to_nested_list(sexp, es, trans_meta_map)
@@ -151,12 +151,12 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
         if sexp in keys(trans_meta_map)
             # Is the symbol a transformation
             return sexp_to_nested_list(trans_meta_map[sexp], es, trans_meta_map)
-        elseif string(sexp) in es.groups.group
+        elseif string(sexp) in lw.groups.group
             # Is the symbol a group?
-            return ESM.get_group(es, sexp)
-        elseif string(sexp) in first.(splitext.(es.samples.name))
+            return Longwing.get_group(es, sexp)
+        elseif string(sexp) in first.(splitext.(lw.samples.name))
             # Is the symbol a sample?
-            return ESM.get_sample(es, string(sexp))
+            return Longwing.get_sample(es, string(sexp))
         end
         # Just return it - its something else
         return sexp
@@ -181,9 +181,9 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
             if channel isa Symbol && length(sexp.args) == 2
                 channel = string(channel)
                 # Want to make sure this isn't some other dot expression
-                if any(last.(splitext.(es.samples.name)) .== ".$channel")
+                if any(last.(splitext.(lw.samples.name)) .== ".$channel")
                     # This is channel access
-                    return ESM.filter_channel(sexp.args[1], channel)
+                    return Longwing.filter_channel(sexp.args[1], channel)
                 end
             end
         end
@@ -194,9 +194,9 @@ function sexp_to_nested_list(sexp, es, trans_meta_map)
     return sexp
 end
 
-function run_transformation(esm, transform)
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(esm.transformations[i]["equation"])
-        for i in keys(esm.transformations))
-    expression = sexp_to_nested_list(Meta.parse(transform), esm, trans_meta_map)
+function run_transformation(lw, transform)
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
+                          for i in keys(lw.transformations))
+    expression = sexp_to_nested_list(Meta.parse(transform), lw, trans_meta_map)
     return eval(expression)
 end

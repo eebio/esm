@@ -1,21 +1,21 @@
 # Other Useful Functions
 
-There are a couple more functions in ESM that may be generally useful for plate reader data. These are the `at` and `between` functions (and there sister functions `at_time` and `between_times`).
+There are a couple more functions in Longwing that may be generally useful for plate reader data. These are the `at` and `between` functions (and there sister functions `at_time` and `between_times`).
 
 ```@docs
-ESM.at
-ESM.between
-ESM.at_time
-ESM.between_times
+Longwing.at
+Longwing.between
+Longwing.at_time
+Longwing.between_times
 ```
 
 They allow you to remove elements of your data (say removing low OD values to avoid returning a growth rate at low OD when the data is very noisy).
 
 ```@setup data
-using ESM
+using Longwing
 using DataFrames
 
-out, _ = ESM.read("../../../test/inputs/biotek-data.csv", BioTek())
+out, _ = Longwing.read("../../../test/inputs/biotek-data.csv", BioTek())
 od = out["OD_600"]
 flu = out["GFP_485_530"]
 od_times = od[:, [:time]]
@@ -46,7 +46,7 @@ between_times(od, od_times; min_value = 3, max_value = 24)
 
 For `at_time`, we returned a single row data frame with the `od` data at 5 minutes (techinically the last recording before 5 minutes).
 
-For `between_times`, all data that was recorded before 3 minutes and after 24 minutes was set to `missing`. This means it will be ignored by most functions in ESM.
+For `between_times`, all data that was recorded before 3 minutes and after 24 minutes was set to `missing`. This means it will be ignored by most functions in Longwing.
 
 ## The at function
 

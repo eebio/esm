@@ -1,4 +1,4 @@
-struct FlowCytometryData <: AbstractESMDataType end
+struct FlowCytometryData <: AbstractLongwingDataType end
 
 include("read.jl")
 include("transform.jl")

@@ -24,7 +24,7 @@ function fluorescence end
     time::Float64
 end
 
-function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtTime; plot_directory = nothing)
+function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtTime; plot_directory=nothing)
     plot_directory = process_plot_directory(plot_directory)
     time = method.time
     fluorescence_at_time = at_time(data_fl, time_fl, time)
@@ -48,8 +48,8 @@ function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtTime; p
         if !isnothing(plot_directory)
             plot_path = joinpath(plot_directory, "fluorescence_per_cell_$col.png")
             # Create a time vector that is the union of the two
-            p = plot(t, fl_new[:, col] ./ od_new[:, col], label = "Fluorescence/OD", xlabel = "Time", ylabel = "Fluorescence/OD", title = "Fluorescence per OD at $(round(time; digits = 1)) min for $col")
-            vline!([time], label = "Time of interest", color = :red, legend = :best)
+            p = plot(t, fl_new[:, col] ./ od_new[:, col], label="Fluorescence/OD", xlabel="Time", ylabel="Fluorescence/OD", title="Fluorescence per OD at $(round(time; digits = 1)) min for $col")
+            vline!([time], label="Time of interest", color=:red, legend=:best)
             savefig(p, plot_path)
         end
     end
@@ -58,7 +58,7 @@ end
 
 struct RatioAtMaxGrowth <: AbstractFluorescenceMethod
     method::AbstractGrowthRateMethod
-    kwargs::Dict{Symbol, Any}
+    kwargs::Dict{Symbol,Any}
 end
 
 function RatioAtMaxGrowth(method::AbstractGrowthRateMethod; kwargs...)
@@ -69,11 +69,11 @@ function RatioAtMaxGrowth(; method::AbstractGrowthRateMethod, kwargs...)
     return RatioAtMaxGrowth(method; kwargs...)
 end
 
-function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtMaxGrowth; plot_directory = nothing)
+function fluorescence(data_fl, time_fl, data_od, time_od, method::RatioAtMaxGrowth; plot_directory=nothing)
     time = time_to_max_growth(data_od, time_od, method.method; method.kwargs...)
     out = DataFrame()
     for col in names(data_od)
-        out[!, col] = ESM.fluorescence(data_fl[:, [col]], time_fl, data_od[:, [col]], time_od, RatioAtTime(time[1, col]); plot_directory = plot_directory)[:, col]
+        out[!, col] = Longwing.fluorescence(data_fl[:, [col]], time_fl, data_od[:, [col]], time_od, RatioAtTime(time[1, col]); plot_directory=plot_directory)[:, col]
     end
     return out
 end

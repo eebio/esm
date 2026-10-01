@@ -1,16 +1,16 @@
-module ESM
-@doc read(joinpath(dirname(@__DIR__), "README.md"), String) ESM
+module Longwing
+@doc read(joinpath(dirname(@__DIR__), "README.md"), String) Longwing
 
 using Comonicon
 
-abstract type AbstractESMMethod end
+abstract type AbstractLongwingMethod end
 
-abstract type AbstractESMDataType end
+abstract type AbstractLongwingDataType end
 
-struct ESMData <: AbstractESMDataType end
+struct LongwingData <: AbstractLongwingDataType end
 
 include("FitEllipse.jl")
-include("esm_files.jl")
+include("lw_files.jl")
 include("main.jl")
 include("plate_readers/main.jl")
 include("flow/main.jl")
@@ -18,7 +18,7 @@ include("summarise.jl")
 include("views.jl")
 include("interactive/main.jl")
 
-export read_esm, esm_zones, read_data, write_esm
+export read_longwing, lw_zones, read_data, write_longwing
 export template, translate, views, summarise, untranslate
 
 export growth_rate, doubling_time, lag_time, max_od, time_to_max_growth, od_at_max_growth
@@ -47,62 +47,62 @@ export MEF
 export transform, untransform, Transform
 export Log, Log10, Log2, Log1p, Arcsinh, Linear, Logicle, Hyperlog, Bound, Identity
 
-export AbstractESMMethod, AbstractPlateReaderMethod
+export AbstractLongwingMethod, AbstractPlateReaderMethod
 export AbstractGrowthRateMethod
-export AbstractESMDataType, AbstractPlateReader
-export ESMData, FlowCytometryData, BioTek, SpectraMax, Tecan, GenericTabular, BMG
+export AbstractLongwingDataType, AbstractPlateReader
+export LongwingData, FlowCytometryData, BioTek, SpectraMax, Tecan, GenericTabular, BMG
 export summary
 
 using Statistics: median
 export median
 
 """
-    esm translate
+    lw translate
 
-Translates the completed .xlsx template file to a .esm file.
+Translates the completed .xlsx template file to a .longwing file.
 
 # Args
 
 - `input`: The completed .xlsx template file to be read.
-- `output`: The filepath/destination for the .esm file.
+- `output`: The filepath/destination for the .longwing file.
 """
 @cast function translate(input::String, output::String)
     x = read_data(input)
-    write_esm(x, output)
+    write_longwing(x, output)
 end
 
 """
-    esm untranslate
+    lw untranslate
 
-Reconstruct an Excel template from an .esm file.
+Reconstruct an Excel template from an .longwing file.
 
 # Args
 
-- `input`: The .esm file to reconstruct.
+- `input`: The .longwing file to reconstruct.
 - `output`: The filepath/destination for the Excel template.
 """
 @cast function untranslate(input::String, output::String)
-    untranslate_esm(input, output)
+    untranslate_longwing(input, output)
 end
 
 """
-    esm views
+    lw views
 
-Produce and save the views from a .esm file.
+Produce and save the views from a .longwing file.
 
 # Args
 
-- `esm_file`: The .esm file to be read.
+- `lw_file`: The .longwing file to be read.
 
 # Options
 - `-v, --view=<String>`: The view to be produced (or comma-separated list of views). All views if not specified.
 - `-o, --output-dir=<String>`: The directory to save the output(s) to. Defaults to the
     current directory.
 """
-@cast function views(esm_file::String; view = nothing, output_dir::String = ".")
-    es = read_esm(esm_file)
-    trans_meta_map = Dict(Symbol(i) => Meta.parse(es.transformations[i]["equation"])
-    for i in keys(es.transformations))
+@cast function views(lw_file::String; view=nothing, output_dir::String=".")
+    lw = read_longwing(lw_file)
+    trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
+                          for i in keys(lw.transformations))
     @info "Producing views."
     if isnothing(view)
         views = []
@@ -111,30 +111,30 @@ Produce and save the views from a .esm file.
     else
         views = [view]
     end
-    view_to_csv(es, trans_meta_map; outdir = output_dir, to_out = views)
+    view_to_csv(lw, trans_meta_map; outdir=output_dir, to_out=views)
 end
 
 """
-    esm template
+    lw template
 
-Produce a template excel file for data entry into the ESM.
+Produce a template excel file for data entry into the Longwing Data Standard.
 
 # Options
 
-- `-o, --output-path=<String>`: The path to create the template in. Defaults to ESM.xlsx in
+- `-o, --output-path=<String>`: The path to create the template in. Defaults to template.xlsx in
     the current directory.
 """
-@cast function template(; output_path::String = "ESM.xlsx")
-    e = pathof(ESM)
-    e = e[1:(length(e) - 6)]
-    cp(joinpath(e, "ESM.xlsx"), output_path)
+@cast function template(; output_path::String="template.xlsx")
+    e = pathof(Longwing)
+    e = e[1:(length(e)-6)]
+    cp(joinpath(e, "template.xlsx"), output_path)
     @info "New template file created at \"$output_path\""
 end
 
 """
-    esm summarise
+    lw summarise
 
-Summarise a data file (.esm, plate reader, .fcs, etc.).
+Summarise a data file (.longwing, plate reader, .fcs, etc.).
 
 # Args
 
@@ -142,65 +142,65 @@ Summarise a data file (.esm, plate reader, .fcs, etc.).
 
 # Options
 
-- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "esm",
+- `-t, --type=<String>`: The type of data file. Options are "auto" (default), "longwing",
     "spectramax", "biotek", "tecan", "bmg", "generic", "fcs". If "auto" is selected, the type will be
     inferred from the file extension (or raise an error if not possible).
 
 # Flags
 
-- `-p, --plot`: Produce plots of the data. Not available for `--type=esm`.
-- `-c, --csv`: Save the data as CSV files. Not available for `--type=esm`.
+- `-p, --plot`: Produce plots of the data. Not available for `--type=longwing`.
+- `-c, --csv`: Save the data as CSV files. Not available for `--type=longwing`.
 """
-@cast function summarise(file; type = "auto", plot::Bool = false, csv::Bool = false)
+@cast function summarise(file; type="auto", plot::Bool=false, csv::Bool=false)
     # If type=="auto", attempt to infer from file extension
     if type == "auto"
         ext = splitext(file)[end]
-        if ext == ".esm"
-            type = "esm"
+        if ext == ".longwing"
+            type = "longwing"
         elseif ext == ".fcs"
             type = "fcs"
         elseif isdir(file)
             type = "generic"
         else
             error("File type $ext cannot be inferred from extension. Supported extensions \
-            are .esm or .fcs (or directories for generic tabular plate reader data).")
+            are .longwing or .fcs (or directories for generic tabular plate reader data).")
         end
     end
-    if lowercase(type) == "esm"
-        summary(file, ESMData(); plot = plot)
+    if lowercase(type) == "longwing"
+        summary(file, LongwingData(); plot=plot)
     elseif lowercase(type) == "fcs"
-        summary(file, FlowCytometryData(); plot = plot, csv = csv)
+        summary(file, FlowCytometryData(); plot=plot, csv=csv)
     elseif lowercase(type) == "spectramax"
-        summary(file, SpectraMax(); plot = plot, csv = csv)
+        summary(file, SpectraMax(); plot=plot, csv=csv)
     elseif lowercase(type) == "biotek"
-        summary(file, BioTek(); plot = plot, csv = csv)
+        summary(file, BioTek(); plot=plot, csv=csv)
     elseif lowercase(type) == "tecan"
-        summary(file, Tecan(); plot = plot, csv = csv)
+        summary(file, Tecan(); plot=plot, csv=csv)
     elseif lowercase(type) == "bmg"
-        summary(file, BMG(); plot = plot, csv = csv)
+        summary(file, BMG(); plot=plot, csv=csv)
     elseif lowercase(type) == "generic"
-        summary(file, GenericTabular(); plot = plot, csv = csv)
+        summary(file, GenericTabular(); plot=plot, csv=csv)
     else
         error("Unsupported file type: $type.")
     end
 end
 
 """
-    esm interactive
+    lw interactive
 
-Open an esm file in an interactive session.
+Open a Longwing file in an interactive session.
 
 # Args
 
-- `file`: The esm data file to source data from. It should contain all the samples you want
+- `file`: The Longwing data file to source data from. It should contain all the samples you want
     to use (and potentially a channel map), but does not need transformations, groups,
     views, etc.
 """
 @cast function interactive(file)
-    es = read_esm(file)
-    main_menu(es, false)
+    lw = read_longwing(file)
+    main_menu(lw, false)
     return nothing
 end
 Comonicon.@main
 
-end # module ESM
+end # module Longwing

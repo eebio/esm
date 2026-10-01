@@ -28,7 +28,7 @@ using TestItemRunner
         return take!(output)
     end
 
-    function interactive_julia_command(project, child, esm_file, session_count)
+    function interactive_julia_command(project, child, lw_file, session_count)
         julia = Base.julia_cmd()
         return Cmd(vcat(
             julia.exec,
@@ -38,16 +38,16 @@ using TestItemRunner
                 "--project=$project",
                 "--code-coverage=user",
                 child,
-                esm_file,
+                lw_file,
                 string(session_count),
             ],
         ))
     end
 
-    function run_interactive_replays(event_files, child, esm_file)
+    function run_interactive_replays(event_files, child, lw_file)
         project = dirname(@__DIR__)
         session_count = length(event_files)
-        julia_command = interactive_julia_command(project, child, esm_file, session_count)
+        julia_command = interactive_julia_command(project, child, lw_file, session_count)
 
         if Sys.isunix()
             expect = Sys.which("expect")
@@ -68,7 +68,7 @@ using TestItemRunner
                 command = Cmd(vcat([winpty], julia_command.exec))
                 output = read(pipeline(command, stdin=events))
                 text = String(output)
-                occursin("ESM_INTERACTIVE_TEST_PASSED", text) ||
+                occursin("LONGWING_INTERACTIVE_TEST_PASSED", text) ||
                     error("Interactive test child did not report success. Output:\n$text")
             finally
                 rm(events; force=true)
@@ -80,20 +80,20 @@ using TestItemRunner
         return nothing
     end
 
-    function run_interactive_replay(event_file, child, esm_file)
-        run_interactive_replays([event_file], child, esm_file)
+    function run_interactive_replay(event_file, child, lw_file)
+        run_interactive_replays([event_file], child, lw_file)
     end
 
 end
 
 @testitem "interactive menu replay" setup=[InteractiveReplay] begin
     if !Sys.iswindows()
-        rm(joinpath(@__DIR__, "temp.esm"); force=true)
+        rm(joinpath(@__DIR__, "temp.longwing"); force=true)
         rm(joinpath(@__DIR__, "group1.csv"); force=true)
-        rm(joinpath(@__DIR__, "test2.esm"); force=true)
-        @test !isfile(joinpath(@__DIR__, "temp.esm"))
+        rm(joinpath(@__DIR__, "test2.longwing"); force=true)
+        @test !isfile(joinpath(@__DIR__, "temp.longwing"))
         @test !isfile(joinpath(@__DIR__, "group1.csv"))
-        @test !isfile(joinpath(@__DIR__, "test2.esm"))
+        @test !isfile(joinpath(@__DIR__, "test2.longwing"))
         InteractiveReplay.run_interactive_replays(
             [
                 joinpath(@__DIR__, "inputs", "interactive_events", "menu_navigation.events"),
@@ -103,13 +103,13 @@ end
                 joinpath(@__DIR__, "inputs", "interactive_events", "coverage.events"),
             ],
             joinpath(@__DIR__, "interactive_child.jl"),
-            joinpath(@__DIR__, "inputs", "example.esm"),
+            joinpath(@__DIR__, "inputs", "example.longwing"),
         )
-        @test isfile(joinpath(@__DIR__, "temp.esm"))
+        @test isfile(joinpath(@__DIR__, "temp.longwing"))
         @test isfile(joinpath(@__DIR__, "group1.csv"))
-        @test isfile(joinpath(@__DIR__, "test2.esm"))
-        rm(joinpath(@__DIR__, "temp.esm"); force=true)
+        @test isfile(joinpath(@__DIR__, "test2.longwing"))
+        rm(joinpath(@__DIR__, "temp.longwing"); force=true)
         rm(joinpath(@__DIR__, "group1.csv"); force=true)
-        rm(joinpath(@__DIR__, "test2.esm"); force=true)
+        rm(joinpath(@__DIR__, "test2.longwing"); force=true)
     end
 end

@@ -1,6 +1,6 @@
-abstract type AbstractPlateReaderMethod <: AbstractESMMethod end
+abstract type AbstractPlateReaderMethod <: AbstractLongwingMethod end
 
-abstract type AbstractPlateReader <: AbstractESMDataType end
+abstract type AbstractPlateReader <: AbstractLongwingDataType end
 
 include("read.jl")
 include("calibrate.jl")

@@ -1,5 +1,5 @@
 using TestItemRunner
-using ESM
+using Longwing
 
 @testsnippet environment_path begin
     println("environment path")
@@ -8,15 +8,15 @@ using ESM
     end
 end
 
-@testitem "update example.esm and summarise.esm" setup=[environment_path] begin
-    println("update example.esm and summarise.esm")
+@testitem "update example.longwing and summarise.longwing" setup=[environment_path] begin
+    println("update example.longwing and summarise.longwing")
     data = read_data("inputs/example.xlsx")
     data["metadata"]["date_created"] = ""
     data["metadata"]["date_modified"] = ""
     data["metadata"]["versioninfo"] = ""
     data["metadata"]["Manifest.toml"] = ""
     data["metadata"]["Project.toml"] = ""
-    write_esm(data, "inputs/example.esm")
+    write_longwing(data, "inputs/example.longwing")
 
     data = read_data("inputs/summarise.xlsx")
     data["metadata"]["date_created"] = ""
@@ -24,7 +24,7 @@ end
     data["metadata"]["versioninfo"] = ""
     data["metadata"]["Manifest.toml"] = ""
     data["metadata"]["Project.toml"] = ""
-    write_esm(data, "inputs/summarise.esm")
+    write_longwing(data, "inputs/summarise.longwing")
 end
 
 @run_package_tests
