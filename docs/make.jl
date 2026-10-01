@@ -36,7 +36,8 @@ modules = [Longwing
 
 makedocs(sitename="Longwing",
     repo=Remotes.GitHub("eebio", "Longwing"), modules=modules, checkdocs=:exports,
-    pages=PAGES, plugins=[links])
+    pages=PAGES, plugins=[links],
+    format = Documenter.HTML(assets = [RawHTMLHeadContent("""<meta name="google-site-verification" content="JfyX6r31rrWQUAIZV5kiaTJfmdXj0MP3XkwLIsah1_A" />""")]))
 
 deploydocs(
     repo="github.com/eebio/longwing",
