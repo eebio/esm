@@ -1,6 +1,31 @@
 using TestItemRunner
 using Longwing
 
+# Remove any existing coverage files
+for f in readdir(pwd(), join=true)
+    if endswith(f, ".cov")
+        rm(f)
+    end
+end
+
+for f in readdir(joinpath(pwd(), "..", "src"), join=true)
+    if endswith(f, ".cov")
+        rm(f)
+    end
+end
+
+for f in readdir(joinpath(pwd(), "..", "src", "flow"), join=true)
+    if endswith(f, ".cov")
+        rm(f)
+    end
+end
+
+for f in readdir(joinpath(pwd(), "..", "src", "interactive"), join=true)
+    if endswith(f, ".cov")
+        rm(f)
+    end
+end
+
 @testsnippet environment_path begin
     println("environment path")
     if "GITHUB_WORKSPACE" ∉ keys(ENV)
