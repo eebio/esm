@@ -73,7 +73,7 @@
     input = joinpath(dir, "input.longwing")
     output = joinpath(dir, "output.xlsx")
     JSON.json(input, data; pretty=true)
-    Longwing.untranslate_lw(input, output)
+    Longwing.untranslate_longwing(input, output)
 
     samples = DataFrame(Longwing.XLSX.readtable(output, "Samples"; stop_in_empty_row=false))
     @test nrow(samples) == 2
