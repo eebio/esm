@@ -45,3 +45,13 @@ ESM.views
 
 !!! note "Comma-separated views"
     When passing a list of views with `-v`, do not include spaces after the commas — use `-v view1,view2,view3`, not `-v view1, view2, view3`.
+
+## interactive
+
+Edit, manipluate and process a `.esm` file interactively.
+
+```@docs; canonical=false
+ESM.interactive
+```
+
+By calling `esm interactive` on a `.esm` file, you can edit transforms, groups, group metadata, and views. You can also process views to get their outputs (similarly to the outputs of `esm views`) and run arbitrary transformations on your data. This allows you to quickly debug and iterate on a particular transform, without needing to edit the template and re-translating it.

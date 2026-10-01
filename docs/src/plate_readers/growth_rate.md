@@ -23,7 +23,7 @@ lag_time
 
 !!! note "Lagtime"
     Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of `log(OD/OD_0)` where `OD_0` is the first OD value in the data set. It is calculated as: `time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0)`.
-    For the parameteric and regularization methods, `OD_0` is determined from the fitted curve.
+    For the parameteric and smoothed spline methods, `OD_0` is determined from the fitted curve.
 
 ## Endpoints
 
@@ -163,9 +163,7 @@ It can be called using `growth_rate(data, time_col, Richards())` or `doubling_ti
 ## Smoothed Spline
 
 For the `SmoothedSpline` method, the data is log scaled (negative points removed) and a weighted least squares spline is fitted using [Dierckx.jl](https://github.com/JuliaMath/Dierckx.jl). The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
-    order::Int = 3
-    smoothness::Float64 = 0.01
-    knots::Union{Nothing, Vector{Float64}} = nothing
+
 It can be called using `growth_rate(data, time_col, SmoothedSpline(order, smoothness, knots))` or `doubling_time(data, time_col, SmoothedSpline(order, smoothness, knots))`.
 
 By default:
@@ -291,7 +289,7 @@ This is the form we fit our linear model in, and where $\varepsilon^\prime = \fr
 
 This means that $var(\varepsilon^\prime)=\frac{\sigma^2}{\widehat{OD}^2}$. Since we don't have access to the fitted $\widehat{OD}$, we instead use the noisy data $OD$. This is why we used weights of $y$ in the example above (then adjusted into frequency weights to ensure the correct effective sample size).
 
-We apply this weighting to all least squares calculations for growth rates. The weight is always $\frac{OD}{OD_0}$, since that is the value we log-transform. This applies for the parametric methods, LinearOnLog (and MovingWindow of LinearOnLog), and the least squares component of regularization.
+We apply this weighting to all least squares calculations for growth rates. The weight is always $\frac{OD}{OD_0}$, since that is the value we log-transform. This applies for the parametric methods, LinearOnLog (and MovingWindow of LinearOnLog), ExpandingWindow, and smoothed splines.
 
 ## Uncertainty
 
