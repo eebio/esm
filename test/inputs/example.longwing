@@ -8,7 +8,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -255,7 +255,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -502,7 +502,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -749,7 +749,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -996,7 +996,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -1243,7 +1243,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -1490,7 +1490,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -1737,7 +1737,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -1984,7 +1984,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -2231,7 +2231,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -2478,7 +2478,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -2725,7 +2725,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -2972,7 +2972,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -3219,7 +3219,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -3466,7 +3466,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -3713,7 +3713,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -3960,7 +3960,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -4207,7 +4207,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -4454,7 +4454,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -4701,7 +4701,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -4948,7 +4948,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -5195,7 +5195,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -5442,7 +5442,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -5689,7 +5689,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -5936,7 +5936,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -6183,7 +6183,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -6430,7 +6430,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -6677,7 +6677,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -6924,7 +6924,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -7171,7 +7171,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -7418,7 +7418,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -7665,7 +7665,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -7912,7 +7912,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -8159,7 +8159,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -8406,7 +8406,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -8653,7 +8653,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -8900,7 +8900,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -9147,7 +9147,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -9394,7 +9394,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -9641,7 +9641,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -9888,7 +9888,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -10135,7 +10135,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -10382,7 +10382,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -10629,7 +10629,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -10876,7 +10876,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -11123,7 +11123,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -11370,7 +11370,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -11617,7 +11617,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -11864,7 +11864,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -12111,7 +12111,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -12358,7 +12358,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -12605,7 +12605,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -12852,7 +12852,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -13099,7 +13099,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -13346,7 +13346,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -13593,7 +13593,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -13840,7 +13840,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -14087,7 +14087,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -14334,7 +14334,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -14581,7 +14581,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -14828,7 +14828,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -15075,7 +15075,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -15322,7 +15322,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -15569,7 +15569,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -15816,7 +15816,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -16063,7 +16063,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -16310,7 +16310,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -16557,7 +16557,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -16804,7 +16804,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -17051,7 +17051,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -17298,7 +17298,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -17545,7 +17545,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -17792,7 +17792,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -18039,7 +18039,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -18286,7 +18286,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -18533,7 +18533,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -18780,7 +18780,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -19027,7 +19027,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -19274,7 +19274,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -19521,7 +19521,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -19768,7 +19768,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -20015,7 +20015,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -20262,7 +20262,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -20509,7 +20509,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -20756,7 +20756,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -21003,7 +21003,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -21250,7 +21250,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -21497,7 +21497,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -21744,7 +21744,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -21991,7 +21991,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -22238,7 +22238,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -22485,7 +22485,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -22732,7 +22732,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -22979,7 +22979,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -23226,7 +23226,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -23473,7 +23473,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -23720,7 +23720,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -23967,7 +23967,7 @@
             "OD",
             "flo"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/pr_folder",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/pr_folder",
           "plate": 1,
           "plate_brand": "Generic",
           "sample_type": "plate reader",
@@ -24471,7 +24471,7 @@
             "FL1_A",
             "FL4_H"
           ],
-          "data_location": "/Users/qr24461/.julia/dev/esm/test/../test/inputs/small.fcs",
+          "data_location": "/Users/qr24461/.julia/dev/longwing/test/../test/inputs/small.fcs",
           "plate": 2,
           "plate_brand": "",
           "sample_type": "flow",

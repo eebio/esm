@@ -11,9 +11,9 @@ This tutorial will walk you through the complete workflow of processing experime
 
 1. [Download the source code](https://github.com/eebio/longwing/archive/refs/heads/main.zip) and unzip it.
 2. [Download Julia](https://julialang.org/) if you don’t already have it installed.
-3. Run `julia --project -e ‘using Pkg; Pkg.precompile(); Pkg.build()’` from the root directory of the repository (i.e. `/where/you/saved/source/code/esm-main`). If it fails, try running it a second time.
-4. You can test if its working by running `esm template -h`, if you see some documentation appear, ESM is successfully installed.
-5. If you instead see an error `command not found: esm`, you may need to add `~/.julia/bin` to your PATH.
+3. Run `julia --project -e ‘using Pkg; Pkg.precompile(); Pkg.build()’` from the root directory of the repository (i.e. `/where/you/saved/source/code/Longwing-main`). If it fails, try running it a second time.
+4. You can test if its working by running `lw template -h`, if you see some documentation appear, Longwing is successfully installed.
+5. If you instead see an error `command not found: lw`, you may need to add `~/.julia/bin` to your PATH.
 
 !!! tip "Adding ~/.julia/bin to your path"
     In order for your terminal to find `lw`, you may need to edit the PATH variable. How exactly you add a directory to your PATH depends on what shell you are using and your operating system. You can find this out by running the command `echo $0`. Common shells include Bash, zsh, and PowerShell. If using Bash, add the line `PATH=$PATH:~/.julia/bin` to `~/.profile` or `~/.bash_profile`. If you are using zsh, add the line `PATH=$PATH:~/.julia/bin` to `~/.zprofile` (or add `~/.julia/bin` to `/etc/paths` on MacOS). Depending on your operating system and shell, you may need to expand the `~` to specify your home directory in full (i.e. replace `~/.julia/bin` with `/Users/UserName/.julia/bin` for example, or `C:\Users\UserName\.julia\bin` on Windows)
@@ -202,8 +202,8 @@ You should now have a file called `dt_control.csv` which contains you doubling t
 
 1. **Summarise Data Early**: Looking at plots of the data can help identify issues like contaminated wells, that may change how you want to analyse the data.
 2. **Start Small**: Its easy to fill out the template at the start, but this can make it harder to debug the transformations. Try going through, writing a transformation at a time and export it as a view to keep an eye on whats happening.
-3. **Save Excel**: Make sure you save the Excel template before calling `esm translate`. Autosaves are not always enough.
-4. **Remember the order of ESM operations**: Using `esm translate` will import and check your raw data, and collect groups, but it won't check your transformations and views. If you are getting errors when trying to generate views, this may be due to transformations being incorrectly defined, rather than just your views.
+3. **Save Excel**: Make sure you save the Excel template before calling `lw translate`. Autosaves are not always enough.
+4. **Remember the order of Longwing operations**: Using `lw translate` will import and check your raw data, and collect groups, but it won't check your transformations and views. If you are getting errors when trying to generate views, this may be due to transformations being incorrectly defined, rather than just your views.
 
 ## Next steps
 
@@ -211,8 +211,8 @@ If you want to learn more about Longwing and the Longwing Data Standard, you can
 
 * [Plate Readers](@ref plate_reader) to learn about the functionality and different methods available for working with plate reader data, like `TimeseriesBlank()` and `Logistic()` used here.
 * [Flow Cytometry](@ref flow_cytometry) to learn about the calibration and gating methods available for working with flow cytometry data.
-* [Command Line Interface](@ref) to learn about all the features of the command line interface (`esm summarise`, `esm translate`, etc.).
-* [Data Format](@ref) to learn about how `.esm` files are structured.
+* [Command Line Interface](@ref) to learn about all the features of the command line interface (`lw summarise`, `lw translate`, etc.).
+* [Data Format](@ref) to learn about how `.longwing` files are structured and the Longwing Data Standard.
 * [Excel Interface](@ref) to learn more details about how the Excel template file works and its format.
 
 ## Getting help

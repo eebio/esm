@@ -319,8 +319,8 @@ Under views, we have key-value pairs (name of the view is the key) with a variab
 
 ## Metadata
 
-In addition to metadata about your samples and groups, ESM also stores a range of metadata about the ESM file itself. This is to help aid in reproducibility of the analysis.
-This metadata is generated when the ESM file is created. It may be changed when the `.esm` file is edited with `esm interactive`, in which case it will be overridden and the old metadata will be stored in the description. The idea behind including this metadata is so that the versions of the software used to do the analysis (the esm version and its dependencies), which is likely to be the same as the version used to generate the `.esm` file, is recorded as part of the `.esm` file, which can help to track down changes either in the functionality of ESM or its dependencies.
+In addition to metadata about your samples and groups, Longwing also stores a range of metadata about the `.longwing` file itself. This is to help aid in reproducibility of the analysis.
+This metadata is generated when the `.longwing` file is created. It may be changed when the `.longwing` file is edited with `lw interactive`, in which case it will be overridden and the old metadata will be stored in the description. The idea behind including this metadata is so that the versions of the software used to do the analysis (the Longwing version and its dependencies), which is likely to be the same as the version used to generate the `.longwing` file, is recorded as part of the `.longwing` file, which can help to track down changes either in the functionality of Longwing or its dependencies.
 
 ```json
 "metadata": {
@@ -335,8 +335,8 @@ This metadata is generated when the ESM file is created. It may be changed when 
     "date_created": "",
     "date_modified": "",
     "description": "",
-    "esm_version": "0.4.0",
-    "schema_version": "0.4.0",
+    "longwing_version": "0.4.0",
+    "longwing_data_standard_version": "0.4.0",
     "versioninfo": "..."
 }
 ```

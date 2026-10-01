@@ -48,10 +48,10 @@ Longwing.views
 
 ## interactive
 
-Edit, manipluate and process a `.esm` file interactively.
+Edit, manipluate and process a `.longwing` file interactively.
 
 ```@docs; canonical=false
-ESM.interactive
+Longwing.interactive
 ```
 
-By calling `esm interactive` on a `.esm` file, you can edit transforms, groups, group metadata, and views. You can also process views to get their outputs (similarly to the outputs of `esm views`) and run arbitrary transformations on your data. This allows you to quickly debug and iterate on a particular transform, without needing to edit the template and re-translating it.
+By calling `lw interactive` on a Longwing Data Standard file, you can edit transforms, groups, group metadata, and views. You can also process views to get their outputs (similarly to the outputs of `lw views`) and run arbitrary transformations on your data. This allows you to quickly debug and iterate on a particular transform, without needing to edit the template and re-translating it.
