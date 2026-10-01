@@ -41,7 +41,7 @@ The inputs needed for Longwing are fairly simple here. Just pointing to the data
 lw translate tutorial.xlsx tutorial.longwing
 ```
 
-![alt text](../assets/wellid-verification.png)
+![alt text](../assets/wellid-verification.jpeg)
 
 The well IDs are correctly verified, as seen by the green check marks in the well map. Alternatively, they could have been yellow question marks (unable to verify), or red crosses (verification revealed a non-matching \$WELLID).
 
