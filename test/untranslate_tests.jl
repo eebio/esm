@@ -64,18 +64,18 @@
         "transformations" => Dict("od_mean" => Dict("equation" => "mean(control.od)")),
         "views" => Dict("control_view" => Dict("data" => ["control", "od_mean"])),
         "metadata" => Dict(
-            "schema_version" => "0.4.0",
+            "longwing_data_standard_version" => "0.4.0",
             "channel_map" => Dict("OD_600" => "od", "FSC-A" => "fsc_a")
         )
     )
 
     dir = Base.Filesystem.mktempdir()
-    input = joinpath(dir, "input.esm")
+    input = joinpath(dir, "input.lw")
     output = joinpath(dir, "output.xlsx")
-    JSON.json(input, data; pretty = true)
-    ESM.untranslate_esm(input, output)
+    JSON.json(input, data; pretty=true)
+    Longwing.untranslate_longwing(input, output)
 
-    samples = DataFrame(ESM.XLSX.readtable(output, "Samples"; stop_in_empty_row = false))
+    samples = DataFrame(Longwing.XLSX.readtable(output, "Samples"; stop_in_empty_row=false))
     @test nrow(samples) == 2
     plate_row = findfirst(samples[!, "Type"] .== "plate reader")
     flow_row = findfirst(samples[!, "Type"] .== "flow")
@@ -83,21 +83,21 @@
     @test samples[plate_row, "Channels"] == "OD_600"
     @test samples[flow_row, "Well"] == "a1"
 
-    channel_map = DataFrame(ESM.XLSX.readtable(output, "Channel Map";
-        stop_in_empty_row = false))
+    channel_map = DataFrame(Longwing.XLSX.readtable(output, "Channel Map";
+        stop_in_empty_row=false))
     od_row = findfirst(channel_map[!, "Channel"] .== "OD_600")
     @test channel_map[od_row, "New name"] == "od"
 
-    groups = DataFrame(ESM.XLSX.readtable(output, "Groups"; stop_in_empty_row = false))
+    groups = DataFrame(Longwing.XLSX.readtable(output, "Groups"; stop_in_empty_row=false))
     @test nrow(groups) == 1
     @test groups[1, "Name"] == "control"
     @test groups[1, "Samples"] == "plate_01_a1, plate_01_a2"
     @test groups[1, "condition"] == "control"
     @test !("autodefined" in names(groups))
 
-    transformations = DataFrame(ESM.XLSX.readtable(output, "Transformations";
-        stop_in_empty_row = false))
+    transformations = DataFrame(Longwing.XLSX.readtable(output, "Transformations";
+        stop_in_empty_row=false))
     @test transformations[1, "Equation"] == "mean(control.od)"
-    views = DataFrame(ESM.XLSX.readtable(output, "Views"; stop_in_empty_row = false))
+    views = DataFrame(Longwing.XLSX.readtable(output, "Views"; stop_in_empty_row=false))
     @test views[1, "View"] == "control, od_mean"
 end

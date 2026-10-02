@@ -33,21 +33,21 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
         else
             channels
         end
-        temp["values"] = Dict{String, Any}(get(channel_map, x, x) =>
+        temp["values"] = Dict{String,Any}(get(channel_map, x, x) =>
             temp_data[flow_channel(x, temp_data)] for x in current_channels)
-        temp["metadata"] = convert(Dict{String, Any},
+        temp["metadata"] = convert(Dict{String,Any},
             Dict(channel_map[x] => extract_flow(
-                     temp_data, flow_channel(x, temp_data))
-            for x in current_channels))
+                temp_data, flow_channel(x, temp_data))
+                 for x in current_channels))
         temp["metadata"]["raw_metadata"] = Dict(k =>
             try
                 getproperty(temp_data, k)
             catch
                 "Error: Property could not be read"
             end
-        for k in propertynames(temp_data))
+                                                for k in propertynames(temp_data))
         for c in current_channels
-            temp["metadata"][channel_map[c]]["esm_well"] = j.Well
+            temp["metadata"][channel_map[c]]["longwing_well"] = j.Well
         end
 
         # Handle time channel units
@@ -55,7 +55,8 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
             function check_times(experiment_time, buffer, start_time, end_time)
                 # Checks that predicted end time is within buffer seconds of actual end time, and that the predicted end time is closer to the actual end time than the start time
                 return (end_time - Second(buffer) <= start_time + Millisecond(round(experiment_time)) <= end_time + Second(buffer)
-                        && end_time - start_time - Millisecond(round(experiment_time)) <= Millisecond(round(experiment_time)))
+                    &&
+                    end_time - start_time - Millisecond(round(experiment_time)) <= Millisecond(round(experiment_time)))
             end
             times = collect(temp["values"][channel_map["time"]])
             assumption = "ERROR"
@@ -96,13 +97,13 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
                 end
             else
                 if check_times(experiment_times[1] * 1000, 2, start_time, end_time) || check_times(experiment_times[2] * 1000, 2, start_time, end_time)
-                        # Already in seconds, convert to ms
-                        temp["values"][channel_map["time"]] = times .* 1000
-                        assumption = "Data appears to have been stored in seconds as floats, and matches start and end times when converted to milliseconds."
+                    # Already in seconds, convert to ms
+                    temp["values"][channel_map["time"]] = times .* 1000
+                    assumption = "Data appears to have been stored in seconds as floats, and matches start and end times when converted to milliseconds."
                 elseif check_times(experiment_times[1], 1, start_time, end_time) || check_times(experiment_times[2], 1, start_time, end_time)
-                        assumption = "Data appears to have been stored in milliseconds as floats, and matches start and end times when treated as milliseconds."
-                        # Also needed to check that start_time+experiment_time is closer to end_time than start_time
-                        # Already in ms, do nothing
+                    assumption = "Data appears to have been stored in milliseconds as floats, and matches start and end times when treated as milliseconds."
+                    # Also needed to check that start_time+experiment_time is closer to end_time than start_time
+                    # Already in ms, do nothing
                 else
                     # Time data is messed up
                     assumption = "Data does not store the timestep and does not appear to be stored in seconds or milliseconds. We have assumed the time is stored in milliseconds but the units on this time data should NOT be trusted."
@@ -134,15 +135,15 @@ function read_flow(samples, sample_dict, channels, broad_g, channel_map)
     return sample_dict, broad_g
 end
 
-function flow_channel(esmchannel, data)
+function flow_channel(lwchannel, data)
     all_channels = keys(data)
     for c in all_channels
-        if format_channel(c) == esmchannel
+        if format_channel(c) == lwchannel
             return c
         end
     end
     for c in all_channels
-        if lowercase(format_channel(c)) == lowercase(esmchannel)
+        if lowercase(format_channel(c)) == lowercase(lwchannel)
             return c
         end
     end
@@ -182,18 +183,18 @@ function extract_flow(fcs, chan)
 end
 
 """
-    to_rfi(es, sample_name)
+    to_rfi(lw, sample_name)
 
 Calculates relative fluorescence of given sample.
 
 Arguments:
-- `es::esm_zones`: The data set to search.
+- `lw::lw_zones`: The data set to search.
 - `sample_name::String`: channel to use.
 """
-function to_rfi(es, sample_name)
-    sub = es.samples[
+function to_rfi(lw, sample_name)
+    sub = lw.samples[
         map(x -> !isnothing(match(Regex(string(sample_name * raw"\.")), x)),
-            es.samples.name),
+            lw.samples.name),
         :]
     chans = sub.channel
     o = Dict()
@@ -201,7 +202,7 @@ function to_rfi(es, sample_name)
         # Load metadata for channel
         amp_type = parse.(
             Float64, split(
-                sub[sub.name .== "$sample_name.$i", "metadata"][1]["amp_type"], ","))
+            sub[sub.name .== "$sample_name.$i", "metadata"][1]["amp_type"], ","))
         range = parse(Int, sub.metadata[sub.name .== "$sample_name.$i", :][1]["range"])
         if amp_type[1] == 0
             if isnothing(sub.metadata[sub.name .== "$sample_name.$i", :][1]["amp_gain"])
@@ -216,8 +217,8 @@ function to_rfi(es, sample_name)
         else
             # Non-linear gain
             data = amp_type[2] *
-                   10 .^ (amp_type[1] *
-                    (sub.values[sub.name .== "$sample_name.$i", :][1] / range))
+                10 .^ (amp_type[1] *
+                (sub.values[sub.name .== "$sample_name.$i", :][1] / range))
             min = amp_type[2] * 10^(amp_type[1] * (1 / range))
             max = amp_type[2] * 10^(amp_type[1] * (range / range))
         end
@@ -226,6 +227,6 @@ function to_rfi(es, sample_name)
         o[i] = data
     end
     o["id"] = 1:length(o[chans[1]])
-    o["esm_well"] = sub.metadata[1]["esm_well"]
+    o["longwing_well"] = sub.metadata[1]["longwing_well"]
     return DataFrame(o)[!, sort(names(DataFrame(o)))]
 end

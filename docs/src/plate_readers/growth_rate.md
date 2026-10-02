@@ -3,8 +3,8 @@
 There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, time_col, Method())` function signature (or `doubling_time(data, time_col, Method())`). These can be used in the transformations in the Excel template.
 
 ```@docs
-ESM.growth_rate
-ESM.doubling_time
+Longwing.growth_rate
+Longwing.doubling_time
 ```
 
 !!! tip "Validation of growth curves"
@@ -95,7 +95,7 @@ You can also call `doubling_time` with either of the `FiniteDiff` methods.
 
 ## Parameteric Models
 
-You also can fit a range of parametric models to calculate growth rates in ESM. All fits are done on data after a ``{y=ln(OD/OD_0)}`` transformation (with negative `OD` values removed).
+You also can fit a range of parametric models to calculate growth rates in the Longwing Data Standard. All fits are done on data after a ``{y=ln(OD/OD_0)}`` transformation (with negative `OD` values removed).
 
 - `growth_rate` - return the parameter ``\mu``
 - `lagtime` - return the parameter ``\lambda``
@@ -303,7 +303,7 @@ For the `SmoothedSpline` method, we utilise a residual bootstrap algorithm to de
 
 ## Implementation Details
 
-If you want to implement a new growth rate method to be included in ESM, you need to:
+If you want to implement a new growth rate method to be included in the Longwing Data Standard, you need to:
 
 - Open a pull request with the following code changes
 - Define a new struct for your method type in `src/methods.jl`
@@ -311,4 +311,4 @@ If you want to implement a new growth rate method to be included in ESM, you nee
 - Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
 - Document that method in the growth rate documentation (this page)
 
-If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new growth rate method and explaining how the method should work.
+If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/longwing/issues/new/choose) asking for a new growth rate method and explaining how the method should work.

@@ -5,56 +5,56 @@ using PDFmerger
 using Combinatorics
 
 """
-    summary(file, ptype::AbstractESMDataType; plot=false)
+    summary(file, ptype::AbstractLongwingDataType; plot=false)
 
-Summarise a data file (.esm, plate reader, .fcs, etc.).
+Summarise a data file (.lw, plate reader, .fcs, etc.).
 
 # Arguments
 - `file::AbstractString`: The data file to be summarised.
-- `ptype::AbstractESMDataType`: The type of data file.
+- `ptype::AbstractLongwingDataType`: The type of data file.
 - `plot::Bool=false`: Produce plots of the data. Defaults to false.
 """
-function Base.summary(file::AbstractString, ::ESMData; plot = false)
+function Base.summary(file::AbstractString, ::LongwingData; plot=false)
     println("")
     # Print a summary of the contents
-    @info "Summary of ESM file: $file"
-    # Read the esm file
-    es = read_esm(file)
+    @info "Summary of Longwing file: $file"
+    # Read the Longwing file
+    lw = read_longwing(file)
     # Summarise samples
     @info "Summarising samples"
     # Number of timeseries and populations
-    @info "Number of timeseries: $(sum(es.samples[!,"type"].=="timeseries"))"
-    @info "Number of populations: $(sum(es.samples[!,"type"].=="population"))"
-    @info "Available channels are: $(unique(es.samples[!,"channel"]))"
+    @info "Number of timeseries: $(sum(lw.samples[!,"type"].=="timeseries"))"
+    @info "Number of populations: $(sum(lw.samples[!,"type"].=="population"))"
+    @info "Available channels are: $(unique(lw.samples[!,"channel"]))"
 
     println("")
     # Summarise groups
     @info "Summarising groups"
-    @info "Number of groups: $(nrow(es.groups))"
-    count = sum([i["autodefined"]!="true" for i in es.groups[!, "metadata"]])
+    @info "Number of groups: $(nrow(lw.groups))"
+    count = sum([i["autodefined"]!="true" for i in lw.groups[!, "metadata"]])
     @info "Number of manually defined groups: $count"
     count = (sum([i["autodefined"] == "true"
-                  for i in es.groups[!, "metadata"]]))
+                  for i in lw.groups[!, "metadata"]]))
     @info "Number of autodefined groups (such as for plates): $count"
-    group_sizes = Dict(i["group"] => length(i["sample_IDs"]) for i in eachrow(es.groups))
+    group_sizes = Dict(i["group"] => length(i["sample_IDs"]) for i in eachrow(lw.groups))
     for (key, value) in group_sizes
-        isautodefined = first(es.groups[es.groups[!, "group"] .== key, "metadata"])["autodefined"] == "true"
+        isautodefined = first(lw.groups[lw.groups[!, "group"] .== key, "metadata"])["autodefined"] == "true"
         @info "Group $key has size $value and is$(isautodefined ? "" : " not") autodefined."
     end
 
     println("")
     # Summarise transformations
     @info "Summarising transformations"
-    @info "Number of transformations: $(length(es.transformations))"
-    for (key, value) in es.transformations
+    @info "Number of transformations: $(length(lw.transformations))"
+    for (key, value) in lw.transformations
         @info "Transformation $key: $(value["equation"])"
     end
 
     println("")
     # Summarise views
     @info "Summarising views"
-    @info "Number of views: $(length(es.views))"
-    for (key, value) in es.views
+    @info "Number of views: $(length(lw.views))"
+    for (key, value) in lw.views
         @info "View $key: $(value["data"])"
     end
 
@@ -63,11 +63,11 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
         @info "Plotting timeseries data"
         # TODO need to know the times for all samples automatically
         dir = mktempdir()
-        for r in eachrow(es.samples)
+        for r in eachrow(lw.samples)
             if r.type == "timeseries"
                 p = Plots.plot(r.values,
-                    xlabel = "Time (#units missing#)", ylabel = "Value",
-                    title = "Timeseries for $(string(r.name))")
+                    xlabel="Time (#units missing#)", ylabel="Value",
+                    title="Timeseries for $(string(r.name))")
                 savefig(p, joinpath(dir, string(r.name) * ".pdf"))
             end
         end
@@ -76,7 +76,7 @@ function Base.summary(file::AbstractString, ::ESMData; plot = false)
     end
 end
 
-function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = false, csv = false)
+function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot=false, csv=false)
     function ms2hmsms(ms)
         h = floor(Int, ms / 3600000)
         ms -= h * 3600000
@@ -112,8 +112,8 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
             nrows = ceil(Int, nplots / 12)
             for scale in [:identity, :log10]
                 plt = Plots.plot(
-                    layout = (nrows, ncols), size = (150 * ncols, 150 * nrows), link = :both,
-                    plot_title = "Multipanel timeseries for:\nChannel - $key, Scale - $(scale == :identity ? "Linear" : "Log10")")
+                    layout=(nrows, ncols), size=(150 * ncols, 150 * nrows), link=:both,
+                    plot_title="Multipanel timeseries for:\nChannel - $key, Scale - $(scale == :identity ? "Linear" : "Log10")")
                 if scale == :log10
                     max_data = 10^ceil(log10(maximum(Matrix(data)) * 1.05))
                     min_data = 10^floor(log10(minimum(Matrix(data)) * 0.95))
@@ -126,30 +126,30 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
                     # Determine subplot position
                     idx = (row - 1) * ncols + col
                     if idx > nplots
-                        plot!(plt, subplot = idx, framestyle = :none)
+                        plot!(plt, subplot=idx, framestyle=:none)
                         continue
                     end
                     show_xticklabels = row == nrows
                     show_yticklabels = col == 1
                     ylim_missing = isnothing(min_data) || isnothing(max_data) || ismissing(min_data) || ismissing(max_data)
-                    plot!(plt, time, data[!, idx], subplot = idx,
-                        title = names(data)[idx], label = nothing,
-                        xformatter = show_xticklabels ? :auto : (x->""),
-                        yformatter = show_yticklabels ? :auto : (y->""),
-                        xrotation = 60,
-                        xlabel = show_xticklabels ? "Time (min)" : nothing,
-                        ylims = ylim_missing ? :auto : (min_data, max_data),
-                        bottom_margin = show_xticklabels ? 7mm : :match,
-                        linewidth = 2.0, colour = :black, yscale = scale)
+                    plot!(plt, time, data[!, idx], subplot=idx,
+                        title=names(data)[idx], label=nothing,
+                        xformatter=show_xticklabels ? :auto : (x->""),
+                        yformatter=show_yticklabels ? :auto : (y->""),
+                        xrotation=60,
+                        xlabel=show_xticklabels ? "Time (min)" : nothing,
+                        ylims=ylim_missing ? :auto : (min_data, max_data),
+                        bottom_margin=show_xticklabels ? 7mm : :match,
+                        linewidth=2.0, colour=:black, yscale=scale)
                 end
                 savefig(plt, joinpath(dir, string(key) * "_" * string(scale) * "_multipanel.pdf"))
 
                 # Single panel plot
-                plt = Plots.plot(xlabel = "Time (min)",
-                    title = "Overlaid timeseries for:\nChannel - $key, Scale - $(scale == :identity ? "Linear" : "Log10")")
+                plt = Plots.plot(xlabel="Time (min)",
+                    title="Overlaid timeseries for:\nChannel - $key, Scale - $(scale == :identity ? "Linear" : "Log10")")
                 for i in 1:nplots
-                    plot!(plt, time, data[!, i], label = nothing, linewidth = 2.0, alpha = 0.5,
-                    yscale = scale)
+                    plot!(plt, time, data[!, i], label=nothing, linewidth=2.0, alpha=0.5,
+                        yscale=scale)
                 end
                 savefig(plt, joinpath(dir, string(key) * "_" * string(scale) * "_singlepanel.pdf"))
             end
@@ -168,7 +168,7 @@ function Base.summary(file::AbstractString, ptype::AbstractPlateReader; plot = f
     end
 end
 
-function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, csv = false)
+function Base.summary(file::AbstractString, ::FlowCytometryData; plot=false, csv=false)
     println("")
     @info "Summary of FCS file: $file"
     f = load(file)
@@ -180,8 +180,8 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
         if lowercase(key) == "time"
             continue
         end
-        esm_channel = replace(key, "-" => "_")
-        @info "Channel $esm_channel: $(length(f[key])) events."
+        lw_channel = replace(key, "-" => "_")
+        @info "Channel $lw_channel: $(length(f[key])) events."
         @info "Values range from $(minimum(f[key])) to $(maximum(f[key]))."
     end
     @info "Time ranges from $(minimum(f["Time"])) to $(maximum(f["Time"])) with \
@@ -193,10 +193,10 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
         channels = [c for c in keys(f) if c != "Time"]
         for c in channels
             p = histogram(f[c],
-                xlabel = format_channel(c), ylabel = "Count")
+                xlabel=format_channel(c), ylabel="Count")
             savefig(p, joinpath(dir, string(c) * ".pdf"))
             p = scatter(f["Time"], f[c],
-                xlabel = "Time", ylabel = format_channel(c), marker = :auto)
+                xlabel="Time", ylabel=format_channel(c), marker=:auto)
             savefig(p, joinpath(dir, string(c) * "_time.pdf"))
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]
@@ -204,7 +204,7 @@ function Base.summary(file::AbstractString, ::FlowCytometryData; plot = false, c
         dir = mktempdir()
         for (c1, c2) in combinations(channels, 2)
             p = histogram2d(f[c1], f[c2],
-                xlabel = format_channel(c1), ylabel = format_channel(c2))
+                xlabel=format_channel(c1), ylabel=format_channel(c2))
             savefig(p, joinpath(dir, string(c1) * string(c2) * ".pdf"))
         end
         filepaths = [joinpath(dir, f) for f in readdir(dir) if endswith(f, ".pdf")]

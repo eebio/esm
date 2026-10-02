@@ -1,6 +1,6 @@
 # API
 
 ```@autodocs
-Modules = [ESM]
+Modules = [Longwing]
 Order   = [:function, :type]
 ```

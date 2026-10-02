@@ -1,9 +1,9 @@
-# ESM (Experimental Simple Model)
+# The Longwing Data Standard
 
 ```@meta
-CurrentModule = ESM
+CurrentModule = Longwing
 ```
 
 ```@docs
-ESM
+Longwing
 ```

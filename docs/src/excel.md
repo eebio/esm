@@ -1,6 +1,6 @@
 # Excel Interface
 
-The Excel interface is accessed through `esm template ...`. It provides an Excel spreadsheet template which can be filled in with information about your data and processing. This is required to create a `.esm` file from which outputs and views can be produced.
+The Excel interface is accessed through `lw template ...`. It provides an Excel spreadsheet template which can be filled in with information about your data and processing. This is required to create a `.lw` file from which outputs and views can be produced.
 
 The Excel template features five sheets to be filled out with relevant information:
 
@@ -14,19 +14,19 @@ On this page, we document what is required to be filled out and give examples of
 
 ## Reconstructing a template
 
-The command `esm untranslate input.esm output.xlsx` reconstructs these five sheets from a `.esm` file. This won't necessarily be the same template that was used to generate the data, but assuming you have the original data files, it should be `esm translate`-able into the same (or similar) `.esm` file.
+The command `lw untranslate input.lw output.xlsx` reconstructs these five sheets from a `.lw` file. This won't necessarily be the same template that was used to generate the data, but assuming you have the original data files, it should be `lw translate`-able into the same (or similar) `.lw` file.
 
 ## Samples
 
 The first sheet is called **Samples** and requires information about where you data is stored and what information should be read from it.
 
-Each row specifies a new file that should be imported into the final `.esm` file.
+Each row specifies a new file that should be imported into the final `.lw` file.
 
 The **Type** defines whether the data is `plate reader` or `flow` to determine how that file should be imported. These are the only two options.
 
 The **Data Location** gives the full filepath to the data. It should include any filename extensions (like **.xlsx** or **.csv**)
 
-**Channels** identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved. This should be a comma-separated list is multiple channels are to be included. Spaces may be optionally included after the commas. The channel names should be formatted as they are printed by `esm summarise`.
+**Channels** identifies the specific channels that you would like to save in the Longwing file. If left blank, then all will be saved. This should be a comma-separated list is multiple channels are to be included. Spaces may be optionally included after the commas. The channel names should be formatted as they are printed by `lw summarise`.
 
 The **Plate brand** identifies the format the data will be in and how it should be parsed. Available options are: `spectramax`, `biotek`, `bmg`, `tecan` and `generic`. Leave it blank for flow cytometry data.
 
@@ -67,7 +67,7 @@ Additional metadata can be added to each group by adding more columns. Each colu
 
 On the transformations sheet, you can define the post-processing you want to apply to your data. This typically involves calibrations and calculating summary statistics.
 
-In the left column, you can name your transformation. In the right column, you can provide the code for the transformation you want to run. This can be arbitrary Julia code, but most commonly is just calling one of the ESM methods for [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) data.
+In the left column, you can name your transformation. In the right column, you can provide the code for the transformation you want to run. This can be arbitrary Julia code, but most commonly is just calling one of the Longwing Data Standard methods for [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) data.
 
 In the example below, we define a short name for the times from plate 1. Then we calibrate our groups based on the blank group, then calculate doubling times on each of the calibrated transformations.
 
@@ -75,7 +75,7 @@ In the example below, we define a short name for the times from plate 1. Then we
 
 ## Views
 
-Finally, the views describe a subset of transformations, groups and samples that you actually want to look at, outside of ESM. This is typically used for your final post-processed data, but can also be useful for debugging (viewing inputs and outputs from a transformation to make sure it is working as intended).
+Finally, the views describe a subset of transformations, groups and samples that you actually want to look at, outside of Longwing. This is typically used for your final post-processed data, but can also be useful for debugging (viewing inputs and outputs from a transformation to make sure it is working as intended).
 
 In the example below, we have three views named `dt_low`, `dt_high`, and `dt_control`, which uses the doubling times calculated by their corresponding transformations. Instead of using a transformation, we could have also used a group name, or a sample name.
 

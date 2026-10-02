@@ -4,7 +4,7 @@ using NaNMath
 using SciMLBase
 import DataFrames: transform
 
-abstract type AbstractTransformMethod <: AbstractESMMethod end
+abstract type AbstractTransformMethod <: AbstractLongwingMethod end
 
 """
     transform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
@@ -21,10 +21,10 @@ Keywords:
     `cols` (e.g., `:FSC-A`), but will be transformed if the full column name is specified
     (e.g., `:FSC-A.max`).
 """
-function transform(data::AbstractDataFrame, method::AbstractTransformMethod; cols = names(data))
+function transform(data::AbstractDataFrame, method::AbstractTransformMethod; cols=names(data))
     data = deepcopy(data)
     for name in cols
-        if string(name) == "id" || string(name) == "esm_well"
+        if string(name) == "id" || string(name) == "longwing_well"
             continue
         end
         data[!, name] = method.forward.(data[!, name])
@@ -47,10 +47,10 @@ Keywords:
     in `cols` (e.g., `:FSC-A`), but will be untransformed if the full column name is
     specified (e.g., `:FSC-A.max`).
 """
-function untransform(data::DataFrame, method::AbstractTransformMethod; cols = names(data))
+function untransform(data::DataFrame, method::AbstractTransformMethod; cols=names(data))
     data = deepcopy(data)
     for name in cols
-        if string(name) == "id" || string(name) == "esm_well"
+        if string(name) == "id" || string(name) == "longwing_well"
             continue
         end
         data[!, name] = method.backward.(data[!, name])
@@ -121,7 +121,7 @@ end
 
     Transforms data to linear scale from the interval [-A, T] to [0, 1].
 """
-function Linear(; A = 0, T = 262144)
+function Linear(; A=0, T=262144)
     T > 0 || error("Linear transform: We require T > 0")
     0 <= A <= T || error("Linear transform: We require 0 <= A <= T")
     return Transform(x -> (x+A)/(T+A), x -> x * (T+A) - A)
@@ -143,7 +143,7 @@ end
 
     When untransforming, values that were clamped to `min` are mapped to `-Inf` and values clamped to `max` are mapped to `Inf`.
 """
-function Bound(; min=-Inf, max=Inf)
+function Bound(; min=(-Inf), max=Inf)
     min <= max || error("Bound transform: We require min <= max")
     function reverse(x)
         if x == min
@@ -230,7 +230,7 @@ function taylorSeries(taylor, x1, x)
     return sum
 end
 
-function Hyperlog(a,b,c,f,xTaylor,taylor,x1,inv,w)
+function Hyperlog(a, b, c, f, xTaylor, taylor, x1, inv, w)
     function EH(x)
         negative = x < x1
         if negative
@@ -265,7 +265,7 @@ function Hyperlog(a,b,c,f,xTaylor,taylor,x1,inv,w)
             x0 = x1 + x * w / inv
         end
         prob = NonlinearProblem(root, x0)
-        sol = NonlinearSolve.solve(prob, NonlinearSolve.NewtonRaphson(), verbose = false)
+        sol = NonlinearSolve.solve(prob, NonlinearSolve.NewtonRaphson(), verbose=false)
         if SciMLBase.successful_retcode(sol)
             if negative
                 return 2 * x1 - sol.u[1]
@@ -344,7 +344,7 @@ Arguments:
 - `M`: The number of decades to be compressed. Must be greater than 0
 - `A`: The additional negative decades. Must be greater than or equal to -W and less than or equal to M - 2*W.
 """
-function Logicle(; W = 1.0, T = 262144, M = 4.5, A = 0)
+function Logicle(; W=1.0, T=262144, M=4.5, A=0)
     T > 0 || error("Logicle transform: We require T > 0")
     M > 0 || error("Logicle transform: We require M > 0")
     0 <= W <= M/2 || error("Logicle transform: We require 0 <= W <= M/2")

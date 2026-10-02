@@ -1,46 +1,46 @@
 # Command Line Interface
 
-The command line interface allows you to interact with, create and edit `.esm` files. The functions are documented here and can also be seen by using `esm -h`. The help for each function can be seen by using `esm summarise -h` or `esm template -h` for example.
+The command line interface allows you to interact with, create and edit `.lw` files. The functions are documented here and can also be seen by using `lw -h`. The help for each function can be seen by using `lw summarise -h` or `lw template -h` for example.
 
 ## summarise
 
-A typcial working begins with `esm summarise`, which lets you view your raw data. This can be helpful for decisions such as detecting contamination in blank wells, gating, etc.
+A typcial working begins with `lw summarise`, which lets you view your raw data. This can be helpful for decisions such as detecting contamination in blank wells, gating, etc.
 
 ```@docs; canonical=false
-ESM.summarise
+Longwing.summarise
 ```
 
 ## template
 
-To convert and collect your data into a `.esm` file, you first want to create an Excel file that describes your data and how it should be imported, processed and viewed. A template Excel file can be loaded using the `esm template ...` function. To see how the Excel file should be filled out, check out [Getting Started with ESM](@ref) or [Excel Interface](@ref).
+To convert and collect your data into a `.lw` file, you first want to create an Excel file that describes your data and how it should be imported, processed and viewed. A template Excel file can be loaded using the `lw template ...` function. To see how the Excel file should be filled out, check out [Getting Started with Longwing](@ref) or [Excel Interface](@ref).
 
 ```@docs; canonical=false
-ESM.template
+Longwing.template
 ```
 
 ## translate
 
-Once the template has been filled out and completed, it can be translated into a `.esm` file using the `esm translate ...` function.
+Once the template has been filled out and completed, it can be translated into a `.lw` file using the `lw translate ...` function.
 
 ```@docs; canonical=false
-ESM.translate
+Longwing.translate
 ```
 
 ## untranslate
 
-An `.esm` file can be reconstructed into an Excel workbook with `esm untranslate ...`.
-This won't neccessarily return the same template that was used to generate the `.esm` file, but it will make a best attempt and assuming you have access to the raw data files, should be `esm translate`-able into the orignal `.esm` file.
+An `.lw` file can be reconstructed into an Excel workbook with `lw untranslate ...`.
+This won't neccessarily return the same template that was used to generate the `.lw` file, but it will make a best attempt and assuming you have access to the raw data files, should be `lw translate`-able into the orignal `.lw` file.
 
 ```@docs; canonical=false
-ESM.untranslate
+Longwing.untranslate
 ```
 
 ## views
 
-To create the views from a `.esm` file, you can use the `esm views ...` function. This saves the views as `.csv` files or plots relevant figures.
+To create the views from a `.lw` file, you can use the `lw views ...` function. This saves the views as `.csv` files or plots relevant figures.
 
 ```@docs; canonical=false
-ESM.views
+Longwing.views
 ```
 
 !!! note "Comma-separated views"
@@ -48,10 +48,10 @@ ESM.views
 
 ## interactive
 
-Edit, manipluate and process a `.esm` file interactively.
+Edit, manipluate and process a `.lw` file interactively.
 
 ```@docs; canonical=false
-ESM.interactive
+Longwing.interactive
 ```
 
-By calling `esm interactive` on a `.esm` file, you can edit transforms, groups, group metadata, and views. You can also process views to get their outputs (similarly to the outputs of `esm views`) and run arbitrary transformations on your data. This allows you to quickly debug and iterate on a particular transform, without needing to edit the template and re-translating it.
+By calling `lw interactive` on a Longwing Data Standard file, you can edit transforms, groups, group metadata, and views. You can also process views to get their outputs (similarly to the outputs of `lw views`) and run arbitrary transformations on your data. This allows you to quickly debug and iterate on a particular transform, without needing to edit the template and re-translating it.

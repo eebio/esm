@@ -1,50 +1,50 @@
-# Getting Started with ESM
+# Getting Started with Longwing
 
-This tutorial will walk you through the complete workflow of processing experimental data with ESM, from initial data exploration to calculating doubling times, with data split into different groups (controls, high fluorescence and low fluorescence). We'll use some sample plate reader data (that you can download to follow along).
+This tutorial will walk you through the complete workflow of processing experimental data with Longwing and the Longwing Data Standard, from initial data exploration to calculating doubling times, with data split into different groups (controls, high fluorescence and low fluorescence). We'll use some sample plate reader data (that you can download to follow along).
 
 ## Prerequisites
 
 !!! note "For Windows users"
-    For Windows users, this tutorial assumes you are using PowerShell, although this is not required to use ESM.
+    For Windows users, this tutorial assumes you are using PowerShell, although this is not required to use Longwing.
 
-### Installing ESM
+### Installing Longwing
 
-1. [Download the source code](https://github.com/eebio/esm/archive/refs/heads/main.zip) and unzip it.
+1. [Download the source code](https://github.com/eebio/longwing/archive/refs/heads/main.zip) and unzip it.
 2. [Download Julia](https://julialang.org/) if you don’t already have it installed.
-3. Run `julia --project -e 'using Pkg; Pkg.precompile(); Pkg.build()'` from the root directory of the repository (i.e. `/where/you/saved/source/code/esm-main`). If it fails, try running it a second time.
-4. You can test if its working by running `esm template -h`, if you see some documentation appear, ESM is successfully installed.
-5. If you instead see an error `command not found: esm`, you may need to add `~/.julia/bin` to your PATH.
+3. Run `julia --project -e ‘using Pkg; Pkg.precompile(); Pkg.build()’` from the root directory of the repository (i.e. `/where/you/saved/source/code/Longwing-main`). If it fails, try running it a second time.
+4. You can test if its working by running `lw template -h`, if you see some documentation appear, Longwing is successfully installed.
+5. If you instead see an error `command not found: lw`, you may need to add `~/.julia/bin` to your PATH.
 
 !!! tip "Adding ~/.julia/bin to your path"
-    In order for your terminal to find esm, you may need to edit the PATH variable. How exactly you add a directory to your PATH depends on what shell you are using and your operating system. You can find this out by running the command `echo $0`. Common shells include Bash, zsh, and PowerShell. If using Bash, add the line `PATH=$PATH:~/.julia/bin` to `~/.profile` or `~/.bash_profile`. If you are using zsh, add the line `PATH=$PATH:~/.julia/bin` to `~/.zprofile` (or add `~/.julia/bin` to `/etc/paths` on MacOS). Depending on your operating system and shell, you may need to expand the `~` to specify your home directory in full (i.e. replace `~/.julia/bin` with `/Users/UserName/.julia/bin` for example, or `C:\Users\UserName\.julia\bin` on Windows)
+    In order for your terminal to find `lw`, you may need to edit the PATH variable. How exactly you add a directory to your PATH depends on what shell you are using and your operating system. You can find this out by running the command `echo $0`. Common shells include Bash, zsh, and PowerShell. If using Bash, add the line `PATH=$PATH:~/.julia/bin` to `~/.profile` or `~/.bash_profile`. If you are using zsh, add the line `PATH=$PATH:~/.julia/bin` to `~/.zprofile` (or add `~/.julia/bin` to `/etc/paths` on MacOS). Depending on your operating system and shell, you may need to expand the `~` to specify your home directory in full (i.e. replace `~/.julia/bin` with `/Users/UserName/.julia/bin` for example, or `C:\Users\UserName\.julia\bin` on Windows)
 
 !!! note "For Windows users"
     There are a few exceptions for Windows users. If you are using Windows 10, you may face a bug during precompilation involving MKL\_jll. This can be fixed by installing [this Visual Studio tool](https://aka.ms/vs/17/release/vc_redist.x64.exe). To change the path variable, see [this guide](https://superuser.com/questions/1861276/how-to-set-a-folder-to-the-path-environment-variable-in-windows-11) - it should be identical on Windows 10 and Windows 11.
 
 ### Downloading the data
 
-You can download the plate reader data from [this link](https://github.com/eebio/esm/raw/refs/heads/main/test/inputs/tecan-data.xlsx).
+You can download the plate reader data from [this link](https://github.com/eebio/longwing/raw/refs/heads/main/test/inputs/tecan-data.xlsx).
 
-## Step 1: Explore your data with esm summarise
+## Step 1: Explore your data with lw summarise
 
-First, let's examine our dataset using the command line interface. We can use `esm summarise` on any ESM-compatible data file (`.fcs`, `.esm`, raw plate reader, etc.).
+First, let's examine our dataset using the command line interface. We can use `lw summarise` on any Longwing Data Standard compatible data file (`.fcs`, `.lw`, raw plate reader, etc.).
 
-To view the help guide for `esm summarise`, you can use `esm summarise -h`.
+To view the help guide for `lw summarise`, you can use `lw summarise -h`.
 
 ```@docs; canonical=false
-ESM.summarise
+Longwing.summarise
 ```
 
 Our plate reader data is from a Tecan machine, and we want to generate plots of the data to see if it looks like we expect, so we specify the `--type` option as `tecan` and add the `--plot` flag.
 
 ```bash
-esm summarise tecan-data.xlsx --type tecan --plot
+lw summarise tecan-data.xlsx --type tecan --plot
 ```
 
 !!! tip "Short options"
-    You can also use short options for all the esm commands. In place of `‑‑type`, you can use `‑t`, similarly with `‑‑plot` and `‑p`. The following are all valid ways of specifying the type option: `‑ttecan`, `‑t=tecan`, `‑t tecan`, `‑‑type tecan`, `‑‑type=tecan` (but not `‑‑typetecan`).
+    You can also use short options for all the lw commands. In place of `‑‑type`, you can use `‑t`, similarly with `‑‑plot` and `‑p`. The following are all valid ways of specifying the type option: `‑ttecan`, `‑t=tecan`, `‑t tecan`, `‑‑type tecan`, `‑‑type=tecan` (but not `‑‑typetecan`).
 
-Running `esm summarise` gives us some summary information about the channels available in the data, time ranges, number of wells/samples, etc. which is all printed to the terminal.
+Running `lw summarise` gives us some summary information about the channels available in the data, time ranges, number of wells/samples, etc. which is all printed to the terminal.
 
 Since we used `--plot` (or `-p`), we now have a `tecan-data.xlsx.pdf` file with a few different plots of our data. Lets have a look at the `OD_600` channel, on a linear scale.
 
@@ -52,24 +52,24 @@ Since we used `--plot` (or `-p`), we now have a `tecan-data.xlsx.pdf` file with 
 
 After looking over our data, it's clear that the cells in the B12 well have failed to grow (A1-A12 are blanks, A12-H12 are negative controls). We will need to remember to exclude that from our analysis later. All the other wells look healthy, so we can move ahead with our analysis.
 
-## Step 2: Begin the analysis with esm template
+## Step 2: Begin the analysis with lw template
 
-Now that we know our data is good, we can begin analysing it. To do this, we need to create an esm template file using, you guessed it, `esm template`.
+Now that we know our data is good, we can begin analysing it. To do this, we need to create an Longwing template file using, you guessed it, `lw template`.
 
-You can look at the help guide for `esm template` by running `esm template -h`. You'll see we can optionally specify a filepath for the template file (which will be a .xlsx file).
+You can look at the help guide for `lw template` by running `lw template -h`. You'll see we can optionally specify a filepath for the template file (which will be a .xlsx file).
 
 ```@docs; canonical=false
-ESM.template
+Longwing.template
 ```
 
 ```bash
-esm template --output-path template.xlsx
+lw template --output-path template.xlsx
 ```
 
-This creates an Excel file called `template.xlsx` where we can provide ESM with information about your data, like file locations and machine types.
+This creates an Excel file called `template.xlsx` where we can provide Longwing with information about your data, like file locations and machine types.
 
 !!! tip "Required vs optional"
-    You might see in `esm template -h` that `--output-path` has a default behaviour. If you don't specify an output filepath, it will add the template file as `ESM.xlsx` in the current directory. So we could have used `esm template` (with no other options) to get the template file.
+    You might see in `lw template -h` that `--output-path` has a default behaviour. If you don't specify an output filepath, it will add the template file as `template.xlsx` in the current directory. So we could have used `lw template` (with no other options) to get the template file.
 
 ## Step 3: Fill in the template
 
@@ -82,7 +82,7 @@ The template is split up into five sheets of information to fill out.
 The first sheet to fill out is the **Samples** sheet. This is where you describe the location and type of your data files.
 
 !!! note "Data formats"
-    ESM allows you to import raw machine outputs for plate readers and flow cytometers, so you don't need to edit the raw data to put it into a compatible format. If you don't have the original files for your plate reader data, we provide another form for [Generic tabular data](@ref).
+    Longwing allows you to import raw machine outputs for plate readers and flow cytometers, so you don't need to edit the raw data to put it into a compatible format. If you don't have the original files for your plate reader data, we provide another form for [Generic tabular data](@ref).
 
 We only have a single data file we want to analyse, so we will only fill out one row. If we had more data, we could include it here with additional rows.
 
@@ -90,14 +90,14 @@ The **Type** column defines whether the data is `plate reader` or `flow` and how
 
 The **Data Location** column gives the full filepath to the data. What you put here depends on where you saved the file **tecan-data.xlsx**.
 
-The **Channels** column identifies the specific channels that you would like to save in the ESM file. If left blank, then all will be saved. Since we are only looking at growth rate here, we will only record the 600nm OD channel (called `OD_600`, as shown with `esm summarise`).
+The **Channels** column identifies the specific channels that you would like to save in the Longwing file. If left blank, then all will be saved. Since we are only looking at growth rate here, we will only record the 600nm OD channel (called `OD_600`, as shown with `lw summarise`).
 
 The **Plate Reader Brand** identifies the format the data will be in. Available options are: `spectramax`, `biotek`, `bmg`, `tecan`, and `generic`. Leave it blank for flow cytometry data. This is `tecan` for us.
 
 The last few columns control the names of the data variables. Since plate reader data already provides well names we can leave the **Well** column blank. The plate name will default to **plate_0\$PLATE\$**, where **\$PLATE\$** is the value in the **Plate** column (we will put `1` here). Alternatively, you can provide a plate name in the **Name** column.
 
 !!! note "Samples, channels, groups and naming conventions"
-    In ESM, we refer to the data from a specific well as a sample, accessed under the variable syntax `plate_01_a5`. This includes all channels recorded for well A5 in plate 1. If we want data from a specific channel, as we normally do, we can index it like this: `plate_01_a5.od`. We can also do the same with groups (introduced in Step 3.3): `blanks.od`, returns only the `od` channel data for the `blanks` group of wells.
+    In the Longwing Data Standard, we refer to the data from a specific well as a sample, accessed under the variable syntax `plate_01_a5`. This includes all channels recorded for well A5 in plate 1. If we want data from a specific channel, as we normally do, we can index it like this: `plate_01_a5.od`. We can also do the same with groups (introduced in Step 3.3): `blanks.od`, returns only the `od` channel data for the `blanks` group of wells.
 
 ![alt text](assets/samples.png)
 
@@ -125,7 +125,7 @@ Here, we use the compressed format so that:
 * all wells on the right (A through H, column 12) are groups as `controls`,
 * the remaining wells (A through H, columns 2 through 11) are split into two groups (rows A, B, C and D as `low_flus`, and E, F, G and H as `high_flus`).
 
-We also need to make sure we don't include well B12 in the control group, based on our preliminany look at the data with `esm summarise`.
+We also need to make sure we don't include well B12 in the control group, based on our preliminany look at the data with `lw summarise`.
 
 ![alt text](assets/groups.png)
 
@@ -135,16 +135,16 @@ On the transformations sheet, you can define the post-processing you want to app
 
 In the example below, we calibrate our groups based on the `blanks` group, then calculate doubling times on each of the calibrated transformations.
 
-More details about some of the inbuilt methods in ESM, like `doubling_time()` can be found in the [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) documentation, for now though, we will just use `TimeseriesBlank()` for calibration and `Logistic()` for growth rate/doubling time calculations.
+More details about some of the inbuilt methods in Longwing and the Longwing Data Standard, like `doubling_time()` can be found in the [Plate Reader](@ref plate_reader) and [Flow Cytometry](@ref flow_cytometry) documentation, for now though, we will just use `TimeseriesBlank()` for calibration and `Logistic()` for growth rate/doubling time calculations.
 
 ![alt text](assets/transformations.png)
 
 !!! note "Time data"
-    For plate reader data, time is stored in its own special "well", so it can be accessed using `plate_01_time` (there is also a special well for temperature). It is useful to remember that the recorded times are different for each channel, so we want to use `plate_01_time.od` here. The time data is stored as a number of milliseconds, although ESM functions typically use inputs and outputs in the standard units of minutes. For flow cytometry data, time is stored as its own channel, rather than a well, so it is accessed as `plate_01_a1.time`.
+    For plate reader data, time is stored in its own special "well", so it can be accessed using `plate_01_time` (there is also a special well for temperature). It is useful to remember that the recorded times are different for each channel, so we want to use `plate_01_time.od` here. The time data is stored as a number of milliseconds, although Longwing functions typically use inputs and outputs in the standard units of minutes. For flow cytometry data, time is stored as its own channel, rather than a well, so it is accessed as `plate_01_a1.time`.
 
 ### Step 3.5: The Views sheet
 
-Finally, the views describe a subset of transformations, groups, and samples that you actually want to look at, outside of ESM. This is typically used for your final post-processed data, but can also be useful for debugging (viewing inputs and outputs from a transformation to make sure it is working as intended).
+Finally, the views describe a subset of transformations, groups, and samples that you actually want to look at, outside of Longwing. This is typically used for your final post-processed data, but can also be useful for debugging (viewing inputs and outputs from a transformation to make sure it is working as intended).
 
 In our example, we have a few views named `dt_low`, `dt_high`, and `dt_control`, each of which refers to the doubling time transformations, although views can also refer to samples or groups, not just transformations.
 
@@ -153,68 +153,68 @@ In our example, we have a few views named `dt_low`, `dt_high`, and `dt_control`,
 !!! tip
     We've gone through how to fill in the Excel template quite quickly. If you want more in depth information, try checking out the [Excel Interface](@ref) page, which goes into more details on what is allowed and supported.
 
-## Step 4: Process the data with esm translate
+## Step 4: Process the data with lw translate
 
-Now we have filled out our template, we can translate it and our data into an esm file with `esm translate`. To see how to do this, lets check out `esm translate -h`.
+Now we have filled out our template, we can translate it and our data into a Longwing file with `lw translate`. To see how to do this, lets check out `lw translate -h`.
 
 ```@docs; canonical=false
-ESM.translate
+Longwing.translate
 ```
 
-We need to provide two arguments to `esm translate`, the completed template file to input and a file path to save the esm file output.
+We need to provide two arguments to `lw translate`, the completed template file to input and a file path to save the Longwing file output.
 
 ```bash
-esm translate template.xlsx data.esm
+lw translate template.xlsx data.lw
 ```
 
 This will:
 
 * Read all specified data files,
-* Combine results into a single ESM file.
+* Combine results into a single Longwing Data Standards file.
 
 !!! note "Transformations are NOT run"
-    When the esm file is created, none of the transformations are run. This may mean that you have successfully created the esm file, but there are still mistakes or bugs in the transformations and views.
+    When the Longwing file is created, none of the transformations are run. This may mean that you have successfully created the Longwing file, but there are still mistakes or bugs in the transformations and views.
 
-## Step 5: Explore the results with esm views
+## Step 5: Explore the results with lw views
 
-The final step is to calculate and output our doubling times, which we can do with `esm views`. Again, you may want to have a look at `esm views -h` to see what is required and what options you can provide.
+The final step is to calculate and output our doubling times, which we can do with `lw views`. Again, you may want to have a look at `lw views -h` to see what is required and what options you can provide.
 
 ```@docs; canonical=false
-ESM.views
+Longwing.views
 ```
 
 We can now look at our calculated doubling times from our data. Lets just have a look at our `dt_control` view for now.
 
 ```bash
-esm views data.esm --view dt_control
+lw views data.lw --view dt_control
 ```
 
 !!! tip "Outputting all views"
-    If you don't specify the `--view` option, all views will be outputted. Since we have multiple views here, it would be easier to run `esm views data.esm`, but we don't do that so you can see how you specify a particular view you want.
+    If you don't specify the `--view` option, all views will be outputted. Since we have multiple views here, it would be easier to run `lw views data.lw`, but we don't do that so you can see how you specify a particular view you want.
 
 ## Step 6: Analyse the data
 
-You should now have a file called `dt_control.csv` which contains you doubling times for the controls. From here, you can freely generate publication-quality plots of the data in your preferred software, perform statistical tests on the data, and integrate with computational pipelines. Just remember to share your `data.esm` file so that others can reproduce your data (by running `esm views data.esm` on their own machine).
+You should now have a file called `dt_control.csv` which contains you doubling times for the controls. From here, you can freely generate publication-quality plots of the data in your preferred software, perform statistical tests on the data, and integrate with computational pipelines. Just remember to share your `data.lw` file so that others can reproduce your data (by running `lw views data.lw` on their own machine).
 
 ![alt text](assets/final-data.png)
 
 ## Best practices
 
 1. **Summarise Data Early**: Looking at plots of the data can help identify issues like contaminated wells, that may change how you want to analyse the data.
-2. **Start Small**: Its easy to fill out the template at the start, but this can make it harder to debug the transformations. Try going through, writing a transformation at a time and export it as a view to keep an eye on whats happening. You can also test out transformations through `esm interactive`.
-3. **Save Excel**: Make sure you save the Excel template before calling `esm translate`. Autosaves are not always enough.
-4. **Remember the order of ESM operations**: Using `esm translate` will import and check your raw data, and collect groups, but it won't check your transformations and views. If you are getting errors when trying to generate views, this may be due to transformations being incorrectly defined, rather than just your views.
+2. **Start Small**: Its easy to fill out the template at the start, but this can make it harder to debug the transformations. Try going through, writing a transformation at a time and export it as a view to keep an eye on whats happening.
+3. **Save Excel**: Make sure you save the Excel template before calling `lw translate`. Autosaves are not always enough.
+4. **Remember the order of Longwing operations**: Using `lw translate` will import and check your raw data, and collect groups, but it won't check your transformations and views. If you are getting errors when trying to generate views, this may be due to transformations being incorrectly defined, rather than just your views.
 
 ## Next steps
 
-If you want to learn more about ESM, you can go to:
+If you want to learn more about Longwing and the Longwing Data Standard, you can go to:
 
 * [Plate Readers](@ref plate_reader) to learn about the functionality and different methods available for working with plate reader data, like `TimeseriesBlank()` and `Logistic()` used here.
 * [Flow Cytometry](@ref flow_cytometry) to learn about the calibration and gating methods available for working with flow cytometry data.
-* [Command Line Interface](@ref) to learn about all the features of the command line interface (`esm summarise`, `esm translate`, etc.) including the interactive mode.
-* [Data Format](@ref) to learn about how `.esm` files are structured.
+* [Command Line Interface](@ref) to learn about all the features of the command line interface (`lw summarise`, `lw translate`, etc.).
+* [Data Format](@ref) to learn about how `.lw` files are structured and the Longwing Data Standard.
 * [Excel Interface](@ref) to learn more details about how the Excel template file works and its format.
 
 ## Getting help
 
-If you encounter issues, [open a new issue](https://github.com/eebio/esm/issues/new) with details about your problem.
+If you encounter issues, [open a new issue](https://github.com/eebio/longwing/issues/new) with details about your problem.

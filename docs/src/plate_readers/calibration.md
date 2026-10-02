@@ -47,7 +47,7 @@ It can be called using `calibrate(data, time_col, StartData())`.
 
 ## Implementation Details
 
-If you want to implement a new calibration method to be included in ESM, you need to:
+If you want to implement a new calibration method to be included in the Longwing Data Standard, you need to:
 
 * Open a pull request with the following code changes
 * Define a new struct for your method type in `src/methods.jl`
@@ -55,4 +55,4 @@ If you want to implement a new calibration method to be included in ESM, you nee
 * Define a new method dispatch `calibrate(data, time_col, ::NameOfNewMethodType)`
 * Document that method in the calibration documentation (this page)
 
-If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new calibration method and explaining how the method should work.
+If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/longwing/issues/new/choose) asking for a new calibration method and explaining how the method should work.

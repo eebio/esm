@@ -174,8 +174,8 @@ Q
 EXPECT_WAIT:You have unsaved changes. What would you like to do?
 ENTER
 EXPECT:Filename>
-TEXT:temp.esm
+TEXT:temp.lw
 ENTER
-EXPECT_WAIT:The current version of ESM is different
+EXPECT_WAIT:The current version of Longwing is different
 ENTER
-EXPECT:ESM saved to temp.esm
+EXPECT:Longwing Data Standard file saved to temp.lw

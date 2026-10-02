@@ -3,7 +3,7 @@ set verbose 0
 
 exp_internal $verbose
 log_user $verbose
-log_file -a /tmp/esm-interactive.expect.log
+log_file -a /tmp/Longwing-interactive.expect.log
 
 proc debug {message} {
     global verbose
@@ -123,7 +123,7 @@ foreach event_file $event_files {
 
     if {$event_index < $event_count} {
         expect {
-            "ESM_INTERACTIVE_SESSION_DONE" {}
+            "LONGWING_INTERACTIVE_SESSION_DONE" {}
             timeout { error "Timed out waiting for interactive session $event_index to finish" }
             eof { error "Child exited after interactive session $event_index" }
         }
@@ -131,7 +131,7 @@ foreach event_file $event_files {
 }
 
 expect {
-    "ESM_INTERACTIVE_TEST_PASSED" { send -- "\n" }
+    "LONGWING_INTERACTIVE_TEST_PASSED" { send -- "\n" }
     timeout { error "Timed out waiting for the interactive test child" }
 }
 expect eof

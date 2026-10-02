@@ -13,21 +13,21 @@ function remove_subcols(df, sub)
 end
 
 """
-    filter_row(es,group)
+    filter_row(lw, group)
 
-Filter the original es.samples dataframe by a specific group defined in the esm.
+Filter the original lw.samples dataframe by a specific group defined in the Longwing file.
 
 Arguments:
-- `es::esm_zones`: esm zones data type.
+- `lw::lw_zones`: The Longwing data to filter.
 - `group::Union{String,Vector}`: what group/groups to filter by.
 """
-function filter_row(es, group)
-    return es.samples[es.samples[!, group] .== true, :]
+function filter_row(lw, group)
+    return lw.samples[lw.samples[!, group] .== true, :]
 end
 
 function filter_channel(df::DataFrame, channel)
     channel = string(channel)
-    return remove_subcols(df[:, filter(colname -> channel in split(colname, ".")  || colname == "id" || colname == "esm_well", names(df))], channel)
+    return remove_subcols(df[:, filter(colname -> channel in split(colname, ".") || colname == "id" || colname == "longwing_well", names(df))], channel)
 end
 
 function filter_channel(df::Expr, channel)
@@ -57,10 +57,10 @@ end
     form_df(df)
 
 Creates the data frame from the dataframe it is passed.
-This is to turn the es.samples.values arrays into dfs.
+This is to turn the lw.samples.values arrays into dfs.
 
 Arguments:
-- `df::DataFrame`: A dataframe of es.samples to parse.
+- `df::DataFrame`: A dataframe of lw.samples to parse.
 """
 function form_df(df::DataFrame)
     max_dat = maximum(length.(df.values))
@@ -73,25 +73,25 @@ function form_df(df::Expr)
 end
 
 """
-    find_group(es,grn)
+    find_group(lw,grn)
 
-Finds a specific group from the original es.groups dataframe.
+Finds a specific group from the original lw.groups dataframe.
 Returns the sample names.
 
 Arguments:
-- `es::esm_zones`: The data set to search.
+- `lw::lw_zones`: The data set to search.
 - `grn::String`: A string of a group name which can be used to filter the original
     dataframe.
 """
-function find_group(es, grn)
-    return es.groups[es.groups.group .== grn, :sample_IDs][1]
+function find_group(lw, grn)
+    return lw.groups[lw.groups.group .== grn, :sample_IDs][1]
 end
 
-function get_group(es, grn)
+function get_group(lw, grn)
     # Is the group a flow group?
-    sample_types = es.samples.type[getproperty(es.samples, grn)]
+    sample_types = lw.samples.type[getproperty(lw.samples, grn)]
     if all(sample_types .== "population")
-        data = [deepcopy(ESM.to_rfi(es, sample)) for sample in find_group(es, string(grn))]
+        data = [deepcopy(Longwing.to_rfi(lw, sample)) for sample in find_group(lw, string(grn))]
         # Check the data is compatible
         # All samples must have the same channels
         @assert all([sort(names(d))==sort(names(data[1])) for d in data]) "Samples in group $grn have different channels."
@@ -103,27 +103,27 @@ function get_group(es, grn)
         end
         return tmp
     elseif all(sample_types .== "timeseries")
-        return ESM.form_df(ESM.filter_row(es, grn))
+        return Longwing.form_df(Longwing.filter_row(lw, grn))
     else
         error("Group $grn contains mixed sample types (population and timeseries).")
     end
 end
 
-function get_sample(es, sample)
+function get_sample(lw, sample)
     # Is the sample a flow sample?
-    sample_types = es.samples[sample .== get_sample_id.(es.samples.name), "type"]
+    sample_types = lw.samples[sample .== get_sample_id.(lw.samples.name), "type"]
     if all(sample_types .== "population")
-        return ESM.to_rfi(es, sample)
+        return Longwing.to_rfi(lw, sample)
     end
     # Otherwise return DataFrame
-    return ESM.form_df(es.samples[sample .== get_sample_id.(es.samples.name), :])
+    return Longwing.form_df(lw.samples[sample .== get_sample_id.(lw.samples.name), :])
 end
 
 function get_sample_id(sample)
     return first(splitext(sample))
 end
 
-function index_between_vals(df; minv = -Inf, maxv = Inf)
+function index_between_vals(df; minv=(-Inf), maxv=Inf)
     if all(ismissing.(df[:, 1])) || count(x -> minv <= x <= maxv, skipmissing(df[:, 1])) == 0
         return nothing, nothing
     end
@@ -143,9 +143,9 @@ Arguments:
 - `mint::Float64=-Inf`: Minimum time in mins.
 - `maxt::Float64=Inf`: Max time in mins.
 """
-function between_times(df::DataFrame, time_col::DataFrame; mint = -Inf, maxt = Inf)
+function between_times(df::DataFrame, time_col::DataFrame; mint=(-Inf), maxt=Inf)
     # Do time calculations in seconds to avoid floating point math
-    return between(df, time_col; min_value = mint * 60000, max_value = maxt * 60000)
+    return between(df, time_col; min_value=mint * 60000, max_value=maxt * 60000)
 end
 
 """
@@ -166,12 +166,12 @@ Arguments:
 - `min_value=-Inf`: Minimum value.
 - `max_value=Inf`: Maximum value.
 """
-function between(df::DataFrame, range_df; min_value = -Inf, max_value = Inf)
+function between(df::DataFrame, range_df; min_value=(-Inf), max_value=Inf)
     df = deepcopy(df)
     allowmissing!(df)
     if range_df isa AbstractVector || ncol(range_df) == 1
         # Find indicies in range_df and replace out of range values with missing
-        indicies = index_between_vals(range_df; minv = min_value, maxv = max_value)
+        indicies = index_between_vals(range_df; minv=min_value, maxv=max_value)
         for col in names(df)
             for i in 1:nrow(df)
                 if isnothing(indicies[1]) || isnothing(indicies[2])
@@ -184,7 +184,7 @@ function between(df::DataFrame, range_df; min_value = -Inf, max_value = Inf)
     else
         @assert issetequal(names(df), names(range_df)) "DataFrame columns must match for range filtering."
         for col in names(df)
-            indicies = index_between_vals(range_df[!, col]; minv = min_value, maxv = max_value)
+            indicies = index_between_vals(range_df[!, col]; minv=min_value, maxv=max_value)
             for i in 1:nrow(df)
                 if isnothing(indicies[1]) || isnothing(indicies[2])
                     df[i, col] = missing
@@ -197,11 +197,11 @@ function between(df::DataFrame, range_df; min_value = -Inf, max_value = Inf)
     return df
 end
 
-function between(df::DataFrame; min_value = -Inf, max_value = Inf)
+function between(df::DataFrame; min_value=(-Inf), max_value=Inf)
     df = deepcopy(df)
     allowmissing!(df)
     for col in names(df)
-        indicies = index_between_vals(df[!, [col]]; minv = min_value, maxv = max_value)
+        indicies = index_between_vals(df[!, [col]]; minv=min_value, maxv=max_value)
         for i in 1:nrow(df)
             if isnothing(indicies[1]) || isnothing(indicies[2])
                 df[i, col] = missing
@@ -226,7 +226,7 @@ Arguments:
 - `time_point::Float64`: Time point in mins at which to report the measurement.
 """
 function at_time(df::DataFrame, time_col::DataFrame, time_point)
-    tvals = index_between_vals(time_col; minv = 0, maxv = round(time_point * 60000))
+    tvals = index_between_vals(time_col; minv=0, maxv=round(time_point * 60000))
     if isnothing(tvals[2])
         @warn "No values found at or before $time_point."
         # Return empty dataframe of the same type

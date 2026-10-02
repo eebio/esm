@@ -3,7 +3,7 @@
 There are a couple of methods for automatically gating flow cytometry data. Each method uses the `gate(data, Method())` function signature which will return all the data that passes the automatic gating algorithm. These can be used in the transformations in the Excel template.
 
 !!! tip "Flow cytometry samples and groups"
-    When using ESM transformations, samples and groups are automatically converted to relative fluoresence intensity. This allows you to use `gate` on any flow sample or group of flow samples.
+    When using Longwing transformations, samples and groups are automatically converted to relative fluoresence intensity. This allows you to use `gate` on any flow sample or group of flow samples.
 
 ```@docs; canonical=false
 gate
@@ -19,7 +19,7 @@ You can also supply `transform_x` and `transform_y` to apply a transformation to
 
 ## Implementation Details
 
-If you want to implement a new automatic gating method to be included in ESM, you need to:
+If you want to implement a new automatic gating method to be included in the Longwing Data Standard, you need to:
 
 * Open a pull request with the following code changes
 * Define a new struct for your method type in `src/methods.jl`
@@ -27,4 +27,4 @@ If you want to implement a new automatic gating method to be included in ESM, yo
 * Define a new method dispatch `gate(data, ::NameOfNewMethodType)`
 * Document that method in the automatic gating documentation (this page)
 
-If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new automatic gating method and explaining how the gate should work.
+If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/longwing/issues/new/choose) asking for a new automatic gating method and explaining how the gate should work.

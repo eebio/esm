@@ -198,7 +198,7 @@ DOWN
 DOWN
 ENTER
 EXPECT:Filename>
-TEXT:test2.esm
+TEXT:test2.lw
 ENTER
 EXPECT:> Yes, save changes and update the metadata
 ENTER
@@ -206,4 +206,4 @@ ENTER
 # Quit
 EXPECT_WAIT:Main Menu (press [q] to quit):
 Q
-EXPECT:Exiting ESM interactive mode.
+EXPECT:Exiting Longwing interactive mode.
