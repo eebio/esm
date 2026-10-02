@@ -1,6 +1,6 @@
 # Data Format
 
-The ESM data format (the format used for `.esm` files) is a JSON format, with its highest level storing 4 key-value pairs. The keys are "samples", "groups", "transformations", and "views", with their values defined as outlined below.
+The Longwing Data Standards data format (the format used for `.lw` files) is a JSON format, with its highest level storing the keys "samples", "groups", "transformations", "views", and "metadata". The first four keys contain the data structures described below. The `metadata` object contains information about the Longwing version and how the source data was imported.
 
 ## Samples
 
@@ -29,7 +29,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         "plate_01_temperature":{
             "values":{
@@ -45,7 +59,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
             ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         "plate_01_a1":{
             "values":{
@@ -61,7 +89,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         ...
         "plate_01_h12":{
@@ -78,7 +120,21 @@ Times are formatted as an integer number of milliseconds. Flow cytometry channel
                 ]
             },
             "type":"timeseries",
-            "metadata":{}
+            "metadata": {
+                "raw_metadata": "Plate:\tPlate1\t1.3\t ... FALSE\tRaw\tFALSE\t1\t52\t52\t1\t535\t1\t12\t96\t485\tManual\t6\tHigh\t1\t5\t485\n",
+                "template": {
+                    "channels": [
+                        "535_485",
+                        "600",
+                        "700"
+                    ],
+                    "data_location": ".../spectramax-summarise.txt",
+                    "plate": 1,
+                "plate_brand": "SpectraMax",
+                "sample_type": "plate reader",
+                "well": ""
+                }
+            }
         },
         "plate_02_a1":{
             "values":{
@@ -258,5 +314,29 @@ Under views, we have key-value pairs (name of the view is the key) with a variab
         ]
         }
     }
+}
+```
+
+## Metadata
+
+In addition to metadata about your samples and groups, Longwing also stores a range of metadata about the `.lw` file itself. This is to help aid in reproducibility of the analysis.
+This metadata is generated when the `.lw` file is created. It may be changed when the `.lw` file is edited with `lw interactive`, in which case it will be overridden and the old metadata will be stored in the description. The idea behind including this metadata is so that the versions of the software used to do the analysis (the Longwing version and its dependencies), which is likely to be the same as the version used to generate the `.lw` file, is recorded as part of the `.lw` file, which can help to track down changes either in the functionality of Longwing or its dependencies.
+
+```json
+"metadata": {
+    "Manifest.toml": "...",
+    "Project.toml": "...",
+    "channel_map": {
+      "535_485": "535_485",
+      "600": "abs600",
+      "700": "abs700",
+      "FSC_H": "FSC_H"
+    },
+    "date_created": "",
+    "date_modified": "",
+    "description": "",
+    "longwing_version": "0.4.0",
+    "longwing_data_standard_version": "0.4.0",
+    "versioninfo": "..."
 }
 ```

@@ -3,8 +3,8 @@
 There are a variety of methods for calculating growth rates (or doubling times). Each method uses the `growth_rate(data, time_col, Method())` function signature (or `doubling_time(data, time_col, Method())`). These can be used in the transformations in the Excel template.
 
 ```@docs
-ESM.growth_rate
-ESM.doubling_time
+Longwing.growth_rate
+Longwing.doubling_time
 ```
 
 !!! tip "Validation of growth curves"
@@ -23,7 +23,7 @@ lag_time
 
 !!! note "Lagtime"
     Lagtime is always calculated using `growth_rate`, `time_to_max_growth`, and `od_at_max_growth` according to [Zwietering et al. 1990](https://doi.org/10.1128/aem.56.6.1875-1881.1990). This method defines the lagtime as the x intercept of the tangent to the growth curve at maximum growth on a plot of `log(OD/OD_0)` where `OD_0` is the first OD value in the data set. It is calculated as: `time_to_max_growth - (1 / growth_rate) * ln(od_at_max_growth / OD_0)`.
-    For the parameteric and regularization methods, `OD_0` is determined from the fitted curve.
+    For the parameteric and smoothed spline methods, `OD_0` is determined from the fitted curve.
 
 ## Endpoints
 
@@ -95,7 +95,7 @@ You can also call `doubling_time` with either of the `FiniteDiff` methods.
 
 ## Parameteric Models
 
-You also can fit a range of parametric models to calculate growth rates in ESM. All fits are done on data after a ``{y=ln(OD/OD_0)}`` transformation (with negative `OD` values removed).
+You also can fit a range of parametric models to calculate growth rates in the Longwing Data Standard. All fits are done on data after a ``{y=ln(OD/OD_0)}`` transformation (with negative `OD` values removed).
 
 - `growth_rate` - return the parameter ``\mu``
 - `lagtime` - return the parameter ``\lambda``
@@ -160,20 +160,24 @@ It can be called using `growth_rate(data, time_col, Richards())` or `doubling_ti
 
 !!! todo "add more options here"
 
-## Regularization
+## Smoothed Spline
 
-For the `Regularization` method, the data is log scaled (negative points removed) and smoothed using regularization, before being interpolated by a cubic spline. The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
+For the `SmoothedSpline` method, the data is log scaled (negative points removed) and a weighted least squares spline is fitted using [Dierckx.jl](https://github.com/JuliaMath/Dierckx.jl). The point where the derivative of this smooth cubic spline is maximised determines the growth rate.
 
-This method uses the `RegularizationSmooth()` method of DataInterpolations.jl, see [here](@extref DataInterpolations methods).
+It can be called using `growth_rate(data, time_col, SmoothedSpline(order, smoothness, knots))` or `doubling_time(data, time_col, SmoothedSpline(order, smoothness, knots))`.
 
-It can be called using `growth_rate(data, time_col, Regularization())` or `doubling_time(data, time_col, Regularization())`.
+By default:
 
-- `max_od` - returns the maximum value of the regularization within the time interval
-- `time_to_max_growth` - return the time where the derivative of the regularization is maximised
-- `od_at_max_growth` - return the regularized OD at `time_to_max_growth`
+- `order=3` which means cubic splines are used,
+- `smoothness=0.01` with larger values producing a smoother curve,
+- `knots=nothing` controls the time position of the spline knots (in minutes). If `knots=nothing`, then they are chosen automatically. If `knots` are specified, then the `smoothness` is ignored and the spline with minimise the discontinuity of the `order`-th derivative at the `knots`.
+
+- `max_od` - returns the maximum value of the spline within the time interval
+- `time_to_max_growth` - return the time where the derivative of the spline is maximised
+- `od_at_max_growth` - return the evaluation of the spline at `time_to_max_growth`
 
 !!! tip "Help! My growth curve is wrong"
-    The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This only happens if the regularization curve is overfitting the data (following the noise rather than just the general trends). This can fixed by changing the smoothing parameter `lambda` (this varies on a log scale, try `10^6`) and changing the `alg` to `:fixed`.
+    The most common problem to appear for the growth curve in this method is to have a predicted maximum growth occuring too early, when the data is very noisy. This only happens if the smoothed spline is overfitting the data (following the noise rather than just the general trends). This can fixed by changing the smoothing parameter `smoothness` (the default is `0.01`).
 
 ## OD Thresholds
 
@@ -285,11 +289,21 @@ This is the form we fit our linear model in, and where $\varepsilon^\prime = \fr
 
 This means that $var(\varepsilon^\prime)=\frac{\sigma^2}{\widehat{OD}^2}$. Since we don't have access to the fitted $\widehat{OD}$, we instead use the noisy data $OD$. This is why we used weights of $y$ in the example above (then adjusted into frequency weights to ensure the correct effective sample size).
 
-We apply this weighting to all least squares calculations for growth rates. The weight is always $\frac{OD}{OD_0}$, since that is the value we log-transform. This applies for the parametric methods, LinearOnLog (and MovingWindow of LinearOnLog), and the least squares component of regularization.
+We apply this weighting to all least squares calculations for growth rates. The weight is always $\frac{OD}{OD_0}$, since that is the value we log-transform. This applies for the parametric methods, LinearOnLog (and MovingWindow of LinearOnLog), ExpandingWindow, and smoothed splines.
+
+## Uncertainty
+
+For some growth rate methods, we allow the ability to calculate a confidence interval for the growth rate. Setting the keyword argument `uncertainty=true` in either `growth_rate` or `doubling_time` will change the reported growth rate/doubling time to be a measurement with uncertainty, e.g. 0.187 ± 0.015. The uncertainty value reports the standard error of the estimate, so can be used to calculate a confidence interval by converting `a ± b` to `a ± 1.96*b`.
+
+For the methods `LinearOnLog`, `ExpandingWindow`, and `MovingWindow(method=:LinearOnLog)`, the standard error is determined from the linear fit. Note that this means it does not consider how the noise may alter the fitting windows identified in `ExpandingWindow` or `MovingWindow`.
+
+For the method parametric methods, the noise is similarly defined from the nonlinear weighted least squares fit.
+
+For the `SmoothedSpline` method, we utilise a residual bootstrap algorithm to determine the standard error. Residuals are determined from the original spline fit, and new bootstrap residuals are calculated by sampling from these residuals with replacement. New splines are fitted with the same knots as the original fit and the growth rate is calculated on these new splines. We derive 1000 bootstrap samples of the growth rate by resampling from the original residuals, and calculate the standard error of these samples. If the smoothed spline fitting fails to converge, it is ignored from the standard error calculation and no new sample is made to replace it (so fewer than 1000 samples may end up being used).
 
 ## Implementation Details
 
-If you want to implement a new growth rate method to be included in ESM, you need to:
+If you want to implement a new growth rate method to be included in the Longwing Data Standard, you need to:
 
 - Open a pull request with the following code changes
 - Define a new struct for your method type in `src/methods.jl`
@@ -297,4 +311,4 @@ If you want to implement a new growth rate method to be included in ESM, you nee
 - Define a new method dispatch `growth_rate(data, time_col, ::NameOfNewMethodType)`
 - Document that method in the growth rate documentation (this page)
 
-If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/esm/issues/new/choose) asking for a new growth rate method and explaining how the method should work.
+If you are unsure how to do any of these steps, feel free to [open an issue on GitHub](https://github.com/eebio/longwing/issues/new/choose) asking for a new growth rate method and explaining how the method should work.

@@ -1,4 +1,4 @@
-using Documenter, ESM
+using Documenter, Longwing
 using DocumenterInterLinks
 
 links = InterLinks(
@@ -7,7 +7,7 @@ links = InterLinks(
 
 PAGES = [
     "Introduction" => "index.md",
-    "Getting Started with ESM" => "tutorial.md",
+    "Getting Started with Longwing" => "tutorial.md",
     "Plate Readers" => [
         "plate_readers/index.md",
         "plate_readers/calibration.md",
@@ -31,14 +31,15 @@ PAGES = [
     "API" => "api.md"
 ]
 
-modules = [ESM
+modules = [Longwing
 ]
 
-makedocs(sitename = "ESM",
-    repo = Remotes.GitHub("eebio", "esm"), modules = modules, checkdocs = :exports,
-    pages = PAGES, plugins = [links])
+makedocs(sitename="Longwing Data Standard",
+    repo=Remotes.GitHub("eebio", "Longwing"), modules=modules, checkdocs=:exports,
+    pages=PAGES, plugins=[links],
+    format = Documenter.HTML(assets = [RawHTMLHeadContent("""<meta name="google-site-verification" content="JfyX6r31rrWQUAIZV5kiaTJfmdXj0MP3XkwLIsah1_A" />""")]))
 
 deploydocs(
-    repo = "github.com/eebio/esm",
-    devbranch = "dev"
+    repo="github.com/eebio/Longwing",
+    devbranch="dev"
 )

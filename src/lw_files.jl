@@ -9,7 +9,7 @@ using FileIO
 using FCSFiles
 using StyledStrings
 
-@with_kw struct esm_zones
+@with_kw mutable struct lw_zones
     samples::DataFrame
     groups::Any
     transformations::Any
@@ -18,12 +18,12 @@ using StyledStrings
 end
 
 """
-    read_esm(file::AbstractString)
+    read_longwing(file::AbstractString)
 
-Parse an esm file found at `file` into an esm_zones object.
+Parse a Longwing file found at `file` into an lw_zones object.
 """
-function read_esm(file::AbstractString)
-    @info "Reading ESM file at: $file"
+function read_longwing(file::AbstractString)
+    @info "Reading Longwing Data Standard file at: $file"
     # Read in the file in a JSON format
     ef = JSON.parsefile(file)
     max_len = 0
@@ -36,52 +36,179 @@ function read_esm(file::AbstractString)
             end
         end
     end
-    # Create the ESM object
-    es = esm_zones(
-        samples = DataFrame(
+    # Create the Longwing object
+    lw = lw_zones(
+        samples=DataFrame(
             [(lowercase(i),
-                 j,
-                 ef["samples"][i]["type"],
-                 replace(ef["samples"][i]["values"][j], nothing => NaN),
-                 if length(keys(ef["samples"][i]["metadata"])) > 1
-                    if "raw_metadata" in keys(ef["samples"][i]["metadata"][j])
-                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"][j]["raw_metadata"]))
-                     else
-                         merge(ef["samples"][i]["metadata"][j], Dict("raw_metadata" => ef["samples"][i]["metadata"]["raw_metadata"]))
-                     end
-                 else
-                     ef["samples"][i]["metadata"]
-                 end,
-                 [i in lowercase.(ef["groups"][k]["sample_IDs"])
-                  for k in keys(ef["groups"])]...) for i in keys(ef["samples"])
+                j,
+                ef["samples"][i]["type"],
+                replace(ef["samples"][i]["values"][j], nothing => missing),
+                sample_channel_metadata(ef["samples"][i]["metadata"], j),
+                [i in lowercase.(ef["groups"][k]["sample_IDs"])
+                 for k in keys(ef["groups"])]...) for i in keys(ef["samples"])
              for j in keys(ef["samples"][i]["values"])],
             ["name", "channel", "type", "values", "metadata",
                 [k for k in keys(ef["groups"])]...]),
-        groups = DataFrame(
+        groups=DataFrame(
             [(i,
-                 lowercase.(ef["groups"][i]["sample_IDs"]),
-                 ef["groups"][i]["metadata"],
-                 :(filter(row -> row.name in ef["groups"][i]["sample_IDs"],
-                     samples, view = true))) for i in keys(ef["groups"])],
+                lowercase.(ef["groups"][i]["sample_IDs"]),
+                ef["groups"][i]["metadata"],
+                :(filter(row -> row.name in ef["groups"][i]["sample_IDs"],
+                    samples, view=true))) for i in keys(ef["groups"])],
             ["group", "sample_IDs", "metadata", "meta_select"]),
-        transformations = ef["transformations"],
-        views = ef["views"],
-        metadata = ef["metadata"]
+        transformations=ef["transformations"],
+        views=ef["views"],
+        metadata=ef["metadata"]
     )
     # Add channels to sample names
-    es.samples.name = string.(es.samples.name, ".", es.samples.channel)
-    @info "ESM file successfully read."
-    return es
+    lw.samples.name = string.(lw.samples.name, ".", lw.samples.channel)
+    @info "Longwing Data Standard file successfully read."
+    return lw
+end
+
+function sample_channel_metadata(sample_metadata, channel)
+    metadata = if haskey(sample_metadata, channel)
+        channel_metadata = sample_metadata[channel]
+        raw_metadata = if haskey(channel_metadata, "raw_metadata")
+            channel_metadata["raw_metadata"]
+        else
+            get(sample_metadata, "raw_metadata", Dict())
+        end
+        merge(channel_metadata, Dict("raw_metadata" => raw_metadata))
+    else
+        copy(sample_metadata)
+    end
+    if haskey(sample_metadata, "template")
+        metadata = merge(metadata, Dict("template" => sample_metadata["template"]))
+    end
+    return metadata
 end
 
 """
-    write_esm(data, file::AbstractString)
+    write_longwing(data, file::AbstractString)
 
-Write the esm data to the path `file`.
+Write the Longwing data to the path `file`.
 """
-function write_esm(data, file::AbstractString)
-    JSON.json(file, data; pretty = true)
-    @info "ESM written to $file"
+function write_longwing(data, file::AbstractString)
+    JSON.json(file, data; pretty=true)
+    @info "Longwing Data Standard file written to $file"
+end
+
+function untranslate_longwing(input::AbstractString, output::AbstractString)
+    lw = read_longwing(input)
+    cp(joinpath(@__DIR__, "template.xlsx"), output; force=true)
+
+    sample_rows = untranslate_sample_rows(lw)
+    channel_map_rows = untranslate_channel_map_rows(lw)
+    group_headers, group_rows = untranslate_group_rows(lw)
+    transformation_rows = untranslate_transformation_rows(lw)
+    view_rows = untranslate_view_rows(lw)
+
+    XLSX.openxlsx(output, mode="rw") do workbook
+        write_excel_table!(workbook["Samples"],
+            ["Type", "Data Location", "Channels", "Plate brand", "Plate", "Well"],
+            sample_rows)
+        write_excel_table!(workbook["Channel Map"], ["Channel", "New name"],
+            channel_map_rows)
+        write_excel_table!(workbook["Groups"], group_headers, group_rows)
+        write_excel_table!(workbook["Transformations"], ["Name", "Equation"],
+            transformation_rows)
+        write_excel_table!(workbook["Views"], ["Name", "View"], view_rows)
+    end
+    @info "Template written to $output"
+    return nothing
+end
+
+function write_excel_table!(sheet, headers, rows)
+    data = Matrix{Any}(undef, length(rows) + 1, length(headers))
+    for (column, header) in enumerate(headers)
+        data[1, column] = header
+    end
+    for (row_number, row) in enumerate(rows)
+        for (column, value) in enumerate(row)
+            data[row_number+1, column] = excel_value(value)
+        end
+    end
+    sheet["A1"] = data
+end
+
+function excel_value(value)
+    if value === nothing || ismissing(value)
+        return ""
+    elseif value isa AbstractString || value isa Number || value isa Bool
+        return value
+    end
+    return string(value)
+end
+
+# This function is used to de-duplicate the sample rows. For example, a single PR file gives
+# many samples, but they all have the same template metadata. We only want to write one row
+# for that template metadata
+function untranslate_sample_rows(lw)
+    rows = Any[]
+    seen = Set{String}()
+    for sample in eachrow(lw.samples)
+        template = sample.metadata["template"]
+        row = template_sample_row(template)
+        signature = join(string.(row), "\u001f")
+        if !(signature in seen)
+            push!(seen, signature)
+            push!(rows, row)
+        end
+    end
+    return rows
+end
+
+function template_sample_row(template)
+    return [template["sample_type"],
+        template["data_location"],
+        join(string.(template["channels"]), ", "),
+        template["plate_brand"],
+        template["plate"],
+        template["well"]]
+end
+
+function untranslate_channel_map_rows(lw)
+    stored_map = lw.metadata["channel_map"]
+    return [[string(source), string(target)] for (source, target) in stored_map]
+end
+
+function untranslate_group_rows(lw)
+    groups = Any[]
+    metadata_keys = String[]
+    for group in eachrow(lw.groups)
+        group_name = string(group.group)
+        group_metadata = group.metadata
+        autogenerated = lowercase(string(get(group_metadata, "autodefined", "false"))) == "true"
+        if autogenerated
+            continue
+        end
+        for key in keys(group_metadata)
+            key = string(key)
+            if key != "autodefined" && !(key in metadata_keys)
+                push!(metadata_keys, key)
+            end
+        end
+        push!(groups, (group_name, group.sample_IDs, group_metadata))
+    end
+    headers = ["Name", "Samples", metadata_keys...]
+    rows = Any[]
+    for (group_name, sample_ids, group_metadata) in groups
+        row = Any[group_name, join(string.(sample_ids), ", ")]
+        append!(row, [group_metadata[key] for key in metadata_keys])
+        push!(rows, row)
+    end
+    return headers, rows
+end
+
+function untranslate_transformation_rows(lw)
+    return [[name, transformation["equation"]] for
+            (name, transformation) in lw.transformations]
+end
+
+function untranslate_view_rows(lw)
+    return [[name, join(string.(view["data"]), ", ")] for
+            (name, view) in lw.views]
 end
 
 """
@@ -91,28 +218,29 @@ Read the data from path `file` into the correct structure.
 """
 function read_data(file::AbstractString)
     # Check for flow directories
-    samples = DataFrame(XLSX.readtable(file, "Samples"; stop_in_empty_row = false))
+    samples = DataFrame(XLSX.readtable(file, "Samples"; stop_in_empty_row=false))
     samples = expand_flow_directories(samples)
 
     # Extract data
     samples = groupby(samples, :Plate)
-    groups = DataFrame(XLSX.readtable(file, "Groups"; stop_in_empty_row = false))
-    trans = DataFrame(XLSX.readtable(file, "Transformations"; stop_in_empty_row = false))
-    views = DataFrame(XLSX.readtable(file, "Views"; stop_in_empty_row = false))
-    channel_map = DataFrame(XLSX.readtable(file, "Channel Map"; stop_in_empty_row = false))
+    groups = DataFrame(XLSX.readtable(file, "Groups"; stop_in_empty_row=false))
+    trans = DataFrame(XLSX.readtable(file, "Transformations"; stop_in_empty_row=false))
+    views = DataFrame(XLSX.readtable(file, "Views"; stop_in_empty_row=false))
+    channel_map = DataFrame(XLSX.readtable(file, "Channel Map"; stop_in_empty_row=false))
 
     # Create the dict to show what channels need to be changed
-    channel_map = Dict(i."Channel" => i."New name" for i in eachrow(channel_map))
+    channel_map = Dict(string(i."Channel") => string(i."New name") for i in eachrow(channel_map)
+                                                                       if !ismissing(i."Channel") && !ismissing(i."New name") && !isempty(string(i."Channel")))
     if any(val != format_channel(val) for val in values(channel_map))
         error("Some channels in the channel map are not in a valid format. Channels should only contain letters, numbers, and underscores.")
     end
     sample_dict = OrderedDict()
     group_dict = OrderedDict(i.Name => Dict(
-                                 "sample_IDs" => expand_groups(i.Samples),
-                                 "type" => "experimental",
-                                 "metadata" => Dict{String, Any}(j => i[j]
-                                 for j in names(i) if !(j in ["Name", "Samples"])))
-    for i in eachrow(groups)) # Get all the experimental groups.
+        "sample_IDs" => expand_groups(i.Samples),
+        "type" => "experimental",
+        "metadata" => Dict{String,Any}(j => i[j]
+                                       for j in names(i) if !(j in ["Name", "Samples"])))
+                             for i in eachrow(groups)) # Get all the experimental groups.
     for i in eachrow(groups)
         group_dict[i.Name]["metadata"]["autodefined"] = "false"
     end
@@ -130,7 +258,7 @@ function read_data(file::AbstractString)
             error("All experiments on one plate must be from the same instrument types. \
             Instrument types used here are: $(Set(samples[i].Type))")
         # Process channels
-        channels = []
+        channels = String[]
         # Convert to string if not already
         str_j = string(samples[i].Channels[1])
         # Add the remaining channels to the list
@@ -142,11 +270,13 @@ function read_data(file::AbstractString)
         channels = unique(channels)
         # Add channels that are not in the channel map to the channel map
         channel_map = Dict(i => if i in keys(channel_map)
-                               channel_map[i]
-                           else
-                               i
-                           end for i in union(channels, keys(channel_map)) if i!="missing")
-        tmp = join([string(j) * ", " for j in channels])[1:(end - 2)]
+            channel_map[i]
+        else
+            i
+        end for i in union(channels, keys(channel_map)) if i!="missing")
+        if channels == ["missing"]
+            channels = String[]
+        end
         # Just for pretty printing. Makes the channel map look nice
         prb = ["$j -> $(channel_map[j])\n" for j in keys(channel_map)]
         if isempty(prb)
@@ -154,9 +284,6 @@ function read_data(file::AbstractString)
         end
         @info "Channel map: \n$(prb...)"
         broad_g = []
-        if channels == ["missing"]
-            channels = []
-        end
         if "plate reader" in lowercase.(ins_type)
             sample_dict, broad_g = read_pr(
                 samples[i], sample_dict, channels, broad_g, channel_map)
@@ -166,6 +293,19 @@ function read_data(file::AbstractString)
         else
             error("Unknown instrument type: $(first(ins_type))")
         end
+
+        if "plate reader" in lowercase.(ins_type)
+            template = template_metadata(first(eachrow(samples[i])), "plate reader",
+                channels)
+            for sample_name in broad_g
+                sample_dict[sample_name]["metadata"]["template"] = template
+            end
+        else
+            for (sample_row, sample_name) in zip(eachrow(samples[i]), broad_g)
+                sample_dict[sample_name]["metadata"]["template"] = template_metadata(
+                    sample_row, "flow", channels)
+            end
+        end
         # Add the physical plate to the group dict
         group_dict["plate_0$i"] = Dict("sample_IDs" => broad_g, "type" => "physical",
             "metadata" => Dict("autodefined" => "true"))
@@ -173,30 +313,50 @@ function read_data(file::AbstractString)
     # Add the transformations
     trans_dict = OrderedDict(i.Name => "equation" => string(i.Equation) for i in eachrow(trans))
     # Add the views
-    views_dict = OrderedDict(i.Name => "data" => [strip.(split(i.View, ","))...]
-    for i in eachrow(views))
+    views_dict = OrderedDict(i.Name => "data" => strip.(split(i.View, ",")) for i in eachrow(views))
     metadata = get_metadata()
+    metadata["channel_map"] = channel_map
     return OrderedDict("samples" => sample_dict, "groups" => group_dict,
         "transformations" => trans_dict, "views" => views_dict, "metadata" => metadata)
+end
+
+function template_metadata(row, sample_type, channels)
+    value(column) =
+        if column in propertynames(row)
+            column_value = row[column]
+            ismissing(column_value) ? "" : column_value
+        else
+            ""
+        end
+    data_location = value(Symbol("Data Location"))
+    plate_brand = value(Symbol("Plate brand"))
+    return Dict{String,Any}(
+        "sample_type" => sample_type,
+        "data_location" => string(data_location),
+        "plate_brand" => string(plate_brand),
+        "channels" => string.(channels),
+        "plate" => value(:Plate),
+        "well" => value(:Well)
+    )
 end
 
 """
     get_metadata()
 
-Generate the metadata for a new ESM file, such as the version of ESM used to create it.
+Generate the metadata for a new Longwing file, such as the version of Longwing used to create it.
 """
 function get_metadata()
     io = IOBuffer()
-    Pkg.status(; io = io)
+    Pkg.status(; io=io)
     project_toml = String(take!(io))
-    Pkg.status(; mode = PKGMODE_MANIFEST, io = io)
+    Pkg.status(; mode=PKGMODE_MANIFEST, io=io)
     manifest_toml = String(take!(io))
     versioninfo(io)
     version_info = String(take!(io))
     return Dict(
         "description" => "",
-        "esm_version" => pkgversion(ESM),
-        "schema_version" => "0.3.0",
+        "longwing_version" => pkgversion(Longwing),
+        "longwing_data_standard_version" => "0.4.0",
         "date_created" => string(Dates.now()),
         "date_modified" => string(Dates.now()),
         "Project.toml" => project_toml,
@@ -252,7 +412,7 @@ function expand_group(group::AbstractString)
     for x in Iterators.product(parts...)
         id = fmt
         for (i, y) in enumerate(eachmatch(r"\{\}", fmt))
-            id = replace(id, y.match => x[i], count = 1)
+            id = replace(id, y.match => x[i], count=1)
         end
         push!(ids, id)
     end

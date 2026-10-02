@@ -1,35 +1,35 @@
 # Flow Cytometry Tutorial
 
-This tutorial walks through how to use flow cytometry data in ESM. It is recommended that you go through the [Getting Started with ESM](@ref) tutorial first, so you are familiar with some of the more general features of ESM.
+This tutorial walks through how to use flow cytometry data in Longwing. It is recommended that you go through the [Getting Started with Longwing](@ref) tutorial first, so you are familiar with some of the more general features of Longwing.
 
-We will go through the analysis of some flow cytometry data ([downloadable here](https://github.com/eebio/esm/raw/refs/heads/main/docs/src/assets/ESM-flow-tutorial-data.zip)), including gating, transforms and bead calibration.
+We will go through the analysis of some flow cytometry data ([downloadable here](https://github.com/eebio/longwing/raw/refs/heads/main/docs/src/assets/Longwing-flow-tutorial-data.zip)), including gating, transforms and bead calibration.
 
 ## Summarise
 
-Like with plate reader data, we can call `esm summarise` on flow cytometry data. You don't need to specify the `--type` since ESM can work it out from the file extension.
+Like with plate reader data, we can call `lw summarise` on flow cytometry data. You don't need to specify the `--type` since Longwing can work it out from the file extension.
 
 ```bash
-esm summarise beads/20260325_ESM_Rainbow2_Experiment_Group2_E3.fcs -p
+lw summarise beads/20260325_Longwing_Rainbow2_Experiment_Group2_E3.fcs -p
 ```
 
 ![alt text](../assets/flow-summarise.png)
 
-## Importing Flow Cytometry Data Into ESM
+## Importing Flow Cytometry Data Into The Longwing Data Standard
 
 We will now create our template file, point to our flow data, add some groups, and generate some views.
 
 ```bash
-esm template
+lw template -o tutorial.xlsx
 ```
 
 ### Samples
 
-Flow cytometry data is typically stored as a folder of files for each well. ESM can read and import a folder of flow cytometry data, automatically extracting well IDs.
+Flow cytometry data is typically stored as a folder of files for each well. Longwing can read and import a folder of flow cytometry data, automatically extracting well IDs.
 
 !!! note "Flow cytometry folders"
-    When importing a folder of flow cytometry data, ESM will attempt to read well names (either in the form A1 or A01, surrounded by some non-alphanumeric characters). It will then attempt to verify the well IDs it finds using the \$WELLID metadata parameter in the FCS files. If the file doesn't have a \$WELLID parameter, the verification is inconclusive. The results of the verification are displayed when the template file is translated. `esm summarise` can't be used with flow cytometry folders.
+    When importing a folder of flow cytometry data, Longwing will attempt to read well names (either in the form A1 or A01, surrounded by some non-alphanumeric characters). It will then attempt to verify the well IDs it finds using the \$WELLID metadata parameter in the FCS files. If the file doesn't have a \$WELLID parameter, the verification is inconclusive. The results of the verification are displayed when the template file is translated. `lw summarise` can't be used with flow cytometry folders.
 
-The inputs needed for ESM are fairly simple here. Just pointing to the data, setting up the plate layout as groups and then creating a view of the beads data.
+The inputs needed for Longwing are fairly simple here. Just pointing to the data, setting up the plate layout as groups and then creating a view of the beads data.
 
 ![alt text](../assets/flow-samples.png)
 
@@ -38,10 +38,10 @@ The inputs needed for ESM are fairly simple here. Just pointing to the data, set
 ![alt text](../assets/flow-views.png)
 
 ```bash
-esm translate ESM.xlsx ESM.esm 
+lw translate tutorial.xlsx tutorial.lw
 ```
 
-![alt text](../assets/wellid-verification.png)
+![alt text](../assets/wellid-verification.jpeg)
 
 The well IDs are correctly verified, as seen by the green check marks in the well map. Alternatively, they could have been yellow question marks (unable to verify), or red crosses (verification revealed a non-matching \$WELLID).
 
@@ -50,7 +50,7 @@ The well IDs are correctly verified, as seen by the green check marks in the wel
 We can now generate our view of the beads data to see how it is stored.
 
 ```bash
-esm views ESM.esm -v v_beads
+lw views tutorial.lw -v v_beads
 ```
 
 ![alt text](../assets/flow-beads-csv.png)
@@ -74,14 +74,14 @@ ggsave(paste0("flow-Beads.png"), width=4, height=2.5)
 
 ## [Transforms](@id fc_tut_transforms)
 
-Flow cytometry data is rarely read on a linear scale (like we plotted above). While some transformations are easily to implement (like log transforms), flow cytometry commonly uses transforms that are much harder to implement, such as Logicle or Hyperlog. ESM provides implementations of these transformations built in. We will transform the data using a Logicle scale and view the transformed data.
+Flow cytometry data is rarely read on a linear scale (like we plotted above). While some transformations are easily to implement (like log transforms), flow cytometry commonly uses transforms that are much harder to implement, such as Logicle or Hyperlog. The Longwing Data Standard provides implementations of these transformations built in. We will transform the data using a Logicle scale and view the transformed data.
 
 ![alt text](../assets/flow-transforms1.png)
 
 ![alt text](../assets/flow-views1.png)
 
 ```bash
-esm translate ESM.xlsx ESM.esm; esm views ESM.esm -v v_logicle
+lw translate tutorial.xlsx tutorial.lw; lw views tutorial.lw -v v_logicle
 ```
 
 ![alt text](../assets/flow-Logicle(Beads).png)
@@ -99,7 +99,7 @@ We should provide two channels to be used for the gating, here `FSC_A` and `SSC_
 ![alt text](../assets/flow-views2.png)
 
 ```bash
-esm translate ESM.xlsx ESM.esm; esm views ESM.esm -v v_auto
+lw translate tutorial.xlsx tutorial.lw; lw views tutorial.lw -v v_auto
 ```
 
 ![alt text](../assets/flow-Logicle(Autogated).png)
@@ -118,7 +118,7 @@ Now, we can calibrate the `BL1_H` fluorescence data for each of our groups based
 ![alt text](../assets/flow-views3.png)
 
 ```bash
-esm translate ESM.xlsx ESM.esm; esm views ESM.esm -v v_weak,v_medium,v_strong,v_v_strong
+lw translate tutorial.xlsx tutorial.lw; lw views tutorial.lw -v v_weak,v_medium,v_strong,v_v_strong
 ```
 
 In the first step, the bead data is extracted. By default, the bead data is not transformed before clustering — if the peaks aren't well separated on a linear scale, you can pass a `transform` argument to `MEF` (e.g. `MEF(..., transform=Logicle())`). See the [MEF Calibration](@ref) documentation for details.
@@ -144,7 +144,7 @@ We can now plot our MEF calibrated fluorescence data. If we wanted to continue t
 
 ## Next Steps
 
-If you want to further explore the flow cytometry functionality in ESM, you could check out:
+If you want to further explore the flow cytometry functionality in the Longwing Data Standard, you could check out:
 
 * [Automatic Gating](@ref) to find out how the autogating algorithm works and other options you can use,
 * [Manual Gating](@ref) wasn't detailed in this tutorial, although is very similar in use to the autogating,

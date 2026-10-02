@@ -34,11 +34,11 @@ function read_pr(samples, sample_dict, channels, broad_g, channel_map)
     # Just so that the broader physical group can be defined using the set difference
     pre = keys(sample_dict)
     sample_dict = merge(sample_dict,
-        OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict(
+        OrderedDict("plate_0$(samples.Plate[1])_$(lowercase(k))" => Dict( # TODO Plate[1] could be >9
                         "type" => "timeseries",
                         "values" => Dict(i => data[i][!, k]
                         for i in channels if k in names(data[i])),
-                        "metadata" => Dict("raw_metadata" => raw_metadata))
+                        "metadata" => Dict{String, Any}("raw_metadata" => raw_metadata))
         for k in names(data[Vector([channels...])[1]]) if isvalid(k)))
     broad_g = [i for i in keys(sample_dict) if !(i in pre)]
     return sample_dict, broad_g
@@ -120,11 +120,11 @@ function runlength(a, i)
     end
 end
 
-function read_standard(file, offset)
+function read_standard(file, offset; time_regex=r"\d{1,2}:\d\d:\d\d")
     # file is string for file path to read
     # offset is the number of lines between the metadata header and the first line containing "Time"
     f = read_into_lines(file)
-    containsTime = [occursin(r"\d{1,2}:\d\d:\d\d", j) ? 1 : 0 for j in f]
+    containsTime = [occursin(time_regex, j) ? 1 : 0 for j in f]
     rl = [runlength(containsTime, i) for i in eachindex(containsTime)]
     datalocations = findall(x -> x == maximum(rl), rl)
     raw_metadata = join(f[1:(datalocations[1] - 2)], "\n")
@@ -224,7 +224,7 @@ Returns:
 - `String`: The plate reader raw metadata.
 """
 function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
-    data, _ = read_standard(file, 1) # Raw metadata is incorrect here, no file level metadata
+    data, _ = read_standard(file, 1; time_regex=r"(\d{1,2}:\d\d:\d\d|NaN)") # Raw metadata is incorrect here, no file level metadata. NaN is used if a timepoint failed to record
     data = correct_data_length(data, "\t")
     # Create the dataframes
     out = Dict()
@@ -288,13 +288,19 @@ function Base.read(file::AbstractString, ::SpectraMax; channels = nothing)
         # Replace saturated data with missing
         allowmissing!(df)
         for col in eachcol(df)
-            if any(col .== "#SAT")
-                col .= map(x -> ismissing(x) || x == "#SAT" ? missing : x, col)
+            if any(ismissing.(col)) || any(col .== "#SAT") || any(col .== "NaN")
+                col .= map(x -> ismissing(x) || x == "#SAT" || x == "NaN" ? missing : x, col)
+            end
+            if eltype(col) <: Union{Missing, Number}
+                if any(ismissing.(col)) || any(isnan.(col))
+                    col .= map(x -> ismissing(x) || isnan(x) ? missing : x, col)
+                end
             end
         end
         # Make sure time is in milliseconds
-        df[!, "time"] = [hour(t) * 3600 * 1000 + minute(t) * 60 * 1000 + second(t) * 1000 +
-                         millisecond(t) for t in df[!, "time"]]
+        time_conversion(t) = ismissing(t) || t isa Time ? t : Time(t)
+        df[!, "time"] = map(t -> ismissing(t) ? missing : hour(time_conversion(t)) * 3600 * 1000 + minute(time_conversion(t)) * 60 * 1000 + second(time_conversion(t)) * 1000 +
+            millisecond(time_conversion(t)), df[!, "time"])
         coerce_numeric_string_columns!(df)
         out[channel] = df
     end

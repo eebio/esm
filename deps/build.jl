@@ -1,2 +1,2 @@
 # build.jl
-using ESM; ESM.comonicon_install()
+using Longwing; Longwing.comonicon_install()

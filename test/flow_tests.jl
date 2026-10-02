@@ -14,7 +14,7 @@
         "FL2_A" => [51.0, 52.0, 53.0, 54.0, 55.0],
         "FL2_A.min" => fill(0.0, 5),
         "FL2_A.max" => fill(1e5, 5),
-        "esm_well" => ["A1", "A1", "A1", "A1", "A1"],
+        "longwing_well" => ["A1", "A1", "A1", "A1", "A1"],
         "id" => [1, 2, 3, 4, 5]
     )
 end
@@ -39,7 +39,7 @@ end
     edge_poly = [(2.0, 200.0), (5.0, 200.0), (5.0, 600.0), (3.5, 500.0), (3.2, 250.0)]
     @test gate(MockFlow.data, PolygonGate(channel_x="FSC_A", channel_y="SSC_A", points=edge_poly)).FSC_A == [2.0, 4.0, 5.0]
     # Ellipse bounds cannot be tested exactly due to numerical precision issues
-    @test gate(MockFlow.data, EllipseGate(channel_x="FSC_A", channel_y="SSC_A", center=(3.0,300.0), points=[(1.9, 200.0), (4.0, 450.0), (3.0, 500.0)])).FSC_A == [2.0, 3.0, 4.0]
+    @test gate(MockFlow.data, EllipseGate(channel_x="FSC_A", channel_y="SSC_A", center=(3.0, 300.0), points=[(1.9, 200.0), (4.0, 450.0), (3.0, 500.0)])).FSC_A == [2.0, 3.0, 4.0]
     @test gate(MockFlow.data, EllipseGate(channel_x="FSC_A", channel_y="SSC_A", points=[(1.9, 200.0), (4.0, 450.0), (3.0, 500.0), (2.5, 400.0), (2.5, 100.0)])).SSC_A == [200.0, 300.0]
     @test MockFlow.data == datacopy  # ensure original data is not modified
 
@@ -61,7 +61,7 @@ end
     datacopy = deepcopy(MockFlow.data)
     gated_data = gate(MockFlow.data, HighLowGate(channel="FL1_A", min=530.0))
     @test gated_proportion(MockFlow.data, gated_data) == 3 / 5
-    @test gated_proportion(MockFlow.data, HighLowGate(channel = "FL1_A", min = 530.0)) == 3 / 5
+    @test gated_proportion(MockFlow.data, HighLowGate(channel="FL1_A", min=530.0)) == 3 / 5
     gated_data2 = gate(MockFlow.data, RectangleGate(channel_x="FSC_A", channel_y="SSC_A", x_min=2.0, x_max=4.5, y_min=50.0, y_max=301.0))
     @test gated_proportion(MockFlow.data, gated_data2) == 2 / 5
     @test gated_proportion(MockFlow.data, RectangleGate(channel_x="FSC_A", channel_y="SSC_A", x_min=2.0, x_max=4.5, y_min=50.0, y_max=301.0)) == 2 / 5
@@ -71,8 +71,8 @@ end
 @testitem "autogating" setup = [MockFlow] begin
     println("autogating")
     datacopy = deepcopy(MockFlow.data)
-    @test gate(MockFlow.data, KDE(channels = ["FSC_A", "SSC_A"])) ==
-    gate(MockFlow.data, HighLowGate(channel="FSC_A", min=1.5, max=5.5))
+    @test gate(MockFlow.data, KDE(channels=["FSC_A", "SSC_A"])) ==
+        gate(MockFlow.data, HighLowGate(channel="FSC_A", min=1.5, max=5.5))
     @test MockFlow.data == datacopy  # ensure original data is not modified
 end
 
@@ -85,7 +85,7 @@ end
     @test gate(MockFlow.data, and(HighLowGate(channel="FL1_A", min=525.0), HighLowGate(channel="SSC_A", max=450.0))).FL1_A == [530.0, 540.0]
     @test gate(MockFlow.data, or(HighLowGate(channel="FL1_A", min=525.0, max=545.0), HighLowGate(channel="SSC_A", max=150.0))).id == [1, 3, 4]
     @test gate(MockFlow.data, not(HighLowGate(channel="FL1_A", min=525.0))).id == [1, 2]
-    @test gate(MockFlow.data, KDE(channels = ["FSC_A", "SSC_A"]) & HighLowGate(channel="FSC_A", max=3.5)).FL1_A == [520.0, 530.0]
+    @test gate(MockFlow.data, KDE(channels=["FSC_A", "SSC_A"]) & HighLowGate(channel="FSC_A", max=3.5)).FL1_A == [520.0, 530.0]
     @test MockFlow.data == datacopy  # ensure original data is not modified
 end
 
@@ -103,25 +103,25 @@ end
     df[!, "SSC-A.min"] .= 0.0
     df[!, "SSC-A.max"] .= 1e6
     df[!, "id"] .= 1:nrow(df)
-    df[!, "esm_well"] .= "A1"
+    df[!, "longwing_well"] .= "A1"
 
     copy = deepcopy(df)
 
     # Density gate
     f = x -> log10.(1 .+ max.(0.0, x))
-    gated = gate(df, KDE(channels = ["FSC-A", "SSC-A"], gate_frac = 0.4, transform_x = f, transform_y = f))
+    gated = gate(df, KDE(channels=["FSC-A", "SSC-A"], gate_frac=0.4, transform_x=f, transform_y=f))
     t = Transform(f, x -> 10 .^ x .- 1)
-    gated = gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = t, transform_y = t))
-    gate(gated, KDE(channels = ["BL1-H", "BL1-A"], gate_frac = 0.9, transform_x = Hyperlog(), transform_y = Logicle()))
+    gated = gate(gated, KDE(channels=["BL1-H", "BL1-A"], gate_frac=0.9, transform_x=t, transform_y=t))
+    gate(gated, KDE(channels=["BL1-H", "BL1-A"], gate_frac=0.9, transform_x=Hyperlog(), transform_y=Logicle()))
 
     # MEF calibration
-    method = MEF(beads = gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1, transform=t)
+    method = MEF(beads=gated, channel="BL1-H", mef=[nothing, 789, 1896, 4872, 15619, 47116, 143912, 333068], nRepeats=1, transform=t)
     dir = mktempdir()
-    calibrated_df = calibrate(df, method; plot_directory = dir)
+    calibrated_df = calibrate(df, method; plot_directory=dir)
     @test all(calibrated_df[!, "BL1-H.min"] .== 0.0)
     @test all(calibrated_df[!, "BL1-H.max"] .> 0.0)
     @test all(calibrated_df[!, "BL1-H"] .>= 0.0)
-    @test all(calibrated_df[!, "esm_well"] .== "A1")
+    @test all(calibrated_df[!, "longwing_well"] .== "A1")
     # Check plots are created
     @test isfile(joinpath(dir, "mef_calibration_fluorescence_data.png"))
     @test isfile(joinpath(dir, "mef_calibration_clusters.png"))
@@ -134,7 +134,7 @@ end
     @test calibrated_df[!, "FSC-A"] == copy[!, "FSC-A"]
     @test calibrated_df[!, "SSC-A"] == copy[!, "SSC-A"]
     @test calibrated_df[!, "id"] == copy[!, "id"]
-    @test calibrated_df[!, "esm_well"] == copy[!, "esm_well"]
+    @test calibrated_df[!, "longwing_well"] == copy[!, "longwing_well"]
     @test calibrated_df[!, "FSC-A.min"] == copy[!, "FSC-A.min"]
     @test calibrated_df[!, "SSC-A.min"] == copy[!, "SSC-A.min"]
     @test calibrated_df[!, "FSC-A.max"] == copy[!, "FSC-A.max"]
@@ -145,7 +145,7 @@ end
     io = IOBuffer()
     logger = SimpleLogger(io)
     with_logger(logger) do
-        calibrate(df, method; plot_directory = :temp)
+        calibrate(df, method; plot_directory=:temp)
     end
     str = String(take!(io))
     str = replace(str, "┌ Info: Plot directory for MEF calibration set to temporary directory: " => "")
@@ -160,9 +160,9 @@ end
     beads[!, "BL1-H.min"] .= 0.0
     beads[!, "BL1-H.max"] .= 1e6
     beads[!, "id"] .= 1:nrow(beads)
-    beads[!, "esm_well"] .= "A1"
+    beads[!, "longwing_well"] .= "A1"
 
-    method = MEF(beads = beads, channel="BL1-H", mef=[10.0, 110.0, 1100.0, nothing], nRepeats=1)
+    method = MEF(beads=beads, channel="BL1-H", mef=[10.0, 110.0, 1100.0, nothing], nRepeats=1)
     calibrated_beads = calibrate(beads, method)
     @test calibrated_beads[!, "BL1-H"] ≈ beads[!, "BL1-H"] atol=0.1
     @test all(calibrated_beads[!, "BL1-H"] .>= 0.0)
@@ -170,7 +170,7 @@ end
     @test all(calibrated_beads[!, "BL1-H.max"] .> 0.0)
 
     # Check calibration without clustering
-    method = MEF(beads = beads, channel="BL1-H", mef=[10.0, 110.0, 1100.0], nInit=1, nIter=1, nRepeats=1)
+    method = MEF(beads=beads, channel="BL1-H", mef=[10.0, 110.0, 1100.0], nInit=1, nIter=1, nRepeats=1)
     calibrated_beads = calibrate(beads, [10.0, 110.0, 1100.0], method)
     @test calibrated_beads[!, "BL1-H"] ≈ beads[!, "BL1-H"] atol=0.1
     @test all(calibrated_beads[!, "BL1-H"] .>= 0.0)
@@ -198,7 +198,8 @@ end
         end
         experiment_times = [maximum(times), maximum(times) - minimum(times)]
         @test (end_time - Second(1) <= start_time + Millisecond(round(experiment_times[1])) <= end_time + Second(1)
-            || end_time - Second(1) <= start_time + Millisecond(round(experiment_times[2])) <= end_time + Second(1))
+            ||
+            end_time - Second(1) <= start_time + Millisecond(round(experiment_times[2])) <= end_time + Second(1))
     end
 end
 
@@ -242,14 +243,14 @@ end
         "ints" => [asinh(-10), asinh(-5), asinh(-1), asinh(0), asinh(1), asinh(2), asinh(3), asinh(10), asinh(100), asinh(1000)]) atol=1e-4
     @test untransform(tmp, Arcsinh()) ≈ data atol=1e-4
 
-    tmp = transform(data, Linear(A = 10, T = 1000))
+    tmp = transform(data, Linear(A=10, T=1000))
     @test all(0.0 .<= tmp[!, "FSC-A"] .<= 1.0)
     @test maximum(tmp[!, "FSC-A"]) == 1.0
     @test minimum(tmp[!, "FSC-A"]) == 0.0
     @test all(0.0 .<= tmp[!, "ints"] .<= 1.0)
     @test maximum(tmp[!, "ints"]) == 1.0
     @test minimum(tmp[!, "ints"]) == 0.0
-    @test untransform(tmp, Linear(A = 10, T = 1000)) ≈ data atol=1e-4
+    @test untransform(tmp, Linear(A=10, T=1000)) ≈ data atol=1e-4
 
     tmp = transform(data, Bound(min=0.0, max=100.0))
     @test all(0.0 .<= tmp[!, "FSC-A"] .<= 100.0)
@@ -259,7 +260,7 @@ end
     @test maximum(tmp[!, "ints"]) == 100.0
     @test minimum(tmp[!, "ints"]) == 0.0
     @test untransform(tmp, Bound(min=0.0, max=100.0)) ≈
-    DataFrame("FSC-A" => [-Inf, -Inf, -Inf, -Inf, 0.3, 1, 3, 10, Inf, Inf],
+        DataFrame("FSC-A" => [-Inf, -Inf, -Inf, -Inf, 0.3, 1, 3, 10, Inf, Inf],
         "ints" => [-Inf, -Inf, -Inf, -Inf, 1, 2, 3, 10, Inf, Inf]) atol=1e-4
 
     tmp = transform(data, Bound())
@@ -275,22 +276,22 @@ end
     @test untransform(tmp, Logicle(T=1000, W=1, M=4, A=0)) ≈ data atol=1e-4
 
     # Transform specific columns
-    tmp = transform(data, Logicle(T = 1000, W = 1, M = 4, A = 0); cols = ["FSC-A"])
+    tmp = transform(data, Logicle(T=1000, W=1, M=4, A=0); cols=["FSC-A"])
     @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
     @test tmp[!, "ints"] == data[!, "ints"]
-    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0); cols = ["FSC-A"]) ≈ data atol=1e-4
+    @test untransform(tmp, Logicle(T=1000, W=1, M=4, A=0); cols=["FSC-A"]) ≈ data atol=1e-4
 
     # ID and well shouldn't be transformed
     data = DataFrame("FSC-A" => [-10, -5, -1, 0, 0.3, 1, 3, 10, 100, 1000],
         "ints" => [-10, -5, -1, 0, 1, 2, 3, 10, 100, 1000],
         "id" => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        "esm_well" => ["A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1"])
-    tmp = transform(data, Logicle(T = 1000, W = 1, M = 4, A = 0))
+        "longwing_well" => ["A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1", "A1"])
+    tmp = transform(data, Logicle(T=1000, W=1, M=4, A=0))
     @test tmp[!, "FSC-A"] ≈ [0.067574, 0.147986, 0.228752, 0.25, 0.256384, 0.271248, 0.312897, 0.432426, 0.739548, 1] atol=1e-4
     @test tmp[!, "id"] == data[!, "id"]
-    @test tmp[!, "esm_well"] == data[!, "esm_well"]
-    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0))[!, Not(:esm_well)] ≈ data[!, Not(:esm_well)] atol=1e-4
-    @test untransform(tmp, Logicle(T = 1000, W = 1, M = 4, A = 0))[!, :esm_well] == data[!, :esm_well]
+    @test tmp[!, "longwing_well"] == data[!, "longwing_well"]
+    @test untransform(tmp, Logicle(T=1000, W=1, M=4, A=0))[!, Not(:longwing_well)] ≈ data[!, Not(:longwing_well)] atol=1e-4
+    @test untransform(tmp, Logicle(T=1000, W=1, M=4, A=0))[!, :longwing_well] == data[!, :longwing_well]
 end
 
 @testitem "flowdir" setup=[environment_path] begin
@@ -305,12 +306,12 @@ end
     str = String(take!(io))
 
     comparison = ["Info: Expanded flow directory \$GITHUB_WORKSPACE/test/inputs/flowdir into the following files and wells:",
-    "┌ Info: Well map: \n│ ? a1 -> Blank_A1_A01_001.fcs\n│ ? b1 -> Blank_B1_B01_002.fcs\n│ ? e1 -> Calibration_E1_E01_093.fcs\n│ ? f1 -> Calibration_F1_F01_094.fcs\n│ ? a2 -> EE01_A2_A02_005.fcs\n│ ? a3 -> EE01_A3_A03_006.fcs\n│ ? b11 -> EE01_B11_B11_024.fcs\n│ ? c2 -> EE02_C2_C02_025.fcs\n│ ? a12 -> NegControl-DH10beta_A12_A12_085.fcs\n│ ? b12 -> NegControl-DH10beta_B12_B12_086.fcs\n│ ? c12 -> NegControl-DH10beta_C12_C12_087.fcs\n│ ? d12 -> NegControl-DH10beta_D12_D12_088.fcs\n│ ? e12 -> NegControl-DH10beta_E12_E12_089.fcs"]
+        "┌ Info: Well map: \n│ ? a1 -> Blank_A1_A01_001.fcs\n│ ? b1 -> Blank_B1_B01_002.fcs\n│ ? e1 -> Calibration_E1_E01_093.fcs\n│ ? f1 -> Calibration_F1_F01_094.fcs\n│ ? a2 -> EE01_A2_A02_005.fcs\n│ ? a3 -> EE01_A3_A03_006.fcs\n│ ? b11 -> EE01_B11_B11_024.fcs\n│ ? c2 -> EE02_C2_C02_025.fcs\n│ ? a12 -> NegControl-DH10beta_A12_A12_085.fcs\n│ ? b12 -> NegControl-DH10beta_B12_B12_086.fcs\n│ ? c12 -> NegControl-DH10beta_C12_C12_087.fcs\n│ ? d12 -> NegControl-DH10beta_D12_D12_088.fcs\n│ ? e12 -> NegControl-DH10beta_E12_E12_089.fcs"]
     @test contains(str, comparison[1])
     @test contains(str, comparison[2])
 
     data = read_data("inputs/flowdir.xlsx")
-    names = ESM.expand_groups("plate_01_[a1,b1,e1,f1,a2,a3,b11,c2,a12,b12,c12,d12,e12], plate_04_a[1:3,10:12], plate_04_b[5,6,10:12]")
+    names = Longwing.expand_groups("plate_01_[a1,b1,e1,f1,a2,a3,b11,c2,a12,b12,c12,d12,e12], plate_04_a[1:3,10:12], plate_04_b[5,6,10:12]")
     @test all([data["samples"][s]["type"] == "population" for s in names])
     @test issetequal(union(data["groups"]["plate_01"]["sample_IDs"], data["groups"]["plate_04"]["sample_IDs"]), names)
 
