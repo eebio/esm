@@ -19,7 +19,7 @@ lw summarise beads/20260325_Longwing_Rainbow2_Experiment_Group2_E3.fcs -p
 We will now create our template file, point to our flow data, add some groups, and generate some views.
 
 ```bash
-lw template
+lw template -o tutorial.xlsx
 ```
 
 ### Samples
