@@ -40,6 +40,6 @@ makedocs(sitename="Longwing Data Standard",
     format = Documenter.HTML(assets = [RawHTMLHeadContent("""<meta name="google-site-verification" content="JfyX6r31rrWQUAIZV5kiaTJfmdXj0MP3XkwLIsah1_A" />""")]))
 
 deploydocs(
-    repo="github.com/eebio/longwing",
+    repo="github.com/eebio/Longwing",
     devbranch="dev"
 )
