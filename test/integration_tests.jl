@@ -44,9 +44,9 @@ end
     @testset "Translate integration" begin
         println("Translate integration")
         dir = Base.Filesystem.mktempdir()
-        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.longwing"))`)
-        @test isfile(joinpath(dir, "tmp.longwing"))
-        f = JSON.parsefile(joinpath(dir, "tmp.longwing"))
+        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.lw"))`)
+        @test isfile(joinpath(dir, "tmp.lw"))
+        f = JSON.parsefile(joinpath(dir, "tmp.lw"))
         @test haskey(f["metadata"], "channel_map")
         @test all(haskey(sample["metadata"], "template")
                   for sample in values(f["samples"]))
@@ -62,15 +62,15 @@ end
         end
         @test bytes2hex(stable_hash(f; version=4)) == "64dc6c1ad5f4825237ae74b01f819f2fb1725904f43db1bfde4c923bf65333ed"
 
-        run(`$(shell) lw untranslate $(joinpath(dir, "tmp.longwing")) $(joinpath(dir, "tmp.xlsx"))`)
+        run(`$(shell) lw untranslate $(joinpath(dir, "tmp.lw")) $(joinpath(dir, "tmp.xlsx"))`)
         @test isfile(joinpath(dir, "tmp.xlsx"))
     end
     @testset "Untranslate round-trip integration" begin
         println("Untranslate round-trip integration")
         dir = Base.Filesystem.mktempdir()
-        first_lw = joinpath(dir, "first.longwing")
+        first_lw = joinpath(dir, "first.lw")
         reconstructed_xlsx = joinpath(dir, "reconstructed.xlsx")
-        second_lw = joinpath(dir, "second.longwing")
+        second_lw = joinpath(dir, "second.lw")
         input = joinpath("inputs", "untranslate.xlsx")
 
         run(`$(shell) lw translate $input $first_lw`)
@@ -89,34 +89,34 @@ end
         println("Views integration")
         # All views
         dir = Base.Filesystem.mktempdir()
-        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.longwing"))`)
-        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) --output-dir $dir`)
+        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.lw"))`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.lw")) --output-dir $dir`)
         @test issetequal(readdir(dir),
             ["flowsub.csv", "group1.csv", "group2.csv", "group3.csv",
-                "mega.csv", "odsub.csv", "sample.csv", "tmp.longwing"])
+                "mega.csv", "odsub.csv", "sample.csv", "tmp.lw"])
         rm.(
             joinpath.(dir,
                 ["flowsub.csv", "group1.csv", "group2.csv",
                     "group3.csv", "mega.csv", "odsub.csv", "sample.csv"]),
             force=true)
-        @test issetequal(readdir(dir), ["tmp.longwing"])
+        @test issetequal(readdir(dir), ["tmp.lw"])
 
-        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) -o $dir`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.lw")) -o $dir`)
         @test issetequal(readdir(dir),
             ["flowsub.csv", "group1.csv", "group2.csv", "group3.csv",
-                "mega.csv", "odsub.csv", "sample.csv", "tmp.longwing"])
+                "mega.csv", "odsub.csv", "sample.csv", "tmp.lw"])
 
         # Specifying a specific view
         dir = Base.Filesystem.mktempdir()
-        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.longwing"))`)
-        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) --view mega --output-dir $dir`)
+        run(`$(shell) lw translate $(joinpath("inputs", "example.xlsx")) $(joinpath(dir, "tmp.lw"))`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.lw")) --view mega --output-dir $dir`)
         @test isfile(joinpath(dir, "mega.csv"))
         lw_hash = stable_hash(read(joinpath(dir, "mega.csv"), String); version=4)
         @test bytes2hex(lw_hash) ==
             "9aef713c4e728f5d12064b6198bd04e0708c4b4a58bb9cecaf921f8e1430ec63"
 
         dir2 = Base.Filesystem.mktempdir()
-        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) -v mega -o $dir2`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.lw")) -v mega -o $dir2`)
         @test isfile(joinpath(dir2, "mega.csv"))
         lw_hash2 = stable_hash(read(joinpath(dir2, "mega.csv"), String); version=4)
         @test bytes2hex(lw_hash2) ==
@@ -124,7 +124,7 @@ end
 
         # Specifying multiple views
         dir3 = Base.Filesystem.mktempdir()
-        run(`$(shell) lw views $(joinpath(dir, "tmp.longwing")) -v flowsub,mega -o $dir3`)
+        run(`$(shell) lw views $(joinpath(dir, "tmp.lw")) -v flowsub,mega -o $dir3`)
         @test isfile(joinpath(dir3, "mega.csv"))
         @test isfile(joinpath(dir3, "flowsub.csv"))
         # Other views should not be present
@@ -134,12 +134,12 @@ end
         println("Summarise integration")
 
         dir = Base.Filesystem.mktempdir()
-        cp(joinpath("inputs", "summarise.longwing"), joinpath(dir, "summarise.longwing"))
-        run(`$(shell) lw summarise $(joinpath(dir, "summarise.longwing")) --plot`)
-        @test isfile(joinpath(dir, "summarise.longwing.pdf"))
-        rm(joinpath(dir, "summarise.longwing.pdf"), force=true)
-        run(`$(shell) lw summarise $(joinpath(dir, "summarise.longwing")) -p`)
-        @test isfile(joinpath(dir, "summarise.longwing.pdf"))
+        cp(joinpath("inputs", "summarise.lw"), joinpath(dir, "summarise.lw"))
+        run(`$(shell) lw summarise $(joinpath(dir, "summarise.lw")) --plot`)
+        @test isfile(joinpath(dir, "summarise.lw.pdf"))
+        rm(joinpath(dir, "summarise.lw.pdf"), force=true)
+        run(`$(shell) lw summarise $(joinpath(dir, "summarise.lw")) -p`)
+        @test isfile(joinpath(dir, "summarise.lw.pdf"))
 
         cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
         run(`$(shell) lw summarise $(joinpath(dir, "small.fcs"))`)
@@ -200,13 +200,13 @@ end
     println("Integration coverage")
     dir = Base.Filesystem.mktempdir()
     template(output_path=joinpath(dir, "tmp.xlsx"))
-    translate(joinpath("inputs", "example.xlsx"), joinpath(dir, "tmp.longwing"))
-    views(joinpath(dir, "tmp.longwing"); output_dir=dir)
-    views(joinpath(dir, "tmp.longwing"); view="mega", output_dir=dir)
-    views(joinpath(dir, "tmp.longwing"); view="flowsub,mega", output_dir=dir)
-    translate(joinpath("inputs", "summarise.xlsx"), joinpath(dir, "summarise.longwing"))
-    untranslate(joinpath(dir, "summarise.longwing"), joinpath(dir, "reconstructed.xlsx"))
-    summarise(joinpath(dir, "summarise.longwing"); plot=true)
+    translate(joinpath("inputs", "example.xlsx"), joinpath(dir, "tmp.lw"))
+    views(joinpath(dir, "tmp.lw"); output_dir=dir)
+    views(joinpath(dir, "tmp.lw"); view="mega", output_dir=dir)
+    views(joinpath(dir, "tmp.lw"); view="flowsub,mega", output_dir=dir)
+    translate(joinpath("inputs", "summarise.xlsx"), joinpath(dir, "summarise.lw"))
+    untranslate(joinpath(dir, "summarise.lw"), joinpath(dir, "reconstructed.xlsx"))
+    summarise(joinpath(dir, "summarise.lw"); plot=true)
     cp(joinpath("inputs", "small.fcs"), joinpath(dir, "small.fcs"))
     cp(joinpath("inputs", "spectramax-summarise.txt"), joinpath(dir, "spectramax-summarise.txt"))
     cp(joinpath("inputs", "biotek-summarise.csv"), joinpath(dir, "biotek-summarise.csv"))

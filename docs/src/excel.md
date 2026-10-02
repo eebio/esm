@@ -1,6 +1,6 @@
 # Excel Interface
 
-The Excel interface is accessed through `lw template ...`. It provides an Excel spreadsheet template which can be filled in with information about your data and processing. This is required to create a `.longwing` file from which outputs and views can be produced.
+The Excel interface is accessed through `lw template ...`. It provides an Excel spreadsheet template which can be filled in with information about your data and processing. This is required to create a `.lw` file from which outputs and views can be produced.
 
 The Excel template features five sheets to be filled out with relevant information:
 
@@ -14,13 +14,13 @@ On this page, we document what is required to be filled out and give examples of
 
 ## Reconstructing a template
 
-The command `lw untranslate input.longwing output.xlsx` reconstructs these five sheets from a `.longwing` file. This won't necessarily be the same template that was used to generate the data, but assuming you have the original data files, it should be `lw translate`-able into the same (or similar) `.longwing` file.
+The command `lw untranslate input.lw output.xlsx` reconstructs these five sheets from a `.lw` file. This won't necessarily be the same template that was used to generate the data, but assuming you have the original data files, it should be `lw translate`-able into the same (or similar) `.lw` file.
 
 ## Samples
 
 The first sheet is called **Samples** and requires information about where you data is stored and what information should be read from it.
 
-Each row specifies a new file that should be imported into the final `.longwing` file.
+Each row specifies a new file that should be imported into the final `.lw` file.
 
 The **Type** defines whether the data is `plate reader` or `flow` to determine how that file should be imported. These are the only two options.
 

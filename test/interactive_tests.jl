@@ -88,12 +88,12 @@ end
 
 @testitem "interactive menu replay" setup=[InteractiveReplay] begin
     if !Sys.iswindows()
-        rm(joinpath(@__DIR__, "temp.longwing"); force=true)
+        rm(joinpath(@__DIR__, "temp.lw"); force=true)
         rm(joinpath(@__DIR__, "group1.csv"); force=true)
-        rm(joinpath(@__DIR__, "test2.longwing"); force=true)
-        @test !isfile(joinpath(@__DIR__, "temp.longwing"))
+        rm(joinpath(@__DIR__, "test2.lw"); force=true)
+        @test !isfile(joinpath(@__DIR__, "temp.lw"))
         @test !isfile(joinpath(@__DIR__, "group1.csv"))
-        @test !isfile(joinpath(@__DIR__, "test2.longwing"))
+        @test !isfile(joinpath(@__DIR__, "test2.lw"))
         InteractiveReplay.run_interactive_replays(
             [
                 joinpath(@__DIR__, "inputs", "interactive_events", "menu_navigation.events"),
@@ -103,13 +103,13 @@ end
                 joinpath(@__DIR__, "inputs", "interactive_events", "coverage.events"),
             ],
             joinpath(@__DIR__, "interactive_child.jl"),
-            joinpath(@__DIR__, "inputs", "example.longwing"),
+            joinpath(@__DIR__, "inputs", "example.lw"),
         )
-        @test isfile(joinpath(@__DIR__, "temp.longwing"))
+        @test isfile(joinpath(@__DIR__, "temp.lw"))
         @test isfile(joinpath(@__DIR__, "group1.csv"))
-        @test isfile(joinpath(@__DIR__, "test2.longwing"))
-        rm(joinpath(@__DIR__, "temp.longwing"); force=true)
+        @test isfile(joinpath(@__DIR__, "test2.lw"))
+        rm(joinpath(@__DIR__, "temp.lw"); force=true)
         rm(joinpath(@__DIR__, "group1.csv"); force=true)
-        rm(joinpath(@__DIR__, "test2.longwing"); force=true)
+        rm(joinpath(@__DIR__, "test2.lw"); force=true)
     end
 end

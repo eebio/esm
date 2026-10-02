@@ -38,7 +38,7 @@ The inputs needed for Longwing are fairly simple here. Just pointing to the data
 ![alt text](../assets/flow-views.png)
 
 ```bash
-lw translate tutorial.xlsx tutorial.longwing
+lw translate tutorial.xlsx tutorial.lw
 ```
 
 ![alt text](../assets/wellid-verification.jpeg)
@@ -50,7 +50,7 @@ The well IDs are correctly verified, as seen by the green check marks in the wel
 We can now generate our view of the beads data to see how it is stored.
 
 ```bash
-lw views LDS.longwing -v v_beads
+lw views tutorial.lw -v v_beads
 ```
 
 ![alt text](../assets/flow-beads-csv.png)
@@ -81,7 +81,7 @@ Flow cytometry data is rarely read on a linear scale (like we plotted above). Wh
 ![alt text](../assets/flow-views1.png)
 
 ```bash
-lw translate tutorial.xlsx tutorial.longwing; lw views tutorial.longwing -v v_logicle
+lw translate tutorial.xlsx tutorial.lw; lw views tutorial.lw -v v_logicle
 ```
 
 ![alt text](../assets/flow-Logicle(Beads).png)
@@ -99,7 +99,7 @@ We should provide two channels to be used for the gating, here `FSC_A` and `SSC_
 ![alt text](../assets/flow-views2.png)
 
 ```bash
-lw translate tutorial.xlsx tutorial.longwing; lw views tutorial.longwing -v v_auto
+lw translate tutorial.xlsx tutorial.lw; lw views tutorial.lw -v v_auto
 ```
 
 ![alt text](../assets/flow-Logicle(Autogated).png)
@@ -118,7 +118,7 @@ Now, we can calibrate the `BL1_H` fluorescence data for each of our groups based
 ![alt text](../assets/flow-views3.png)
 
 ```bash
-lw translate tutorial.xlsx tutorial.longwing; lw views tutorial.longwing -v v_weak,v_medium,v_strong,v_v_strong
+lw translate tutorial.xlsx tutorial.lw; lw views tutorial.lw -v v_weak,v_medium,v_strong,v_v_strong
 ```
 
 In the first step, the bead data is extracted. By default, the bead data is not transformed before clustering — if the peaks aren't well separated on a linear scale, you can pass a `transform` argument to `MEF` (e.g. `MEF(..., transform=Logicle())`). See the [MEF Calibration](@ref) documentation for details.

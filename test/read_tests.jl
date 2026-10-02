@@ -185,7 +185,7 @@
 """
 
     # Write mock data to a temporary file
-    temp_file = joinpath(Base.Filesystem.mktempdir(), "temp_mock_data.longwing")
+    temp_file = joinpath(Base.Filesystem.mktempdir(), "temp_mock_data.lw")
     open(temp_file, "w") do f
         write(f, mock_data)
     end
@@ -476,7 +476,7 @@ end
 
 @testitem "produce_views" setup=[environment_path] begin
     println("produce_views")
-    lw = read_longwing("inputs/example.longwing")
+    lw = read_longwing("inputs/example.lw")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
     a = Longwing.produce_views(lw, trans_meta_map)
@@ -553,8 +553,8 @@ end
     # More complex views
     dir = mktempdir()
     x = read_data("inputs/views.xlsx")
-    write_longwing(x, joinpath(dir, "views.longwing"))
-    lw = read_longwing(joinpath(dir, "views.longwing"))
+    write_longwing(x, joinpath(dir, "views.lw"))
+    lw = read_longwing(joinpath(dir, "views.lw"))
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
     out = Longwing.produce_views(lw, trans_meta_map)
@@ -572,8 +572,8 @@ end
     dir = mktempdir()
     cp("inputs/kw_name_collision.xlsx", joinpath(dir, "kw_name_collision.xlsx"))
     lw = read_data(joinpath(dir, "kw_name_collision.xlsx"))
-    write_longwing(lw, joinpath(dir, "kw_name_collision.longwing"))
-    lw = read_longwing(joinpath(dir, "kw_name_collision.longwing"))
+    write_longwing(lw, joinpath(dir, "kw_name_collision.lw"))
+    lw = read_longwing(joinpath(dir, "kw_name_collision.lw"))
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
     out = Longwing.produce_views(lw, trans_meta_map)
@@ -585,8 +585,8 @@ end
     dir = mktempdir()
     cp("inputs/non_table_views.xlsx", joinpath(dir, "non_table_views.xlsx"))
     lw = read_data(joinpath(dir, "non_table_views.xlsx"))
-    write_longwing(lw, joinpath(dir, "non_table_views.longwing"))
-    lw = read_longwing(joinpath(dir, "non_table_views.longwing"))
+    write_longwing(lw, joinpath(dir, "non_table_views.lw"))
+    lw = read_longwing(joinpath(dir, "non_table_views.lw"))
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
 
@@ -604,7 +604,7 @@ end
 
 @testitem "to_rfi" begin
     println("to_rfi")
-    lw = read_longwing("inputs/example.longwing")
+    lw = read_longwing("inputs/example.lw")
     out = Longwing.to_rfi(lw, "plate_02_a1")
     # Linear test with no gain
     @test out[!, "FSC_H"] == [628.0, 1023.0, 373.0, 1023.0]
@@ -618,7 +618,7 @@ end
 
 @testitem "raw metadata" begin
     println("raw metadata")
-    lw = read_longwing("inputs/example.longwing")
+    lw = read_longwing("inputs/example.lw")
     metadata = lw.samples.metadata[lw.samples.name .== "plate_02_a1.FL1_A"][1]
     @test haskey(metadata, "raw_metadata")
     @test metadata["raw_metadata"]["creator"] == "CELLQuest<aa> 3.3"
@@ -627,9 +627,9 @@ end
 
 @testitem "summary" begin
     println("summary")
-    summary("inputs/summarise.longwing", LongwingData(); plot=true)
-    @test isfile("inputs/summarise.longwing.pdf")
-    rm("inputs/summarise.longwing.pdf")
+    summary("inputs/summarise.lw", LongwingData(); plot=true)
+    @test isfile("inputs/summarise.lw.pdf")
+    rm("inputs/summarise.lw.pdf")
     summary("inputs/small.fcs", FlowCytometryData(); plot=true, csv=true)
     @test isfile("inputs/small.fcs.pdf")
     @test isfile("inputs/small.fcs.csv")

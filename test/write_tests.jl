@@ -19,7 +19,7 @@ end
     println("write lw")
     # write lw from example.xlsx and read it back
     lw = read_data("inputs/example.xlsx")
-    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.longwing")
+    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.lw")
     write_longwing(lw, filename)
     lw_written = read_longwing(filename)
     names = []
@@ -90,7 +90,7 @@ end
 
     using DataFrames
     lw = read_data("inputs/small.xlsx")
-    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.longwing")
+    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.lw")
     write_longwing(lw, filename)
     lw_written = read_longwing(filename)
 
@@ -98,7 +98,7 @@ end
         ["plate_01_a1.FL1_H", "plate_01_a1.SSC_H",
             "plate_01_a1.forward", "plate_01_a1.newtime"])
 
-    # Run transformations on small.longwing
+    # Run transformations on small.lw
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw_written.transformations[i]["equation"])
                           for i in keys(lw_written.transformations))
     @test eval(Longwing.sexp_to_nested_list(:(f), lw_written, trans_meta_map)) ==

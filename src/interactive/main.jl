@@ -87,15 +87,15 @@ function save_lw(lw, changes_made; exit_on_success=false)
         if !match
             @warn "The current version of Longwing is different from the version used to create \
             the original file. If you have access to the original data, it is recommended \
-            to re-translate the .longwing file with this version. Otherwise, we can save the \
+            to re-translate the .lw file with this version. Otherwise, we can save the \
             file with these changes and append a warning to the description metadata to \
-            record the original metadata used to create the .longwing file."
+            record the original metadata used to create the .lw file."
             options = ["Yes, save changes and update the metadata", "No, discard changes"]
             menu = RadioMenu(options)
             should_save = request("Version mismatch detected. Would you still like to save the changes?", menu)
             should_save = should_save == 1
             if should_save
-                new_metadata["description"] = old_metadata["description"] * "\nWARNING: This .longwing file was modified after creation using a different version of Longwing. Original metadata: \n" * string(old_metadata)
+                new_metadata["description"] = old_metadata["description"] * "\nWARNING: This .lw file was modified after creation using a different version of Longwing. Original metadata: \n" * string(old_metadata)
                 new_metadata["date_created"] = old_metadata["date_created"]
                 lw.metadata = new_metadata
             end

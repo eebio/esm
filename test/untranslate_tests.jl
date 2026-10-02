@@ -70,7 +70,7 @@
     )
 
     dir = Base.Filesystem.mktempdir()
-    input = joinpath(dir, "input.longwing")
+    input = joinpath(dir, "input.lw")
     output = joinpath(dir, "output.xlsx")
     JSON.json(input, data; pretty=true)
     Longwing.untranslate_longwing(input, output)

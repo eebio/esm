@@ -33,15 +33,15 @@ end
     end
 end
 
-@testitem "update example.longwing and summarise.longwing" setup=[environment_path] begin
-    println("update example.longwing and summarise.longwing")
+@testitem "update example.lw and summarise.lw" setup=[environment_path] begin
+    println("update example.lw and summarise.lw")
     data = read_data("inputs/example.xlsx")
     data["metadata"]["date_created"] = ""
     data["metadata"]["date_modified"] = ""
     data["metadata"]["versioninfo"] = ""
     data["metadata"]["Manifest.toml"] = ""
     data["metadata"]["Project.toml"] = ""
-    write_longwing(data, "inputs/example.longwing")
+    write_longwing(data, "inputs/example.lw")
 
     data = read_data("inputs/summarise.xlsx")
     data["metadata"]["date_created"] = ""
@@ -49,7 +49,7 @@ end
     data["metadata"]["versioninfo"] = ""
     data["metadata"]["Manifest.toml"] = ""
     data["metadata"]["Project.toml"] = ""
-    write_longwing(data, "inputs/summarise.longwing")
+    write_longwing(data, "inputs/summarise.lw")
 end
 
 @run_package_tests

@@ -190,10 +190,10 @@ end
     @test growth_rate(od_df, time_col, SmoothedSpline(knots=[2, 4, 6, 8]))[1, "A"] ≈ log(2)
 
     # Recalibrate == :offset
-    @test growth_rate(od_df, time_col, FiniteDiff(); recalibrate = :offset)[1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided); recalibrate = :offset)[1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, SmoothedSpline(); recalibrate = :offset)[1, "A"] ≈ log(2)
-    @test growth_rate(od_df, time_col, SmoothedSpline(knots=[2, 4, 6, 8]); recalibrate = :offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff(); recalibrate=:offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, FiniteDiff(type=:onesided); recalibrate=:offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline(); recalibrate=:offset)[1, "A"] ≈ log(2)
+    @test growth_rate(od_df, time_col, SmoothedSpline(knots=[2, 4, 6, 8]); recalibrate=:offset)[1, "A"] ≈ log(2)
 
     # Tests for warnings
     od_df_warn = DataFrame(A=[
@@ -750,7 +750,7 @@ end
 @testitem "fluorescence per cell" setup=[environment_path] begin
     println("fluorescence per cell")
     lw = read_data("inputs/biotek.xlsx")
-    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.longwing")
+    filename = joinpath(Base.Filesystem.mktempdir(), "tmp.lw")
     write_longwing(lw, filename)
     lw = read_longwing(filename)
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
@@ -796,7 +796,7 @@ end
 end
 
 @testitem "warning for calibrating multiple channels" begin
-    lw = read_longwing("inputs/example.longwing")
+    lw = read_longwing("inputs/example.lw")
     trans_meta_map = Dict(Symbol(i) => Meta.parse(lw.transformations[i]["equation"])
                           for i in keys(lw.transformations))
     data = eval(Longwing.sexp_to_nested_list(:(plate_01_a1), lw, trans_meta_map))

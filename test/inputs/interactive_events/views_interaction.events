@@ -174,8 +174,8 @@ Q
 EXPECT_WAIT:You have unsaved changes. What would you like to do?
 ENTER
 EXPECT:Filename>
-TEXT:temp.longwing
+TEXT:temp.lw
 ENTER
 EXPECT_WAIT:The current version of Longwing is different
 ENTER
-EXPECT:Longwing Data Standard file saved to temp.longwing
+EXPECT:Longwing Data Standard file saved to temp.lw

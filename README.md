@@ -12,7 +12,7 @@ It allows standardised and reproducible processing of plate reader and flow cyto
 
 ## How does it work?
 
-The Longwing data format is composed of a structured JSON file (named the `.longwing` file) containing the raw data (in a standardised format) and the post-processing commands that are run on the data. This means that uploading a `.longwing` file a supplementary data for an article allows anyone to view the raw data and see (and reproduce) exactly how it was processed to derive the results seen in the article.
+The Longwing data format is composed of a structured JSON file (named the `.lw` file) containing the raw data (in a standardised format) and the post-processing commands that are run on the data. This means that uploading a `.lw` file a supplementary data for an article allows anyone to view the raw data and see (and reproduce) exactly how it was processed to derive the results seen in the article.
 
 Since we have all the data in a standardised format, we can (and do) provide a set of methods for processing the data. This includes calibration methods, flow cytometry gating, and calculating summary statistics such as growth rate or per cell fluorescence. While we provide many possible methods for each of these, we also offer sensible, robust, benchmark-verified defaults that should work in the majority of cases.
 

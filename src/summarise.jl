@@ -7,7 +7,7 @@ using Combinatorics
 """
     summary(file, ptype::AbstractLongwingDataType; plot=false)
 
-Summarise a data file (.longwing, plate reader, .fcs, etc.).
+Summarise a data file (.lw, plate reader, .fcs, etc.).
 
 # Arguments
 - `file::AbstractString`: The data file to be summarised.

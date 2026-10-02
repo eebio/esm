@@ -59,12 +59,12 @@ export median
 """
     lw translate
 
-Translates the completed .xlsx template file to a .longwing file.
+Translates the completed .xlsx template file to a .lw file.
 
 # Args
 
 - `input`: The completed .xlsx template file to be read.
-- `output`: The filepath/destination for the .longwing file.
+- `output`: The filepath/destination for the .lw file.
 """
 @cast function translate(input::String, output::String)
     x = read_data(input)
@@ -74,11 +74,11 @@ end
 """
     lw untranslate
 
-Reconstruct an Excel template from an .longwing file.
+Reconstruct an Excel template from an .lw file.
 
 # Args
 
-- `input`: The .longwing file to reconstruct.
+- `input`: The .lw file to reconstruct.
 - `output`: The filepath/destination for the Excel template.
 """
 @cast function untranslate(input::String, output::String)
@@ -88,11 +88,11 @@ end
 """
     lw views
 
-Produce and save the views from a .longwing file.
+Produce and save the views from a .lw file.
 
 # Args
 
-- `lw_file`: The .longwing file to be read.
+- `lw_file`: The .lw file to be read.
 
 # Options
 - `-v, --view=<String>`: The view to be produced (or comma-separated list of views). All views if not specified.
@@ -134,7 +134,7 @@ end
 """
     lw summarise
 
-Summarise a data file (.longwing, plate reader, .fcs, etc.).
+Summarise a data file (.lw, plate reader, .fcs, etc.).
 
 # Args
 
@@ -155,7 +155,7 @@ Summarise a data file (.longwing, plate reader, .fcs, etc.).
     # If type=="auto", attempt to infer from file extension
     if type == "auto"
         ext = splitext(file)[end]
-        if ext == ".longwing"
+        if ext == ".lw"
             type = "longwing"
         elseif ext == ".fcs"
             type = "fcs"
@@ -163,7 +163,7 @@ Summarise a data file (.longwing, plate reader, .fcs, etc.).
             type = "generic"
         else
             error("File type $ext cannot be inferred from extension. Supported extensions \
-            are .longwing or .fcs (or directories for generic tabular plate reader data).")
+            are .lw or .fcs (or directories for generic tabular plate reader data).")
         end
     end
     if lowercase(type) == "longwing"

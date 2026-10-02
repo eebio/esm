@@ -1,6 +1,6 @@
 # Command Line Interface
 
-The command line interface allows you to interact with, create and edit `.longwing` files. The functions are documented here and can also be seen by using `lw -h`. The help for each function can be seen by using `lw summarise -h` or `lw template -h` for example.
+The command line interface allows you to interact with, create and edit `.lw` files. The functions are documented here and can also be seen by using `lw -h`. The help for each function can be seen by using `lw summarise -h` or `lw template -h` for example.
 
 ## summarise
 
@@ -12,7 +12,7 @@ Longwing.summarise
 
 ## template
 
-To convert and collect your data into a `.longwing` file, you first want to create an Excel file that describes your data and how it should be imported, processed and viewed. A template Excel file can be loaded using the `lw template ...` function. To see how the Excel file should be filled out, check out [Getting Started with Longwing](@ref) or [Excel Interface](@ref).
+To convert and collect your data into a `.lw` file, you first want to create an Excel file that describes your data and how it should be imported, processed and viewed. A template Excel file can be loaded using the `lw template ...` function. To see how the Excel file should be filled out, check out [Getting Started with Longwing](@ref) or [Excel Interface](@ref).
 
 ```@docs; canonical=false
 Longwing.template
@@ -20,7 +20,7 @@ Longwing.template
 
 ## translate
 
-Once the template has been filled out and completed, it can be translated into a `.longwing` file using the `lw translate ...` function.
+Once the template has been filled out and completed, it can be translated into a `.lw` file using the `lw translate ...` function.
 
 ```@docs; canonical=false
 Longwing.translate
@@ -28,8 +28,8 @@ Longwing.translate
 
 ## untranslate
 
-An `.longwing` file can be reconstructed into an Excel workbook with `lw untranslate ...`.
-This won't neccessarily return the same template that was used to generate the `.longwing` file, but it will make a best attempt and assuming you have access to the raw data files, should be `lw translate`-able into the orignal `.longwing` file.
+An `.lw` file can be reconstructed into an Excel workbook with `lw untranslate ...`.
+This won't neccessarily return the same template that was used to generate the `.lw` file, but it will make a best attempt and assuming you have access to the raw data files, should be `lw translate`-able into the orignal `.lw` file.
 
 ```@docs; canonical=false
 Longwing.untranslate
@@ -37,7 +37,7 @@ Longwing.untranslate
 
 ## views
 
-To create the views from a `.longwing` file, you can use the `lw views ...` function. This saves the views as `.csv` files or plots relevant figures.
+To create the views from a `.lw` file, you can use the `lw views ...` function. This saves the views as `.csv` files or plots relevant figures.
 
 ```@docs; canonical=false
 Longwing.views
@@ -48,7 +48,7 @@ Longwing.views
 
 ## interactive
 
-Edit, manipluate and process a `.longwing` file interactively.
+Edit, manipluate and process a `.lw` file interactively.
 
 ```@docs; canonical=false
 Longwing.interactive

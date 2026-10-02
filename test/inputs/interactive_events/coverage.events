@@ -198,7 +198,7 @@ DOWN
 DOWN
 ENTER
 EXPECT:Filename>
-TEXT:test2.longwing
+TEXT:test2.lw
 ENTER
 EXPECT:> Yes, save changes and update the metadata
 ENTER

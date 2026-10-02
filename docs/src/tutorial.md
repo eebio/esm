@@ -27,7 +27,7 @@ You can download the plate reader data from [this link](https://github.com/eebio
 
 ## Step 1: Explore your data with lw summarise
 
-First, let's examine our dataset using the command line interface. We can use `lw summarise` on any Longwing Data Standard compatible data file (`.fcs`, `.longwing`, raw plate reader, etc.).
+First, let's examine our dataset using the command line interface. We can use `lw summarise` on any Longwing Data Standard compatible data file (`.fcs`, `.lw`, raw plate reader, etc.).
 
 To view the help guide for `lw summarise`, you can use `lw summarise -h`.
 
@@ -164,7 +164,7 @@ Longwing.translate
 We need to provide two arguments to `lw translate`, the completed template file to input and a file path to save the Longwing file output.
 
 ```bash
-lw translate template.xlsx data.longwing
+lw translate template.xlsx data.lw
 ```
 
 This will:
@@ -186,15 +186,15 @@ Longwing.views
 We can now look at our calculated doubling times from our data. Lets just have a look at our `dt_control` view for now.
 
 ```bash
-lw views data.longwing --view dt_control
+lw views data.lw --view dt_control
 ```
 
 !!! tip "Outputting all views"
-    If you don't specify the `--view` option, all views will be outputted. Since we have multiple views here, it would be easier to run `lw views data.longwing`, but we don't do that so you can see how you specify a particular view you want.
+    If you don't specify the `--view` option, all views will be outputted. Since we have multiple views here, it would be easier to run `lw views data.lw`, but we don't do that so you can see how you specify a particular view you want.
 
 ## Step 6: Analyse the data
 
-You should now have a file called `dt_control.csv` which contains you doubling times for the controls. From here, you can freely generate publication-quality plots of the data in your preferred software, perform statistical tests on the data, and integrate with computational pipelines. Just remember to share your `data.longwing` file so that others can reproduce your data (by running `lw views data.longwing` on their own machine).
+You should now have a file called `dt_control.csv` which contains you doubling times for the controls. From here, you can freely generate publication-quality plots of the data in your preferred software, perform statistical tests on the data, and integrate with computational pipelines. Just remember to share your `data.lw` file so that others can reproduce your data (by running `lw views data.lw` on their own machine).
 
 ![alt text](assets/final-data.png)
 
@@ -212,7 +212,7 @@ If you want to learn more about Longwing and the Longwing Data Standard, you can
 * [Plate Readers](@ref plate_reader) to learn about the functionality and different methods available for working with plate reader data, like `TimeseriesBlank()` and `Logistic()` used here.
 * [Flow Cytometry](@ref flow_cytometry) to learn about the calibration and gating methods available for working with flow cytometry data.
 * [Command Line Interface](@ref) to learn about all the features of the command line interface (`lw summarise`, `lw translate`, etc.).
-* [Data Format](@ref) to learn about how `.longwing` files are structured and the Longwing Data Standard.
+* [Data Format](@ref) to learn about how `.lw` files are structured and the Longwing Data Standard.
 * [Excel Interface](@ref) to learn more details about how the Excel template file works and its format.
 
 ## Getting help
